@@ -1,0 +1,90 @@
+[
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 1,
+    "fields": {
+      "firstname": "Joe",
+      "surname": "Wicks"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 2,
+    "fields": {
+      "firstname": "Nims",
+      "surname": "Purja"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 3,
+    "fields": {
+      "firstname": "Jake",
+      "surname": "Humphrey"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 4,
+    "fields": {
+      "firstname": "Peter",
+      "surname": "Crouch"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 5,
+    "fields": {
+      "firstname": "Chatrick",
+      "surname": "Vierra"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 6,
+    "fields": {
+      "firstname": "Greg",
+      "surname": "Thebaker"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 7,
+    "fields": {
+      "firstname": "Ben",
+      "surname": "Dover"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 8,
+    "fields": {
+      "firstname": "Samuel",
+      "surname": "Phillips"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 9,
+    "fields": {
+      "firstname": "Cameron",
+      "surname": "Jerome"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 10,
+    "fields": {
+      "firstname": "Casper",
+      "surname": "Schmeical"
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 11,
+    "fields": {
+      "firstname": "Fifty",
+      "surname": "Cent"
+    }
+  }
+]

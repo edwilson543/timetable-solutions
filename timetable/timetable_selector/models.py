@@ -56,8 +56,8 @@ class FixedClass(models.Model):
     Model for storing the unique list of classes that take place, when they take place, the teacher that takes the
     class, and the pupils that attend the class.
     """
-    class_id = models.CharField(max_length=20)  # Since may potentially want more complex ID than
+    class_id = models.CharField(max_length=20, primary_key=True)
     subject_name = models.CharField(max_length=20)
-    teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="teacher")
-    pupils = models.ManyToManyField("Pupil", related_name="pupils")
-    time_slots = models.ManyToManyField("TimetableSlot", related_name="slots")
+    teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="classes")
+    pupils = models.ManyToManyField("Pupil", related_name="classes")
+    time_slots = models.ManyToManyField("TimetableSlot", related_name="classes")
