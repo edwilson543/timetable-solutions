@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Navigation to relevant teacher's timetable</title>
+    <style>
+        body {background-color: powderblue;}
+        h1 {color: black;}
+    </style>
+</head>
+
+<body>
+    <a href="{% url 'teachers_navigator' %}">
+        <h1>View a teacher's timetable</h1>
+    </a>
+    <a href="{% url 'pupils_navigator' %}">
+        <h1>View a pupil's timetable</h1>
+    </a>
+</body>
+</html>
