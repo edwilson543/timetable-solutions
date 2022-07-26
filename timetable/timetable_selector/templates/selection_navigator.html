@@ -2,20 +2,38 @@
 <html>
 
 <head>
-    <meta charset="UTF-8">
-    <title>Navigation to relevant teacher's timetable</title>
-    <style>
-        body {background-color: powderblue;}
-        h1 {color: black;}
-    </style>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation to view either pupil or teacher list</title>
+{% load static %}
+<style>
+h1 {color: black;}
+a {text-decoration: none;}
+h1:hover {
+    background-color: #1f1530;
+    color: white;
+}
+
+body, html {
+  height: 100%;
+  margin: 0;
+  background-color: #c7c3c3;
+}
+
+</style>
 </head>
 
 <body>
-    <a href="{% url 'teachers_navigator' %}">
-        <h1>View a teacher's timetable</h1>
-    </a>
-    <a href="{% url 'pupils_navigator' %}">
-        <h1>View a pupil's timetable</h1>
-    </a>
+
+<div class="bg"><img src="{% static 'oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
+
+<div>
+<div style="width:50%; float:left; text-align:center;">
+<a href="{% url 'teachers_navigator' %}"><h1>View a teacher's timetable</h1></a>
+</div>
+<div style="width:50%; float:right; text-align:center;">
+<a href="{% url 'pupils_navigator' %}"><h1>View a pupil's timetable</h1></a>
+</div>
+</div>
+
 </body>
 </html>
