@@ -9,14 +9,25 @@
 <body>
 <h1>Timetable for: {{pupil.firstname}} {{pupil.surname}}</h1>
 
-<ul>
-{% for slot, subject in timetable.items %}
-    <li>Day: {{slot.day_of_week}} <li>
-    <li>Time: {{slot.period_start_time}} <li>
-    <li>Subject: {{subject}}</li>
-    <li></li>
+<table>
+
+{% for time, day_dict in timetable.items %}
+
+<tr>
+    {% if forloop.first %}
+    {% for day in day_dict %}
+    <th>{{day}}</th>
     {% endfor %}
-</ul>
+    {% endif %}
+</tr>
+<tr>
+    {% for day, subject in day_dict.items %}
+    <td>{{subject}}</td>
+    {% endfor %}
+</tr>
+
+{% endfor %}
+</table>
 </body>
 
 </html>
