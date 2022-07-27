@@ -1,6 +1,7 @@
 # Django imports
 from django.http import HttpResponse
 from django.template import loader
+from django.db.models import Q
 
 # Local application imports
 from .models import Pupil, TimetableSlot
@@ -33,16 +34,27 @@ def pupil_navigator(request):
     return HttpResponse(template.render(context, request))
 
 
-def pupil_timetable_view(request, pk: int):
+def pupil_timetable_view(request, id: int):
     # noinspection PyUnresolvedReferences
-    pupil = Pupil.objects.get(id=pk)
-    timetable = {(day, time): pupil.classes.filter(
-        time_slots=TimetableSlot(day_of_week=day, period_start_time=time))
-        for day in TimetableSlot.WeekDay.values for time in TimetableSlot.PeriodStart.value}
+    pupil = Pupil.objects.get(id=id)
+    classes = pupil.classes.all()
+    class_indexed_timetable = {klass.subject_name: klass.time_slots.all().values() for klass in classes}
+    timetable = {}
+    for day in TimetableSlot.WeekDay.values:
+        for time in TimetableSlot.PeriodStart.values:
+            # noinspection PyUnresolvedReferences
+            slot = TimetableSlot.objects.get(Q(day_of_week=day) & Q(period_start_time=time))
+            for klass, time_slots in class_indexed_timetable.items():
+                queryset = time_slots.filter(day_of_week=day, period_start_time=time)
+                if queryset.exists():
+                    timetable[slot] = klass
+            if slot not in timetable:
+                timetable[slot] = "Free"
+
     template = loader.get_template("timetable.html")
     context = {
         "timetable": timetable,
-        "name": pupil.firstname,
+        "pupil": pupil,
     }
     return HttpResponse(template.render(context, request))
 

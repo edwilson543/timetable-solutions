@@ -82,7 +82,7 @@ table, th, td {
       <tr>
           <td>{{pupil.firstname}}</td>
           <td>{{pupil.surname}}</td>
-          <td>View</td>
+          <td><a href="{% url 'pupil_timetable_view' pupil.id %}">View</a></td>
       </tr>
       {% endfor %}
   </table>

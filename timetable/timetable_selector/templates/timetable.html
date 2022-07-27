@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+<title>Navigation to view either pupil or teacher list</title>
+</head>
+
+<body>
+<h1>Timetable for: {{pupil.firstname}} {{pupil.surname}}</h1>
+
+<ul>
+{% for slot, subject in timetable.items %}
+    <li>Day: {{slot.day_of_week}} <li>
+    <li>Time: {{slot.period_start_time}} <li>
+    <li>Subject: {{subject}}</li>
+    <li></li>
+    {% endfor %}
+</ul>
+</body>
+
+</html>
