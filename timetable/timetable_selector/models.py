@@ -57,8 +57,20 @@ class FixedClass(models.Model):
     class, and the pupils that attend the class.
     Note that teacher is nullable so that a FixedClass can be made for breaks.
     """
+    class SubjectColour(models.TextChoices):
+        """Enum to list the options and colour that each colour of the timetable should be."""
+        MATHS = "#b3f2b3"
+        ENGLISH = "#ffbfd6"
+        FRENCH = "#c8d4e3"
+        LUNCH = "#b3b3b3"
+        FREE = "#feffba"
+
+        @staticmethod
+        def get_colour_from_subject(subject_name: str) -> str:
+            return getattr(FixedClass.SubjectColour, subject_name).value
+
     class_id = models.CharField(max_length=20, primary_key=True)
-    subject_name = models.CharField(max_length=20)
+    subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     pupils = models.ManyToManyField("Pupil", related_name="classes")
     time_slots = models.ManyToManyField("TimetableSlot", related_name="classes")

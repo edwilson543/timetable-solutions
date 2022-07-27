@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.template import loader
 
 # Local application imports
-from .models import Pupil, TimetableSlot
+from .models import Pupil, TimetableSlot, FixedClass
 
 
 def selection_navigator(request):
@@ -48,13 +48,16 @@ def pupil_timetable_view(request, id: int):
                 if queryset.exists():
                     time_timetable[day] = klass
             if day not in time_timetable:
-                time_timetable[day] = "Free"
+                time_timetable[day] = "FREE"
         timetable[time] = time_timetable
 
+    class_colours = {subject: FixedClass.SubjectColour.get_colour_from_subject(
+            subject_name=subject) for subject in class_indexed_timetable}
+    class_colours = class_colours | {"FREE": FixedClass.SubjectColour.get_colour_from_subject("FREE")}
     template = loader.get_template("timetable.html")
     context = {
         "timetable": timetable,
         "pupil": pupil,
+        "class_colours": class_colours,
     }
     return HttpResponse(template.render(context, request))
-
