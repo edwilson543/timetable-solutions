@@ -16,13 +16,13 @@
 <tr>
     {% if forloop.first %}
     {% for day in day_dict %}
-    <th>{{day}}</th>
+    <th>{{ day|title }}</th>
     {% endfor %}
     {% endif %}
 </tr>
 <tr>
     {% for day, subject in day_dict.items %}
-    <td>{{subject}}</td>
+    <td>{{ subject|title }}</td>
     {% endfor %}
 </tr>
 
