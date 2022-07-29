@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Navigation to relevant pupil's timetable</title>
+    <title>Pupil Timetable Selector</title>
 <style>
 
 /* COLLAPSIBLE STYLING */
@@ -62,9 +61,12 @@ table, th, td {
 }
 
 </style>
+{% extends "base.html" %}
 </head>
 
 <body>
+
+{% block body_content %}
 
 <h2>Pupil timetables</h2>
 
@@ -106,6 +108,9 @@ for (i = 0; i < coll.length; i++) {
 }
 </script>
 
+{% endblock %}
+
 </body>
+
 
 </html>

@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
 </head>
 <body>
-<p>
-    TODO:
-    - FAVICON
-    - NAVIGATION BAR
-    - ANY OTHER GENERAL STYLING
-</p>
-
+{% block body_content %}{% endblock %}
 </body>
 </html>
