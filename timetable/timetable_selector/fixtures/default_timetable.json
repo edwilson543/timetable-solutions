@@ -1,0 +1,317 @@
+[
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 1,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 2,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 3,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 4,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 5,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 6,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 7,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 8,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 9,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 10,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 11,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 12,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 13,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 14,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 15,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 16,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 17,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 18,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 19,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 20,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 21,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 22,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 23,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 24,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 25,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 26,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 27,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 28,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 29,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 30,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 31,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 32,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 33,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 34,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00"
+    }
+  },
+  {
+    "model": "timetable_selector.timetableslot",
+    "pk": 35,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00"
+    }
+  }
+]

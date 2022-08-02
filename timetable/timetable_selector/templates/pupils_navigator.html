@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+<html lang="en">
+
+<head>
+<title>{% block title %}Pupil Timetables{% endblock %}</title>
+
+<style>
+{% block styling %}
+
+/* COLLAPSIBLE STYLING */
+
+.collapsible {
+  background-color: #777;
+  color: white;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 15px;
+}
+
+.active, .collapsible:hover {
+  background-color: #555;
+}
+
+.collapsible:after {
+  content: '\002B';
+  color: white;
+  font-weight: bold;
+  float: right;
+  margin-left: 5px;
+}
+
+.active:after {
+  content: "\2212";
+}
+
+.content {
+  padding: 0 18px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #f1f1f1;
+}
+
+/* TABLE STYLING */
+
+table {width: 100%;}
+tr:nth-child(even) {
+  background-color: rgba(150, 212, 212, 0.4);
+}
+tr:hover {
+  background-color: #3d112f;
+  color: white;
+  font-weight: bold;
+}
+
+table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+{% endblock %}
+</style>
+
+</head>
+
+<body>
+
+{% block main_content %}
+
+<h2>Pupil timetables</h2>
+
+<p>Expand the year groups below to locate the relevant pupil</p>
+{% for year_group, pupils_in_year in all_pupils.items %}
+<button class="collapsible">Year {{year_group}} pupils</button>
+<div class="content">
+  <table>
+      <tr>
+          <th>Firstname</th>
+          <th>Surname</th>
+          <th>View timetable</th>
+      </tr>
+      {% for pupil in pupils_in_year %}
+      <tr>
+          <td>{{pupil.firstname}}</td>
+          <td>{{pupil.surname}}</td>
+          <td><a href="{% url 'pupil_timetable_view' pupil.id %}">View</a></td>
+      </tr>
+      {% endfor %}
+  </table>
+</div>
+{% endfor %}
+
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
+    } else {
+      content.style.maxHeight = content.scrollHeight + "px";
+    }
+  });
+}
+</script>
+
+{% endblock %}
+
+</body>
+
+
+</html>

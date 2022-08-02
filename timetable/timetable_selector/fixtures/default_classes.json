@@ -1,0 +1,132 @@
+[
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_MATHS_A",
+    "fields": {
+      "subject_name": "MATHS",
+      "teacher": 1,
+      "pupils": [1, 2],
+      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_MATHS_B",
+    "fields": {
+      "subject_name": "MATHS",
+      "teacher": 2,
+      "pupils": [3],
+      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_ENGLISH_A",
+    "fields": {
+      "subject_name": "ENGLISH",
+      "teacher": 3,
+      "pupils": [1, 2],
+      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_ENGLISH_B",
+    "fields": {
+      "subject_name": "ENGLISH",
+      "teacher": 4,
+      "pupils": [3],
+      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_FRENCH_A",
+    "fields": {
+      "subject_name": "FRENCH",
+      "teacher": 5,
+      "pupils": [1, 2],
+      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_ONE_FRENCH_B",
+    "fields": {
+      "subject_name": "FRENCH",
+      "teacher": 6,
+      "pupils": [3],
+      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_MATHS_A",
+    "fields": {
+      "subject_name": "MATHS",
+      "teacher": 7,
+      "pupils": [4, 6],
+      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_MATHS_B",
+    "fields": {
+      "subject_name": "MATHS",
+      "teacher": 8,
+      "pupils": [5],
+      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_ENGLISH_A",
+    "fields": {
+      "subject_name": "ENGLISH",
+      "teacher": 9,
+      "pupils": [4, 6],
+      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_ENGLISH_B",
+    "fields": {
+      "subject_name": "ENGLISH",
+      "teacher": 10,
+      "pupils": [5],
+      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_FRENCH_A",
+    "fields": {
+      "subject_name": "FRENCH",
+      "teacher": 11,
+      "pupils": [4, 6],
+      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "YEAR_TWO_FRENCH_B",
+    "fields": {
+      "subject_name": "FRENCH",
+      "teacher": 1,
+      "pupils": [5],
+      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": null,
+      "pupils": [1, 2, 3, 4, 5, 6],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  }
+]
