@@ -71,9 +71,9 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
         timetable[time] = time_timetable
 
     class_colours = {subject: FixedClass.SubjectColour.get_colour_from_subject(
-            subject_name=subject) for subject in class_indexed_timetable}
+        subject_name=subject) for subject in class_indexed_timetable}
     class_colours = class_colours | {"FREE": FixedClass.SubjectColour.get_colour_from_subject("FREE")}
-    template = loader.get_template("timetable.html")
+    template = loader.get_template("pupil_timetable.html")
     context = {
         "timetable": timetable,
         "pupil": pupil,
@@ -83,4 +83,5 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 
 
 def teacher_timetable_view(request, id: int):
+
     pass
