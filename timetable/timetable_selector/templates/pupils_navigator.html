@@ -1,8 +1,12 @@
 <!DOCTYPE html>
+{% extends "base.html" %}
 <html lang="en">
+
 <head>
-    <title>Pupil Timetable Selector</title>
+<title>{% block title %}Pupil Timetables{% endblock %}</title>
+
 <style>
+{% block styling %}
 
 /* COLLAPSIBLE STYLING */
 
@@ -60,13 +64,14 @@ table, th, td {
   text-align: center;
 }
 
+{% endblock %}
 </style>
-{% extends "base.html" %}
+
 </head>
 
 <body>
 
-{% block body_content %}
+{% block main_content %}
 
 <h2>Pupil timetables</h2>
 
