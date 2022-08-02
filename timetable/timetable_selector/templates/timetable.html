@@ -3,9 +3,9 @@
 {% extends "base.html" %}
 
 <head>
-<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
-<title>Navigation to view either pupil or teacher list</title>
-
+{% block head_content %}
+<title>{{pupil.firstname}} {{pupil.surname}} Timetable</title>
+{% endblock %}
 <style>
 {% block styling %}
 

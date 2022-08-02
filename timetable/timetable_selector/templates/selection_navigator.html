@@ -4,8 +4,9 @@
 {% extends "base.html" %}
 
 <head>
-<title>{% block title %} Timetable navigator {% endblock %}</title>
-{% load static %}
+{% block head_content %}
+<title> Timetable navigator </title>
+{% endblock %}
 <style>
 {% block styling %}
 
@@ -35,6 +36,7 @@ span {
 
 <body>
 {% block main_content %}
+{% load static %}
 <div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
 
 <div>

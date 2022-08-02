@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Navigation to relevant teacher's timetable</title>
-</head>
-<body>
 
+{% extends "base.html" %}
+
+<head>
+<title>{% block title %}Teacher timetables {% endblock %}</title>
+<style>
+{% block styling %}
+p {
+    color: red;
+}
+{% endblock %}
+</style>
+</head>
+
+<body>
+{% block main_content %}
+<p>
+{% for letter, teachers in all_teachers.items %}
+<br>{{letter}}
+    {% for teacher in teachers %}
+    {{teacher}}
+    {% endfor %}
+{% endfor %}
+</p>
+{% endblock %}
 </body>
 </html>
