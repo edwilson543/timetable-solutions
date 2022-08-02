@@ -82,6 +82,9 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-def teacher_timetable_view(request, id: int):
-
+def teacher_timetable_view(request, id: int) -> HttpResponse:
+    """
+    View for the timetable of the individual teacher with the passed id.
+    Context is as for the pupil timetable view.
+    """
     pass
