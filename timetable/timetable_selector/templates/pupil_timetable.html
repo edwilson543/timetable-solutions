@@ -66,8 +66,13 @@ td {
 </tr>
 <tr>
     <td class="perimeter">{{time}}</td>
-    {% for day, subject in day_dict.items %}
-    <td class="color_{{subject}}">{{ subject|title }}</td>
+    {% for day, klass in day_dict.items %}
+    {% if klass == "FREE" %}
+    <td class="color_{{klass}}">{{ klass|title }}</td>
+    {% else %}
+    <td class="color_{{klass.subject_name}}">{{ klass.subject_name|title}}</td>
+    {% endif %}
+
     {% endfor %}
 </tr>
 

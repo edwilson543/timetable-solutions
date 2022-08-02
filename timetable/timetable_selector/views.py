@@ -49,14 +49,15 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual pupil with the passed id.
     The main context is 'timetable' - a nested dictionary where the outermost key is the time/period (9am/10am/...), the
-    innermost key is the day of the week, and the values are the subject names at each relevant timeslot.
+    innermost key is the day of the week, and the values are the subject objects at each relevant timeslot, with the
+    exception that a free period is just a string 'FREE'.
     e.g. {9AM: {MONDAY: MATHS, TUESDAY: FRENCH,...}, 10AM: {...}, ...}
     This structure is chosen such that it can be efficiently iterated over in the template to create a html table.
     """
     # noinspection PyUnresolvedReferences
     pupil = Pupil.objects.get(id=id)
     classes = pupil.classes.all()
-    class_indexed_timetable = {klass.subject_name: klass.time_slots.all().values() for klass in classes}
+    class_indexed_timetable = {klass: klass.time_slots.all().values() for klass in classes}
     timetable = {}
     for time in TimetableSlot.PeriodStart.values:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
@@ -67,12 +68,14 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
                 if queryset.exists():
                     time_timetable[day] = klass
             if day not in time_timetable:
-                time_timetable[day] = "FREE"
+                time_timetable[day] = FixedClass.SubjectColour.FREE.name
         timetable[time] = time_timetable
 
-    class_colours = {subject: FixedClass.SubjectColour.get_colour_from_subject(
-        subject_name=subject) for subject in class_indexed_timetable}
-    class_colours = class_colours | {"FREE": FixedClass.SubjectColour.get_colour_from_subject("FREE")}
+    class_colours = {klass.subject_name: FixedClass.SubjectColour.get_colour_from_subject(
+        subject_name=klass.subject_name) for klass in class_indexed_timetable}
+    class_colours = class_colours | {"FREE": FixedClass.SubjectColour.get_colour_from_subject(
+            FixedClass.SubjectColour.FREE.name)}
+
     template = loader.get_template("pupil_timetable.html")
     context = {
         "timetable": timetable,
@@ -87,4 +90,6 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
     View for the timetable of the individual teacher with the passed id.
     Context is as for the pupil timetable view.
     """
+    # TODO first split out the reusable part of the pupil timetable view.
+    # For the template, create a css file for the timetable.
     pass
