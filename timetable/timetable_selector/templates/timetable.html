@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
+{% extends "base.html" %}
 
 <head>
 <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
 <title>Navigation to view either pupil or teacher list</title>
+
 <style>
+{% block styling %}
+
 /* Background settings */
 body, html {
   height: 100%;
@@ -37,11 +41,15 @@ td {
   background-color: {{colour}};
 }
 {% endfor %}
-</style>
 
+{% endblock %}
+</style>
 </head>
 
 <body>
+
+{% block main_content %}
+
 <h1>Timetable for: {{pupil.firstname}} {{pupil.surname}}</h1>
 
 <table style="width:100%;">
@@ -65,6 +73,9 @@ td {
 
 {% endfor %}
 </table>
+
+{% endblock %}
+
 </body>
 
 </html>
