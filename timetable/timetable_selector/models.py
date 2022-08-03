@@ -16,11 +16,16 @@ class Pupil(models.Model):
     """Model for storing unique list of pupils."""
 
     class YearGroup(models.IntegerChoices):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-        FOUR = 4
-        FIVE = 5
+        ONE = 1, "#b3f2b3"
+        TWO = 2, "#ffbfd6"
+        THREE = 3, "#c8d4e3"
+        FOUR = 4, "#fcc4a2"
+        FIVE = 5, "#babac2"
+
+        @staticmethod
+        def get_colour_from_year_group(year_group: str) -> str:
+            """Method taking a year group name e.g. 'ONE' and returning a hexadecimal colour e.g. #b3f2b3"""
+            return getattr(Pupil.YearGroup, year_group).label
 
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
@@ -67,6 +72,7 @@ class FixedClass(models.Model):
 
         @staticmethod
         def get_colour_from_subject(subject_name: str) -> str:
+            """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
             return getattr(FixedClass.SubjectColour, subject_name).value
 
     class_id = models.CharField(max_length=20, primary_key=True)
