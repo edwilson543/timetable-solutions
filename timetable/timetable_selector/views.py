@@ -1,5 +1,5 @@
 # Standard library imports
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 # Django imports
 from django.db.models import QuerySet
@@ -35,7 +35,7 @@ def pupil_navigator(request) -> HttpResponse:
 def teacher_navigator(request) -> HttpResponse:
     """
     View to bring up a list of teachers which can be linked out to each of their timetables.
-    Pre-processed to return a dictionary of teachers with the surnmaes indexed alphabetically.
+    Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
     """
     alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     # noinspection PyUnresolvedReferences
@@ -54,9 +54,9 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     View for the timetable of the individual pupil with the passed id.
     Context:
     ----------
-    timetable - see _get_timetable_slot_indexed_timetable
     pupil - an instance of the Pupil model
-    class_colours - a dictionary
+    timetable - see _get_timetable_slot_indexed_timetable
+    class_colours - a dictionary with keys of subject name strings, and values of hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
     pupil = Pupil.objects.get(id=id)
@@ -65,13 +65,12 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 
     class_colours = {klass.subject_name: FixedClass.SubjectColour.get_colour_from_subject(
         subject_name=klass.subject_name) for klass in classes}
-    class_colours = class_colours | {f"FREE": FixedClass.SubjectColour.get_colour_from_subject(
-            FixedClass.SubjectColour.FREE.name)}
+    class_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.value
 
     template = loader.get_template("pupil_timetable.html")
     context = {
-        "timetable": timetable,
         "pupil": pupil,
+        "timetable": timetable,
         "class_colours": class_colours,
     }
     return HttpResponse(template.render(context, request))
@@ -80,15 +79,35 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 def teacher_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
-    Context is as for the pupil timetable view.
+        Context:
+    ----------
+    teacher - an instance of the teacher model
+    timetable - see _get_timetable_slot_indexed_timetable
+    class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
     """
-    # TODO first split out the reusable part of the pupil timetable view.
-    # For the template, create a css file for the timetable.
-    pass
+    # noinspection PyUnresolvedReferences
+    teacher = Teacher.objects.get(id=id)
+    classes = teacher.classes.all()
+    timetable = _get_timetable_slot_indexed_timetable(classes=classes)
+
+    year_group_colours = {}  # Not using dict comp here since info extraction requires some explanation
+    for klass in classes:
+        first_pupil = klass.pupils.all()[0]  # Just take the first pupil from queryset since all have same year group
+        year_group: int = first_pupil.year_group
+        year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
+    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.value
+    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.value
+
+    template = loader.get_template("teacher_timetable.html")
+    context = {
+        "teacher": teacher,
+        "timetable": timetable,
+        "colours": year_group_colours,
+    }
+    return HttpResponse(template.render(context, request))
 
 
-def _get_timetable_slot_indexed_timetable(classes: QuerySet | List[FixedClass]) -> \
-        Dict[Tuple[TimetableSlot.PeriodStart, TimetableSlot.WeekDay] | str, QuerySet | List[FixedClass]]:
+def _get_timetable_slot_indexed_timetable(classes: QuerySet | List[FixedClass]) -> Dict:
     """
     Function to return a timetable data structure that can easily be iterated over in a django template.
 
