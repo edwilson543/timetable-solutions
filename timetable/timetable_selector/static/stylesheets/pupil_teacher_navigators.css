@@ -1,4 +1,4 @@
-/* COLLAPSIBLE STYLING */
+/* Collapsible styling */
 
 .collapsible {
   background-color: #777;
@@ -36,7 +36,7 @@
   background-color: #f1f1f1;
 }
 
-/* TABLE STYLING */
+/* Table styling */
 
 table {width: 100%;}
 tr:nth-child(even) {
