@@ -23,9 +23,10 @@ class Pupil(models.Model):
         FIVE = 5, "#babac2"
 
         @staticmethod
-        def get_colour_from_year_group(year_group: str) -> str:
-            """Method taking a year group name e.g. 'ONE' and returning a hexadecimal colour e.g. #b3f2b3"""
-            return getattr(Pupil.YearGroup, year_group).label
+        def get_colour_from_year_group(year_group: int) -> str:
+            """Method taking a year group name e.g. int: 1 and returning a hexadecimal colour e.g. #b3f2b3"""
+            member = Pupil.YearGroup(year_group)
+            return member.label
 
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
