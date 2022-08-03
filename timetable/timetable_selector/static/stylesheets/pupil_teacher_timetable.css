@@ -6,6 +6,7 @@ body, html {
 }
 
 /* Table formatting */
+table {width:100%;}
 th, td {
   padding: 15px;
   background-color: #c9c9c9; /* default colour if subject is not found */

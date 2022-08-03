@@ -12,6 +12,7 @@
 
 <style>
 {% block styling %}
+
 {% for subject, colour in class_colours.items %}
 .color_{{ subject }} {
   background-color: {{colour}};
@@ -28,7 +29,7 @@
 
 <h1>Timetable for: {{pupil.firstname}} {{pupil.surname}}</h1>
 
-<table style="width:100%;">
+<table>
 
 {% for time, day_dict in timetable.items %}
 
@@ -51,7 +52,6 @@
 
     {% endfor %}
 </tr>
-
 {% endfor %}
 </table>
 

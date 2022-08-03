@@ -29,7 +29,7 @@
       <tr>
           <td>{{teacher.firstname}}</td>
           <td>{{teacher.surname}}</td>
-          <td><a href="">View</a></td>
+          <td><a href="{% url 'teacher_timetable_view' teacher.id %}">View</a></td>
       </tr>
       {% endfor %}
   </table>
