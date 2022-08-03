@@ -1,0 +1,27 @@
+/* Background settings */
+body, html {
+  height: 100%;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* Table formatting */
+th, td {
+  padding: 15px;
+  background-color: #c9c9c9; /* default colour if subject is not found */
+  text-align: center;
+}
+.perimeter {
+  background-color: #4d4141;
+  color: white;
+  border-radius: 3px;
+}
+td:hover {
+  background-color: #0a2fa8;
+  color: white;
+}
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-radius: 3px;
+}
