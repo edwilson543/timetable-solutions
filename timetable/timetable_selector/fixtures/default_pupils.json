@@ -5,7 +5,7 @@
     "fields": {
       "firstname": "John",
       "surname": "Smith",
-      "year_group": "ONE"
+      "year_group": 1
     }
   },
   {
@@ -14,7 +14,7 @@
     "fields": {
       "firstname": "Oliver",
       "surname": "Wilson",
-      "year_group": "ONE"
+      "year_group": 1
     }
   },
   {
@@ -23,7 +23,7 @@
     "fields": {
       "firstname": "George",
       "surname": "Jones",
-      "year_group": "ONE"
+      "year_group": 1
     }
   },
   {
@@ -32,7 +32,7 @@
     "fields": {
       "firstname": "Peter",
       "surname": "Rhodes",
-      "year_group": "TWO"
+      "year_group": 2
     }
   },
   {
@@ -41,7 +41,7 @@
     "fields": {
       "firstname": "Teemu",
       "surname": "Pukki",
-      "year_group": "TWO"
+      "year_group": 2
     }
   },
   {
@@ -50,7 +50,7 @@
     "fields": {
       "firstname": "Wesley",
       "surname": "Hoolahan",
-      "year_group": "TWO"
+      "year_group": 2
     }
   }
 ]
