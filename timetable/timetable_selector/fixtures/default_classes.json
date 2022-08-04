@@ -5,9 +5,21 @@
     "fields": {
       "subject_name": "MATHS",
       "teacher": 1,
-      "pupils": [1, 2],
+      "pupils": [
+        1,
+        2
+      ],
       "classroom": 1,
-      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+      "time_slots": [
+        1,
+        2,
+        8,
+        9,
+        15,
+        16,
+        29,
+        30
+      ]
     }
   },
   {
@@ -16,9 +28,21 @@
     "fields": {
       "subject_name": "MATHS",
       "teacher": 2,
-      "pupils": [3],
+      "pupils": [
+        3
+      ],
       "classroom": 2,
-      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+      "time_slots": [
+        6,
+        7,
+        13,
+        14,
+        20,
+        27,
+        28,
+        34,
+        35
+      ]
     }
   },
   {
@@ -27,9 +51,21 @@
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 3,
-      "pupils": [1, 2],
+      "pupils": [
+        1,
+        2
+      ],
       "classroom": 3,
-      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+      "time_slots": [
+        3,
+        4,
+        10,
+        11,
+        17,
+        18,
+        31,
+        32
+      ]
     }
   },
   {
@@ -38,9 +74,20 @@
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 4,
-      "pupils": [3],
+      "pupils": [
+        3
+      ],
       "classroom": 4,
-      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+      "time_slots": [
+        3,
+        4,
+        10,
+        11,
+        17,
+        18,
+        31,
+        32
+      ]
     }
   },
   {
@@ -49,9 +96,22 @@
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 5,
-      "pupils": [1, 2],
+      "pupils": [
+        1,
+        2
+      ],
       "classroom": 5,
-      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+      "time_slots": [
+        6,
+        7,
+        13,
+        14,
+        20,
+        27,
+        28,
+        34,
+        35
+      ]
     }
   },
   {
@@ -60,9 +120,20 @@
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 6,
-      "pupils": [3],
+      "pupils": [
+        3
+      ],
       "classroom": 6,
-      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+      "time_slots": [
+        1,
+        2,
+        8,
+        9,
+        15,
+        16,
+        29,
+        30
+      ]
     }
   },
   {
@@ -71,9 +142,21 @@
     "fields": {
       "subject_name": "MATHS",
       "teacher": 7,
-      "pupils": [4, 6],
+      "pupils": [
+        4,
+        6
+      ],
       "classroom": 7,
-      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+      "time_slots": [
+        3,
+        4,
+        10,
+        11,
+        17,
+        18,
+        31,
+        32
+      ]
     }
   },
   {
@@ -82,9 +165,20 @@
     "fields": {
       "subject_name": "MATHS",
       "teacher": 8,
-      "pupils": [5],
+      "pupils": [
+        5
+      ],
       "classroom": 8,
-      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+      "time_slots": [
+        1,
+        2,
+        8,
+        9,
+        15,
+        16,
+        29,
+        30
+      ]
     }
   },
   {
@@ -93,9 +187,21 @@
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 9,
-      "pupils": [4, 6],
+      "pupils": [
+        4,
+        6
+      ],
       "classroom": 9,
-      "time_slots": [1, 2, 8, 9, 15, 16, 29, 30]
+      "time_slots": [
+        1,
+        2,
+        8,
+        9,
+        15,
+        16,
+        29,
+        30
+      ]
     }
   },
   {
@@ -104,9 +210,20 @@
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 10,
-      "pupils": [5],
+      "pupils": [
+        5
+      ],
       "classroom": 10,
-      "time_slots": [3, 4, 10, 11, 17, 18, 31, 32]
+      "time_slots": [
+        3,
+        4,
+        10,
+        11,
+        17,
+        18,
+        31,
+        32
+      ]
     }
   },
   {
@@ -115,9 +232,22 @@
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 11,
-      "pupils": [4, 6],
+      "pupils": [
+        4,
+        6
+      ],
       "classroom": 11,
-      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+      "time_slots": [
+        6,
+        7,
+        13,
+        14,
+        20,
+        27,
+        28,
+        34,
+        35
+      ]
     }
   },
   {
@@ -126,9 +256,21 @@
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 1,
-      "pupils": [5],
+      "pupils": [
+        5
+      ],
       "classroom": 12,
-      "time_slots": [6, 7, 13, 14, 20, 27, 28, 34, 35]
+      "time_slots": [
+        6,
+        7,
+        13,
+        14,
+        20,
+        27,
+        28,
+        34,
+        35
+      ]
     }
   },
   {
@@ -137,12 +279,25 @@
     "fields": {
       "subject_name": "LUNCH",
       "teacher": null,
-      "pupils": [1, 2, 3, 4, 5, 6],
+      "pupils": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_1",
     "fields": {
@@ -150,10 +305,16 @@
       "teacher": 1,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_2",
     "fields": {
@@ -161,10 +322,16 @@
       "teacher": 2,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_3",
     "fields": {
@@ -172,10 +339,16 @@
       "teacher": 3,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_4",
     "fields": {
@@ -183,10 +356,16 @@
       "teacher": 4,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_5",
     "fields": {
@@ -194,10 +373,16 @@
       "teacher": 5,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   },
-    {
+  {
     "model": "timetable_selector.fixedclass",
     "pk": "LUNCH_6",
     "fields": {
@@ -205,7 +390,98 @@
       "teacher": 6,
       "pupils": [],
       "classroom": null,
-      "time_slots": [21, 22, 23, 24, 25]
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_7",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 7,
+      "pupils": [],
+      "classroom": null,
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_8",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 8,
+      "pupils": [],
+      "classroom": null,
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_9",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 9,
+      "pupils": [],
+      "classroom": null,
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_10",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 10,
+      "pupils": [],
+      "classroom": null,
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
+    }
+  },
+  {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_11",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 11,
+      "pupils": [],
+      "classroom": null,
+      "time_slots": [
+        21,
+        22,
+        23,
+        24,
+        25
+      ]
     }
   }
 ]

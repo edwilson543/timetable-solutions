@@ -5,6 +5,9 @@ body, html {
   margin-right: 10px;
 }
 
+/* Title settings */
+.heading {text-align: center;}
+
 /* Table formatting */
 table {width:100%;}
 
