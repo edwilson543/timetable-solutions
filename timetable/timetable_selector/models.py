@@ -10,6 +10,7 @@ class Teacher(models.Model):
     """Model for storing unique list of teachers."""
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
+    title = models.CharField(max_length=10)
 
 
 class Pupil(models.Model):
@@ -80,4 +81,14 @@ class FixedClass(models.Model):
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     pupils = models.ManyToManyField("Pupil", related_name="classes")
+    classroom = models.ForeignKey("Classroom", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     time_slots = models.ManyToManyField("TimetableSlot", related_name="classes")
+
+
+class Classroom(models.Model):
+    """
+    Model storing the classroom (location) in which a fixed class takes place.
+    Currently, a fixed class id must take place in exactly one classroom
+    """
+    building = models.CharField(max_length=20)
+    room_number = models.IntegerField()

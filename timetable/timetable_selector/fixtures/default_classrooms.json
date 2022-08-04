@@ -1,0 +1,98 @@
+[
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 1,
+    "fields": {
+      "building": "MB",
+      "room_number": 47
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 2,
+    "fields": {
+      "building": "MB",
+      "room_number": 14
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 3,
+    "fields": {
+      "building": "EB",
+      "room_number": 7
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 4,
+    "fields": {
+      "building": "EB",
+      "room_number": 23
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 5,
+    "fields": {
+      "building": "LB",
+      "room_number": 19
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 6,
+    "fields": {
+      "building": "LB",
+      "room_number": 11
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 7,
+    "fields": {
+      "building": "MB",
+      "room_number": 1
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 8,
+    "fields": {
+      "building": "MB",
+      "room_number": 2
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 9,
+    "fields": {
+      "building": "EB",
+      "room_number": 18
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 10,
+    "fields": {
+      "building": "EB",
+      "room_number": 20
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 11,
+    "fields": {
+      "building": "LB",
+      "room_number": 40
+    }
+  },
+  {
+    "model": "timetable_selector.classroom",
+    "pk": 12,
+    "fields": {
+      "building": "LB",
+      "room_number": 50
+    }
+  }
+]
