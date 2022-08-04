@@ -23,14 +23,13 @@
 
 <body>
 {% block main_content %}
-
 <table>
 
 {% for time, day_dict in timetable.items %}
 
 <tr>
     {% if forloop.first %}
-    <th style="background-color:#876969; color:white;">Start time</th>
+    <th style="background-color:#876969;color:white;">Start time</th>
     {% for day in day_dict %}
     <th class="perimeter">{{ day|title }}</th>
     {% endfor %}
@@ -42,14 +41,13 @@
     {% if klass == "FREE" or klass == "LUNCH" %}
     <td class="color_{{klass}}">{{ klass|title }}</td>
     {% else %}
-    <td class="color_{{klass.subject_name}}">{{ klass.subject_name|title}}</td>
+    <td class="color_{{klass.pupils.all.0.year_group}}">{{ klass.subject_name|title}}</td>
     {% endif %}
 
     {% endfor %}
 </tr>
 {% endfor %}
 </table>
-<p>{{colours}}</p>
 {% endblock %}
 
 </body>
