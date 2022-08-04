@@ -7,11 +7,7 @@ body, html {
 
 /* Table formatting */
 table {width:100%;}
-th, td {
-  padding: 15px;
-  background-color: #c9c9c9; /* default colour if subject is not found */
-  text-align: center;
-}
+
 .perimeter {
   background-color: #4d4141;
   color: white;
@@ -20,6 +16,11 @@ th, td {
 td:hover {
   background-color: #0a2fa8;
   color: white;
+}
+th, td {
+  padding: 5px;
+  background-color: #c9c9c9; /* default colour if subject is not found */
+  text-align: center;
 }
 td {
   border: 1px solid black;

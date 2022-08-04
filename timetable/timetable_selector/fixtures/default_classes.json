@@ -121,11 +121,71 @@
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH",
+    "pk": "LUNCH_PUPILS",
     "fields": {
       "subject_name": "LUNCH",
       "teacher": null,
       "pupils": [1, 2, 3, 4, 5, 6],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_1",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 1,
+      "pupils": [],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_2",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 2,
+      "pupils": [],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_3",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 3,
+      "pupils": [],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_4",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 4,
+      "pupils": [],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_5",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 5,
+      "pupils": [],
+      "time_slots": [21, 22, 23, 24, 25]
+    }
+  },
+    {
+    "model": "timetable_selector.fixedclass",
+    "pk": "LUNCH_6",
+    "fields": {
+      "subject_name": "LUNCH",
+      "teacher": 6,
+      "pupils": [],
       "time_slots": [21, 22, 23, 24, 25]
     }
   }

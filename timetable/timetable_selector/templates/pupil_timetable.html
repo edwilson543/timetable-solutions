@@ -35,9 +35,9 @@
 
 <tr>
     {% if forloop.first %}
-    <th style="background-color:#876969; color:white;">Start time</th>
+    <th style="background-color:#876969;color:white;width:10%">Start time</th>
     {% for day in day_dict %}
-    <th class="perimeter">{{ day|title }}</th>
+    <th class="perimeter" style="width:18%;">{{ day|title }}</th>
     {% endfor %}
     {% endif %}
 </tr>

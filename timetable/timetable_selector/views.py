@@ -92,9 +92,11 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
 
     year_group_colours = {}  # Not using dict comp here since info extraction requires some explanation
     for klass in classes:
-        first_pupil = klass.pupils.all()[0]  # Just take the first pupil from queryset since all have same year group
-        year_group: int = first_pupil.year_group
-        year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
+        all_pupils = klass.pupils.all()
+        if all_pupils.exists():  # Take first pupil from queryset since all have same year group
+            first_pupil = klass.pupils.all()[0]
+            year_group: int = first_pupil.year_group
+            year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
     year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.value
     year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.value
 

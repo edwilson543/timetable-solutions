@@ -29,21 +29,25 @@
 
 <tr>
     {% if forloop.first %}
-    <th style="background-color:#876969;color:white;">Start time</th>
+    <th style="background-color:#876969;color:white;width:10%">Start time</th>
     {% for day in day_dict %}
-    <th class="perimeter">{{ day|title }}</th>
+    <th class="perimeter" style="width:18%;">{{ day|title }}</th>
     {% endfor %}
     {% endif %}
 </tr>
 <tr>
     <td class="perimeter">{{time}}</td>
     {% for day, klass in day_dict.items %}
-    {% if klass == "FREE" or klass == "LUNCH" %}
-    <td class="color_{{klass}}">{{ klass|title }}</td>
-    {% else %}
-    <td class="color_{{klass.pupils.all.0.year_group}}">{{ klass.subject_name|title}}</td>
-    {% endif %}
-
+      {% if klass == "FREE" %}
+        <td class="color_{{klass}}">{{ klass|title }}</td>
+      {% elif klass.subject_name == "LUNCH" %}
+        <td class="color_{{klass.pupils.all.0.year_group}}">{{ klass.subject_name|title}}</td>
+      {% else %}
+        <td class="color_{{klass.pupils.all.0.year_group}}">
+          {{ klass.subject_name|title}}<br>
+          <i>Year {{ klass.pupils.all.0.year_group }}</i>
+        </td>
+      {% endif %}
     {% endfor %}
 </tr>
 {% endfor %}
