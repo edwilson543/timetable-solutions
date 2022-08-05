@@ -7,12 +7,6 @@ from .models import Pupil, Teacher, FixedClass
 from .utils import _get_timetable_slot_indexed_timetable
 
 
-def selection_navigator(request) -> HttpResponse:
-    """View to bring up the main navigation screen for guiding the user towards individual timetables."""
-    template = loader.get_template("selection_navigator.html")
-    return HttpResponse(template.render({}, request))
-
-
 def pupil_navigator(request) -> HttpResponse:
     """
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
