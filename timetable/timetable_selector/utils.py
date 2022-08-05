@@ -10,7 +10,7 @@ from django.db.models import QuerySet
 from .models import FixedClass, TimetableSlot
 
 
-def _get_timetable_slot_indexed_timetable(classes: QuerySet | List[FixedClass]) -> Dict:
+def get_timetable_slot_indexed_timetable(classes: QuerySet | List[FixedClass]) -> Dict:
     """
     Function to return a timetable data structure that can easily be iterated over in a django template.
 
