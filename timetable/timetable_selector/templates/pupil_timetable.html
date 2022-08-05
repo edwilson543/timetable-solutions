@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+{% extends "base.html" %}
+
+<head>
+
+{% block head_content %}
+<title>{{pupil.firstname}} {{pupil.surname}} Timetable</title>
+{% load static %}
+<link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_timetable.css' %}">
+{% endblock %}
+
+<style>
+{% block styling %}
+
+{% for subject, colour in class_colours.items %}
+.color_{{ subject }} {
+  background-color: {{colour}};
+}
+{% endfor %}
+
+{% endblock %}
+</style>
+</head>
+
+<body>
+
+{% block main_content %}
+
+<h1 class="heading">Timetable for: {{pupil.firstname}} {{pupil.surname}}</h1>
+
+<table>
+
+{% for time, day_dict in timetable.items %}
+
+<tr>
+    {% if forloop.first %}
+    <th style="background-color:#876969;color:white;width:10%">Start time</th>
+    {% for day in day_dict %}
+    <th class="perimeter" style="width:18%;">{{ day|title }}</th>
+    {% endfor %}
+    {% endif %}
+</tr>
+<tr>
+    <td class="perimeter">{{time}}</td>
+    {% for day, klass in day_dict.items %}
+    {% if klass == "FREE" %}
+      <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
+    {% elif klass.subject_name == "LUNCH" %}
+      <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
+    {% else %}
+      <td class="color_{{klass.subject_name}}">
+          <b>{{ klass.subject_name|title}}</b><br>
+          <i>{{ klass.teacher.title }} {{ klass.teacher.surname }}</i><br>
+          <i>{{ klass.classroom.building}} {{klass.classroom.room_number}}</i>
+      </td>
+    {% endif %}
+
+    {% endfor %}
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
+
+</body>
+
+</html>

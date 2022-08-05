@@ -4,17 +4,22 @@
     <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
     <link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
-    <title>{% block title %} Timetabling {% endblock %}</title>
+    {% block head_content %}
+    {% endblock %}
 <style>
 body, html {
   height: 100%;
   background-color: #d4cbd6;
 }
-
-{% block styling %}{% endblock %}
+* {
+ font-family: Arial;
+}
+{% block styling %}
+{% endblock %}
 </style>
 </head>
 <body>
-{% block main_content %}{% endblock %}
+{% block main_content %}
+{% endblock %}
 </body>
 </html>

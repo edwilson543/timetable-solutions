@@ -4,10 +4,13 @@
 {% extends "base.html" %}
 
 <head>
-<title>{% block title %} Timetable navigator {% endblock %}</title>
-{% load static %}
+{% block head_content %}
+<title> Timetable navigator </title>
+{% endblock %}
 <style>
 {% block styling %}
+
+body, html {background-color: #d4cbd6;}
 
 a {text-decoration: none;}
 h1 {
@@ -17,6 +20,13 @@ h1 {
     line-height: 100px;
     border: 2px solid black;
     border-radius: 5px;
+}
+.bg {
+  height: 70%;
+  width: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 h1:hover {
@@ -35,13 +45,14 @@ span {
 
 <body>
 {% block main_content %}
+{% load static %}
 <div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
 
 <div>
-<div style="width:40%; float:left; text-align:center; margin-left:5%; margin-right:5%">
+<div style="width:48%; float:left; text-align:center; margin-left:1%; margin-right:1%;">
 <a href="{% url 'teachers_navigator' %}"><h1><span>View a teacher's timetable</span></h1></a>
 </div>
-<div style="width:40%; float:right; text-align:center; margin-left:5%; margin-right:5%">
+<div style="width:48%; float:right; text-align:center; margin-left:1%; margin-right:1%;">
 <a href="{% url 'pupils_navigator' %}"><h1><span>View a pupil's timetable</span></h1></a>
 </div>
 </div>

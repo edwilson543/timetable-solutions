@@ -10,17 +10,24 @@ class Teacher(models.Model):
     """Model for storing unique list of teachers."""
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
+    title = models.CharField(max_length=10)
 
 
 class Pupil(models.Model):
     """Model for storing unique list of pupils."""
 
     class YearGroup(models.IntegerChoices):
-        ONE = 1
-        TWO = 2
-        THREE = 3
-        FOUR = 4
-        FIVE = 5
+        ONE = 1, "#b3f2b3"
+        TWO = 2, "#ffbfd6"
+        THREE = 3, "#c8d4e3"
+        FOUR = 4, "#fcc4a2"
+        FIVE = 5, "#babac2"
+
+        @staticmethod
+        def get_colour_from_year_group(year_group: int) -> str:
+            """Method taking a year group name e.g. int: 1 and returning a hexadecimal colour e.g. #b3f2b3"""
+            member = Pupil.YearGroup(year_group)
+            return member.label
 
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
@@ -67,10 +74,21 @@ class FixedClass(models.Model):
 
         @staticmethod
         def get_colour_from_subject(subject_name: str) -> str:
+            """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
             return getattr(FixedClass.SubjectColour, subject_name).value
 
     class_id = models.CharField(max_length=20, primary_key=True)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     pupils = models.ManyToManyField("Pupil", related_name="classes")
+    classroom = models.ForeignKey("Classroom", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     time_slots = models.ManyToManyField("TimetableSlot", related_name="classes")
+
+
+class Classroom(models.Model):
+    """
+    Model storing the classroom (location) in which a fixed class takes place.
+    Currently, a fixed class id must take place in exactly one classroom
+    """
+    building = models.CharField(max_length=20)
+    room_number = models.IntegerField()
