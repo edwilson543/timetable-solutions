@@ -5,6 +5,12 @@ body, html {
   margin-right: 10px;
 }
 
+/* Download button */
+.download_button {
+  border: 1px solid black;
+  margin-top: 10px;
+}
+
 /* Title settings */
 .heading {text-align: center;}
 
