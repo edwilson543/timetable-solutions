@@ -12,8 +12,8 @@
     "model": "timetable_selector.pupil",
     "pk": 2,
     "fields": {
-      "firstname": "Oliver",
-      "surname": "Wilson",
+      "firstname": "Lynn",
+      "surname": "Brindley",
       "year_group": 1
     }
   },
@@ -30,8 +30,8 @@
     "model": "timetable_selector.pupil",
     "pk": 4,
     "fields": {
-      "firstname": "Peter",
-      "surname": "Rhodes",
+      "firstname": "Wether",
+      "surname": "Spoon",
       "year_group": 2
     }
   },
