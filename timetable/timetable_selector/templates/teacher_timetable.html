@@ -41,12 +41,12 @@
     <td class="perimeter">{{time}}</td>
     {% for day, klass in day_dict.items %}
       {% if klass == "FREE" %}
-        <td class="color_{{klass}}">{{ klass|title }}</td>
+        <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
       {% elif klass.subject_name == "LUNCH" %}
-        <td class="color_{{klass.subject_name}}">{{ klass.subject_name|title}}</td>
+        <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
       {% else %}
         <td class="color_{{klass.pupils.all.0.year_group}}">
-          {{ klass.subject_name|title}}<br>
+            <b>{{ klass.subject_name|title}}</b><br>
           <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
           <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
         </td>
