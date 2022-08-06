@@ -6,7 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from ..models import Pupil, TimetableSlot, FixedClass
+from ..models import Pupil, TimetableSlot, FixedClass, Teacher
 
 
 class TestViews(TestCase):
@@ -73,8 +73,9 @@ class TestViews(TestCase):
         monday_period_one = timetable[TimetableSlot.PeriodStart.PERIOD_ONE.value][TimetableSlot.WeekDay.MONDAY.value]
         self.assertIsInstance(monday_period_one, FixedClass)
         self.assertEqual(monday_period_one.subject_name, FixedClass.SubjectColour.MATHS.name)
+        self.assertEqual(monday_period_one.classroom.building, "MB")
         free_period = timetable[TimetableSlot.PeriodStart.PERIOD_FOUR.value][TimetableSlot.WeekDay.THURSDAY.value]
-        self.assertEqual(free_period, "FREE")  # Note a string is returned as opposed to a FixedClass instance
+        self.assertEqual(free_period, FixedClass.SubjectColour.FREE.name)  # string returned, not a FixedClass instance
 
         # Test colours context
         colours = response.context["class_colours"]
@@ -82,4 +83,30 @@ class TestViews(TestCase):
         self.assertEqual(colours[FixedClass.SubjectColour.MATHS.name], FixedClass.SubjectColour.MATHS.value)
         self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.value)
 
-    # TODO test for the teacher timetable
+    def test_teacher_timetable_view_correct_response(self):
+        """
+        Unit test that the context returned by a GET request to the teacher_timetable_view function, containing the
+        relevant timetable etc.
+        """
+        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
+        response = self.client.get(url)
+
+        # Test teacher context
+        teacher = response.context["teacher"]
+        self.assertIsInstance(teacher, Teacher)
+        self.assertEqual(teacher.firstname, "Greg")
+
+        # Test timetable content
+        timetable = response.context["timetable"]
+        monday_period_one = timetable[TimetableSlot.PeriodStart.PERIOD_ONE.value][TimetableSlot.WeekDay.MONDAY.value]
+        self.assertIsInstance(monday_period_one, FixedClass)
+        self.assertEqual(monday_period_one.subject_name, FixedClass.SubjectColour.FRENCH.name)
+        free_period = timetable[TimetableSlot.PeriodStart.PERIOD_TWO.value][TimetableSlot.WeekDay.MONDAY.value]
+        self.assertEqual(free_period, FixedClass.SubjectColour.FREE.name)  # string returned, not a FixedClass instance
+
+        # Test the colours context
+        colours = response.context["colours"]
+        self.assertIsInstance(colours, dict)
+        self.assertEqual(colours[Pupil.YearGroup.ONE.value], Pupil.YearGroup.ONE.label)
+        self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.value)
+        self.assertEqual(colours[FixedClass.SubjectColour.LUNCH.name], FixedClass.SubjectColour.LUNCH.value)

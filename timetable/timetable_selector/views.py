@@ -70,11 +70,11 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 def teacher_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
-        Context:
+    Context:
     ----------
-    teacher - an instance of the teacher model
-    timetable - see _get_timetable_slot_indexed_timetable
-    class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
+        teacher - an instance of the teacher model
+        timetable - see _get_timetable_slot_indexed_timetable
+        class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
     teacher = Teacher.objects.get(id=id)
