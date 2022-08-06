@@ -36,7 +36,22 @@ class TestViews(TestCase):
         self.assertIsInstance(john_smith, dict)
         self.assertEqual(john_smith["firstname"], "John")
 
-    # TODO test for the teacher navigator
+    def test_teacher_navigator_response(self):
+        """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
+        url = reverse('teachers_navigator')
+        response = self.client.get(url)
+        teachers = response.context["all_teachers"]
+
+        # Test the keys are the relevant alphabet letters
+        self.assertEqual(list(teachers.keys()), list("CDFHJMPSTV"))
+
+        # Test the data at an individual key
+        self.assertIsInstance(teachers["C"], QuerySet)
+        self.assertEqual(len(teachers["C"]), 2)
+
+        # Test the data within the queryset
+        fifty = teachers["C"].get(id=11)
+        self.assertEqual(fifty["surname"], "Cent")
 
     def test_pupil_timetable_view_response_correct_timetable(self):
         """
