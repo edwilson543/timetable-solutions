@@ -1,3 +1,5 @@
+"""Core models of the timetable project - these models are used across the django apps."""
+
 
 # Standard library imports
 import datetime as dt
@@ -7,7 +9,12 @@ from django.db import models
 
 
 class Teacher(models.Model):
-    """Model for storing unique list of teachers."""
+    """
+    Model for storing unique list of teachers.
+    Note that a manual primary key is specified since users will need to use this when uploading their own data (e.g.
+    specifying which teacher takes a certain class). Same for Pupil/Classroom models below.
+    """
+    teacher_id = models.IntegerField(primary_key=True)
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     title = models.CharField(max_length=10)
@@ -29,6 +36,7 @@ class Pupil(models.Model):
             member = Pupil.YearGroup(year_group)
             return member.label
 
+    pupil_id = models.IntegerField(primary_key=True)
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     year_group = models.IntegerField(choices=YearGroup.choices)
@@ -90,5 +98,6 @@ class Classroom(models.Model):
     Model storing the classroom (location) in which a fixed class takes place.
     Currently, a fixed class id must take place in exactly one classroom
     """
+    classroom_id = models.IntegerField(primary_key=True)
     building = models.CharField(max_length=20)
     room_number = models.IntegerField()

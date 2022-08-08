@@ -12,7 +12,6 @@
 
 <body>
 {% block main_content %}
-
 <h2>Teacher timetables</h2>
 
 <p>Expand the sections below to locate the relevant teacher</p>
@@ -29,7 +28,7 @@
       <tr>
           <td>{{teacher.firstname}}</td>
           <td>{{teacher.surname}}</td>
-          <td><a href="{% url 'teacher_timetable_view' teacher.id %}">View</a></td>
+          <td><a href="{% url 'teacher_timetable_view' teacher.teacher_id %}">View</a></td>
       </tr>
       {% endfor %}
   </table>
