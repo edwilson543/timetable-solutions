@@ -4,13 +4,7 @@ from django.template import loader
 
 # Local application imports
 from .models import Pupil, Teacher, FixedClass
-from .utils import _get_timetable_slot_indexed_timetable
-
-
-def selection_navigator(request) -> HttpResponse:
-    """View to bring up the main navigation screen for guiding the user towards individual timetables."""
-    template = loader.get_template("selection_navigator.html")
-    return HttpResponse(template.render({}, request))
+from .utils import get_timetable_slot_indexed_timetable
 
 
 def pupil_navigator(request) -> HttpResponse:
@@ -58,7 +52,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     # noinspection PyUnresolvedReferences
     pupil = Pupil.objects.get(id=id)
     classes = pupil.classes.all()
-    timetable = _get_timetable_slot_indexed_timetable(classes=classes)
+    timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
     class_colours = {klass.subject_name: FixedClass.SubjectColour.get_colour_from_subject(
         subject_name=klass.subject_name) for klass in classes}
@@ -76,16 +70,16 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 def teacher_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
-        Context:
+    Context:
     ----------
-    teacher - an instance of the teacher model
-    timetable - see _get_timetable_slot_indexed_timetable
-    class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
+        teacher - an instance of the teacher model
+        timetable - see _get_timetable_slot_indexed_timetable
+        class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
     teacher = Teacher.objects.get(id=id)
     classes = teacher.classes.all()
-    timetable = _get_timetable_slot_indexed_timetable(classes=classes)
+    timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
     year_group_colours = {}  # Not using dict comp here since info extraction requires some explanation
     for klass in classes:
