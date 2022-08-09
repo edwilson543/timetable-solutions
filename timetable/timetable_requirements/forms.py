@@ -4,8 +4,9 @@ and specify their requirements for generating timetable solutions.
 """
 
 # Django imports
-from django.forms import Form
+from django.forms import Form, FileField
 
 
 class TeacherListUploadForm(Form):
-    pass
+    """Form containing an individual upload slot for the list of teachers."""
+    teacher_list = FileField()

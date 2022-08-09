@@ -1,4 +1,4 @@
-"""Module containing utility functions that are used to do the processing of the uploaded teacher files."""
+"""Module containing utility class used to do the processing of the uploaded csv files into the database."""
 
 # Standard library imports
 from io import StringIO
@@ -39,7 +39,7 @@ class FileUploadProcessor:
         self._model = model
 
         # Try uploading the file to the database
-        self.upload_status = False  # This only gets switched to True if a successful upload is made.
+        self.upload_successful = False  # This only gets switched to True if a successful upload is made.
         self._upload_file_content(file=csv_file)
 
     def _upload_file_content(self, file: UploadedFile) -> None:
@@ -70,7 +70,7 @@ class FileUploadProcessor:
         # Full file now check, so upload all model instances to the database
         for model in valid_model_instances:
             model.save()
-        self.upload_status = True
+        self.upload_successful = True
 
     def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelInstance] | None:
         """

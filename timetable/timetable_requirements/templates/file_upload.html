@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+{% extends "base.html" %}
+
+<head>
+    {% block head_content %}
+    <title> Timetable navigator </title>
+    {% endblock %}
+    <style>
+    {% block styling %}
+    {% endblock styling %}
+    </style>
+</head>
+
+<body>
+{% block main_content %}
+<form action="" method="post">
+    {% csrf_token %}
+    <div>
+        {{teacher_form.teacher_list}}
+    </div>
+    <button type="submit">Upload</button>
+</form>
+
+{% endblock %}
+</body>
+</html>
