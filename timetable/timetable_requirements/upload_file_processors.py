@@ -1,76 +1,86 @@
 """Module containing utility functions that are used to do the processing of the uploaded teacher files."""
 
 # Standard library imports
-from abc import ABC, abstractmethod
-from csv import reader
 from io import StringIO
-from typing import List
+from typing import List, Type, TypeVar
+
+# Third party imports
+import pandas as pd
+from pandas import read_csv
 
 # Django imports
+from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
-
-# Local application imports
-from timetable.timetable_selector.models import Teacher
+from django.db.models import Model
 
 
-class FileUploadProcessor(ABC):
+ModelInstance = TypeVar("ModelInstance", bound=Model)  # Typehint when referring to specific django Model subclasses
+
+
+class FileUploadProcessor:
     """
-    Abstract base class for the processing units which, following a POST request from the user involving a file
-    upload, will take that file, check it fits the requirements, and then upload to the database or not as appropriate.
+    Class for the processing unit which, following a POST request from the user involving a file upload, will take that
+    file, check it fits the requirements, and then upload to the database or not as appropriate.
     """
-    upload_status = False  # This only gets switched to True if a successful upload is made.
 
-    def __init__(self, file: UploadedFile):
-        self._upload_file_content(file=file)
+    def __init__(self,
+                 csv_file: UploadedFile,
+                 csv_headers: List[str],
+                 id_column_name: str | None,
+                 model: Type[ModelInstance]):
+        """
+        :param csv_file: the file as received from the user upload
+        :param csv_headers: the column headers from the csv file, which will correspond to the model fields
+        :param id_column_name: whether or not the input file should contain an id column
+        :param model: the model that the file is used to create instances of
+        """
+        self._csv_headers = csv_headers
+        self._id_column_name = id_column_name
+        self._model = model
+
+        # Try uploading the file to the database
+        self.upload_status = False  # This only gets switched to True if a successful upload is made.
+        self._upload_file_content(file=csv_file)
 
     def _upload_file_content(self, file: UploadedFile) -> None:
         """Method to attempt to save the file to the database. If successful, upload status will become True."""
-        file_bytes = file.readlines().decode("utf-8")
+        file_bytes = file.read().decode("utf-8")
         file_stream = StringIO(file_bytes)
-        csv_data = reader(file_stream, delimiter=",")
+        # noinspection PyTypeChecker
+        upload_df = read_csv(file_stream, sep=",")
 
-        for n, row in enumerate(csv_data):
-            if n == 0:
-                headers_valid = self._check_file_headers(header_row=row)
-                if not headers_valid:
-                    break
-            else:
-                row_valid = self._check_file_row(row=row)
-                if not row_valid:
-                    break
-                self._upload_row_to_database(row=row)  # TODO can also implement this method within this class
-        self.upload_status = True  # If the for loop gets completed, then the upload has succeeded
+        # Check file structure and id column uniqueness where relevant
+        headers_valid = upload_df.columns == self._csv_headers
+        if not headers_valid:
+            return
+        if self._id_column_name is not None:
+            # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant below
+            ids_unique = upload_df[self._id_column_name].is_unique
+            if not ids_unique:
+                return
 
-    @abstractmethod
-    def _upload_row_to_database(self, row: List) -> None:
+        # Check rows for valid model instances and accumulate (until an error is found)
+        valid_model_instances = []
+        for _, data_ser in upload_df.iterrows():
+            model_instance = self._create_model_instance_from_row(row=data_ser)
+            if model_instance is None:
+                break
+            valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
+
+        # Full file now check, so upload all model instances to the database
+        for model in valid_model_instances:
+            model.save()
+        self.upload_status = True
+
+    def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelInstance] | None:
         """
-        Method to save an individual row from the csv file to the database, once it has been validated.
-        Note that one row from the csv file will correspond to one instance of the model.
+        Method to take an individual row from the csv file, validate that it corresponds to a valid model instance,
+        and then create that model instance.
         """
-        # TODO this could just be created using an unpacking and an instance attribute
-        raise NotImplementedError("Call made to abstract method _upload_ of ABC UploadFileProcessor")
-
-    @abstractmethod
-    def _check_file_headers(self, header_row: List) -> bool:
-        """Method to check the correct file headers have been used. Returns True if they have been."""
-        raise NotImplementedError("Call made to abstract method _check_file_headers of ABC UploadFileProcessor")
-
-    @abstractmethod
-    def _check_file_row(self, row: List) -> bool:
-        """Method to validate the entries in file row. Returns True if the row is valid."""
-        raise NotImplementedError("Call made to abstract method _check_file_row of ABC UploadFileProcessor")
-
-
-class TeacherListUploadProcessor(FileUploadProcessor):
-    """Class for handling the upload of teacher csv files from the user"""
-
-    def __init__(self, file: UploadedFile):
-        super().__init__(file)
-
-    def _upload_file_content(self, file: UploadedFile) -> None:
-        """Function to take the uploaded file object and save the data in the database."""
-
-
-
-
-
+        model_dict = row.to_dict()
+        try:
+            model_instance = self._model(**model_dict)
+            model_instance.full_clean()
+            return model_instance
+        except ValidationError:
+            return None
