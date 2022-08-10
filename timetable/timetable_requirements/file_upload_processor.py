@@ -50,7 +50,7 @@ class FileUploadProcessor:
         upload_df = read_csv(file_stream, sep=",")
 
         # Check file structure and id column uniqueness where relevant
-        headers_valid = upload_df.columns == self._csv_headers
+        headers_valid = all(upload_df.columns == self._csv_headers)
         if not headers_valid:
             return
         if self._id_column_name is not None:

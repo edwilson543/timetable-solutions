@@ -15,14 +15,15 @@
 
 <body>
 {% block main_content %}
-<form action="" method="post">
+{% load static %}
+<form action="{% url 'teacher_list' %}" method="post">
     {% csrf_token %}
     <div>
         {{teacher_form.teacher_list}}
     </div>
     <button type="submit">Upload</button>
 </form>
-
+{{success}}
 {% endblock %}
 </body>
 </html>

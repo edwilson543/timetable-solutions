@@ -32,13 +32,14 @@ class TeacherListUploadView(View):
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
         form = TeacherListUploadForm(request.POST, request.FILES)
+        context = {
+            "success": False
+        }
         if form.is_valid():
             file = request.FILES["file"]
             upload_processor = FileUploadProcessor(
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
             if upload_processor.upload_successful:
-                context = {
-                    "placeholder": True
-                }
-                return render(request, self.template_name, context)
+                context["success"] = True
+        return render(request, self.template_name, context)
 
