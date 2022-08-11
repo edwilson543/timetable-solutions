@@ -30,3 +30,17 @@ class TestFileUploadViews(TestCase):
         self.assertIsInstance(greg, Teacher)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
+
+    def test_teacher_list_upload_view_file_unsuccessful_with_invalid_file(self):
+        """
+        We try uploading the demo pupils file, to check that this does not work, and also that the database
+        is unaffected.
+        """
+        # Try uploading the wrong file (pupils.csv)
+        with open(self.test_data_folder / "pupils.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+            url = reverse("teacher_list")  # Corresponds to TeacherListUploadView
+            self.client.post(url, data={"teacher_list": upload_file})
+
+        # Assert that nothing has happened
+        self.assertEqual(len(Teacher.objects.all()), 0)
