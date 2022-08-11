@@ -32,7 +32,7 @@ class TestViews(TestCase):
         self.assertEqual(len(year_one), 3)
 
         # Test an individual pupil returned from the query set
-        john_smith = year_one.get(id=1)
+        john_smith = year_one.get(pupil_id=1)
         self.assertIsInstance(john_smith, dict)
         self.assertEqual(john_smith["firstname"], "John")
 
@@ -50,7 +50,7 @@ class TestViews(TestCase):
         self.assertEqual(len(teachers["C"]), 2)
 
         # Test the data within the queryset
-        fifty = teachers["C"].get(id=11)
+        fifty = teachers["C"].get(teacher_id=11)
         self.assertEqual(fifty["surname"], "Cent")
 
     def test_pupil_timetable_view_response_correct_timetable(self):
@@ -59,7 +59,7 @@ class TestViews(TestCase):
         Note there are three elements within the context of the HTTP response - each of which is tested in turn, one of
         which is the pupil's timetable.
         """
-        url = reverse('pupil_timetable_view', kwargs={"id": 1})
+        url = reverse('pupil_timetable_view', kwargs={"pupil_id": 1})
         response = self.client.get(url)
 
         # Test pupil context
@@ -88,7 +88,7 @@ class TestViews(TestCase):
         Unit test that the context returned by a GET request to the teacher_timetable_view function, containing the
         relevant timetable etc.
         """
-        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
+        url = reverse('teacher_timetable_view', kwargs={"teacher_id": 6})  # Timetable for Greg Thebaker
         response = self.client.get(url)
 
         # Test teacher context

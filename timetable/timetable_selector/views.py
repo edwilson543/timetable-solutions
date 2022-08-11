@@ -40,7 +40,7 @@ def teacher_navigator(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-def pupil_timetable_view(request, id: int) -> HttpResponse:
+def pupil_timetable_view(request, pupil_id: int) -> HttpResponse:
     """
     View for the timetable of the individual pupil with the passed id.
     Context:
@@ -50,7 +50,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     class_colours - a dictionary with keys of subject name strings, and values of hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
-    pupil = Pupil.objects.get(id=id)
+    pupil = Pupil.objects.get(pupil_id=pupil_id)
     classes = pupil.classes.all()
     timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
@@ -67,7 +67,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-def teacher_timetable_view(request, id: int) -> HttpResponse:
+def teacher_timetable_view(request, teacher_id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
     Context:
@@ -77,7 +77,7 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
         class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
-    teacher = Teacher.objects.get(id=id)
+    teacher = Teacher.objects.get(teacher_id=teacher_id)
     classes = teacher.classes.all()
     timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
