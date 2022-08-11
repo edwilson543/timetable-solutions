@@ -36,7 +36,7 @@ class TeacherListUploadView(View):
             "success": False
         }
         if form.is_valid():
-            file = request.FILES["file"]
+            file = request.FILES["teacher_list"]
             upload_processor = FileUploadProcessor(
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
             if upload_processor.upload_successful:

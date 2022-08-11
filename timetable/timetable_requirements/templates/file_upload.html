@@ -16,7 +16,7 @@
 <body>
 {% block main_content %}
 {% load static %}
-<form action="{% url 'teacher_list' %}" method="post">
+<form enctype="multipart/form-data" action="{% url 'teacher_list' %}" method="post">
     {% csrf_token %}
     <div>
         {{teacher_form.teacher_list}}
