@@ -67,6 +67,16 @@ class TimetableSlot(models.Model):
     period_duration = models.DurationField(default=dt.timedelta(hours=1))
 
 
+class Classroom(models.Model):
+    """
+    Model storing the classroom (location) in which a fixed class takes place.
+    Currently, a fixed class id must take place in exactly one classroom
+    """
+    classroom_id = models.IntegerField(primary_key=True)
+    building = models.CharField(max_length=20)
+    room_number = models.IntegerField()
+
+
 class FixedClass(models.Model):
     """
     Model for storing the unique list of classes that take place, when they take place, the teacher that takes the
@@ -88,17 +98,7 @@ class FixedClass(models.Model):
 
     class_id = models.CharField(max_length=20, primary_key=True)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
-    teacher = models.ForeignKey("Teacher", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
-    pupils = models.ManyToManyField("Pupil", related_name="classes")
-    classroom = models.ForeignKey("Classroom", on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
-    time_slots = models.ManyToManyField("TimetableSlot", related_name="classes")
-
-
-class Classroom(models.Model):
-    """
-    Model storing the classroom (location) in which a fixed class takes place.
-    Currently, a fixed class id must take place in exactly one classroom
-    """
-    classroom_id = models.IntegerField(primary_key=True)
-    building = models.CharField(max_length=20)
-    room_number = models.IntegerField()
+    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
+    pupils = models.ManyToManyField(Pupil, related_name="classes")
+    classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
+    time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
