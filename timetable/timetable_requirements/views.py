@@ -10,9 +10,9 @@ from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
-from .forms import PupilListUploadForm, TeacherListUploadForm
+from .forms import PupilListUploadForm, TeacherListUploadForm, ClassroomListUploadForm
 from .file_upload_processor import FileUploadProcessor
-from timetable_selector.models import Teacher, Pupil
+from timetable_selector.models import Teacher, Pupil, Classroom
 
 
 @dataclass
@@ -36,12 +36,15 @@ def _get_all_form_context() -> Dict:
     to allow files to be uploaded separately)."""
     teacher_upload_status = len(Teacher.objects.all()) > 0
     pupil_upload_status = len(Pupil.objects.all()) > 0
+    classroom_upload_status = len(Classroom.objects.all()) > 0
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,
                                               empty_form=TeacherListUploadForm(), url_name="teacher_list"),
                    "pupils": RequiredUpload(form_name="Pupil List", upload_status=pupil_upload_status,
-                                            empty_form=PupilListUploadForm(), url_name="pupil_list")
+                                            empty_form=PupilListUploadForm(), url_name="pupil_list"),
+                   "classrooms": RequiredUpload(form_name="Classroom List", upload_status=classroom_upload_status,
+                                                empty_form=ClassroomListUploadForm(), url_name="classroom_list")
                }
                }
     return context
@@ -81,6 +84,22 @@ class PupilListUploadView(View):
         form = PupilListUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["pupil_list"]
+            upload_processor = FileUploadProcessor(
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+        return upload_page_view(request)
+
+
+class ClassroomListUploadView(View):
+    """View to control upload of the classroom list to database"""
+    csv_headers = ["classroom_id", "building", "room_number"]
+    id_column_name = "classroom_id"
+    model = Classroom
+
+    def post(self, request, *args, **kwargs):
+        """Method for handling a POST request"""
+        form = ClassroomListUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["classroom_list"]
             upload_processor = FileUploadProcessor(
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
         return upload_page_view(request)

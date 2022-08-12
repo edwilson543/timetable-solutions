@@ -15,3 +15,8 @@ class TeacherListUploadForm(Form):
 class PupilListUploadForm(Form):
     """Form containing an individual upload slot for the list of pupils."""
     pupil_list = FileField(allow_empty_file=False, label="")
+
+
+class ClassroomListUploadForm(Form):
+    """Form containing an individual upload slot for the list of pupils."""
+    classroom_list = FileField(allow_empty_file=False, label="")

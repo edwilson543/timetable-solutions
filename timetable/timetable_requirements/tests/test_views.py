@@ -9,7 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from timetable_selector.models import Teacher, Pupil
+from timetable_selector.models import Teacher, Pupil, Classroom
 
 
 class TestFileUploadViews(TestCase):
@@ -54,8 +54,8 @@ class TestFileUploadViews(TestCase):
             self.client.post(url, data={"pupil_list": upload_file})
 
         # Test that the database is as expected
-        all_teachers = Pupil.objects.all()
-        self.assertEqual(len(all_teachers), 6)
+        all_pupils = Pupil.objects.all()
+        self.assertEqual(len(all_pupils), 6)
         teemu = Pupil.objects.get(pupil_id=5)
         self.assertIsInstance(teemu, Pupil)
         self.assertEqual(teemu.firstname, "Teemu")
@@ -66,11 +66,26 @@ class TestFileUploadViews(TestCase):
         We try uploading the demo teachers file, to check that this does not work, and also that the database
         is unaffected.
         """
-        # Try uploading the wrong file (pupils.csv)
+        # Try uploading the wrong file (teachers.csv)
         with open(self.test_data_folder / "teachers.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            url = reverse("pupil_list")  # Corresponds to TeacherListUploadView
+            url = reverse("pupil_list")  # Corresponds to PupilListUploadView
             self.client.post(url, data={"pupil_list": upload_file})
 
         # Assert that nothing has happened
         self.assertEqual(len(Pupil.objects.all()), 0)
+
+    def test_classroom_list_upload_view_file_uploads_successfully(self):
+        """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
+        # Set the state of the test database
+        with open(self.test_data_folder / "classrooms.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+            url = reverse("classroom_list")  # Corresponds to TeacherListUploadView
+            self.client.post(url, data={"classroom_list": upload_file})
+
+        # Test that the database is as expected
+        all_classrooms = Classroom.objects.all()
+        self.assertEqual(len(all_classrooms), 12)
+        room = Classroom.objects.get(classroom_id=11)
+        self.assertIsInstance(room, Classroom)
+        self.assertEqual(room.room_number, 40)
