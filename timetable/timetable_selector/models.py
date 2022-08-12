@@ -61,6 +61,7 @@ class TimetableSlot(models.Model):
         PERIOD_FIVE = 14, 0, "PERIOD_FIVE"
         PERIOD_SIX = 15, 0, "PERIOD_SIX"
 
+    slot_id = models.IntegerField(primary_key=True)
     day_of_week = models.CharField(max_length=9, choices=WeekDay.choices)
     period_start_time = models.TimeField(choices=PeriodStart.choices)
     period_duration = models.DurationField(default=dt.timedelta(hours=1))
