@@ -10,8 +10,10 @@ from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
-from .forms import PupilListUploadForm, TeacherListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm
+from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
+    UnsolvedClassUploadForm
 from .file_upload_processor import FileUploadProcessor
+from .models import UnsolvedClass
 from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
 
 
@@ -31,13 +33,15 @@ class RequiredUpload:
             self.upload_status = "Incomplete"
 
 
+# noinspection PyUnresolvedReferences
 def _get_all_form_context() -> Dict:
     """Function to get a dictionary of forms that must be populated (note each form has just one file field
     to allow files to be uploaded separately)."""
-    teacher_upload_status = len(Teacher.objects.all()) > 0
+    teacher_upload_status = len(Teacher.objects.all()) > 0  # In due course, status will depend on authenticated user
     pupil_upload_status = len(Pupil.objects.all()) > 0
     classroom_upload_status = len(Classroom.objects.all()) > 0
     timetable_upload_status = len(TimetableSlot.objects.all()) > 0
+    unsolved_class_upload_status = len(UnsolvedClass.objects.all()) > 0
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,
@@ -48,7 +52,10 @@ def _get_all_form_context() -> Dict:
                                                 empty_form=ClassroomListUploadForm(), url_name="classroom_list"),
                    "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=timetable_upload_status,
                                                empty_form=TimetableStructureUploadForm(),
-                                               url_name="timetable_structure")
+                                               url_name="timetable_structure"),
+                   "unsolved_classes": RequiredUpload(
+                       form_name="Class requirements", upload_status=unsolved_class_upload_status,
+                       empty_form=UnsolvedClassUploadForm(), url_name="unsolved_classes")
                }
                }
     return context
@@ -120,6 +127,22 @@ class TimetableStructureUploadView(View):
         form = TimetableStructureUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["timetable_structure"]
+            upload_processor = FileUploadProcessor(
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+        return upload_page_view(request)
+
+
+class UnsolvedClassUploadView(View):
+    """View to control upload of the unsolved classes to the database"""
+    csv_headers = ["class_id", "subject_name", "teacher", "pupils", "classroom", "teaching_hours", "min_slots"]
+    id_column_name = "class_id"
+    model = UnsolvedClass
+
+    def post(self, request, *args, **kwargs):
+        """Method for handling a POST request"""
+        form = UnsolvedClassUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["unsolved_classes"]
             upload_processor = FileUploadProcessor(
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
         return upload_page_view(request)
