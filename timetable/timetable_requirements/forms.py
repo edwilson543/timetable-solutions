@@ -10,3 +10,8 @@ from django.forms import Form, FileField
 class TeacherListUploadForm(Form):
     """Form containing an individual upload slot for the list of teachers."""
     teacher_list = FileField(allow_empty_file=False, label="")
+
+
+class PupilListUploadForm(Form):
+    """Form containing an individual upload slot for the list of pupils."""
+    pupil_list = FileField(allow_empty_file=False, label="")
