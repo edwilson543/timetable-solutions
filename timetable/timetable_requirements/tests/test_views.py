@@ -1,6 +1,7 @@
 """Unit tests for views of the timetable_requirements app"""
 
 # Standard library imports
+from datetime import time, timedelta
 from pathlib import Path
 
 # Django imports
@@ -9,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from timetable_selector.models import Teacher, Pupil, Classroom
+from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
 
 
 class TestFileUploadViews(TestCase):
@@ -89,3 +90,20 @@ class TestFileUploadViews(TestCase):
         room = Classroom.objects.get(classroom_id=11)
         self.assertIsInstance(room, Classroom)
         self.assertEqual(room.room_number, 40)
+
+    def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
+        """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
+        # Set the state of the test database
+        with open(self.test_data_folder / "timetable.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+            url = reverse("timetable_structure")  # Corresponds to TeacherListUploadView
+            self.client.post(url, data={"timetable_structure": upload_file})
+
+        # Test that the database is as expected
+        all_slots = TimetableSlot.objects.all()
+        self.assertEqual(len(all_slots), 35)
+        slot = TimetableSlot.objects.get(slot_id=1)
+        self.assertIsInstance(slot, TimetableSlot)
+        self.assertEqual(slot.day_of_week, "MONDAY")
+        self.assertEqual(slot.period_start_time, time(hour=9))
+        self.assertEqual(slot.period_duration, timedelta(hours=1))

@@ -10,9 +10,9 @@ from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
-from .forms import PupilListUploadForm, TeacherListUploadForm, ClassroomListUploadForm
+from .forms import PupilListUploadForm, TeacherListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm
 from .file_upload_processor import FileUploadProcessor
-from timetable_selector.models import Teacher, Pupil, Classroom
+from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
 
 
 @dataclass
@@ -37,6 +37,7 @@ def _get_all_form_context() -> Dict:
     teacher_upload_status = len(Teacher.objects.all()) > 0
     pupil_upload_status = len(Pupil.objects.all()) > 0
     classroom_upload_status = len(Classroom.objects.all()) > 0
+    timetable_upload_status = len(TimetableSlot.objects.all()) > 0
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,
@@ -44,7 +45,10 @@ def _get_all_form_context() -> Dict:
                    "pupils": RequiredUpload(form_name="Pupil List", upload_status=pupil_upload_status,
                                             empty_form=PupilListUploadForm(), url_name="pupil_list"),
                    "classrooms": RequiredUpload(form_name="Classroom List", upload_status=classroom_upload_status,
-                                                empty_form=ClassroomListUploadForm(), url_name="classroom_list")
+                                                empty_form=ClassroomListUploadForm(), url_name="classroom_list"),
+                   "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=timetable_upload_status,
+                                               empty_form=TimetableStructureUploadForm(),
+                                               url_name="timetable_structure")
                }
                }
     return context
@@ -104,3 +108,18 @@ class ClassroomListUploadView(View):
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
         return upload_page_view(request)
 
+
+class TimetableStructureUploadView(View):
+    """View to control upload of the timetable structure to database"""
+    csv_headers = ["slot_id", "day_of_week", "period_start_time", "period_duration"]
+    id_column_name = "slot_id"
+    model = TimetableSlot
+
+    def post(self, request, *args, **kwargs):
+        """Method for handling a POST request"""
+        form = TimetableStructureUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["timetable_structure"]
+            upload_processor = FileUploadProcessor(
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+        return upload_page_view(request)

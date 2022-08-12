@@ -31,7 +31,7 @@ class FileUploadProcessor:
         """
         :param csv_file: the file as received from the user upload
         :param csv_headers: the column headers from the csv file, which will correspond to the model fields
-        :param id_column_name: whether or not the input file should contain an id column
+        :param id_column_name: string depending on whether the input file contains an id column
         :param model: the model that the file is used to create instances of
         """
         self._csv_headers = csv_headers

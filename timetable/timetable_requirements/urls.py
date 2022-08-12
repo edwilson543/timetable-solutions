@@ -11,4 +11,5 @@ urlpatterns = [
     path('file_upload/teacher_list', views.TeacherListUploadView.as_view(), name='teacher_list'),
     path('file_upload/pupil_list', views.PupilListUploadView.as_view(), name='pupil_list'),
     path('file_upload/classroom_list', views.ClassroomListUploadView.as_view(), name='classroom_list'),
+    path('file_upload/timetable_structure', views.TimetableStructureUploadView.as_view(), name='timetable_structure'),
 ]

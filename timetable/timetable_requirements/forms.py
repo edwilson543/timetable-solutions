@@ -1,6 +1,6 @@
 """
 Module containing forms that allow users to upload their school data (pupil lists, timetable structure etc.)
-and specify their requirements for generating timetable solutions.
+These get uploaded as csv files and then used to populate the relevant model in the database using the ORM.
 """
 
 # Django imports
@@ -20,3 +20,8 @@ class PupilListUploadForm(Form):
 class ClassroomListUploadForm(Form):
     """Form containing an individual upload slot for the list of pupils."""
     classroom_list = FileField(allow_empty_file=False, label="")
+
+
+class TimetableStructureUploadForm(Form):
+    """Form containing an individual upload slot for the structure of the timetable."""
+    timetable_structure = FileField(allow_empty_file=False, label="")
