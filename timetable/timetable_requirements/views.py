@@ -10,6 +10,7 @@ from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
+from .constants.csv_headers import CSVUplaodFiles
 from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
     UnsolvedClassUploadForm
 from .file_upload_processor import FileUploadProcessor
@@ -70,8 +71,8 @@ def upload_page_view(request):
 
 class TeacherListUploadView(View):
     """View to control upload of teacher list to database"""
-    csv_headers = ["teacher_id", "firstname", "surname", "title"]
-    id_column_name = "teacher_id"
+    csv_headers = CSVUplaodFiles.TEACHERS.headers
+    id_column_name = CSVUplaodFiles.TEACHERS.id_column
     model = Teacher
 
     def post(self, request, *args, **kwargs):
@@ -86,8 +87,8 @@ class TeacherListUploadView(View):
 
 class PupilListUploadView(View):
     """View to control upload of pupil list to database"""
-    csv_headers = ["pupil_id", "firstname", "surname", "year_group"]
-    id_column_name = "pupil_id"
+    csv_headers = CSVUplaodFiles.PUPILS.headers
+    id_column_name = CSVUplaodFiles.PUPILS.id_column
     model = Pupil
 
     def post(self, request, *args, **kwargs):
@@ -102,8 +103,8 @@ class PupilListUploadView(View):
 
 class ClassroomListUploadView(View):
     """View to control upload of the classroom list to database"""
-    csv_headers = ["classroom_id", "building", "room_number"]
-    id_column_name = "classroom_id"
+    csv_headers = CSVUplaodFiles.CLASSROOMS.headers
+    id_column_name = CSVUplaodFiles.CLASSROOMS.id_column
     model = Classroom
 
     def post(self, request, *args, **kwargs):
@@ -118,8 +119,8 @@ class ClassroomListUploadView(View):
 
 class TimetableStructureUploadView(View):
     """View to control upload of the timetable structure to database"""
-    csv_headers = ["slot_id", "day_of_week", "period_start_time", "period_duration"]
-    id_column_name = "slot_id"
+    csv_headers = CSVUplaodFiles.TIMETABLE.headers
+    id_column_name = CSVUplaodFiles.TIMETABLE.id_column
     model = TimetableSlot
 
     def post(self, request, *args, **kwargs):
@@ -134,8 +135,8 @@ class TimetableStructureUploadView(View):
 
 class UnsolvedClassUploadView(View):
     """View to control upload of the unsolved classes to the database"""
-    csv_headers = ["class_id", "subject_name", "teacher_id", "pupil_ids", "classroom_id", "total_slots", "min_slots"]
-    id_column_name = "class_id"
+    csv_headers = CSVUplaodFiles.CLASS_REQUIREMENTS.headers
+    id_column_name = CSVUplaodFiles.CLASS_REQUIREMENTS.id_column
     model = UnsolvedClass
 
     def post(self, request, *args, **kwargs):
