@@ -43,6 +43,7 @@ def _get_all_form_context() -> Dict:
     classroom_upload_status = len(Classroom.objects.all()) > 0
     timetable_upload_status = len(TimetableSlot.objects.all()) > 0
     unsolved_class_upload_status = len(UnsolvedClass.objects.all()) > 0
+    fixed_class_upload_status = len(UnsolvedClass.objects.all()) > 0
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,
@@ -56,7 +57,10 @@ def _get_all_form_context() -> Dict:
                                                url_name="timetable_structure"),
                    "unsolved_classes": RequiredUpload(
                        form_name="Class requirements", upload_status=unsolved_class_upload_status,
-                       empty_form=UnsolvedClassUploadForm(), url_name="unsolved_classes")
+                       empty_form=UnsolvedClassUploadForm(), url_name="unsolved_classes"),
+                   "fixed_classes": RequiredUpload(
+                       form_name="Fixed classes", upload_status=unsolved_class_upload_status,
+                       empty_form=FixedClassUploadForm(), url_name="fixed_classes")
                }
                }
     return context
