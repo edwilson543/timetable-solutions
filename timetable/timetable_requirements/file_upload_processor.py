@@ -15,8 +15,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Model
 
 # Local application imports
-from timetable_selector.models import Pupil
-from .models import UnsolvedClass
+from .constants.csv_headers import Header
 
 ModelInstance = TypeVar("ModelInstance", bound=Model)  # Typehint when referring to specific django Model subclasses
 
@@ -112,15 +111,15 @@ class FileUploadProcessor:
         except ValidationError:
             return None
 
-    @staticmethod
-    def _create_unsolved_class_instance_from_row(row: pd.Series) -> UnsolvedClass | None:
+    def _create_unsolved_class_instance_from_row(self, row: pd.Series) -> Type[ModelInstance] | None:
         """Method to process each row of the unsolved class csv file upload"""
-        model_dict = {"class_id": row["class_id"], "subject_name": row["subject_name"], "teacher_id": row["teacher_id"],
-                      "classroom_id": row["classroom_id"], "total_slots": row["total_slots"],
-                      "min_slots": row["min_slots"]}  # Note we don't include the pupil_ids here
+        model_dict = {  # Note we don't include the pupil_ids here
+            Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
+            Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS]}
         try:
-            model_instance = UnsolvedClass(**model_dict)
-            pups = ast.literal_eval(row["pupil_ids"])
+            model_instance = self._model(**model_dict)
+            pups = ast.literal_eval(row[Header.PUPIL_IDS])
             pups = {int(val) for val in pups}
             model_instance.pupils.add(*pups)
             model_instance.full_clean()
