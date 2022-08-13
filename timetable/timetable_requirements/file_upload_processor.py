@@ -57,7 +57,7 @@ class FileUploadProcessor:
         for _, data_ser in upload_df.iterrows():
             model_instance = self._create_model_instance_from_row(row=data_ser)
             if model_instance is None:
-                break
+                return
             valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
 
         # Full file now check, so upload all model instances to the database
