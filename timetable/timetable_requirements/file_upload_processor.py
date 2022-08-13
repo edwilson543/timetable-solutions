@@ -49,15 +49,8 @@ class FileUploadProcessor:
         # noinspection PyTypeChecker
         upload_df = read_csv(file_stream, sep=",")
 
-        # Check file structure and id column uniqueness where relevant
-        headers_valid = all(upload_df.columns == self._csv_headers)
-        if not headers_valid:
+        if not self._check_headers_valid_and_ids_unique(upload_df=upload_df):
             return
-        if self._id_column_name is not None:
-            # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant below
-            ids_unique = upload_df[self._id_column_name].is_unique
-            if not ids_unique:
-                return
 
         # Check rows for valid model instances and accumulate (until an error is found)
         valid_model_instances = []
@@ -71,6 +64,18 @@ class FileUploadProcessor:
         for model in valid_model_instances:
             model.save()
         self.upload_successful = True
+
+    def _check_headers_valid_and_ids_unique(self, upload_df: pd.DataFrame) -> bool:
+        headers_valid = all(upload_df.columns == self._csv_headers)
+        if not headers_valid:
+            return False
+        if self._id_column_name is not None:
+            # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant below
+            ids_unique = upload_df[self._id_column_name].is_unique
+            if not ids_unique:
+                return False
+
+        return True
 
     def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelInstance] | None:
         """
