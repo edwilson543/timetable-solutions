@@ -26,7 +26,7 @@ class FileUploadProcessor:
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
     """
-    __nan_handler = "###ignorenan"
+    __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float(nan) is error-prone
 
     def __init__(self,
                  csv_file: UploadedFile,
