@@ -1,6 +1,7 @@
 """Module containing utility class used to do the processing of the uploaded csv files into the database."""
 
 # Standard library imports
+import ast
 from io import StringIO
 from typing import List, Type, TypeVar
 
@@ -13,6 +14,9 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Model
 
+# Local application imports
+from timetable_selector.models import Pupil
+from .models import UnsolvedClass
 
 ModelInstance = TypeVar("ModelInstance", bound=Model)  # Typehint when referring to specific django Model subclasses
 
@@ -27,16 +31,24 @@ class FileUploadProcessor:
                  csv_file: UploadedFile,
                  csv_headers: List[str],
                  id_column_name: str | None,
-                 model: Type[ModelInstance]):
+                 model: Type[ModelInstance],
+                 is_unsolved_class_upload: bool = False,
+                 is_fixed_class_upload: bool = False):
         """
         :param csv_file: the file as received from the user upload
         :param csv_headers: the column headers from the csv file, which will correspond to the model fields
         :param id_column_name: string depending on whether the input file contains an id column
         :param model: the model that the file is used to create instances of
+
+        :param is_unsolved_class_upload/is_fixed_class_upload - these represent special cases of the file upload
+        process since the models the data are being uploaded to contain many-to-many relationships, and thus require
+        their own methods (see _create_model_instance_from_row variations below)
         """
         self._csv_headers = csv_headers
         self._id_column_name = id_column_name
         self._model = model
+        self._is_unsolved_class_upload = is_unsolved_class_upload
+        self._is_fixed_class_upload = is_fixed_class_upload
 
         # Try uploading the file to the database
         self.upload_successful = False  # This only gets switched to True if a successful upload is made.
@@ -52,15 +64,10 @@ class FileUploadProcessor:
         if not self._check_headers_valid_and_ids_unique(upload_df=upload_df):
             return
 
-        # Check rows for valid model instances and accumulate (until an error is found)
-        valid_model_instances = []
-        for _, data_ser in upload_df.iterrows():
-            model_instance = self._create_model_instance_from_row(row=data_ser)
-            if model_instance is None:
-                return
-            valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
+        valid_model_instances = self._get_valid_model_instances(upload_df=upload_df)
 
-        # Full file now check, so upload all model instances to the database
+        if valid_model_instances is None:
+            return
         for model in valid_model_instances:
             model.save()
         self.upload_successful = True
@@ -74,8 +81,25 @@ class FileUploadProcessor:
             ids_unique = upload_df[self._id_column_name].is_unique
             if not ids_unique:
                 return False
-
         return True
+
+    def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
+        valid_model_instances = []
+        for _, data_ser in upload_df.iterrows():
+            if self._is_unsolved_class_upload:
+                model_instance = self._create_unsolved_class_instance_from_row(row=data_ser)
+                if model_instance is None:
+                    for mod_inst in valid_model_instances:
+                        mod_inst.delete()   # since we ha to save to add pupils
+                    return None
+                valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
+            else:
+                model_instance = self._create_model_instance_from_row(row=data_ser)
+                if model_instance is None:
+                    return None
+                valid_model_instances.append(model_instance)
+
+        return valid_model_instances
 
     def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelInstance] | None:
         """
@@ -85,6 +109,22 @@ class FileUploadProcessor:
         model_dict = row.to_dict()
         try:
             model_instance = self._model(**model_dict)
+            model_instance.full_clean()
+            return model_instance
+        except ValidationError:
+            return None
+
+    @staticmethod
+    def _create_unsolved_class_instance_from_row(row: pd.Series) -> UnsolvedClass | None:
+        """Method to process each row of the unsolved class csv file upload"""
+        model_dict = {"class_id": row["class_id"], "subject_name": row["subject_name"], "teacher_id": row["teacher_id"],
+                      "classroom_id": row["classroom_id"], "total_slots": row["total_slots"],
+                      "min_slots": row["total_slots"]}  # Note we don't include the pupil_ids here
+        try:
+            model_instance = UnsolvedClass(**model_dict)  # Use create instead
+            model_instance.save()  # We have to save model instance to be able to add pupils
+            pups = ast.literal_eval(row["pupil_ids"])
+            model_instance.pupils.set(pups)
             model_instance.full_clean()
             return model_instance
         except ValidationError:

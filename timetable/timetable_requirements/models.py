@@ -18,5 +18,5 @@ class UnsolvedClass(models.Model):
     pupils = models.ManyToManyField(Pupil, related_name="unsolved_classes")
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT,
                                   related_name="unsolved_classes", blank=True, null=True)
-    teaching_hours = models.DurationField()
+    total_slots = models.PositiveSmallIntegerField()
     min_slots = models.PositiveSmallIntegerField()

@@ -85,16 +85,16 @@ class FixedClass(models.Model):
     """
     class SubjectColour(models.TextChoices):
         """Enum to list the options and colour that each colour of the timetable should be."""
-        MATHS = "#b3f2b3"
-        ENGLISH = "#ffbfd6"
-        FRENCH = "#c8d4e3"
-        LUNCH = "#b3b3b3"
-        FREE = "#feffba"
+        MATHS = "MATHS", "#b3f2b3"
+        ENGLISH = "ENGLISH", "#ffbfd6"
+        FRENCH = "FRENCH", "#c8d4e3"
+        LUNCH = "LUNCH", "#b3b3b3"
+        FREE = "FREE", "#feffba"
 
         @staticmethod
         def get_colour_from_subject(subject_name: str) -> str:
             """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
-            return getattr(FixedClass.SubjectColour, subject_name).value
+            return getattr(FixedClass.SubjectColour, subject_name).label
 
     class_id = models.CharField(max_length=20, primary_key=True)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)

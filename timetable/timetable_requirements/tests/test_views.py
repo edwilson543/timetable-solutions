@@ -11,6 +11,7 @@ from django.urls import reverse
 
 # Local application imports
 from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
+from timetable_requirements.models import UnsolvedClass
 
 
 class TestFileUploadViews(TestCase):
@@ -35,7 +36,6 @@ class TestFileUploadViews(TestCase):
         all_teachers = Teacher.objects.all()
         self.assertEqual(len(all_teachers), 11)
         greg = Teacher.objects.get(teacher_id=6)
-        self.assertIsInstance(greg, Teacher)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
 
@@ -59,7 +59,6 @@ class TestFileUploadViews(TestCase):
         all_pupils = Pupil.objects.all()
         self.assertEqual(len(all_pupils), 6)
         teemu = Pupil.objects.get(pupil_id=5)
-        self.assertIsInstance(teemu, Pupil)
         self.assertEqual(teemu.firstname, "Teemu")
         self.assertEqual(teemu.surname, "Pukki")
 
@@ -83,7 +82,6 @@ class TestFileUploadViews(TestCase):
         all_classrooms = Classroom.objects.all()
         self.assertEqual(len(all_classrooms), 12)
         room = Classroom.objects.get(classroom_id=11)
-        self.assertIsInstance(room, Classroom)
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
@@ -95,7 +93,6 @@ class TestFileUploadViews(TestCase):
         all_slots = TimetableSlot.objects.all()
         self.assertEqual(len(all_slots), 35)
         slot = TimetableSlot.objects.get(slot_id=1)
-        self.assertIsInstance(slot, TimetableSlot)
         self.assertEqual(slot.day_of_week, "MONDAY")
         self.assertEqual(slot.period_start_time, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
@@ -105,5 +102,19 @@ class TestFileUploadViews(TestCase):
         Unit test that simulating a csv file upload of classrooms successfully populates the central database.
         Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
         """
-        pass
+        # First we need the pupils, teachers, classrooms and timetable structure
+        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
+        self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
+        self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
+        self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
+        # Now can upload the unsolved classes csv
+        self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
+        # Test the database is as expected
+        all_classes = UnsolvedClass.objects.all()
+        assert len(all_classes) == 12
+        klass = UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
+        a = klass.pupils
+
+        self.assertEqual(klass.pupils, Pupil.objects.filter(pupil_id__in={1, 2}))
+        self.assertEqual(klass.teacher, Teacher.objects.get(teacher_id=1))

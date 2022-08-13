@@ -134,7 +134,7 @@ class TimetableStructureUploadView(View):
 
 class UnsolvedClassUploadView(View):
     """View to control upload of the unsolved classes to the database"""
-    csv_headers = ["class_id", "subject_name", "teacher", "pupils", "classroom", "teaching_hours", "min_slots"]
+    csv_headers = ["class_id", "subject_name", "teacher_id", "pupil_ids", "classroom_id", "total_slots", "min_slots"]
     id_column_name = "class_id"
     model = UnsolvedClass
 
@@ -143,6 +143,6 @@ class UnsolvedClassUploadView(View):
         form = UnsolvedClassUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["unsolved_classes"]
-            upload_processor = FileUploadProcessor(
+            upload_processor = FileUploadProcessor(is_unsolved_class_upload=True,
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
         return upload_page_view(request)
