@@ -89,8 +89,6 @@ class FileUploadProcessor:
             if self._is_unsolved_class_upload:
                 model_instance = self._create_unsolved_class_instance_from_row(row=data_ser)
                 if model_instance is None:
-                    for mod_inst in valid_model_instances:
-                        mod_inst.delete()   # since we ha to save to add pupils
                     return None
                 valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
             else:
@@ -119,12 +117,12 @@ class FileUploadProcessor:
         """Method to process each row of the unsolved class csv file upload"""
         model_dict = {"class_id": row["class_id"], "subject_name": row["subject_name"], "teacher_id": row["teacher_id"],
                       "classroom_id": row["classroom_id"], "total_slots": row["total_slots"],
-                      "min_slots": row["total_slots"]}  # Note we don't include the pupil_ids here
+                      "min_slots": row["min_slots"]}  # Note we don't include the pupil_ids here
         try:
-            model_instance = UnsolvedClass(**model_dict)  # Use create instead
-            model_instance.save()  # We have to save model instance to be able to add pupils
+            model_instance = UnsolvedClass(**model_dict)
             pups = ast.literal_eval(row["pupil_ids"])
-            model_instance.pupils.set(pups)
+            pups = {int(val) for val in pups}
+            model_instance.pupils.add(*pups)
             model_instance.full_clean()
             return model_instance
         except ValidationError:

@@ -114,7 +114,7 @@ class TestFileUploadViews(TestCase):
         all_classes = UnsolvedClass.objects.all()
         assert len(all_classes) == 12
         klass = UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
-        a = klass.pupils
+        a = klass.pupils.all()
 
-        self.assertEqual(klass.pupils, Pupil.objects.filter(pupil_id__in={1, 2}))
+        self.assertQuerysetEqual(klass.pupils.all(), Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
         self.assertEqual(klass.teacher, Teacher.objects.get(teacher_id=1))
