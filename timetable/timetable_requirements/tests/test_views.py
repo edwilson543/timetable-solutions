@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
+from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot, FixedClass
 from timetable_requirements.models import UnsolvedClass
 
 
@@ -99,7 +99,7 @@ class TestFileUploadViews(TestCase):
 
     def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):
         """
-        Unit test that simulating a csv file upload of classrooms successfully populates the central database.
+        Unit test that simulating a csv file upload of unsolved classes successfully populates the central database.
         Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
         """
         # First we need the pupils, teachers, classrooms and timetable structure
@@ -114,7 +114,27 @@ class TestFileUploadViews(TestCase):
         all_classes = UnsolvedClass.objects.all()
         assert len(all_classes) == 12
         klass = UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
-        a = klass.pupils.all()
 
         self.assertQuerysetEqual(klass.pupils.all(), Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
         self.assertEqual(klass.teacher, Teacher.objects.get(teacher_id=1))
+
+    def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
+        """
+        Unit test that simulating a csv file upload of fixed classes successfully populates the central database.
+        Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
+        """
+        # First we need the pupils, teachers, classrooms and timetable structure
+        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
+        self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
+        self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
+        self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
+        # Now can upload the unsolved classes csv
+        self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
+
+        # Test the database is as expected
+        all_classes = FixedClass.objects.all()
+        assert len(all_classes) == 12
+        pup_lunch = FixedClass.objects.get(class_id="LUNCH_PUPILS")
+        self.assertQuerysetEqual(pup_lunch.pupils.all(), Pupil.objects.all(), ordered=False)
+        teach_ten_lunch = FixedClass.objects.get(class_id="LUNCH_10")
+        self.assertEqual(teach_ten_lunch.teacher, Teacher.objects.get(teacher_id=10))

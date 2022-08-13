@@ -12,10 +12,10 @@ from django.views.generic.base import View
 # Local application imports
 from .constants.csv_headers import CSVUplaodFiles
 from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
-    UnsolvedClassUploadForm
+    UnsolvedClassUploadForm, FixedClassUploadForm
 from .file_upload_processor import FileUploadProcessor
 from .models import UnsolvedClass
-from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot
+from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot, FixedClass
 
 
 @dataclass
@@ -145,5 +145,24 @@ class UnsolvedClassUploadView(View):
         if form.is_valid():
             file = request.FILES["unsolved_classes"]
             upload_processor = FileUploadProcessor(is_unsolved_class_upload=True,
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+        return upload_page_view(request)
+
+
+class FixedClassUploadView(View):
+    """
+    View to control upload of the fixed classes to the database (i.e. classes which are already known to have to
+    occur at a certain times.
+    """
+    csv_headers = CSVUplaodFiles.FIXED_CLASSES.headers
+    id_column_name = CSVUplaodFiles.FIXED_CLASSES.id_column
+    model = FixedClass
+
+    def post(self, request, *args, **kwargs):
+        """Method for handling a POST request"""
+        form = FixedClassUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = request.FILES["fixed_classes"]
+            upload_processor = FileUploadProcessor(is_fixed_class_upload=True,
                 csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
         return upload_page_view(request)

@@ -30,3 +30,8 @@ class TimetableStructureUploadForm(Form):
 class UnsolvedClassUploadForm(Form):
     """Form containing an individual upload slot for the classes that must be taught, and associated details."""
     unsolved_classes = FileField(allow_empty_file=False, label="")
+
+
+class FixedClassUploadForm(Form):
+    """Form containing an individual upload slot for 'fixed classes' i.e. classes which must occur at certain times."""
+    fixed_classes = FileField(allow_empty_file=False, label="")
