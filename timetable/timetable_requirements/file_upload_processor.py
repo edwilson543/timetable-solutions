@@ -3,7 +3,6 @@
 # Standard library imports
 import ast
 from io import StringIO
-from math import isnan
 from typing import List, Type, TypeVar
 
 # Third party imports
@@ -95,12 +94,16 @@ class FileUploadProcessor:
             if self._is_unsolved_class_upload:
                 model_instance = self._create_unsolved_class_instance_from_row(row=data_ser)
                 if model_instance is None:
+                    for md_inst in valid_model_instances:  # Since we must save in _create_unsolved_clas_instance
+                        md_inst.delete()
                     return None
                 valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
 
             elif self._is_fixed_class_upload:
                 model_instance = self._create_fixed_class_instance_from_row(row=data_ser)
                 if model_instance is None:
+                    for md_inst in valid_model_instances:
+                        md_inst.delete()
                     return None
                 valid_model_instances.append(model_instance)
 
@@ -138,6 +141,8 @@ class FileUploadProcessor:
             Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS]}
         try:
             model_instance = self._model(**model_dict)
+            model_instance.save()  # Need to save to be able to add pupils
+
             pups = ast.literal_eval(row[Header.PUPIL_IDS])
             pups = {int(val) for val in pups}
             model_instance.pupils.add(*pups)
@@ -155,6 +160,7 @@ class FileUploadProcessor:
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
         try:
             model_instance = self._model(**model_dict)
+            model_instance.save()  # Need to save to be able to add pupils / slots
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])
             pups = {int(val) for val in pups}
