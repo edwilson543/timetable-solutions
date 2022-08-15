@@ -17,3 +17,4 @@ class TimetableLeadTeacher(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school_access_key = models.SmallIntegerField()
+    school_name = models.CharField(max_length=50)
