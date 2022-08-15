@@ -14,7 +14,7 @@ class Teacher(models.Model):
     Note that a manual primary key is specified since users will need to use this when uploading their own data (e.g.
     specifying which teacher takes a certain class). Same for Pupil/Classroom models below.
     """
-    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    school_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     teacher_id = models.IntegerField()
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
@@ -37,7 +37,7 @@ class Pupil(models.Model):
             member = Pupil.YearGroup(year_group)
             return member.label
 
-    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    school_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     pupil_id = models.IntegerField()
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
@@ -63,7 +63,7 @@ class TimetableSlot(models.Model):
         PERIOD_FIVE = 14, 0, "PERIOD_FIVE"
         PERIOD_SIX = 15, 0, "PERIOD_SIX"
 
-    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    school_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
     day_of_week = models.CharField(max_length=9, choices=WeekDay.choices)
     period_start_time = models.TimeField(choices=PeriodStart.choices)
@@ -75,7 +75,7 @@ class Classroom(models.Model):
     Model storing the classroom (location) in which a fixed class takes place.
     Currently, a fixed class id must take place in exactly one classroom
     """
-    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    school_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     classroom_id = models.IntegerField()
     building = models.CharField(max_length=20)
     room_number = models.IntegerField()
@@ -100,7 +100,7 @@ class FixedClass(models.Model):
             """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
             return getattr(FixedClass.SubjectColour, subject_name).label
 
-    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    school_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     class_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
