@@ -35,6 +35,7 @@ table {
 <body>
 {% block main_content %}
 {% load static %}
+{{request.user.username}}  <!--TODO-->
 <table>
     <tr>
         <th>File name</th>

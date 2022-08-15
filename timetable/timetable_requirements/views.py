@@ -67,7 +67,7 @@ def _get_all_form_context() -> Dict:
 
 
 def upload_page_view(request):
-    """Initial view for loading the upload page."""
+    """View called by the individual views for each of the form upload views."""
     template = loader.get_template("file_upload.html")
     context = _get_all_form_context()
     return HttpResponse(template.render(context, request))
@@ -79,13 +79,19 @@ class TeacherListUploadView(View):
     id_column_name = CSVUplaodFiles.TEACHERS.id_column
     model = Teacher
 
+    # TODO add get request method
+
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
         form = TeacherListUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["teacher_list"]
-            upload_processor = FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+            try:
+                upload_processor = FileUploadProcessor(
+                    csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+            except Exception:
+                error_message = upload_processor.upload_error_message   # TODO
+                pass
         return upload_page_view(request)
 
 
