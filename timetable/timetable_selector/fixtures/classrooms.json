@@ -4,7 +4,9 @@
     "pk": 1,
     "fields": {
       "building": "MB",
-      "room_number": 47
+      "room_number": 47,
+      "classroom_id": 1,
+      "school_id": 1
     }
   },
   {
@@ -12,7 +14,9 @@
     "pk": 2,
     "fields": {
       "building": "MB",
-      "room_number": 14
+      "room_number": 14,
+      "classroom_id": 2,
+      "school_id": 1
     }
   },
   {
@@ -20,7 +24,9 @@
     "pk": 3,
     "fields": {
       "building": "EB",
-      "room_number": 7
+      "room_number": 7,
+      "classroom_id": 3,
+      "school_id": 1
     }
   },
   {
@@ -28,7 +34,9 @@
     "pk": 4,
     "fields": {
       "building": "EB",
-      "room_number": 23
+      "room_number": 23,
+      "classroom_id": 4,
+      "school_id": 1
     }
   },
   {
@@ -36,7 +44,9 @@
     "pk": 5,
     "fields": {
       "building": "LB",
-      "room_number": 19
+      "room_number": 19,
+      "classroom_id": 5,
+      "school_id": 1
     }
   },
   {
@@ -44,7 +54,9 @@
     "pk": 6,
     "fields": {
       "building": "LB",
-      "room_number": 11
+      "room_number": 11,
+      "classroom_id": 6,
+      "school_id": 1
     }
   },
   {
@@ -52,7 +64,9 @@
     "pk": 7,
     "fields": {
       "building": "MB",
-      "room_number": 1
+      "room_number": 1,
+      "classroom_id": 7,
+      "school_id": 1
     }
   },
   {
@@ -60,7 +74,9 @@
     "pk": 8,
     "fields": {
       "building": "MB",
-      "room_number": 2
+      "room_number": 2,
+      "classroom_id": 8,
+      "school_id": 1
     }
   },
   {
@@ -68,7 +84,9 @@
     "pk": 9,
     "fields": {
       "building": "EB",
-      "room_number": 18
+      "room_number": 18,
+      "classroom_id": 9,
+      "school_id": 1
     }
   },
   {
@@ -76,7 +94,9 @@
     "pk": 10,
     "fields": {
       "building": "EB",
-      "room_number": 20
+      "room_number": 20,
+      "classroom_id": 10,
+      "school_id": 1
     }
   },
   {
@@ -84,7 +104,9 @@
     "pk": 11,
     "fields": {
       "building": "LB",
-      "room_number": 40
+      "room_number": 40,
+      "classroom_id": 11,
+      "school_id": 1
     }
   },
   {
@@ -92,7 +114,9 @@
     "pk": 12,
     "fields": {
       "building": "LB",
-      "room_number": 50
+      "room_number": 50,
+      "classroom_id": 12,
+      "school_id": 1
     }
   }
 ]

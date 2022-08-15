@@ -5,7 +5,9 @@
     "fields": {
       "firstname": "John",
       "surname": "Smith",
-      "year_group": 1
+      "year_group": 1,
+      "pupil_id": 1,
+      "school_id": 1
     }
   },
   {
@@ -14,7 +16,9 @@
     "fields": {
       "firstname": "Lynn",
       "surname": "Brindley",
-      "year_group": 1
+      "year_group": 1,
+      "pupil_id": 2,
+      "school_id": 1
     }
   },
   {
@@ -23,7 +27,9 @@
     "fields": {
       "firstname": "George",
       "surname": "Jones",
-      "year_group": 1
+      "year_group": 1,
+      "pupil_id": 3,
+      "school_id": 1
     }
   },
   {
@@ -32,7 +38,9 @@
     "fields": {
       "firstname": "Wether",
       "surname": "Spoon",
-      "year_group": 2
+      "year_group": 2,
+      "pupil_id": 4,
+      "school_id": 1
     }
   },
   {
@@ -41,7 +49,9 @@
     "fields": {
       "firstname": "Teemu",
       "surname": "Pukki",
-      "year_group": 2
+      "year_group": 2,
+      "pupil_id": 5,
+      "school_id": 1
     }
   },
   {
@@ -50,7 +60,9 @@
     "fields": {
       "firstname": "Wesley",
       "surname": "Hoolahan",
-      "year_group": 2
+      "year_group": 2,
+      "pupil_id": 6,
+      "school_id": 1
     }
   }
 ]
