@@ -1,5 +1,6 @@
 # Django imports
 from django.db import models
+from django.conf import settings
 
 # Local application imports
 from timetable_selector.models import FixedClass, Teacher, Pupil, Classroom
@@ -11,6 +12,7 @@ class UnsolvedClass(models.Model):
     and also teaching hours / min number of slots etc. "Unsolved" since it represents an input to the solver which
     finds the timetable structure that works across the board. Twin to "FixedClass" in timetable_selector app.
     """
+    school_access_key = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     class_id = models.CharField(max_length=20, primary_key=True)
     subject_name = models.CharField(max_length=20, choices=FixedClass.SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,
