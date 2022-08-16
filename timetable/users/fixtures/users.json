@@ -29,8 +29,7 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "school": 1,
-      "school_name": "Fake School"
+      "school": 123
     }
   }
 ]
