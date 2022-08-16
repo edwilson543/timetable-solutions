@@ -7,7 +7,7 @@
       "surname": "Smith",
       "year_group": 1,
       "pupil_id": 1,
-      "school_id": 1
+      "school": 123
     }
   },
   {
@@ -18,7 +18,7 @@
       "surname": "Brindley",
       "year_group": 1,
       "pupil_id": 2,
-      "school_id": 1
+      "school": 123
     }
   },
   {
@@ -29,7 +29,7 @@
       "surname": "Jones",
       "year_group": 1,
       "pupil_id": 3,
-      "school_id": 1
+      "school": 123
     }
   },
   {
@@ -40,7 +40,7 @@
       "surname": "Spoon",
       "year_group": 2,
       "pupil_id": 4,
-      "school_id": 1
+      "school": 123
     }
   },
   {
@@ -51,7 +51,7 @@
       "surname": "Pukki",
       "year_group": 2,
       "pupil_id": 5,
-      "school_id": 1
+      "school": 123
     }
   },
   {
@@ -62,7 +62,7 @@
       "surname": "Hoolahan",
       "year_group": 2,
       "pupil_id": 6,
-      "school_id": 1
+      "school": 123
     }
   }
 ]
