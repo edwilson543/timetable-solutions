@@ -90,7 +90,8 @@ class ProfileRegistration(View):
         form = ProfileRegistrationForm(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
-            profile = Profile(user=request.user, school=access_key)
+            # noinspection PyUnresolvedReferences
+            profile = Profile.objects.create(user=request.user, school_id=access_key)
             profile.save()
             return redirect(reverse("dashboard"))
         else:
