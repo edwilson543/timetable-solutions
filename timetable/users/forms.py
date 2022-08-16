@@ -18,7 +18,7 @@ class SchoolRegistrationPivot(forms.Form):
     Pivot to decide whether the 2nd stage of user sign-up also requires them to register their school, or if
     they just need to enter their school access key. No doubt unnecessary with javascript...
     """
-    CHOICES = [("EXISTING", "I have an school existing access key"),
+    CHOICES = [("EXISTING", "I have an existing school access key"),
                ("NEW", "I am registering my school for the first time")]
     existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
 
