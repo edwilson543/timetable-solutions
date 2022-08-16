@@ -22,6 +22,6 @@ from django.urls import path, include
 urlpatterns = [
     path('selection_navigator/', include('timetable_selector.urls')),
     path('requirements/', include('timetable_requirements.urls')),
-    path('', include('users.urls')),
+    path('users/', include('users.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

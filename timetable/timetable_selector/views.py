@@ -1,4 +1,5 @@
 # Django imports
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.template import loader
 
@@ -7,14 +8,15 @@ from .models import Pupil, Teacher, FixedClass
 from .utils import get_timetable_slot_indexed_timetable
 
 
+@login_required(login_url="/login")
 def pupil_navigator(request) -> HttpResponse:
     """
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
     This is pre-processed to be indexed by year group for display in the template.
     """
     # noinspection PyUnresolvedReferences
-    year_indexed_pupils = {year: Pupil.objects.filter(year_group=year).order_by("surname").values() for
-                           year in Pupil.YearGroup.values}
+    year_indexed_pupils = {year: Pupil.objects.filter(
+        year_group=year, id__in=request.user.pupil_set).order_by("surname").values() for year in Pupil.YearGroup.values}
     year_indexed_pupils = {key: value for key, value in year_indexed_pupils.items() if len(value) > 0}
     template = loader.get_template("pupils_navigator.html")
     context = {

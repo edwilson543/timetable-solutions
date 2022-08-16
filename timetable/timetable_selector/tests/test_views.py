@@ -2,7 +2,7 @@
 
 # Django imports
 from django.db.models import QuerySet
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 # Local application imports
@@ -11,15 +11,17 @@ from ..models import Pupil, TimetableSlot, FixedClass, Teacher
 
 class TestViews(TestCase):
     """Test class for the timetable_selector views"""
-    fixtures = ["classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
+    fixtures = ["dummy_user.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
 
     def test_pupil_navigator_response(self):
         """
         Test that the correct full list of pupils indexed by year group is returned by a get request to the
         pupil_navigator view. We test the data structures at successive depths of the nested context dictionary.
         """
+        c = Client()
+        c.login(username='dummy_teacher', password='dt123dt123')
         url = reverse('pupils_navigator')
-        response = self.client.get(url)
+        response = c.get(url)
 
         # Test the keys of the dict are the year groups
         all_pupils_dict = response.context["all_pupils"]

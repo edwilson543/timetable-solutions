@@ -1,6 +1,6 @@
 [
   {
-    "model": "users.user",
+    "model": "auth.user",
     "pk": 1,
     "fields": {
       "password": "pbkdf2_sha256$320000$91DmQjcW4wbUgNIHQpI3yr$0TYqFLymfsfn9or2NPkYdsgg8NWN1JcxFNusbXj2sQI=",
@@ -18,11 +18,18 @@
     }
   },
   {
-    "model": "users.timetableleadteacher",
+    "model": "users.school",
+    "pk": 123,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
+    "model": "users.profile",
     "pk": 1,
     "fields": {
       "user": 1,
-      "school_access_key": 123,
+      "school": 1,
       "school_name": "Fake School"
     }
   }

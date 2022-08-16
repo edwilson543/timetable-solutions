@@ -5,20 +5,16 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Local application imports
-from .models import User, TimetableLeadTeacher
+from .models import Profile
 
 
-class TimetableLeadTeacherInline(admin.StackedInline):
+class ProfileInline(admin.StackedInline):
     """Inline admin descriptor for TimetableLeadTeacher model which acts a bit like a singleton."""
-    model = TimetableLeadTeacher
+    model = Profile
     can_delete = False
-    verbose_name_plural = 'timetable_lead_teacher'
+    verbose_name_plural = 'user_profile'
 
 
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
-    inlines = (TimetableLeadTeacherInline,)
-
-
-# Re-register UserAdmin
-admin.site.register(User, UserAdmin)
+    inlines = (ProfileInline,)

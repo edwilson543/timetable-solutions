@@ -1,12 +1,13 @@
 {% extends 'base_users.html' %}
 
 {% block content %}
-<h2>Register</h2>
+<h2>Please enter details for your school below</h2>
+<p>The access key acts like a pin number</p>
 
 <form method="post">
     {% csrf_token %}
     {{form}}
-    <input type="submit" value="Register">
+    <input type="submit" value="Submit">
 </form>
 
 <a href="{% url 'login' %}">Back to login</a>
