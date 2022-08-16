@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 # Local application imports
-from .models import Profile
+from .models import Profile, School
 
 
 class ProfileInline(admin.StackedInline):
@@ -18,3 +18,7 @@ class ProfileInline(admin.StackedInline):
 # Define a new User admin
 class UserAdmin(BaseUserAdmin):
     inlines = (ProfileInline,)
+
+
+admin.site.register(Profile)
+admin.site.register(School)
