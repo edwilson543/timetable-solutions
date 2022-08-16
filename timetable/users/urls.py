@@ -1,4 +1,4 @@
-from django.urls import include, re_path, path
+from django.urls import include, re_path
 from django.views.generic import TemplateView
 from .views import Register, SchoolRegisterPivot, SchoolRegistration, ProfileRegistration
 

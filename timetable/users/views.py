@@ -1,12 +1,12 @@
 # Django imports
-from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from django.urls import reverse
+from django.shortcuts import render, redirect
 from django.views import View
-from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
+from django.urls import reverse
 
 # Local application imports
 from .models import Profile
+from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
 
 
 # Create your views here.
@@ -14,10 +14,8 @@ class Register(View):
     """View for step 1 of registering - entering basic details."""
     @staticmethod
     def get(request):
-        return render(
-            request, "users/register.html",
-            {"form": CustomUserCreationForm}
-        )
+        context = {"form": CustomUserCreationForm}
+        return render(request, "users/register.html", context)
 
     @staticmethod
     def post(request):
@@ -26,6 +24,12 @@ class Register(View):
             user = form.save()
             login(request, user)
             return SchoolRegisterPivot.get(request)
+        else:
+            context = {
+                "error_messages": form.error_messages,
+                "form": CustomUserCreationForm
+            }
+            return render(request, "users/register.html", context)
 
 
 class SchoolRegisterPivot(View):
@@ -46,6 +50,8 @@ class SchoolRegisterPivot(View):
                 return ProfileRegistration.get(request)
             else:
                 return SchoolRegistration.get(request)
+        else:
+            return redirect(reverse("register"))
 
 
 class SchoolRegistration(View):
