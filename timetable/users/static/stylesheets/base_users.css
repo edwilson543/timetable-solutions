@@ -17,8 +17,7 @@ span.helptext {
     color: white;
     font-size: 30px;
     margin-left: 20px;
-    text-align: center;
-    padding: 15px 0;
+    vertical-align: middle;
     float: left;
 }
 .login_info {
@@ -26,15 +25,14 @@ span.helptext {
     text-align: center;
     font-size: 20px;
     margin-right: 20px;
-    text-align: center;
-    padding: 20px ;
+    vertical-align: middle;
     float: right;
 }
 .footer_info {
     position: absolute;
     bottom: 0px;
     text-align: center;
+    vertical-align: middle;
     width: 100%;
-    padding: 0.1px 0;
 }
 a {color: white;}

@@ -1,16 +1,49 @@
 {% extends 'base_users.html' %}
 
+{% block style_block %}
+* {
+    padding: 0px;
+    border-width: 0px;
+}
+.bg {
+  height: 65%;
+  width: 100%;
+  padding: 0px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.option_button {
+    color: black;
+    background-color: #919191;
+    height: 50px;
+
+    text-align: center;
+    font-height: 20px;
+    border: 2px solid black;
+    border-radius: 5px;
+    width: 25%;
+}
+.option_button:hover {
+    background-color: #1f1530;
+    color: white;
+}
+.option_button_text {
+    vertical-align: middle;
+    height: 10px;
+}
+
+{% endblock %}
+
 {% block content %}
-Hello, {{ user.username|default:'Guest' }}!
+{% load static %}
+<div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
+
+<div>
+<div class="option_button" style="float:left"><h1 class="option_button_text">Upload data</h1></div>
+<h1 class="option_button" style="float:left">Create a new set of timetables</h1>
+<h1 class="option_button" style="float:left">View timetables</h1>
+</div>
 
 <hr>
-<div>
-    {% if user.is_authenticated %}
-        <a href="{% url 'password_change' %}">Change password</a><br>
-        <a href="{% url 'logout' %}">Logout</a>
-    {% else %}
-        <a href="{% url 'login' %}">Login</a><br>
-        <a href="{% url 'register' %}">Register</a>
-    {% endif %}
-</div>
 {% endblock %}

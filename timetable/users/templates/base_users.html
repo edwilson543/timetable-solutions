@@ -1,9 +1,14 @@
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'stylesheets/base_users.css' %}">
-<style>
 
+<head>
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'stylesheets/base_users.css' %}">
+
+<style>
+    {% block style_block %}
+    {% endblock %}
 </style>
 </head>
 
@@ -14,13 +19,13 @@
         <span class="login_info">Logged in as: {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a></span>
     {% endif %}
 </div>
-<hr>
+
+
 {% block content %}
 {% endblock %}
 
-
 <footer class="footer_info">
-    <hr>
+    <hr style="border-color:black;border-width:1px;">
     <span>Copyright Timetable Solutions ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore</span>
 </footer>
 </body>
