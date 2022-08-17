@@ -54,7 +54,7 @@ class FileUploadProcessor:
 
         # Try uploading the file to the database
         self.upload_successful = False  # This only gets switched to True if a successful upload is made.
-        self.upload_error_message = ""  # Provides details on why the upload has failed
+        self.upload_error_message = None  # Provides details on why the upload has failed
         self._upload_file_content(file=csv_file)
 
     def _upload_file_content(self, file: UploadedFile) -> None:

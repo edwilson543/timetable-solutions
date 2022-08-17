@@ -15,6 +15,8 @@ from timetable_requirements.models import UnsolvedClass
 
 
 class TestFileUploadViews(TestCase):
+
+    fixtures = ["users.json"]
     test_data_folder = Path(__file__).parents[1] / "test_data"
 
     def upload_test_file(self, filename: str, url_data_name: str) -> None:
@@ -29,7 +31,7 @@ class TestFileUploadViews(TestCase):
 
     def test_teacher_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of teachers successfully populates the central database."""
-        # Set the state of the test database
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
 
         # Test that the database is as expected
@@ -44,6 +46,7 @@ class TestFileUploadViews(TestCase):
         We try uploading the demo pupils file, to check that this does not work, and also that the database
         is unaffected.
         """
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         # Try uploading the wrong file (pupils.csv)
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
@@ -52,7 +55,7 @@ class TestFileUploadViews(TestCase):
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
-        # Set the state of the test database
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
 
         # Test that the database is as expected
@@ -68,6 +71,7 @@ class TestFileUploadViews(TestCase):
         is unaffected.
         """
         # Try uploading the wrong file (teachers.csv)
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
 
         # Assert that nothing has happened
@@ -75,7 +79,7 @@ class TestFileUploadViews(TestCase):
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
-        # Set the state of the test database
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
 
         # Test that the database is as expected
@@ -86,7 +90,7 @@ class TestFileUploadViews(TestCase):
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
-        # Set the state of the test database
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
@@ -102,6 +106,7 @@ class TestFileUploadViews(TestCase):
         Unit test that simulating a csv file upload of unsolved classes successfully populates the central database.
         Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
         """
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         # First we need the pupils, teachers, classrooms and timetable structure
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
@@ -123,6 +128,7 @@ class TestFileUploadViews(TestCase):
         Unit test that simulating a csv file upload of fixed classes successfully populates the central database.
         Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
         """
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         # First we need the pupils, teachers, classrooms and timetable structure
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
