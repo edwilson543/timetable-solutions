@@ -64,6 +64,7 @@ class FileUploadProcessor:
         # noinspection PyTypeChecker
         upload_df = read_csv(file_stream, sep=",")
         upload_df.fillna(value=self.__nan_handler, inplace=True)
+        upload_df = self._convert_df_to_correct_types(upload_df)
 
         if not self._check_headers_valid_and_ids_unique(upload_df=upload_df):
             return
@@ -88,6 +89,15 @@ class FileUploadProcessor:
                 self.upload_error_message = f"Input file contained repeated ids (id column is {self._id_column_name})"
                 return False
         return True
+
+    @staticmethod
+    def _convert_df_to_correct_types(upload_df: pd.DataFrame):
+        """Method to ensure timestamps / timedelta are converted to the correct type"""
+        if Header.PERIOD_DURATION in upload_df.columns:
+            upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(upload_df[Header.PERIOD_DURATION])
+        if Header.PERIOD_START_TIME in upload_df.columns:
+            upload_df[Header.PERIOD_START_TIME] = pd.to_datetime(upload_df[Header.PERIOD_START_TIME])
+        return upload_df
 
     def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
         valid_model_instances = []
