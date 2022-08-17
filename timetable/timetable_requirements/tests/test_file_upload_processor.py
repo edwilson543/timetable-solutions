@@ -27,7 +27,7 @@ class TestFileUploadProcessor(TestCase):
                 csv_file=upload_file, csv_headers=CSVUplaodFiles.TEACHERS.headers,
                 id_column_name=CSVUplaodFiles.TEACHERS.id_column, model=Teacher, school_access_key=123)
 
-        # Test that attribute 'upload_successful' has been set to True, indicating that everythin has worked
+        # Test that attribute 'upload_successful' has been set to True, indicating that everything has worked
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
