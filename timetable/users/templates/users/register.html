@@ -3,7 +3,7 @@
 {% block content %}
 <h2>Register</h2>
 {% for error_message in error_messages.values %}
-<p>error_message</p>
+<p>{{error_message}}</p>
 {% endfor %}
 <form method="post">
     {% csrf_token %}

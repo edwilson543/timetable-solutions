@@ -23,7 +23,7 @@ class Register(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return SchoolRegisterPivot.get(request)
+            return redirect(reverse("registration_pivot"))
         else:
             context = {
                 "error_messages": form.error_messages,
@@ -37,19 +37,16 @@ class SchoolRegisterPivot(View):
 
     @staticmethod
     def get(request):
-        return render(
-            request, "users/register_school_pivot.html",
-            {"form": SchoolRegistrationPivot}
-        )
+        return render(request, "users/register_school_pivot.html", {"form": SchoolRegistrationPivot})
 
     @staticmethod
     def post(request):
         form = SchoolRegistrationPivot(request.POST)
         if form.is_valid():
             if form.cleaned_data.get("existing_school") == "EXISTING":
-                return ProfileRegistration.get(request)
+                return redirect(reverse("profile_registration"))
             else:
-                return SchoolRegistration.get(request)
+                return redirect(reverse("school_registration"))
         else:
             return redirect(reverse("register"))
 
@@ -59,10 +56,7 @@ class SchoolRegistration(View):
 
     @staticmethod
     def get(request):
-        return render(
-            request, "users/register_school.html",
-            {"form": SchoolRegistrationForm}
-        )
+        return render(request, "users/register_school.html", {"form": SchoolRegistrationForm})
 
     @staticmethod
     def post(request):
@@ -80,10 +74,7 @@ class ProfileRegistration(View):
 
     @staticmethod
     def get(request):
-        return render(
-            request, "users/school_access_key.html",
-            {"form": ProfileRegistrationForm}
-        )
+        return render(request, "users/school_access_key.html", {"form": ProfileRegistrationForm})
 
     @staticmethod
     def post(request):

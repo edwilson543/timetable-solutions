@@ -20,7 +20,7 @@ class SchoolRegistrationPivot(forms.Form):
     """
     CHOICES = [("EXISTING", "I have an existing school access key"),
                ("NEW", "I am registering my school for the first time")]
-    existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect)
+    existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect, label="")
 
 
 class SchoolRegistrationForm(forms.ModelForm):
