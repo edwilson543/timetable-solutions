@@ -2,7 +2,7 @@
 
 # Django imports
 from django.db.models import QuerySet
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
@@ -62,7 +62,7 @@ class TestViews(TestCase):
         which is the pupil's timetable.
         """
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('pupil_timetable_view', kwargs={"pupil_id": 1})
+        url = reverse('pupil_timetable_view', kwargs={"id": 1})
         response = self.client.get(url)
 
         # Test pupil context
@@ -92,7 +92,7 @@ class TestViews(TestCase):
         relevant timetable etc.
         """
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('teacher_timetable_view', kwargs={"teacher_id": 6})  # Timetable for Greg Thebaker
+        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
         response = self.client.get(url)
 
         # Test teacher context
