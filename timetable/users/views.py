@@ -1,5 +1,5 @@
 # Django imports
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 from django.views import View
 from django.urls import reverse
@@ -88,3 +88,12 @@ class ProfileRegistration(View):
         else:
             # TODO - access key not found message
             pass
+
+
+def custom_logout(request):
+    """
+    View redirecting users to the login page when they logout rather than the dashboard, since there is no
+    application unless the user is logged in.
+    """
+    logout(request)
+    return redirect(reverse("login"))

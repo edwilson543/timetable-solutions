@@ -1,17 +1,52 @@
-<!--users/templates/base.html-->
-
+<html lang="en">
+<head>
 <style>
-    label, input {
-        display: block;
-    }
-    span.helptext {
-        display: none;
-    }
+body, html {
+  height: 100%;
+  background-color: #d4cbd6;
+}
+label, input {
+    display: block;
+}
+span.helptext {
+    display: none;
+}
+.head_strap {
+    background-color: #11014A;
+    padding: 0px;
+    height: 40px;
+}
+.head_strap_text {
+    color: white;
+    font-size: 30px;
+    margin-left: 20px;
+    text-align: center;
+    padding: 5px 0;
+    float: left;
+}
+.login_info {
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    margin-right: 20px;
+    text-align: center;
+    padding: 10px ;
+    float: right;
+}
+a {color: white;}
 </style>
+</head>
 
 <body>
-<h1>Welcome to Blog Website</h1>
-
+<div class="head_strap">
+    <i class="head_strap_text">Timetable Solutions</i>
+    {% if user.is_authenticated %}
+        <span class="login_info">Logged in as: {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a></span>
+    {% endif %}
+</div>
+<hr>
 {% block content %}
 {% endblock %}
+
 </body>
+</html>
