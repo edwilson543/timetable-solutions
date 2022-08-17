@@ -30,6 +30,7 @@ class FileUploadProcessor:
     def __init__(self,
                  csv_file: UploadedFile,
                  csv_headers: List[str],
+                 school_access_key: int,  # Unique identifier for the school which the data corresponds to
                  id_column_name: str | None,
                  model: Type[ModelInstance],
                  is_unsolved_class_upload: bool = False,
@@ -45,6 +46,7 @@ class FileUploadProcessor:
         their own methods (see _create_model_instance_from_row variations below)
         """
         self._csv_headers = csv_headers
+        self._school_access_key = school_access_key
         self._id_column_name = id_column_name
         self._model = model
         self._is_unsolved_class_upload = is_unsolved_class_upload
@@ -120,9 +122,10 @@ class FileUploadProcessor:
         Method to take an individual row from the csv file, validate that it corresponds to a valid model instance,
         and then create that model instance.
         """
-        model_dict = row.to_dict()
+        model_dict = dict(row.to_dict())
+        model_dict["school_id"] = self._school_access_key
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
@@ -138,9 +141,10 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS]}
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS],
+            "school_id": self._school_access_key}
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])
@@ -158,8 +162,9 @@ class FileUploadProcessor:
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID]}
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
+        model_dict["school_id"] = self._school_access_key
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils / slots
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])
