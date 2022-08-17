@@ -6,6 +6,7 @@ from django.template import loader
 # Local application imports
 from .models import Pupil, Teacher, FixedClass
 from .utils import get_timetable_slot_indexed_timetable
+from users.models import School
 
 
 @login_required(login_url="/login")
@@ -14,9 +15,10 @@ def pupil_navigator(request) -> HttpResponse:
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
     This is pre-processed to be indexed by year group for display in the template.
     """
+    school = School.objects.get(school_access_key=request.user.profile.school.school_access_key)
     # noinspection PyUnresolvedReferences
     year_indexed_pupils = {year: Pupil.objects.filter(
-        year_group=year, id__in=request.user.pupil_set).order_by("surname").values() for year in Pupil.YearGroup.values}
+        year_group=year, school=school).order_by("surname").values() for year in Pupil.YearGroup.values}
     year_indexed_pupils = {key: value for key, value in year_indexed_pupils.items() if len(value) > 0}
     template = loader.get_template("pupils_navigator.html")
     context = {
@@ -30,10 +32,11 @@ def teacher_navigator(request) -> HttpResponse:
     View to bring up a list of teachers which can be linked out to each of their timetables.
     Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
     """
+    school = School.objects.get(school_access_key=request.user.profile.school.school_access_key)
     alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     # noinspection PyUnresolvedReferences
-    teachers = {letter: Teacher.objects.filter(surname__startswith=letter).order_by("firstname").values() for
-                letter in alphabet}
+    teachers = {letter: Teacher.objects.filter(
+        surname__startswith=letter, school=school).order_by("firstname").values() for letter in alphabet}
     teachers = {key: value for key, value in teachers.items() if len(value) > 0}
     template = loader.get_template("teachers_navigator.html")
     context = {
