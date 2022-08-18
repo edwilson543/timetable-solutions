@@ -16,7 +16,9 @@
 <div class="head_strap">
     <i class="head_strap_text">Timetable Solutions</i>
     {% if user.is_authenticated %}
-        <span class="login_info">Logged in as: {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a></span>
+        <span class="login_info">
+            Logged in as: {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
+        </span>
     {% endif %}
 </div>
 
@@ -26,7 +28,9 @@
 
 <footer class="footer_info">
     <hr style="border-color:black;border-width:1px;">
-    <span>Copyright Timetable Solutions ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore</span>
+    <span>
+        Copyright Timetable Solutions ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
+    </span>
 </footer>
 </body>
 

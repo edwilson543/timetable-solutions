@@ -2,6 +2,7 @@ body, html {
   height: 100%;
   background-color: #D1D1D1;
 }
+* {margin:0; padding:0}
 label, input {
     display: block;
 }
@@ -10,8 +11,9 @@ span.helptext {
 }
 .head_strap {
     background-color: #11014A;
-    padding: 0px;
     height: 60px;
+    line-height: 60px;
+    vertical-align: middle;
 }
 .head_strap_text {
     color: white;

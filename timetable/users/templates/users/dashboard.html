@@ -1,10 +1,6 @@
 {% extends 'base_users.html' %}
 
 {% block style_block %}
-* {
-    padding: 0px;
-    border-width: 0px;
-}
 .bg {
   height: 65%;
   width: 100%;
@@ -13,37 +9,66 @@
   background-repeat: no-repeat;
   background-size: cover;
 }
-.option_button {
-    color: black;
+.grid-container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 5;
+    columns-column-start: 2;
+    grid-template-rows: 1;
+    gap: 10%;
+    padding: 20px;
+}
+.grid-item {
     background-color: #919191;
-    height: 50px;
-
-    text-align: center;
-    font-height: 20px;
     border: 2px solid black;
     border-radius: 5px;
-    width: 25%;
+    height: 50px;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
 }
-.option_button:hover {
+.grid-item:hover {
     background-color: #1f1530;
     color: white;
 }
-.option_button_text {
-    vertical-align: middle;
-    height: 10px;
+.a_option:link, .a_option:visited {
+  background-color: transparent;
+  color: black;
+  text-decoration: none;
 }
 
+
 {% endblock %}
+
 
 {% block content %}
 {% load static %}
 <div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
 
-<div>
-<div class="option_button" style="float:left"><h1 class="option_button_text">Upload data</h1></div>
-<h1 class="option_button" style="float:left">Create a new set of timetables</h1>
-<h1 class="option_button" style="float:left">View timetables</h1>
+
+<div class="grid-container">
+    <div></div>
+    <a class="a_option" href=#>
+        <div class="grid-item" style="vertical-align:middle;">
+            Upload data
+        </div>
+    </a>
+
+    <a class="a_option" href=#>
+        <div class="grid-item">
+            Create a new set of timetables
+        </div>
+    </a>
+
+    <a class="a_option" href=#>
+        <div class="grid-item">
+            View timetables
+        </div>
+    </a>
+    <div></div>
 </div>
 
-<hr>
 {% endblock %}
