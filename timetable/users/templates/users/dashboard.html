@@ -12,11 +12,10 @@
 .grid-container {
     display: grid;
     grid-auto-flow: column;
-    grid-template-columns: 5;
-    columns-column-start: 2;
+    grid-template-columns: 3;
     grid-template-rows: 1;
-    gap: 10%;
-    padding: 20px;
+    column-gap: 5%;
+    padding: 50px;
 }
 .grid-item {
     background-color: #919191;
@@ -24,7 +23,7 @@
     border-radius: 5px;
     height: 50px;
     width: 100%;
-    text-align: center;
+    font-size: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,7 +39,6 @@
   text-decoration: none;
 }
 
-
 {% endblock %}
 
 
@@ -53,19 +51,19 @@
     <div></div>
     <a class="a_option" href=#>
         <div class="grid-item" style="vertical-align:middle;">
-            Upload data
+            <b>Upload data</b>
         </div>
     </a>
 
     <a class="a_option" href=#>
         <div class="grid-item">
-            Create a new set of timetables
+            <b>Create timetables</b>
         </div>
     </a>
 
     <a class="a_option" href=#>
         <div class="grid-item">
-            View timetables
+            <b>View timetables</b>
         </div>
     </a>
     <div></div>

@@ -2,7 +2,12 @@ body, html {
   height: 100%;
   background-color: #D1D1D1;
 }
-* {margin:0; padding:0}
+* {
+    margin:0;
+    padding:0;
+    font-family: Arial;
+}
+a:link, a:visited {text-decoration: none;}
 label, input {
     display: block;
 }
@@ -32,9 +37,10 @@ span.helptext {
 }
 .footer_info {
     position: absolute;
-    bottom: 0px;
+    bottom: 2px;
     text-align: center;
     vertical-align: middle;
     width: 100%;
+    font-size: 15px;
 }
 a {color: white;}
