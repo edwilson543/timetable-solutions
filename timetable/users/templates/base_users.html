@@ -13,6 +13,7 @@
 </head>
 
 <body>
+<!--Add a 'head strap'-->
 <div class="head_strap">
     <i class="head_strap_text">Timetable Solutions</i>
     {% if user.is_authenticated %}
@@ -22,6 +23,18 @@
     {% endif %}
 </div>
 
+<!--Add a navigation bar-->
+{% if user.is_authenticated %}
+<div class="navbar">
+    <p class="navbar_text">
+        <a href="{% url 'dashboard' %}">Home</a> |
+        <a href="{% url 'file_upload_page' %}">Data</a> |
+        <a href="">Create</a> |
+        <a href="{% url 'selection_navigator' %}">View</a>
+    </p>
+</div>
+{% endif %}
+
 
 {% block content %}
 {% endblock %}
@@ -29,7 +42,7 @@
 <footer class="footer_info">
     <hr style="border-color:black;border-width:1px;">
     <span>
-        Copyright Timetable Solutions ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
+        Copyright Timetable Solutions Ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
     </span>
 </footer>
 </body>

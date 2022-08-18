@@ -1,6 +1,7 @@
+/* General/ miscellaneous styling */
 body, html {
   height: 100%;
-  background-color: #D1D1D1;
+  background-color: white;
 }
 * {
     margin:0;
@@ -14,6 +15,8 @@ label, input {
 span.helptext {
     display: none;
 }
+
+/* Head strap styling */
 .head_strap {
     background-color: #11014A;
     height: 60px;
@@ -35,12 +38,35 @@ span.helptext {
     vertical-align: middle;
     float: right;
 }
+
+/* Navbar styling */
+.navbar {
+    position: absolute;
+    top: 60px; /* Since this corresponds to the bottom of the head strap */
+    background-color: rgba(0, 0, 0, 0.3);
+    height: 40px;
+    width: 100%;
+    line-height: 40px;
+    vertical-align: middle;
+}
+.navbar_text {
+    color: white;
+    opacity: 1.0;
+    font-size: 20px;
+    vertical-align: middle;
+    margin-left: 20px
+}
+.navbar:hover {
+background-color: rgba(0, 0, 0, 1.0);
+}
+
+/* Footer styling */
 .footer_info {
     position: absolute;
     bottom: 2px;
     text-align: center;
     vertical-align: middle;
     width: 100%;
-    font-size: 15px;
+    font-size: 12px;
 }
 a {color: white;}
