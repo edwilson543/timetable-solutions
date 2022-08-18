@@ -1,15 +1,12 @@
 # Django imports
 from django.contrib.auth import login, logout
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
-from django.template import loader
 from django.views import View
 from django.urls import reverse
 
 # Local application imports
 from .models import Profile
 from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
-from timetable_selector.models import FixedClass
 
 
 # Create your views here.
@@ -107,9 +104,7 @@ def dashboard_view(request):
     Method to add some context to the dashboard view, for rendering in the template.
     This is to restrict the list of options available to users.
     """
-    school = request.user.profile.school
-    # noinspection PyUnresolvedReferences
-    timetable_data_available = FixedClass.objects.filter(school=school)
-    context = {"tt_data": timetable_data_available}
-    template = loader.get_template("users/dashboard.html")
-    return HttpResponse(template.render(context, request))
+    if not request.user.is_authenticated:
+        return redirect(reverse("login"))
+
+    return render(request, "users/dashboard.html")

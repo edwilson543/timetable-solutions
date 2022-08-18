@@ -5,11 +5,16 @@
 
 {% load static %}
 <link rel="stylesheet" href="{% static 'stylesheets/base_users.css' %}">
+{% block head_content %}
+{% endblock %}
+
 
 <style>
-    {% block style_block %}
-    {% endblock %}
+{% block style_block %}
+{% endblock %}
 </style>
+
+
 </head>
 
 <body>
@@ -34,7 +39,6 @@
     </p>
 </div>
 {% endif %}
-
 
 {% block content %}
 {% endblock %}
