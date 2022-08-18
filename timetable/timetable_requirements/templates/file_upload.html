@@ -27,10 +27,20 @@
 #reset_button {
     font-size: 15px;
     margin: auto;
+    color: black;
+    background-color: grey;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 1px;
+    padding: 2px;
 }
 
-
-table {
+#upload_file_table td {
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+#upload_file_table {
   width:90%;
   height: 90%;
 }
@@ -57,7 +67,7 @@ table {
 {% load static %}
 
 <div id="table_container">
-<table>
+<table id="upload_file_table">
     <tr>
         <th>File name</th>
         <th>Download example file</th>
@@ -85,7 +95,7 @@ table {
     <tr>
         <td></td>
         <td></td>
-        <td><button id="reset_button">Reset all</button></td>
+        <td><a id="reset_button" href=#>Reset all</a></td>
     </tr>
 </table>
 </div>
