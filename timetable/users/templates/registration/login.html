@@ -1,6 +1,50 @@
 {% extends 'base_users.html' %}
 
+<style>
+{% block style_block %}
+#background_image {
+  padding: 0px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+{% load static %}
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 90%;
+}
+
+#form_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    width: 300px;
+    height: 300px;
+    border: 1px; solid black;
+    border-radius: 5px;
+    box-shadow: -2px 2px rgba(184, 184, 184, 0.5);
+}
+
+
+{% endblock %}
+</style>
+
+
 {% block content %}
+{% load static %}
+<!--<div id="background_image"><img src="{% static 'img/patterns_background.png' %}" height=100% width=100% alt=""></div>-->
+
+<div id="parent_container">
+<div id="form_container">
+
 <h2>Login</h2>
 
 <form method="post">
@@ -8,7 +52,8 @@
     {{ form.as_p }}
     <input type="submit" value="Login">
 </form>
+</div>
+</div>
 
 <hr>
-<a href="{% url 'password_reset' %}">Reset password</a>
 {% endblock %}

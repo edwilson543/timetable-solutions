@@ -1,5 +1,7 @@
+# Django imports
 from django.urls import include, re_path, path
-from django.views.generic import TemplateView
+
+# Local application imports
 from .views import Register, SchoolRegisterPivot, SchoolRegistration, ProfileRegistration, custom_logout, dashboard_view
 
 urlpatterns = [
