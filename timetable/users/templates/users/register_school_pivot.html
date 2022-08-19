@@ -1,7 +1,7 @@
 {% extends 'base_users.html' %}
 
 {% block content %}
-<h2>Do you have an existing access key for your school?</h2>
+<h2>{{user.first_name}}, do you have an existing access key for your school?</h2>
 
 <form method="post">
     {% csrf_token %}
