@@ -48,6 +48,7 @@ span.helptext {
     width: 100%;
     line-height: 40px;
     vertical-align: middle;
+    z-index: 100;
 }
 .navbar_text {
     color: white;

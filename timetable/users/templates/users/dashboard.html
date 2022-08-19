@@ -10,6 +10,7 @@
   background-size: cover;
 }
 .grid-container {
+    width: 70%;
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: 3;
@@ -19,10 +20,11 @@
     border: 1px solid black;
     border-radius: 100px;
     margin: 1%;
-    background-color: #e6e6e6;
+    background-color: rgba(255, 255, 255, 0.6);
 }
 .grid-item {
-    background-color: #919191;
+    background-color: #003b45;
+    color: white;
     border: 2px solid black;
     border-radius: 5px;
     height: 50px;
@@ -43,12 +45,28 @@
   text-decoration: none;
 }
 
+{% load static %}
+#parent_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: auto;
+}
+
 {% endblock %}
 
 
 {% block content %}
 {% load static %}
+
 <div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
+<div id="parent_container">
 <hr>
 
 <div class="grid-container">
@@ -71,6 +89,7 @@
         </div>
     </a>
     <div></div>
+</div>
 </div>
 
 {% endblock %}
