@@ -16,9 +16,12 @@ class TestRegistration(TestCase):
         """We test that successful registration redirects to the correct url at the next stage of registration"""
         url = reverse('register')
         form_data = {"username": "dummy_teacher2", "email": "dummy_teacher@dt.co.uk",
-                     "password1": "dt123dt123", "password2": "dt123dt123"}
+                     "password1": "dt123dt123", "password2": "dt123dt123",
+                     "first_name": "dummy", "last_name": "teacher"}
         response = self.client.post(url, data=form_data)
         self.assertIsNotNone(User.objects.get(username="dummy_teacher2"))
+        self.assertEqual(User.objects.get(username="dummy_teacher2").first_name, "dummy")
+        self.assertEqual(User.objects.get(username="dummy_teacher2").last_name, "teacher")
         self.assertRedirects(response, reverse("registration_pivot"))
 
     def test_register_new_user_invalid_credentials_passwords_different(self):

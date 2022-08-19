@@ -10,7 +10,7 @@ from .models import School
 class CustomUserCreationForm(UserCreationForm):
     """Placeholder customisation of the default django user creation form"""
     class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields + ("email",)
+        fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name")
 
 
 class SchoolRegistrationPivot(forms.Form):
