@@ -25,14 +25,46 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     background-color: white;
-    width: 300px;
-    height: 300px;
-    border: 1px; solid black;
-    border-radius: 5px;
-    box-shadow: -2px 2px rgba(184, 184, 184, 0.5);
+    width: 350px;
+    height: auto;
+    padding: 20px;
+    border: 3px solid rgba(51, 0, 61, 0.5);
+    border-radius: 10px;
+    box-shadow: 5px 5px rgba(184, 184, 184);
 }
 
+input {
+    border-radius: 5px;
+    border: 1px solid #33003d;
+    width: 330px;
+    font-size: 20px;
+    padding: 5px;
+    margin-bottom: 15px;
+}
+input[type="submit"] {
+    background-color: #1f1530;
+    color: white;
+    width: 100%;
+}
+input[type="submit"]:hover {cursor: pointer;}
+label {
+    font-weight: bold;
+    font-size: 20px;
+}
+
+
+.other_buttons {
+    border-radius: 5px;
+    border: 1px solid #33003d;
+    width: 330px;
+    font-size: 20px;
+    padding: 5px;
+    color: white;
+    text-align: center;
+    background-color: #004000;
+}
 
 {% endblock %}
 </style>
@@ -40,18 +72,19 @@
 
 {% block content %}
 {% load static %}
-<!--<div id="background_image"><img src="{% static 'img/patterns_background.png' %}" height=100% width=100% alt=""></div>-->
 
 <div id="parent_container">
 <div id="form_container">
-
-<h2>Login</h2>
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Login">
 </form>
+
+<hr style="color:black;width:90%;margin-bottom:15px;">
+<a href="{% url 'register' %}" class="other_buttons">Register</a>
+
 </div>
 </div>
 
