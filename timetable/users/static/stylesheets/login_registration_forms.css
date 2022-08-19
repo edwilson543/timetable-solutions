@@ -18,7 +18,7 @@ input {
     width: 330px;
     font-size: 20px;
     padding: 5px;
-    margin-bottom: 15px;
+    margin-bottom: 2%;
 }
 input[type="submit"] {
     background-color: #1f1530;
