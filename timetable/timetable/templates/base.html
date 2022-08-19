@@ -5,16 +5,17 @@
 
 <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
 {% load static %}
-<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
+<link rel="icon" type="image/x-icon" href="{% static 'img/favicon2.png' %}">
+<link rel="stylesheet" href="{% static 'stylesheets/base_users.css' %}">
 
 {% block head_content %}
 {% endblock %}
-<link rel="stylesheet" href="{% static 'stylesheets/base_users.css' %}">
 
 <style>
     {% block style_block %}
     {% endblock %}
 </style>
+
 </head>
 
 <body>
@@ -23,7 +24,7 @@
     <i class="head_strap_text">Timetable Solutions</i>
     {% if user.is_authenticated %}
         <span class="login_info">
-            Logged in as: {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
+            {{user.profile.school.school_name}} | {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
         </span>
     {% endif %}
 </div>
