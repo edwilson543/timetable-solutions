@@ -36,18 +36,14 @@ class SchoolRegistrationForm(forms.ModelForm):
         """Check that the requested school access key is taken and meets the requirements"""
         form_valid = super().is_valid()
         if not form_valid:
+            self.error_message = self.errors["school_access_key"][0]  # Manually extract auto django form error
             return False
         access_key = self.cleaned_data.get("school_access_key")
-        try:
-            access_key_exists = School.objects.get(school_access_key=access_key)
-            self.error_message = "Access key already taken"
-            return False  # Access key already taken so form is not valid
-        except ObjectDoesNotExist:  # The access key is available, so form might be valid
-            if len(str(access_key)) == 6:
-                return True  # Access key available and is 6 digits
-            else:
-                self.error_message = "Access key is not 6 digits"
-                return False
+        if len(str(access_key)) != 6:
+            self.error_message = "Access key is not 6 digits"
+            return False
+        else:
+            return True  # Access key available and is 6 digits
 
 
 class ProfileRegistrationForm(forms.Form):
@@ -61,9 +57,9 @@ class ProfileRegistrationForm(forms.Form):
         if not form_valid:
             return False
         access_key = self.cleaned_data.get("school_access_key")
-        try:
-            access_key_exists = School.objects.get(school_access_key=access_key)
+
+        if School.objects.filter(school_access_key=access_key).exists():
             return True
-        except ObjectDoesNotExist:
+        else:
             self.error_message = "Access key not found, please try again"
             return False
