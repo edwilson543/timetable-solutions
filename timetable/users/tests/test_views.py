@@ -58,11 +58,11 @@ class TestRegistration(TestCase):
         """
         self.login_dummy_user()
         url = reverse('school_registration')
-        form_data = {"school_access_key": 12345, "school_name": "Fake School"}
+        form_data = {"school_access_key": 654321, "school_name": "Fake School"}
         response = self.client.post(url, data=form_data)
         self.assertRedirects(response, reverse("dashboard"))
 
-        new_school = School.objects.get(school_access_key=12345)
+        new_school = School.objects.get(school_access_key=654321)
         self.assertIsInstance(new_school, School)
 
     def test_register_new_school_access_key_already_taken(self):
@@ -85,10 +85,10 @@ class TestRegistration(TestCase):
         self.login_dummy_user()
         url = reverse("profile_registration")
 
-        form_data = {"school_access_key": 123}
+        form_data = {"school_access_key": 123456}
         response = self.client.post(url, data=form_data)
         self.assertRedirects(response, reverse("dashboard"))
 
-        existing_school = School.objects.get(school_access_key=123)  # From fixture
+        existing_school = School.objects.get(school_access_key=123456)  # From fixture
         new_user_school = User.objects.get(username="dummy_teacher2").profile.school
         self.assertEqual(existing_school, new_user_school)

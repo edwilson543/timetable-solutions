@@ -25,13 +25,13 @@ class TestFileUploadProcessor(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = FileUploadProcessor(
                 csv_file=upload_file, csv_headers=CSVUplaodFiles.TEACHERS.headers,
-                id_column_name=CSVUplaodFiles.TEACHERS.id_column, model=Teacher, school_access_key=123)
+                id_column_name=CSVUplaodFiles.TEACHERS.id_column, model=Teacher, school_access_key=123456)
 
         # Test that attribute 'upload_successful' has been set to True, indicating that everything has worked
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
-        school = School.objects.get(school_access_key=123)
+        school = School.objects.get(school_access_key=123456)
         all_teachers = Teacher.objects.filter(school=school)
         self.assertEqual(len(all_teachers), 11)
         greg = Teacher.objects.get(teacher_id=6)

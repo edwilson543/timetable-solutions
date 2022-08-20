@@ -19,7 +19,7 @@
   },
   {
     "model": "users.school",
-    "pk": 123,
+    "pk": 123456,
     "fields": {
       "school_name": "Fake School"
     }
@@ -29,7 +29,7 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "school": 123
+      "school": 123456
     }
   }
 ]
