@@ -1,1 +1,123 @@
-[{"model": "timetable_selector.teacher", "pk": 1, "fields": {"firstname": "Theresa", "surname": "May", "title": "Mrs", "teacher_id": 1, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 2, "fields": {"firstname": "Nims", "surname": "Purja", "title": "Mr", "teacher_id": 2, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 3, "fields": {"firstname": "Jake", "surname": "Humphrey", "title": "Mrs", "teacher_id": 3, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 4, "fields": {"firstname": "Peter", "surname": "Crouch", "title": "Mr", "teacher_id": 4, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 5, "fields": {"firstname": "Chatrick", "surname": "Vierra", "title": "Dr", "teacher_id": 5, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 6, "fields": {"firstname": "Greg", "surname": "Thebaker", "title": "Mr", "teacher_id": 6, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 7, "fields": {"firstname": "Ben", "surname": "Dover", "title": "Mr", "teacher_id": 7, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 8, "fields": {"firstname": "Ipee", "surname": "Freely", "title": "Mrs", "teacher_id": 8, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 9, "fields": {"firstname": "Cameron", "surname": "Jerome", "title": "Sir", "teacher_id": 9, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 10, "fields": {"firstname": "Casper", "surname": "Schmeical", "title": "Mr", "teacher_id": 10, "school": 123}}, {"model": "timetable_selector.teacher", "pk": 11, "fields": {"firstname": "Fifty", "surname": "Cent", "title": "MC", "teacher_id": 11, "school": 123}}]
+[
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 1,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 1,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 2,
+    "fields": {
+      "firstname": "Nims",
+      "surname": "Purja",
+      "title": "Mr",
+      "teacher_id": 2,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 3,
+    "fields": {
+      "firstname": "Jake",
+      "surname": "Humphrey",
+      "title": "Mrs",
+      "teacher_id": 3,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 4,
+    "fields": {
+      "firstname": "Peter",
+      "surname": "Crouch",
+      "title": "Mr",
+      "teacher_id": 4,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 5,
+    "fields": {
+      "firstname": "Chatrick",
+      "surname": "Vierra",
+      "title": "Dr",
+      "teacher_id": 5,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 6,
+    "fields": {
+      "firstname": "Greg",
+      "surname": "Thebaker",
+      "title": "Mr",
+      "teacher_id": 6,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 7,
+    "fields": {
+      "firstname": "Ben",
+      "surname": "Dover",
+      "title": "Mr",
+      "teacher_id": 7,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 8,
+    "fields": {
+      "firstname": "Ipee",
+      "surname": "Freely",
+      "title": "Mrs",
+      "teacher_id": 8,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 9,
+    "fields": {
+      "firstname": "Cameron",
+      "surname": "Jerome",
+      "title": "Sir",
+      "teacher_id": 9,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 10,
+    "fields": {
+      "firstname": "Casper",
+      "surname": "Schmeical",
+      "title": "Mr",
+      "teacher_id": 10,
+      "school": 123456
+    }
+  },
+  {
+    "model": "timetable_selector.teacher",
+    "pk": 11,
+    "fields": {
+      "firstname": "Fifty",
+      "surname": "Cent",
+      "title": "MC",
+      "teacher_id": 11,
+      "school": 123456
+    }
+  }
+]
