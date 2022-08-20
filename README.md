@@ -8,7 +8,7 @@ The core functionality of the application is / will be:
     <li>Create an account and register the school</li>
     <li>Upload teacher/pupils/classrooms data for the year</li>
     <li>Upload the classes that must take place, and any classes that must take place at a certain time</li>
-    <li>Set priorities for the timetable structure</li>
+    <li>Set priorities for the timetable structure (e.g. to maximise spread of each class throughout week)</li>
     <li>Formulate the timetabling problem as a linear programming problem</li>
     <li>Call a linear optimisation API</li>
     <li>Make the timetables created available for viewing / download in the app</li>
