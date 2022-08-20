@@ -25,14 +25,35 @@ class SchoolRegistrationPivot(forms.Form):
 
 class SchoolRegistrationForm(forms.ModelForm):
     """Form to fill in at registration, if the user also needs to register their school."""
+
+    error_message = None
+
     class Meta:
         model = School
         fields = ["school_access_key", "school_name"]
+
+    def is_valid(self):
+        """Check that the requested school access key is taken and meets the requirements"""
+        form_valid = super().is_valid()
+        if not form_valid:
+            return False
+        access_key = self.cleaned_data.get("school_access_key")
+        try:
+            access_key_exists = School.objects.get(school_access_key=access_key)
+            self.error_message = "Access key already taken"
+            return False  # Access key already taken so form is not valid
+        except ObjectDoesNotExist:  # The access key is available, so form might be valid
+            if len(str(access_key)) == 6:
+                return True  # Access key available and is 6 digits
+            else:
+                self.error_message = "Access key is not 6 digits"
+                return False
 
 
 class ProfileRegistrationForm(forms.Form):
     """Form to fill in at registration, if the user's schools is already registered."""
     school_access_key = forms.IntegerField()
+    error_message = None
 
     def is_valid(self):
         """Additional check on validity that the given access key exists."""
@@ -44,4 +65,5 @@ class ProfileRegistrationForm(forms.Form):
             access_key_exists = School.objects.get(school_access_key=access_key)
             return True
         except ObjectDoesNotExist:
+            self.error_message = "Access key not found"
             return False
