@@ -2,12 +2,10 @@
 
 <head>
 {% block head_content %}
-
-{% load static %}
-<link rel="stylesheet" href="{% static 'stylesheets/login_registration_forms.css' %}">
-<title>Register</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stylesheets/login_registration_forms.css' %}">
+    <title>Register</title>
 {% endblock %}
-
 
 <style>
 {% block style_block %}
@@ -23,6 +21,7 @@
     width: 100%;
     height: 90%;
 }
+
 input[type="submit"] {
     background-color: #004000;
     margin-top: 20px;
