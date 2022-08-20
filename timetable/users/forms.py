@@ -65,5 +65,5 @@ class ProfileRegistrationForm(forms.Form):
             access_key_exists = School.objects.get(school_access_key=access_key)
             return True
         except ObjectDoesNotExist:
-            self.error_message = "Access key not found"
+            self.error_message = "Access key not found, please try again"
             return False

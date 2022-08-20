@@ -29,13 +29,21 @@ input[type="submit"] {
 }
 input[type="radio"] {
     margin-bottom: 1px;
-    margin-top: 20px;
+    margin-top: 10px;
 }
 
+label:hover {
+  background-color: #1f1530;
+  color: white;
+}
 label {
     font-weight: bold;
     font-size: 15px;
     margin-bottom: 15px;
+    border: 1px solid black;
+    border-radius: 4px;
+    text-align: center;
+    padding: 5px;
 }
 
 {% endblock %}
@@ -53,9 +61,7 @@ label {
     </h4>
     <form method="post">
         {% csrf_token %}
-        <table>
-        {{form.as_table}}
-        </table>
+        {{form}}
         <input type="submit" value="Continue">
     </form>
     </div>

@@ -19,6 +19,8 @@ class Register(View):
     def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": CustomUserCreationForm}
+        if request.user.is_authenticated:
+            logout(request)
         return render(request, "users/register.html", context)
 
     def post(self, request):
@@ -85,7 +87,7 @@ class ProfileRegistration(View):
     def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": ProfileRegistrationForm}
-        return render(request, "users/school_access_key.html", context)
+        return render(request, "users/register_profile_existing_school.html", context)
 
     def post(self, request):
         form = ProfileRegistrationForm(request.POST)
