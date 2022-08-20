@@ -19,11 +19,26 @@ The core functionality of the application is / will be:
 
 <h2>Project setup</h2>
 <ol>
-    <li>Install the fixtures if you want some dummy data to browse, in the following order
+    <li>Fork and clone repository</li>
+    <li>Setup virtual environment</li>
+    <li>Install the dependencies from requirements.txt (with pip is fine)</li>
+    <li>
+        Check tests are working - once in the timetable directory:<br>
+        <code>python manage.py test</code>
+    </li>
+    <li>
+        Migrate the models (the migrations are all committed)<br>
+        <code>python manage.py migrate</code>
+    </li>
+    <li>Install the fixtures if you want some dummy data to view, in the following order:
         <ol>
             <li>users.json</li>
-            <li>pupils, teachers, classrooms, timetable (.json)</li>
+            <li>pupils.json, teachers.json, classrooms.json, timetable.json</li>
             <li>classes.json</li>
         </ol>
+    </li>
+    <li>
+        Alternatively, create/upload your own data through the app. Note that not all functionality has been
+        implemented yet.
     </li>
 </ol>
