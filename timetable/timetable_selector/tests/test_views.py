@@ -11,13 +11,14 @@ from ..models import Pupil, TimetableSlot, FixedClass, Teacher
 
 class TestViews(TestCase):
     """Test class for the timetable_selector views"""
-    fixtures = ["classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
+    fixtures = ["users.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
 
     def test_pupil_navigator_response(self):
         """
         Test that the correct full list of pupils indexed by year group is returned by a get request to the
         pupil_navigator view. We test the data structures at successive depths of the nested context dictionary.
         """
+        self.client.login(username='dummy_teacher', password='dt123dt123')
         url = reverse('pupils_navigator')
         response = self.client.get(url)
 
@@ -38,6 +39,7 @@ class TestViews(TestCase):
 
     def test_teacher_navigator_response(self):
         """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
+        self.client.login(username='dummy_teacher', password='dt123dt123')
         url = reverse('teachers_navigator')
         response = self.client.get(url)
         teachers = response.context["all_teachers"]
@@ -59,7 +61,8 @@ class TestViews(TestCase):
         Note there are three elements within the context of the HTTP response - each of which is tested in turn, one of
         which is the pupil's timetable.
         """
-        url = reverse('pupil_timetable_view', kwargs={"pupil_id": 1})
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse('pupil_timetable_view', kwargs={"id": 1})
         response = self.client.get(url)
 
         # Test pupil context
@@ -88,7 +91,8 @@ class TestViews(TestCase):
         Unit test that the context returned by a GET request to the teacher_timetable_view function, containing the
         relevant timetable etc.
         """
-        url = reverse('teacher_timetable_view', kwargs={"teacher_id": 6})  # Timetable for Greg Thebaker
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
         response = self.client.get(url)
 
         # Test teacher context

@@ -1,7 +1,7 @@
 [
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_MATHS_A",
+    "pk": 1,
     "fields": {
       "subject_name": "MATHS",
       "teacher": 1,
@@ -19,12 +19,14 @@
         16,
         29,
         30
-      ]
+      ],
+      "class_id": "YEAR_ONE_MATHS_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_MATHS_B",
+    "pk": 2,
     "fields": {
       "subject_name": "MATHS",
       "teacher": 2,
@@ -42,12 +44,14 @@
         28,
         34,
         35
-      ]
+      ],
+      "class_id": "YEAR_ONE_MATHS_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_ENGLISH_A",
+    "pk": 3,
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 3,
@@ -65,12 +69,14 @@
         18,
         31,
         32
-      ]
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_ENGLISH_B",
+    "pk": 4,
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 4,
@@ -87,12 +93,14 @@
         18,
         31,
         32
-      ]
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_FRENCH_A",
+    "pk": 5,
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 5,
@@ -111,12 +119,14 @@
         28,
         34,
         35
-      ]
+      ],
+      "class_id": "YEAR_ONE_FRENCH_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_ONE_FRENCH_B",
+    "pk": 6,
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 6,
@@ -133,12 +143,14 @@
         16,
         29,
         30
-      ]
+      ],
+      "class_id": "YEAR_ONE_FRENCH_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_MATHS_A",
+    "pk": 7,
     "fields": {
       "subject_name": "MATHS",
       "teacher": 7,
@@ -156,12 +168,14 @@
         18,
         31,
         32
-      ]
+      ],
+      "class_id": "YEAR_TWO_MATHS_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_MATHS_B",
+    "pk": 8,
     "fields": {
       "subject_name": "MATHS",
       "teacher": 8,
@@ -178,12 +192,14 @@
         16,
         29,
         30
-      ]
+      ],
+      "class_id": "YEAR_TWO_MATHS_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_ENGLISH_A",
+    "pk": 9,
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 9,
@@ -201,12 +217,14 @@
         16,
         29,
         30
-      ]
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_ENGLISH_B",
+    "pk": 10,
     "fields": {
       "subject_name": "ENGLISH",
       "teacher": 10,
@@ -223,12 +241,14 @@
         18,
         31,
         32
-      ]
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_FRENCH_A",
+    "pk": 11,
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 11,
@@ -247,12 +267,14 @@
         28,
         34,
         35
-      ]
+      ],
+      "class_id": "YEAR_TWO_FRENCH_A",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "YEAR_TWO_FRENCH_B",
+    "pk": 12,
     "fields": {
       "subject_name": "FRENCH",
       "teacher": 1,
@@ -270,12 +292,14 @@
         28,
         34,
         35
-      ]
+      ],
+      "class_id": "YEAR_TWO_FRENCH_B",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_PUPILS",
+    "pk": 13,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": null,
@@ -294,12 +318,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_PUPILS",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_1",
+    "pk": 14,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 1,
@@ -311,12 +337,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_1",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_2",
+    "pk": 15,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 2,
@@ -328,12 +356,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_2",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_3",
+    "pk": 16,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 3,
@@ -345,12 +375,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_3",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_4",
+    "pk": 17,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 4,
@@ -362,12 +394,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_4",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_5",
+    "pk": 18,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 5,
@@ -379,12 +413,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_5",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_6",
+    "pk": 19,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 6,
@@ -396,12 +432,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_6",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_7",
+    "pk": 20,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 7,
@@ -413,12 +451,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_7",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_8",
+    "pk": 21,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 8,
@@ -430,12 +470,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_8",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_9",
+    "pk": 22,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 9,
@@ -447,12 +489,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_9",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_10",
+    "pk": 23,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 10,
@@ -464,12 +508,14 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_10",
+      "school": 123456
     }
   },
   {
     "model": "timetable_selector.fixedclass",
-    "pk": "LUNCH_11",
+    "pk": 24,
     "fields": {
       "subject_name": "LUNCH",
       "teacher": 11,
@@ -481,7 +527,9 @@
         23,
         24,
         25
-      ]
+      ],
+      "class_id": "LUNCH_11",
+      "school": 123456
     }
   }
 ]

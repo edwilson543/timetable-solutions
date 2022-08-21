@@ -66,10 +66,11 @@ def _get_all_form_context() -> Dict:
     return context
 
 
-def upload_page_view(request):
+def upload_page_view(request, error_message: str | None = None):
     """View called by the individual views for each of the form upload views."""
     template = loader.get_template("file_upload.html")
     context = _get_all_form_context()
+    context["error_message"] = error_message
     return HttpResponse(template.render(context, request))
 
 
@@ -84,15 +85,15 @@ class TeacherListUploadView(View):
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
         form = TeacherListUploadForm(request.POST, request.FILES)
+        error_message = None
         if form.is_valid():
             file = request.FILES["teacher_list"]
-            try:
-                upload_processor = FileUploadProcessor(
-                    csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
-            except Exception:
-                error_message = upload_processor.upload_error_message   # TODO
-                pass
-        return upload_page_view(request)
+            upload_processor = FileUploadProcessor(
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
+            error_message = upload_processor.upload_error_message  # Will just be None if no errors
+
+        return upload_page_view(request, error_message)
 
 
 class PupilListUploadView(View):
@@ -107,7 +108,8 @@ class PupilListUploadView(View):
         if form.is_valid():
             file = request.FILES["pupil_list"]
             upload_processor = FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)
 
 
@@ -123,7 +125,8 @@ class ClassroomListUploadView(View):
         if form.is_valid():
             file = request.FILES["classroom_list"]
             upload_processor = FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)
 
 
@@ -139,7 +142,8 @@ class TimetableStructureUploadView(View):
         if form.is_valid():
             file = request.FILES["timetable_structure"]
             upload_processor = FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)
 
 
@@ -155,7 +159,8 @@ class UnsolvedClassUploadView(View):
         if form.is_valid():
             file = request.FILES["unsolved_classes"]
             upload_processor = FileUploadProcessor(is_unsolved_class_upload=True,
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)
 
 
@@ -174,5 +179,6 @@ class FixedClassUploadView(View):
         if form.is_valid():
             file = request.FILES["fixed_classes"]
             upload_processor = FileUploadProcessor(is_fixed_class_upload=True,
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model)
+                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+                school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)

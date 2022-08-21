@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+<head>
+{% block head_content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stylesheets/login_registration_forms.css' %}">
+    <title>Register</title>
+{% endblock %}
+
+<style>
+{% block style_block %}
+
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 90%;
+}
+#back_button {
+    border-radius: 5px;
+    border: 1px solid #33003d;
+    width: 330px;
+    font-size: 20px;
+    padding: 5px;
+    color: white;
+    text-align: center;
+    background-color: #c4353f;
+}
+
+{% endblock %}
+</style>
+</head>
+
+{% block content %}
+
+<div id="parent_container">
+    <div id="form_container">
+        <h4 style="margin-bottom:20px;">
+            Please enter your school's access key below
+        </h4>
+        {% if error_message is not None %}
+        <p class="error_message">
+            {{error_message}}
+        </p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{form}}
+            <input type="submit" value="Submit">
+        </form>
+        <hr style="color:black;width:90%;margin-bottom:15px;">
+        <a href="{% url 'registration_pivot' %}" id="back_button">Back</a>
+    </div>
+</div>
+
+{% endblock %}

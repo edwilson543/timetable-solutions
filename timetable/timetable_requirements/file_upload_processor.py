@@ -30,6 +30,7 @@ class FileUploadProcessor:
     def __init__(self,
                  csv_file: UploadedFile,
                  csv_headers: List[str],
+                 school_access_key: int,  # Unique identifier for the school which the data corresponds to
                  id_column_name: str | None,
                  model: Type[ModelInstance],
                  is_unsolved_class_upload: bool = False,
@@ -45,6 +46,7 @@ class FileUploadProcessor:
         their own methods (see _create_model_instance_from_row variations below)
         """
         self._csv_headers = csv_headers
+        self._school_access_key = school_access_key
         self._id_column_name = id_column_name
         self._model = model
         self._is_unsolved_class_upload = is_unsolved_class_upload
@@ -52,7 +54,7 @@ class FileUploadProcessor:
 
         # Try uploading the file to the database
         self.upload_successful = False  # This only gets switched to True if a successful upload is made.
-        self.upload_error_message = ""  # Provides details on why the upload has failed
+        self.upload_error_message = None  # Provides details on why the upload has failed
         self._upload_file_content(file=csv_file)
 
     def _upload_file_content(self, file: UploadedFile) -> None:
@@ -62,6 +64,7 @@ class FileUploadProcessor:
         # noinspection PyTypeChecker
         upload_df = read_csv(file_stream, sep=",")
         upload_df.fillna(value=self.__nan_handler, inplace=True)
+        upload_df = self._convert_df_to_correct_types(upload_df)
 
         if not self._check_headers_valid_and_ids_unique(upload_df=upload_df):
             return
@@ -86,6 +89,15 @@ class FileUploadProcessor:
                 self.upload_error_message = f"Input file contained repeated ids (id column is {self._id_column_name})"
                 return False
         return True
+
+    @staticmethod
+    def _convert_df_to_correct_types(upload_df: pd.DataFrame):
+        """Method to ensure timestamps / timedelta are converted to the correct type"""
+        if Header.PERIOD_DURATION in upload_df.columns:
+            upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(upload_df[Header.PERIOD_DURATION])
+        if Header.PERIOD_START_TIME in upload_df.columns:
+            upload_df[Header.PERIOD_START_TIME] = pd.to_datetime(upload_df[Header.PERIOD_START_TIME])
+        return upload_df
 
     def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
         valid_model_instances = []
@@ -120,9 +132,10 @@ class FileUploadProcessor:
         Method to take an individual row from the csv file, validate that it corresponds to a valid model instance,
         and then create that model instance.
         """
-        model_dict = row.to_dict()
+        model_dict = dict(row.to_dict())
+        model_dict["school_id"] = self._school_access_key
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
@@ -138,9 +151,10 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS]}
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS],
+            "school_id": self._school_access_key}
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])
@@ -158,8 +172,9 @@ class FileUploadProcessor:
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID]}
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
+        model_dict["school_id"] = self._school_access_key
         try:
-            model_instance = self._model(**model_dict)
+            model_instance = self._model.objects.create(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils / slots
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+<head>
+{% block head_content %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'stylesheets/login_registration_forms.css' %}">
+    <title>Register</title>
+{% endblock %}
+
+<style>
+{% block style_block %}
+
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 90%;
+}
+input[type="submit"] {
+    background-color: #004000;
+}
+p {
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+{% endblock %}
+
+</style>
+</head>
+
+{% block content %}
+
+<div id="parent_container">
+    <div id="form_container">
+        <h4>
+            Please create a 6-digit access key for your school below
+        </h4>
+        <p>
+            The access key is used if you need to associate other user accounts with your school.
+        </p>
+        {% if error_message is not None %}
+        <p class="error_message">
+            {{error_message}}
+        </p>
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{form}}
+            <input type="submit" value="Complete registration">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

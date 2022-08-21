@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block style_block %}
+.bg {
+  height: 65%;
+  width: 100%;
+  padding: 0px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.grid-container {
+    width: 70%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: 3;
+    grid-template-rows: 1;
+    column-gap: 5%;
+    padding: 25px;
+    border: 1px solid black;
+    border-radius: 100px;
+    margin: 1%;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+.grid-item {
+    background-color: #003b45;
+    color: white;
+    border: 2px solid black;
+    border-radius: 5px;
+    height: 50px;
+    width: 80%;
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+.grid-item:hover {
+    background-color: #1f1530;
+    color: white;
+}
+.a_option:link, .a_option:visited {
+  background-color: transparent;
+  color: black;
+  text-decoration: none;
+}
+
+{% load static %}
+#parent_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: auto;
+}
+
+{% endblock %}
+
+
+{% block content %}
+{% load static %}
+
+<div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
+<div id="parent_container">
+<hr>
+
+<div class="grid-container">
+    <div></div>
+    <a class="a_option" href="{% url 'file_upload_page' %}">
+        <div class="grid-item" style="vertical-align:middle;">
+            <h4>Upload data</h4><br>
+        </div>
+    </a>
+
+    <a class="a_option" href=#>
+        <div class="grid-item">
+            <b>Create timetables</b>
+        </div>
+    </a>
+
+    <a class="a_option" href="{% url 'selection_navigator' %}">
+        <div class="grid-item">
+            <b>View timetables</b>
+        </div>
+    </a>
+    <div></div>
+</div>
+</div>
+
+{% endblock %}

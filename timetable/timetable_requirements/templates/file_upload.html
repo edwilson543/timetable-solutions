@@ -4,17 +4,47 @@
 {% extends "base.html" %}
 
 <head>
+
 {% block head_content %}
-<title> Timetable navigator </title>
+<title> File upload </title>
 {% endblock %}
 
 <style>
-{% block styling %}
-table {
-  width:50%;
-  margin-left: auto;
-  margin-right: auto;
+{% block style_block %}
+
+#table_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10%;
+    height: 50%;
+    background-color: white;
+    border: 5px solid black;
+    border-radius: 5px;
 }
+
+#reset_button {
+    font-size: 15px;
+    margin: auto;
+    color: black;
+    background-color: grey;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 1px;
+    padding: 2px;
+}
+
+#upload_file_table td {
+  text-align: center;
+  vertical-align: middle;
+  width: 20%;
+}
+#upload_file_table {
+  width:90%;
+  height: 90%;
+}
+
 .upload_cell {
   background-color: white;
   border: 1px solid black;
@@ -27,16 +57,17 @@ table {
     margin-left: 10%;
 }
 
-{% endblock styling %}
+{% endblock %}
 </style>
 
 </head>
 
 <body>
-{% block main_content %}
+{% block content %}
 {% load static %}
-{{request.user.username}}  <!--TODO-->
-<table>
+
+<div id="table_container">
+<table id="upload_file_table">
     <tr>
         <th>File name</th>
         <th>Download example file</th>
@@ -61,7 +92,13 @@ table {
         {% endif %}
     </tr>
     {% endfor %}
+    <tr>
+        <td></td>
+        <td></td>
+        <td><a id="reset_button" href=#>Reset all</a></td>
+    </tr>
 </table>
+</div>
 
 {% endblock %}
 </body>
