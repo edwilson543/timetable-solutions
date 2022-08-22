@@ -10,6 +10,17 @@ from users.models import School
 
 
 @login_required(login_url="/login")
+def selection_dashboard(request) -> HttpResponse:
+    """View providing the context for the information displayed on the selection dashboard"""
+    classes_ = 1
+    context = {
+        "classes_per_week": 1
+    }
+
+    template = loader.get_template("selection_dashboard.html")
+
+
+@login_required(login_url="/login")
 def pupil_navigator(request) -> HttpResponse:
     """
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
