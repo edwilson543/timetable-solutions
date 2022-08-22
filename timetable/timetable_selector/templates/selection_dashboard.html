@@ -2,41 +2,109 @@
 <html>
 
 {% extends "base.html" %}
+{% load static %}
 
 <head>
 {% block head_content %}
-<title> Timetable navigator </title>
+<title> View timetables </title>
 {% endblock %}
 <style>
-{% block styling %}
+{% block style_block %}
 
 body, html {background-color: #d4cbd6;}
 
 a {text-decoration: none;}
-h1 {
-    color: black;
-    background-color: #919191;
-    height: 100px;
-    line-height: 100px;
-    border: 2px solid black;
-    border-radius: 5px;
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    width: 100%;
+    height: 90%;
 }
-.bg {
-  height: 70%;
-  width: 100%;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+#content_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: white;
+    width: 800px;
+    height: auto;
+    padding: 20px;
+    border: 3px solid rgba(51, 0, 61, 0.5);
+    border-radius: 10px;
+    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
+}
+#grid_container {
+    width: 90%;
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    column-gap: 4%;
+    row-gap: 4%;
+    margin: 1%;
+    background-color: rgba(255, 255, 255, 0.6);
 }
 
-h1:hover {
-    background-color: #1f1530;
+#dashboard_title {
+    width: 90%;
+    height: 40px;
+    background-color: #11014A;
     color: white;
-}
-span {
-    display: inline-block;
+    line-height: 40px;
     vertical-align: middle;
-    line-height: normal;
+    border: 1px solid black;
+    border-radius: 5px;
+    text-align: center;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.info_frame {
+    background-color: #e0e0e0;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    font-size: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+#summary_info {
+    grid-row: 1 / 3;
+    grid-column: 1;
+}
+#pupil_info {
+    grid-row: 1;
+    grid-column: 2;
+}
+#teacher_info {
+    grid-row: 2;
+    grid-column: 2;
+}
+.pup_teach_info {
+    height: auto;
+}
+.link_button {
+    border-radius: 5px;
+    border: 1px solid #33003d;
+    width: 90%;
+    font-size: 20px;
+    padding: 5px;
+    color: white;
+    text-align: center;
+    background-color: #1f1530;
+}
+.link_button:hover {background-color: #1f1530;}
+ul {padding: 10px;}
+li {
+    font-size: 15px;
 }
 
 {% endblock %}
@@ -45,16 +113,47 @@ span {
 
 <body>
 {% block content %}
-{% load static %}
-<div class="bg"><img src="{% static 'img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%></div>
 
-<div>
-<div style="width:48%; float:left; text-align:center; margin-left:1%; margin-right:1%;">
-<a href="{% url 'teachers_navigator' %}"><h1><span>View a teacher's timetable</span></h1></a>
-</div>
-<div style="width:48%; float:right; text-align:center; margin-left:1%; margin-right:1%;">
-<a href="{% url 'pupils_navigator' %}"><h1><span>View a pupil's timetable</span></h1></a>
-</div>
+<div id="parent_container">
+    <div id="content_container">
+        <div id="dashboard_title">
+            {% if not True %}
+            <h4>No timetable solutions were found</h4>
+            {% else %}
+            <h4>Timetable solutions have been found</h4>
+        </div>
+
+        <div id="grid_container">
+            <div id="summary_info" class="info_frame">
+                <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                </ul>
+            </div>
+
+            <div id ="pupil_info" class="pup_teach_info info_frame">
+                <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                </ul>
+                <hr style="color:black;width:80%;margin-bottom:15px;">
+                <a href="{% url 'teachers_navigator' %}" class="link_button">
+                    View timetables
+                </a>
+            </div>
+
+            <div id="teacher_info" class="pup_teach_info info_frame">
+                <ul>
+                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                </ul>
+                <hr style="color:black;width:80%;margin-bottom:15px;">
+                <a href="{% url 'pupils_navigator' %}" class="link_button">
+                    View timetables
+                </a>
+            </div>
+        </div>
+
+        {% endif %}
+    </div>
 </div>
 
 {% endblock %}
