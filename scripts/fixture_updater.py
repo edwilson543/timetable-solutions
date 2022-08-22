@@ -8,8 +8,8 @@ from typing import List
 
 # io settings
 loc = Path(__file__).parents[1] / "timetable" / "timetable_selector" / "fixtures"
-input_filenames = ["classes.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
-output_filenames = ["classes.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+input_filenames = ["classes.json"]
+output_filenames = ["classes.json"]
 school_access_key = 123456
 # old_id_column = "pupil_id"
 
@@ -21,7 +21,8 @@ def update_fixture(input_fixture_file: str, output_fixture_file: str, location: 
         new_pyt_data = []
         for n, item in enumerate(pyt_data):
             new_item = item.copy()
-            new_item["fields"]["school"] = school_access_key
+            new_item["fields"]["user_defined"] = False
+            # new_item["fields"]["school"] = school_access_key
             # del new_item["fields"]["school_id"]
             new_pyt_data.append(new_item)
 
