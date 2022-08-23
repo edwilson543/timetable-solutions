@@ -20,7 +20,7 @@ def get_summary_stats(school_access_key: int) -> Dict:
     school = School.objects.get(school_access_key=school_access_key)
 
     # Get the querysets used to create summary statistics
-    all_classes = FixedClass.objects.filter(Q(school=school) & ~Q(subject_name__contains="LUNCH"))
+    all_classes = FixedClass.objects.filter(Q(school=school) & ~Q(user_defined=True))
 
     all_slots = TimetableSlot.objects.filter(school=school)
     all_slot_classes = {(slot.period_start_time, slot.day_of_week): slot.classes for slot in all_slots}
