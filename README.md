@@ -47,6 +47,13 @@ The core functionality of the application is / will be:
 
 <h2>User interface and usage overview</h2>
 
+<h4>User authentication</h4>
+<img src="readme_screenshots/login.png" alt="Screenshot of the login page">
+<ul>
+    <li>The application is setup such that users can register an account and login etc.</li>
+    <li>Users must associate themselves with a school, which is achieved using an access key</li>
+</ul>
+
 <h4>Timetabling selector</h4>
 <img src="readme_screenshots/selection_dash.png" alt="Screenshot of selection dash">
 <ul>
