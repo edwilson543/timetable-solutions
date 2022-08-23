@@ -13,8 +13,8 @@ The core functionality of the application is / will be:
     <li>Call a linear optimisation API</li>
     <li>Make the timetables created available for viewing / download in the app</li>
 </ol>
-<br>
 
+<hr>
 
 
 <h2>Project setup</h2>
@@ -42,3 +42,13 @@ The core functionality of the application is / will be:
         implemented yet.
     </li>
 </ol>
+
+<hr>
+
+<h2>User interface and usage overview</h2>
+
+<h4>Timetabling selector</h4>
+<img src="readme_screenshots/selection_dash.png" alt="Screenshot of selection dash">
+<ul>
+    <li>Users can navigate to the solutions found for all pupil / teacher timetables from the 'selection dashboard'</li>
+</ul>
