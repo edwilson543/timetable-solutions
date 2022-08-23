@@ -104,7 +104,9 @@ a {text-decoration: none;}
 .link_button:hover {background-color: #1f1530;}
 ul {padding: 10px;}
 li {
-    font-size: 15px;
+    font-size: 20px;
+    padding: 10px;
+    margin-left: 5px;
 }
 
 {% endblock %}
@@ -122,18 +124,19 @@ li {
                 {% if not True %}
                 <h4>No timetable solutions were found</h4>
                 {% else %}
-                <h4>Timetable solutions have been found</h4>
+                <h4>Timetable solutions have been found!</h4>
             </div>
             <div id="summary_info" class="info_frame">
                 <ul>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                    <li>Timetable solutions for a total of {{total_classes}} classes have been found</li>
+                    <li>{{total_lessons}} lessons will be taught each week</li>
+                    <li>The busiest timeslot of the week is {{busiest_slot.period_start_time}} on {{busiest_slot.day_of_week | title}}</li>
                 </ul>
             </div>
 
             <div id ="pupil_info" class="pup_teach_info info_frame">
                 <ul>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                    <li>Timetables have been generated for all {{total_pupils}} pupils</li>
                 </ul>
                 <hr style="color:black;width:80%;margin-bottom:15px;">
                 <a href="{% url 'pupils_navigator' %}" class="link_button">
@@ -143,7 +146,7 @@ li {
 
             <div id="teacher_info" class="pup_teach_info info_frame">
                 <ul>
-                    <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin at mi sagittis nisi fermentum aliquet at sed urna. Sed sit amet aliquet nisl</li>
+                    <li>Timetables have been generated for all {{total_teachers}} teachers</li>
                 </ul>
                 <hr style="color:black;width:80%;margin-bottom:15px;">
                 <a href="{% url 'teachers_navigator' %}" class="link_button">

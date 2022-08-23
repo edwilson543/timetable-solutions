@@ -4,6 +4,7 @@
 from django.test import TestCase
 
 # Local application imports
+from ..models import TimetableSlot
 from ..utils import get_summary_stats
 
 
@@ -22,3 +23,4 @@ class TestViews(TestCase):
         self.assertEqual(stats["total_lessons"], 100)
         self.assertEqual(stats["total_pupils"], 6)
         self.assertEqual(stats["total_teachers"], 11)
+        self.assertIsInstance(stats["busiest_slot"], TimetableSlot)

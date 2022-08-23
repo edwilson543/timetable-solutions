@@ -23,9 +23,10 @@ def get_summary_stats(school_access_key: int) -> Dict:
     all_classes = FixedClass.objects.filter(Q(school=school) & ~Q(user_defined=True))
 
     all_slots = TimetableSlot.objects.filter(school=school)
-    all_slot_classes = {(slot.period_start_time, slot.day_of_week): slot.classes for slot in all_slots}
+    all_slot_classes = {slot: slot.classes for slot in all_slots}
     slot_class_count = {key: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
                         key, klasses in all_slot_classes.items()}
+
     pupils = Pupil.objects.all()
     teachers = Teacher.objects.all()
 
