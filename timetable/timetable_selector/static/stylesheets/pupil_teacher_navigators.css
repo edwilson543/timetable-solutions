@@ -1,5 +1,4 @@
 /* Collapsible styling */
-
 .collapsible {
   background-color: #777;
   color: white;
@@ -28,17 +27,17 @@
   content: "\2212";
 }
 
-.content {
-  padding: 0 18px;
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.2s ease-out;
-  background-color: #f1f1f1;
-}
+
 
 /* Table styling */
+.content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
+}
 
-table {width: 100%;}
 tr:nth-child(even) {
   background-color: rgba(150, 212, 212, 0.4);
 }
@@ -52,4 +51,6 @@ table, th, td {
   border: 1px solid white;
   border-collapse: collapse;
   text-align: center;
+  padding: 10px;
 }
+a:link, a:visited {black;}

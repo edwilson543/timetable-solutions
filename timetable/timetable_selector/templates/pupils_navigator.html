@@ -11,12 +11,6 @@
 
 <style>
 {% block style_block %}
-body {
-    background-image: url("{% static 'img/patterns_background.png' %}");
-    background-position: center;
-    background-repeat: repeat;
-    background-size: contain;
-}
 #parent_container {
     display: flex;
     align-items: center;
@@ -53,7 +47,7 @@ body {
         <p>Expand the year groups below to locate the relevant pupil</p>
         {% for year_group, pupils_in_year in all_pupils.items %}
         <button class="collapsible">Year {{year_group}} pupils</button>
-        <div class="content">
+        <div class="content" style="width:100%">
           <table>
               <tr>
                   <th>Firstname</th>
