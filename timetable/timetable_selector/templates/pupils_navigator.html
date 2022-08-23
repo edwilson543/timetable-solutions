@@ -8,33 +8,74 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_navigators.css' %}">
 {% endblock %}
+
+<style>
+{% block style_block %}
+body {
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: repeat;
+    background-size: contain;
+}
+<!--#parent_container {-->
+<!--    display: flex;-->
+<!--    align-items: center;-->
+<!--    justify-content: center;-->
+<!--    background-image: url("{% static 'img/patterns_background.png' %}");-->
+<!--    background-position: center;-->
+<!--    background-repeat: repeat;-->
+<!--    background-size: contain;-->
+<!--    width: 100%;-->
+<!--    height: 90%;-->
+<!--}-->
+#content_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: white;
+    width: 500px;
+    height: auto;
+    padding: 20px;
+    border: 3px solid rgba(51, 0, 61, 0.5);
+    border-radius: 10px;
+    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
+}
+
+{% endblock %}
+</style>
+
 </head>
 
 <body>
 {% block content %}
 
-<h2>Pupil timetables</h2>
+<div id="parent_container">
+    <div id="content_container">
+        <h2>Pupil timetables</h2>
 
-<p>Expand the year groups below to locate the relevant pupil</p>
-{% for year_group, pupils_in_year in all_pupils.items %}
-<button class="collapsible">Year {{year_group}} pupils</button>
-<div class="content">
-  <table>
-      <tr>
-          <th>Firstname</th>
-          <th>Surname</th>
-          <th>View timetable</th>
-      </tr>
-      {% for pupil in pupils_in_year %}
-      <tr>
-          <td>{{pupil.firstname}}</td>
-          <td>{{pupil.surname}}</td>
-          <td><a href="{% url 'pupil_timetable_view' pupil.pupil_id %}">View</a></td>
-      </tr>
-      {% endfor %}
-  </table>
+        <p>Expand the year groups below to locate the relevant pupil</p>
+        {% for year_group, pupils_in_year in all_pupils.items %}
+        <button class="collapsible">Year {{year_group}} pupils</button>
+        <div class="content">
+          <table>
+              <tr>
+                  <th>Firstname</th>
+                  <th>Surname</th>
+                  <th>View timetable</th>
+              </tr>
+              {% for pupil in pupils_in_year %}
+              <tr>
+                  <td>{{pupil.firstname}}</td>
+                  <td>{{pupil.surname}}</td>
+                  <td><a href="{% url 'pupil_timetable_view' pupil.pupil_id %}">View</a></td>
+              </tr>
+              {% endfor %}
+          </table>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-{% endfor %}
 
 <script src="{% static 'javascript/collapsible.js' %}"></script>
 
