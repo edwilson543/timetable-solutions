@@ -5,19 +5,17 @@ from django.template import loader
 
 # Local application imports
 from .models import Pupil, Teacher, FixedClass
-from .utils import get_timetable_slot_indexed_timetable
+from .utils import get_timetable_slot_indexed_timetable, get_summary_stats
 from users.models import School
 
 
 @login_required(login_url="/login")
 def selection_dashboard(request) -> HttpResponse:
     """View providing the context for the information displayed on the selection dashboard"""
-    classes_ = 1
-    context = {
-        "classes_per_week": 1
-    }
-
+    school_access_ley = request.user.profile.school.school_access_key
+    context = get_summary_stats(school_access_key=school_access_ley)
     template = loader.get_template("selection_dashboard.html")
+    return HttpResponse(template.render(context, request))
 
 
 @login_required(login_url="/login")
