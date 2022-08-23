@@ -34,18 +34,18 @@
 {% block content %}
 
 <div id="parent_container">
-<div id="form_container">
+    <div id="form_container">
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Login">
-</form>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Login">
+        </form>
 
-<hr style="color:black;width:90%;margin-bottom:15px;">
-<a href="{% url 'register' %}" id="register_button">Register</a>
+        <hr style="color:black;width:90%;margin-bottom:15px;">
+        <a href="{% url 'register' %}" id="register_button">Register</a>
 
-</div>
+    </div>
 </div>
 
 <hr>
