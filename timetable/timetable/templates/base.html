@@ -12,8 +12,14 @@
 {% endblock %}
 
 <style>
-    {% block style_block %}
-    {% endblock %}
+body {
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: center;
+    background-repeat: repeat;
+    background-size: contain;
+}
+{% block style_block %}
+{% endblock %}
 </style>
 
 </head>
