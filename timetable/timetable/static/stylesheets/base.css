@@ -8,6 +8,22 @@ body, html {
     padding:0;
     font-family: Arial;
 }
+.page_wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    /* equal to footer height */
+    margin-bottom: -20px;
+}
+.page_wrap:after {
+    content: "";
+    display: block;
+    * equal to footer height */
+    height: 20px;
+}
+
 a:link, a:visited {text-decoration: none;}
 label, input {
     display: block;
@@ -63,11 +79,10 @@ background-color: rgba(0, 0, 0, 1.0);
 
 /* Footer styling */
 .footer_info {
-    position: absolute;
-    bottom: 2px;
     text-align: center;
     vertical-align: middle;
     width: 100%;
     font-size: 12px;
+    height: 20px;
 }
 a {color: white;}
