@@ -83,7 +83,7 @@ The core functionality of the application is / will be:
 <h4>Teacher navigator</h4>
 <img src="readme_screenshots/teacher_navigator_expanded.png" alt="Screenshot of the login page">
 <ul>
-    <li>Teacher are indexed by their surname</li>
+    <li>Teachers are indexed by their surname</li>
     <li>Teachers within a surname letter can be expanded out</li>
 </ul>
 
