@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html>
 {% extends "base.html" %}
 
 <head>
@@ -9,7 +7,7 @@
 <link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_timetable.css' %}">
 {% endblock %}
 <style>
-{% block styling %}
+{% block style_block %}
 
 {% for year_group, colour in colours.items %}
 .color_{{ year_group }} {
@@ -63,5 +61,3 @@
 {% endblock %}
 
 </body>
-
-</html>
