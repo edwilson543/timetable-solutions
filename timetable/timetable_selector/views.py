@@ -18,7 +18,7 @@ def selection_dashboard(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def pupil_navigator(request) -> HttpResponse:
     """
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
@@ -36,7 +36,7 @@ def pupil_navigator(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def teacher_navigator(request) -> HttpResponse:
     """
     View to bring up a list of teachers which can be linked out to each of their timetables.
@@ -55,7 +55,7 @@ def teacher_navigator(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def pupil_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual pupil with the passed id.
@@ -83,7 +83,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def teacher_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
