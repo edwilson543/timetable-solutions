@@ -14,10 +14,11 @@
 <style>
 body {
     background-image: url("{% static 'img/patterns_background.png' %}");
-    background-position: center;
+    background-position: cover;
     background-repeat: repeat;
     background-size: contain;
 }
+
 {% block style_block %}
 {% endblock %}
 </style>
@@ -47,17 +48,16 @@ body {
 </div>
 {% endif %}
 
-<div class="page_wrap">
 {% block content %}
 {% endblock %}
-</div>
 
+<hr style="border-color:black;border-width:1px;">
 <footer class="footer_info">
-    <hr style="border-color:black;border-width:1px;">
     <span>
         Copyright Timetable Solutions Ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
     </span>
 </footer>
+
 </body>
 
 </html>

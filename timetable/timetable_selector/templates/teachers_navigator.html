@@ -9,33 +9,6 @@
     <link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_navigators.css' %}">
 {% endblock %}
 
-<style>
-{% block style_block %}
-#parent_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: auto;
-    margin-top: 40px;
-}
-#content_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: white;
-    width: 500px;
-    height: auto;
-    padding: 20px;
-    margin-bottom: 25px;
-    border: 3px solid rgba(51, 0, 61, 0.5);
-    border-radius: 10px;
-    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
-}
-{% endblock %}
-</style>
-
 </head>
 
 <body>
@@ -47,8 +20,8 @@
         <p style="margin-bottom:20px;">Expand the sections below to locate the relevant teacher</p>
         {% for letter, teachers in all_teachers.items %}
         <button class="collapsible">{{letter | upper}}- Surnames</button>
-        <div class="content" style="width:100%;">
-          <table style="width:100%;">
+        <div class="content">
+          <table>
               <tr>
                   <th>Firstname</th>
                   <th>Surname</th>
