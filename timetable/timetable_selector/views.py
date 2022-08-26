@@ -105,8 +105,8 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
             first_pupil = klass.pupils.all()[0]
             year_group: int = first_pupil.year_group
             year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
-    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.value
-    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.value
+    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.label
+    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.label
 
     template = loader.get_template("teacher_timetable.html")
     context = {
