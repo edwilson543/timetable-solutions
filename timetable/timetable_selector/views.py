@@ -5,11 +5,20 @@ from django.template import loader
 
 # Local application imports
 from .models import Pupil, Teacher, FixedClass
-from .utils import get_timetable_slot_indexed_timetable
+from .utils import get_timetable_slot_indexed_timetable, get_summary_stats
 from users.models import School
 
 
 @login_required(login_url="/login")
+def selection_dashboard(request) -> HttpResponse:
+    """View providing the context for the information displayed on the selection dashboard"""
+    school_access_ley = request.user.profile.school.school_access_key
+    context = get_summary_stats(school_access_key=school_access_ley)
+    template = loader.get_template("selection_dashboard.html")
+    return HttpResponse(template.render(context, request))
+
+
+@login_required(login_url="login")
 def pupil_navigator(request) -> HttpResponse:
     """
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
@@ -27,7 +36,7 @@ def pupil_navigator(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def teacher_navigator(request) -> HttpResponse:
     """
     View to bring up a list of teachers which can be linked out to each of their timetables.
@@ -46,7 +55,7 @@ def teacher_navigator(request) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def pupil_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual pupil with the passed id.
@@ -74,7 +83,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     return HttpResponse(template.render(context, request))
 
 
-@login_required(login_url="/login")
+@login_required(login_url="login")
 def teacher_timetable_view(request, id: int) -> HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
@@ -96,8 +105,8 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
             first_pupil = klass.pupils.all()[0]
             year_group: int = first_pupil.year_group
             year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
-    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.value
-    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.value
+    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.label
+    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.label
 
     template = loader.get_template("teacher_timetable.html")
     context = {

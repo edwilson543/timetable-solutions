@@ -1,13 +1,17 @@
 /* General/ miscellaneous styling */
 body, html {
   height: 100%;
+  width: 100%;
   background-color: #d6d4d4;
+  margin: 0;
+  padding: 0;
 }
 * {
     margin:0;
     padding:0;
     font-family: Arial;
 }
+
 a:link, a:visited {text-decoration: none;}
 label, input {
     display: block;
@@ -18,8 +22,9 @@ span.helptext {
 
 /* Head strap styling */
 .head_strap {
-    background-color: #11014A;
+    width: 100%;
     height: 60px;
+    background-color: #11014A;
     line-height: 60px;
     vertical-align: middle;
 }
@@ -63,11 +68,12 @@ background-color: rgba(0, 0, 0, 1.0);
 
 /* Footer styling */
 .footer_info {
-    position: absolute;
-    bottom: 2px;
     text-align: center;
     vertical-align: middle;
     width: 100%;
+    height: 20px;
     font-size: 12px;
+    padding-top: 1px;
+    padding-bottom: 1px;
 }
 a {color: white;}

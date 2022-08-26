@@ -173,6 +173,7 @@ class FileUploadProcessor:
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID]}
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
         model_dict["school_id"] = self._school_access_key
+        model_dict["user_defined"] = True  # Since any fixed class uploaded by the user is user defined
         try:
             model_instance = self._model.objects.create(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils / slots

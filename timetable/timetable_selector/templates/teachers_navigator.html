@@ -12,28 +12,32 @@
 
 <body>
 {% block content %}
-<h2>Teacher timetables</h2>
+<div id="parent_container">
+    <div id="content_container">
+        <h2>Teacher timetables</h2>
 
-<p>Expand the sections below to locate the relevant teacher</p>
-{% for letter, teachers in all_teachers.items %}
-<button class="collapsible">{{letter | upper}}- Surnames</button>
-<div class="content">
-  <table>
-      <tr>
-          <th>Firstname</th>
-          <th>Surname</th>
-          <th>View timetable</th>
-      </tr>
-      {% for teacher in teachers %}
-      <tr>
-          <td>{{teacher.firstname}}</td>
-          <td>{{teacher.surname}}</td>
-          <td><a href="{% url 'teacher_timetable_view' teacher.teacher_id %}">View</a></td>
-      </tr>
-      {% endfor %}
-  </table>
+        <p style="margin-bottom:20px;">Expand the sections below to locate the relevant teacher</p>
+        {% for letter, teachers in all_teachers.items %}
+        <button class="collapsible">{{letter | upper}}- Surnames</button>
+        <div class="content">
+          <table>
+              <tr>
+                  <th>Firstname</th>
+                  <th>Surname</th>
+                  <th>View timetable</th>
+              </tr>
+              {% for teacher in teachers %}
+              <tr>
+                  <td>{{teacher.firstname}}</td>
+                  <td>{{teacher.surname}}</td>
+                  <td><a href="{% url 'teacher_timetable_view' teacher.teacher_id %}" style="color:black">View</a></td>
+              </tr>
+              {% endfor %}
+          </table>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-{% endfor %}
 
 <script src="{% static 'javascript/collapsible.js' %}"></script>
 

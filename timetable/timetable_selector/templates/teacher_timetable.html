@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html>
 {% extends "base.html" %}
 
 <head>
@@ -8,60 +6,87 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_timetable.css' %}">
 {% endblock %}
+
 <style>
-{% block styling %}
+{% block style_block %}
+
+/* Containers */
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+}
+#content_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background-color: white;
+    width: 80%;
+    height: 80%;
+    padding: 20px;
+    margin-top: 45px;
+    margin-bottom: 10px;
+    border: 3px solid rgba(51, 0, 61, 0.5);
+    border-radius: 10px;
+    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
+}
 
 {% for year_group, colour in colours.items %}
 .color_{{ year_group }} {
   background-color: {{colour}};
 }
 {% endfor %}
-
 {% endblock %}
 </style>
+
 </head>
 
 <body>
 {% block content %}
-<h1 class="heading">Timetable for: {{teacher.firstname}} {{teacher.surname}}</h1>
+<div id="parent_container">
+    <div id="content_container">
+        <h1 class="heading"><i>Timetable for: {{teacher.firstname}} {{teacher.surname}}</i></h1>
 
-<table id="{{teacher.firstname}}_{{teacher.surname}}_timetable">
+        <table id="{{teacher.firstname}}_{{teacher.surname}}_timetable">
 
-{% for time, day_dict in timetable.items %}
+        {% for time, day_dict in timetable.items %}
 
-<tr>
-    {% if forloop.first %}
-    <th style="background-color:#876969;color:white;width:10%">Start time</th>
-    {% for day in day_dict %}
-    <th class="perimeter" style="width:18%;">{{ day|title }}</th>
-    {% endfor %}
-    {% endif %}
-</tr>
-<tr>
-    <td class="perimeter">{{time}}</td>
-    {% for day, klass in day_dict.items %}
-      {% if klass == "FREE" %}
-        <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
-      {% elif klass.subject_name == "LUNCH" %}
-        <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
-      {% else %}
-        <td class="color_{{klass.pupils.all.0.year_group}}">
-            <b>{{ klass.subject_name|title}}</b><br>
-          <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
-          <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
-        </td>
-      {% endif %}
-    {% endfor %}
-</tr>
-{% endfor %}
-</table>
+        <tr>
+            {% if forloop.first %}
+            <th style="background-color:#876969;color:white;width:10%">Start time</th>
+            {% for day in day_dict %}
+            <th class="perimeter" style="width:18%;">{{ day|title }}</th>
+            {% endfor %}
+            {% endif %}
+        </tr>
+        <tr>
+            <td class="perimeter">{{time}}</td>
+            {% for day, klass in day_dict.items %}
+              {% if klass == "FREE" %}
+                <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
+              {% elif klass.subject_name == "LUNCH" %}
+                <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
+              {% else %}
+                <td class="color_{{klass.pupils.all.0.year_group}}">
+                    <b>{{ klass.subject_name|title}}</b><br>
+                  <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
+                  <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
+                </td>
+              {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </table>
 
-<button type="button" class="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
-    Download as CSV
-</button>
-<script src="{% static 'javascript/table_to_csv.js' %}"></script>
+        <button type="button" class="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
+            Download as CSV
+        </button>
+        <script src="{% static 'javascript/table_to_csv.js' %}"></script>
+    </div>
+</div>
+
 {% endblock %}
-
 </body>
-
-</html>

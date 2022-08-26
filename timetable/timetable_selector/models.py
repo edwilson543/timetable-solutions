@@ -109,3 +109,4 @@ class FixedClass(models.Model):
     pupils = models.ManyToManyField(Pupil, related_name="classes")
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
+    user_defined = models.BooleanField()  # If True, this is a class user has said must occur at a certain time

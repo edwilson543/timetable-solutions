@@ -4,10 +4,40 @@
 from typing import Dict, List
 
 # Django imports
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 
 # Local application imports
-from .models import FixedClass, TimetableSlot
+from .models import FixedClass, TimetableSlot, Pupil, Teacher
+from users.models import School
+
+
+# noinspection PyUnresolvedReferences
+def get_summary_stats(school_access_key: int) -> Dict:
+    """
+    Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
+    the selection_dashboard
+    """
+    school = School.objects.get(school_access_key=school_access_key)
+
+    # Get the querysets used to create summary statistics
+    all_classes = FixedClass.objects.filter(Q(school=school) & ~Q(user_defined=True))
+
+    all_slots = TimetableSlot.objects.filter(school=school)
+    all_slot_classes = {slot: slot.classes for slot in all_slots}
+    slot_class_count = {key: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
+                        key, klasses in all_slot_classes.items()}
+
+    pupils = Pupil.objects.all()
+    teachers = Teacher.objects.all()
+
+    stats = {
+        "total_classes": len(all_classes),
+        "total_lessons": sum(slot_class_count.values()),
+        "busiest_slot": max(slot_class_count, key=slot_class_count.get),
+        "total_pupils": len(pupils),
+        "total_teachers": len(teachers),
+    }
+    return stats
 
 
 def get_timetable_slot_indexed_timetable(classes: QuerySet | List[FixedClass]) -> Dict:
