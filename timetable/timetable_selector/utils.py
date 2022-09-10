@@ -16,12 +16,10 @@ def get_summary_stats(school_access_key: int) -> Dict:
     Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
     the selection_dashboard
     """
-    school = models.School.objects.get_individual_school(school_id=school_access_key)  # TODO remove
-
     # Get the query sets used to create summary statistics
     all_classes = models.FixedClass.objects.get_non_user_defined_fixed_classes(school_id=school_access_key)
 
-    all_slots = models.TimetableSlot.objects.filter(school=school)
+    all_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=school_access_key)
     all_slot_classes = {slot: slot.classes for slot in all_slots}
     slot_class_count = {key: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
                         key, klasses in all_slot_classes.items()}

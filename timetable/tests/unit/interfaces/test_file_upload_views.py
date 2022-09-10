@@ -93,10 +93,9 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
-        school = models.School.objects.get_individual_school(school_id=123456)
-        all_slots = models.TimetableSlot.objects.filter(school=school)
+        all_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=123456)
         self.assertEqual(len(all_slots), 35)
-        slot = models.TimetableSlot.objects.get(slot_id=1)
+        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
         self.assertEqual(slot.day_of_week, "MONDAY")
         self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
