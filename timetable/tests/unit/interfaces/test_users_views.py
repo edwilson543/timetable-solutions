@@ -5,7 +5,7 @@ from django.urls import reverse
 
 # Local application imports
 from users.forms import CustomUserCreationForm, ProfileRegistrationForm, SchoolRegistrationForm
-from data.models.school import School
+from data import models
 
 
 class TestRegistration(TestCase):
@@ -76,8 +76,8 @@ class TestRegistration(TestCase):
         response = self.client.post(url, data=form_data)
         self.assertRedirects(response, reverse("dashboard"))
 
-        new_school = School.objects.get(school_access_key=654321)
-        self.assertIsInstance(new_school, School)
+        new_school = models.School.objects.get(school_access_key=654321)
+        self.assertIsInstance(new_school, models.School)
 
     def test_register_new_school_access_key_not_6_digits(self):
         """Should return the same form with an error message that tells users access key is not 6 digits."""
@@ -116,7 +116,7 @@ class TestRegistration(TestCase):
         response = self.client.post(url, data=form_data)
         self.assertRedirects(response, reverse("dashboard"))
 
-        existing_school = School.objects.get(school_access_key=123456)  # From fixture
+        existing_school = models.School.objects.get(school_access_key=123456)  # From fixture
         new_user_school = User.objects.get(username="dummy_teacher2").profile.school
         self.assertEqual(existing_school, new_user_school)
 

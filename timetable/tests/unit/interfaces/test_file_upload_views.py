@@ -9,13 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from data.models.fixed_class import FixedClass
-from data.models.classroom import Classroom
-from data.models.timetable_slot import TimetableSlot
-from data.models.pupil import Pupil
-from data.models.teacher import Teacher
-from data.models.unsolved_class import UnsolvedClass
-from data.models.school import School
+from data import models
 from base_files.settings import BASE_DIR
 
 
@@ -40,10 +34,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
 
         # Test that the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_teachers = Teacher.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_teachers = models.Teacher.objects.filter(school=school)
         self.assertEqual(len(all_teachers), 11)
-        greg = Teacher.objects.get(teacher_id=6)
+        greg = models.Teacher.objects.get(teacher_id=6)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
 
@@ -57,8 +51,8 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
         # Assert that nothing has happened
-        school = School.objects.get(school_access_key=123456)
-        self.assertEqual(len(Teacher.objects.filter(school=school)), 0)
+        school = models.School.objects.get(school_access_key=123456)
+        self.assertEqual(len(models.Teacher.objects.filter(school=school)), 0)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
@@ -66,10 +60,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
 
         # Test that the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_pupils = Pupil.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_pupils = models.Pupil.objects.filter(school=school)
         self.assertEqual(len(all_pupils), 6)
-        teemu = Pupil.objects.get(pupil_id=5)
+        teemu = models.Pupil.objects.get(pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
         self.assertEqual(teemu.surname, "Pukki")
 
@@ -83,8 +77,8 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
 
         # Assert that nothing has happened
-        school = School.objects.get(school_access_key=123456)
-        self.assertEqual(len(Pupil.objects.filter(school=school)), 0)
+        school = models.School.objects.get(school_access_key=123456)
+        self.assertEqual(len(models.Pupil.objects.filter(school=school)), 0)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
@@ -92,10 +86,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
 
         # Test that the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_classrooms = Classroom.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_classrooms = models.Classroom.objects.filter(school=school)
         self.assertEqual(len(all_classrooms), 12)
-        room = Classroom.objects.get(classroom_id=11)
+        room = models.Classroom.objects.get(classroom_id=11)
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
@@ -104,10 +98,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_slots = TimetableSlot.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_slots = models.TimetableSlot.objects.filter(school=school)
         self.assertEqual(len(all_slots), 35)
-        slot = TimetableSlot.objects.get(slot_id=1)
+        slot = models.TimetableSlot.objects.get(slot_id=1)
         self.assertEqual(slot.day_of_week, "MONDAY")
         self.assertEqual(slot.period_start_time, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
@@ -127,13 +121,13 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_classes = UnsolvedClass.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_classes = models.UnsolvedClass.objects.filter(school=school)
         assert len(all_classes) == 12
-        klass = UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
+        klass = models.UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
 
-        self.assertQuerysetEqual(klass.pupils.all(), Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
-        self.assertEqual(klass.teacher, Teacher.objects.get(teacher_id=1))
+        self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
+        self.assertEqual(klass.teacher, models.Teacher.objects.get(teacher_id=1))
 
     def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
         """
@@ -150,10 +144,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
 
         # Test the database is as expected
-        school = School.objects.get(school_access_key=123456)
-        all_classes = FixedClass.objects.filter(school=school)
+        school = models.School.objects.get(school_access_key=123456)
+        all_classes = models.FixedClass.objects.filter(school=school)
         assert len(all_classes) == 12
-        pup_lunch = FixedClass.objects.get(class_id="LUNCH_PUPILS")
-        self.assertQuerysetEqual(pup_lunch.pupils.all(), Pupil.objects.all(), ordered=False)
-        teach_ten_lunch = FixedClass.objects.get(class_id="LUNCH_10")
-        self.assertEqual(teach_ten_lunch.teacher, Teacher.objects.get(teacher_id=10))
+        pup_lunch = models.FixedClass.objects.get(class_id="LUNCH_PUPILS")
+        self.assertQuerysetEqual(pup_lunch.pupils.all(), models.Pupil.objects.all(), ordered=False)
+        teach_ten_lunch = models.FixedClass.objects.get(class_id="LUNCH_10")
+        self.assertEqual(teach_ten_lunch.teacher, models.Teacher.objects.get(teacher_id=10))

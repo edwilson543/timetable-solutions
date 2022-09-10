@@ -6,10 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from data.models.fixed_class import FixedClass
-from data.models.timetable_slot import TimetableSlot
-from data.models.pupil import Pupil
-from data.models.teacher import Teacher
+from data import models
 
 
 class TestViews(TestCase):
@@ -28,10 +25,10 @@ class TestViews(TestCase):
         # Test the keys of the dict are the year groups
         all_pupils_dict = response.context["all_pupils"]
         year_groups_list = list(all_pupils_dict.keys())
-        self.assertEqual(year_groups_list, [Pupil.YearGroup.ONE.value, Pupil.YearGroup.TWO.value])
+        self.assertEqual(year_groups_list, [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value])
 
         # Test that each key corresponds to a value, which is the query set of pupils in that year group
-        year_one = all_pupils_dict[Pupil.YearGroup.ONE.value]
+        year_one = all_pupils_dict[models.Pupil.YearGroup.ONE.value]
         self.assertIsInstance(year_one, QuerySet)
         self.assertEqual(len(year_one), 3)
 
@@ -70,24 +67,27 @@ class TestViews(TestCase):
 
         # Test pupil context
         pupil = response.context["pupil"]
-        self.assertIsInstance(pupil, Pupil)
+        self.assertIsInstance(pupil, models.Pupil)
         self.assertEqual(pupil.firstname, "John")
         self.assertEqual(pupil.year_group, 1)
 
         # Test timetable context
         timetable = response.context["timetable"]
-        monday_period_one = timetable[TimetableSlot.PeriodStart.PERIOD_ONE.value][TimetableSlot.WeekDay.MONDAY.value]
-        self.assertIsInstance(monday_period_one, FixedClass)
-        self.assertEqual(monday_period_one.subject_name, FixedClass.SubjectColour.MATHS.name)
+        monday_period_one = timetable[
+            models.TimetableSlot.PeriodStart.PERIOD_ONE.value][models.TimetableSlot.WeekDay.MONDAY.value]
+        self.assertIsInstance(monday_period_one, models.FixedClass)
+        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.MATHS.name)
         self.assertEqual(monday_period_one.classroom.building, "MB")
-        free_period = timetable[TimetableSlot.PeriodStart.PERIOD_FOUR.value][TimetableSlot.WeekDay.THURSDAY.value]
-        self.assertEqual(free_period, FixedClass.SubjectColour.FREE.name)  # string returned, not a FixedClass instance
+        free_period = timetable[
+            models.TimetableSlot.PeriodStart.PERIOD_FOUR.value][models.TimetableSlot.WeekDay.THURSDAY.value]
+        # For free periods, the dictionary value is a string as opposed to a FixedClass instance
+        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
 
         # Test colours context
         colours = response.context["class_colours"]
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[FixedClass.SubjectColour.MATHS.name], FixedClass.SubjectColour.MATHS.label)
-        self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name], models.FixedClass.SubjectColour.MATHS.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)
 
     def test_teacher_timetable_view_correct_response(self):
         """
@@ -100,20 +100,23 @@ class TestViews(TestCase):
 
         # Test teacher context
         teacher = response.context["teacher"]
-        self.assertIsInstance(teacher, Teacher)
+        self.assertIsInstance(teacher, models.Teacher)
         self.assertEqual(teacher.firstname, "Greg")
 
         # Test timetable content
         timetable = response.context["timetable"]
-        monday_period_one = timetable[TimetableSlot.PeriodStart.PERIOD_ONE.value][TimetableSlot.WeekDay.MONDAY.value]
-        self.assertIsInstance(monday_period_one, FixedClass)
-        self.assertEqual(monday_period_one.subject_name, FixedClass.SubjectColour.FRENCH.name)
-        free_period = timetable[TimetableSlot.PeriodStart.PERIOD_TWO.value][TimetableSlot.WeekDay.MONDAY.value]
-        self.assertEqual(free_period, FixedClass.SubjectColour.FREE.name)  # string returned, not a FixedClass instance
+        monday_period_one = timetable[
+            models.TimetableSlot.PeriodStart.PERIOD_ONE.value][models.TimetableSlot.WeekDay.MONDAY.value]
+        self.assertIsInstance(monday_period_one, models.FixedClass)
+        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.FRENCH.name)
+        free_period = timetable[
+            models.TimetableSlot.PeriodStart.PERIOD_TWO.value][models.TimetableSlot.WeekDay.MONDAY.value]
+        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
 
         # Test the colours context
         colours = response.context["colours"]
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[Pupil.YearGroup.ONE.value], Pupil.YearGroup.ONE.label)
-        self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.label)
-        self.assertEqual(colours[FixedClass.SubjectColour.LUNCH.name], FixedClass.SubjectColour.LUNCH.label)
+        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], models.Pupil.YearGroup.ONE.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.LUNCH.name],
+                         models.FixedClass.SubjectColour.LUNCH.label)
