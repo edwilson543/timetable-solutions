@@ -7,11 +7,10 @@ from typing import List
 
 
 # io settings
-loc = Path(__file__).parents[1] / "timetable" / "timetable_selector" / "fixtures"
+loc = Path(__file__).parents[1] / "timetable" / "data" / "fixtures"
 input_filenames = ["fixed_classes.json"]
 output_filenames = ["fixed_classes.json"]
-school_access_key = 123456
-# old_id_column = "pupil_id"
+new_model_name = "data.fixedclass"
 
 
 def update_fixture(input_fixture_file: str, output_fixture_file: str, location: Path = loc) -> None:
@@ -21,9 +20,7 @@ def update_fixture(input_fixture_file: str, output_fixture_file: str, location: 
         new_pyt_data = []
         for n, item in enumerate(pyt_data):
             new_item = item.copy()
-            new_item["fields"]["user_defined"] = False
-            # new_item["fields"]["school"] = school_access_key
-            # del new_item["fields"]["school_id"]
+            new_item["model"] = new_model_name
             new_pyt_data.append(new_item)
 
     with open(location / output_fixture_file, "w") as write_file:

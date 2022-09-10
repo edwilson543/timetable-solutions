@@ -1,1 +1,387 @@
-[{"model": "timetable_selector.timetableslot", "pk": 1, "fields": {"day_of_week": "MONDAY", "period_start_time": "09:00:00", "period_duration": "01:00:00", "slot_id": 1, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 2, "fields": {"day_of_week": "TUESDAY", "period_start_time": "09:00:00", "period_duration": "01:00:00", "slot_id": 2, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 3, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "09:00:00", "period_duration": "01:00:00", "slot_id": 3, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 4, "fields": {"day_of_week": "THURSDAY", "period_start_time": "09:00:00", "period_duration": "01:00:00", "slot_id": 4, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 5, "fields": {"day_of_week": "FRIDAY", "period_start_time": "09:00:00", "period_duration": "01:00:00", "slot_id": 5, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 6, "fields": {"day_of_week": "MONDAY", "period_start_time": "10:00:00", "period_duration": "01:00:00", "slot_id": 6, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 7, "fields": {"day_of_week": "TUESDAY", "period_start_time": "10:00:00", "period_duration": "01:00:00", "slot_id": 7, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 8, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "10:00:00", "period_duration": "01:00:00", "slot_id": 8, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 9, "fields": {"day_of_week": "THURSDAY", "period_start_time": "10:00:00", "period_duration": "01:00:00", "slot_id": 9, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 10, "fields": {"day_of_week": "FRIDAY", "period_start_time": "10:00:00", "period_duration": "01:00:00", "slot_id": 10, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 11, "fields": {"day_of_week": "MONDAY", "period_start_time": "11:00:00", "period_duration": "01:00:00", "slot_id": 11, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 12, "fields": {"day_of_week": "TUESDAY", "period_start_time": "11:00:00", "period_duration": "01:00:00", "slot_id": 12, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 13, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "11:00:00", "period_duration": "01:00:00", "slot_id": 13, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 14, "fields": {"day_of_week": "THURSDAY", "period_start_time": "11:00:00", "period_duration": "01:00:00", "slot_id": 14, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 15, "fields": {"day_of_week": "FRIDAY", "period_start_time": "11:00:00", "period_duration": "01:00:00", "slot_id": 15, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 16, "fields": {"day_of_week": "MONDAY", "period_start_time": "12:00:00", "period_duration": "01:00:00", "slot_id": 16, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 17, "fields": {"day_of_week": "TUESDAY", "period_start_time": "12:00:00", "period_duration": "01:00:00", "slot_id": 17, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 18, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "12:00:00", "period_duration": "01:00:00", "slot_id": 18, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 19, "fields": {"day_of_week": "THURSDAY", "period_start_time": "12:00:00", "period_duration": "01:00:00", "slot_id": 19, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 20, "fields": {"day_of_week": "FRIDAY", "period_start_time": "12:00:00", "period_duration": "01:00:00", "slot_id": 20, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 21, "fields": {"day_of_week": "MONDAY", "period_start_time": "13:00:00", "period_duration": "01:00:00", "slot_id": 21, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 22, "fields": {"day_of_week": "TUESDAY", "period_start_time": "13:00:00", "period_duration": "01:00:00", "slot_id": 22, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 23, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "13:00:00", "period_duration": "01:00:00", "slot_id": 23, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 24, "fields": {"day_of_week": "THURSDAY", "period_start_time": "13:00:00", "period_duration": "01:00:00", "slot_id": 24, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 25, "fields": {"day_of_week": "FRIDAY", "period_start_time": "13:00:00", "period_duration": "01:00:00", "slot_id": 25, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 26, "fields": {"day_of_week": "MONDAY", "period_start_time": "14:00:00", "period_duration": "01:00:00", "slot_id": 26, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 27, "fields": {"day_of_week": "TUESDAY", "period_start_time": "14:00:00", "period_duration": "01:00:00", "slot_id": 27, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 28, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "14:00:00", "period_duration": "01:00:00", "slot_id": 28, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 29, "fields": {"day_of_week": "THURSDAY", "period_start_time": "14:00:00", "period_duration": "01:00:00", "slot_id": 29, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 30, "fields": {"day_of_week": "FRIDAY", "period_start_time": "14:00:00", "period_duration": "01:00:00", "slot_id": 30, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 31, "fields": {"day_of_week": "MONDAY", "period_start_time": "15:00:00", "period_duration": "01:00:00", "slot_id": 31, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 32, "fields": {"day_of_week": "TUESDAY", "period_start_time": "15:00:00", "period_duration": "01:00:00", "slot_id": 32, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 33, "fields": {"day_of_week": "WEDNESDAY", "period_start_time": "15:00:00", "period_duration": "01:00:00", "slot_id": 33, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 34, "fields": {"day_of_week": "THURSDAY", "period_start_time": "15:00:00", "period_duration": "01:00:00", "slot_id": 34, "school": 123456}}, {"model": "timetable_selector.timetableslot", "pk": 35, "fields": {"day_of_week": "FRIDAY", "period_start_time": "15:00:00", "period_duration": "01:00:00", "slot_id": 35, "school": 123456}}]
+[
+  {
+    "model": "data.timetableslot",
+    "pk": 1,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 1,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 2,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 2,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 3,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 3,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 4,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 4,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 5,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "09:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 5,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 6,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 6,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 7,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 7,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 8,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 8,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 9,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 9,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 10,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "10:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 10,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 11,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 11,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 12,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 12,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 13,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 13,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 14,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 14,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 15,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "11:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 15,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 16,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 16,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 17,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 17,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 18,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 18,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 19,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 19,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 20,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "12:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 20,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 21,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 21,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 22,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 22,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 23,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 23,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 24,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 24,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 25,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "13:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 25,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 26,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 26,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 27,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 27,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 28,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 28,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 29,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 29,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 30,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "14:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 30,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 31,
+    "fields": {
+      "day_of_week": "MONDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 31,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 32,
+    "fields": {
+      "day_of_week": "TUESDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 32,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 33,
+    "fields": {
+      "day_of_week": "WEDNESDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 33,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 34,
+    "fields": {
+      "day_of_week": "THURSDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 34,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 35,
+    "fields": {
+      "day_of_week": "FRIDAY",
+      "period_start_time": "15:00:00",
+      "period_duration": "01:00:00",
+      "slot_id": 35,
+      "school": 123456
+    }
+  }
+]

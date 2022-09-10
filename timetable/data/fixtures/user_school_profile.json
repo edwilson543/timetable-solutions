@@ -18,14 +18,14 @@
     }
   },
   {
-    "model": "users.school",
+    "model": "data.school",
     "pk": 123456,
     "fields": {
       "school_name": "Fake School"
     }
   },
   {
-    "model": "users.profile",
+    "model": "data.profile",
     "pk": 1,
     "fields": {
       "user": 1,

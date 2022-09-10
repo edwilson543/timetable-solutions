@@ -1,6 +1,6 @@
 [
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 1,
     "fields": {
       "subject_name": "MATHS",
@@ -26,7 +26,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 2,
     "fields": {
       "subject_name": "MATHS",
@@ -52,7 +52,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 3,
     "fields": {
       "subject_name": "ENGLISH",
@@ -78,7 +78,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 4,
     "fields": {
       "subject_name": "ENGLISH",
@@ -103,7 +103,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 5,
     "fields": {
       "subject_name": "FRENCH",
@@ -130,7 +130,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 6,
     "fields": {
       "subject_name": "FRENCH",
@@ -155,7 +155,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 7,
     "fields": {
       "subject_name": "MATHS",
@@ -181,7 +181,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 8,
     "fields": {
       "subject_name": "MATHS",
@@ -206,7 +206,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 9,
     "fields": {
       "subject_name": "ENGLISH",
@@ -232,7 +232,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 10,
     "fields": {
       "subject_name": "ENGLISH",
@@ -257,7 +257,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 11,
     "fields": {
       "subject_name": "FRENCH",
@@ -284,7 +284,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 12,
     "fields": {
       "subject_name": "FRENCH",
@@ -310,7 +310,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 13,
     "fields": {
       "subject_name": "LUNCH",
@@ -337,7 +337,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 14,
     "fields": {
       "subject_name": "LUNCH",
@@ -357,7 +357,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 15,
     "fields": {
       "subject_name": "LUNCH",
@@ -377,7 +377,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 16,
     "fields": {
       "subject_name": "LUNCH",
@@ -397,7 +397,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 17,
     "fields": {
       "subject_name": "LUNCH",
@@ -417,7 +417,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 18,
     "fields": {
       "subject_name": "LUNCH",
@@ -437,7 +437,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 19,
     "fields": {
       "subject_name": "LUNCH",
@@ -457,7 +457,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 20,
     "fields": {
       "subject_name": "LUNCH",
@@ -477,7 +477,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 21,
     "fields": {
       "subject_name": "LUNCH",
@@ -497,7 +497,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 22,
     "fields": {
       "subject_name": "LUNCH",
@@ -517,7 +517,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 23,
     "fields": {
       "subject_name": "LUNCH",
@@ -537,7 +537,7 @@
     }
   },
   {
-    "model": "timetable_selector.fixedclass",
+    "model": "data.fixedclass",
     "pk": 24,
     "fields": {
       "subject_name": "LUNCH",
