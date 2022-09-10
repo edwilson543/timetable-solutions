@@ -4,7 +4,6 @@
 from typing import Set
 
 # Django imports
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 # Local application imports (other models)
@@ -13,6 +12,28 @@ from data.models.classroom import Classroom
 from data.models.pupil import Pupil
 from data.models.teacher import Teacher
 from data.models.timetable_slot import TimetableSlot
+
+
+class FixedClassQuerySet(models.QuerySet):
+    """Custom queryset manager for the FixedClass model"""
+
+    def get_non_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
+        """Method returning the queryset of FixedClass instances created by the solver"""
+        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
+
+    def school_has_user_defined_fixed_class_data(self, school_id: int) -> bool:
+        """
+        Method to return True/False depending on whether the user has uploaded data on fixed classes that must occur at
+        a certain time.
+        """
+        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True)).exists()
+
+    def school_has_timetable_solutions(self, school_id: int) -> bool:
+        """
+        Method to return True/False depending on whether timetable solutions have been found - we can tell this by
+        inspecting whether there are any FixedClass instances that were not user defined.
+        """
+        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False)).exists()
 
 
 class FixedClass(models.Model):
@@ -42,6 +63,9 @@ class FixedClass(models.Model):
     pupils = models.ManyToManyField(Pupil, related_name="classes")
     time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
     user_defined = models.BooleanField()  # If True, this is a class user has said must occur at a certain time
+
+    # Introduce a custom manager
+    objects = FixedClassQuerySet.as_manager()
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""

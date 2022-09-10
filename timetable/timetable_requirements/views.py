@@ -35,15 +35,19 @@ class RequiredUpload:
 
 # noinspection PyUnresolvedReferences
 def _get_all_form_context(request: HttpRequest) -> Dict:
-    """Function to get a dictionary of forms that must be populated (note each form has just one file field
-    to allow files to be uploaded separately)."""
+    """
+    Function to get a dictionary of forms that must be populated (note each form has just one file field
+    to allow files to be uploaded separately).
+    """
     school_id = request.user.profile.school.school_access_key
+
     teacher_upload_status = len(models.Teacher.objects.filter(school_id=school_id)) > 0  # TODO move to models
     pupil_upload_status = len(models.Pupil.objects.filter(school_id=school_id)) > 0
     classroom_upload_status = models.Classroom.objects.school_has_classroom_data(school_id=school_id)
     timetable_upload_status = len(models.TimetableSlot.objects.filter(school_id=school_id)) > 0
     unsolved_class_upload_status = len(models.UnsolvedClass.objects.filter(school_id=school_id)) > 0
-    fixed_class_upload_status = len(models.FixedClass.objects.filter(school_id=school_id)) > 0
+    fixed_class_upload_status = models.FixedClass.objects.school_has_user_defined_fixed_class_data(school_id=school_id)
+
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,

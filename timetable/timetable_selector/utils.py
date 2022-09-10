@@ -22,8 +22,8 @@ def get_summary_stats(school_access_key: int) -> Dict:
     """
     school = School.objects.get(school_access_key=school_access_key)
 
-    # Get the querysets used to create summary statistics
-    all_classes = FixedClass.objects.filter(Q(school=school) & ~Q(user_defined=True))
+    # Get the query sets used to create summary statistics
+    all_classes = FixedClass.objects.get_non_user_defined_fixed_classes(school_id=school_access_key)
 
     all_slots = TimetableSlot.objects.filter(school=school)
     all_slot_classes = {slot: slot.classes for slot in all_slots}
