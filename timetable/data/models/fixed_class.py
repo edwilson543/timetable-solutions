@@ -29,20 +29,6 @@ class FixedClassQuerySet(models.QuerySet):
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
 
-    def school_has_user_defined_fixed_class_data(self, school_id: int) -> bool:
-        """
-        Method to return True/False depending on whether the user has uploaded data on fixed classes that must occur at
-        a certain time.
-        """
-        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True)).exists()
-
-    def school_has_timetable_solutions(self, school_id: int) -> bool:
-        """
-        Method to return True/False depending on whether timetable solutions have been found - we can tell this by
-        inspecting whether there are any FixedClass instances that were not user defined.
-        """
-        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False)).exists()
-
 
 class FixedClass(models.Model):
     """

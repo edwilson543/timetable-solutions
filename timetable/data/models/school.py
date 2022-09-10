@@ -64,7 +64,13 @@ class School(models.Model):
         return self.unsolvedclass_set.exists()
 
     @property
-    def has_fixed_class_data(self) -> bool:
+    def has_user_defined_fixed_class_data(self) -> bool:
         """Indicates whether a user from the given school has uploaded FixedClass data into the database."""
         # noinspection PyUnresolvedReferences
-        return self.fixedclass_set.exists()
+        return self.fixedclass_set.filter(user_defined=True).exists()
+
+    @property
+    def has_timetable_solutions(self) -> bool:
+        """Indicates whether any FixedClass data has been produced BY THE SOLVER and saved into the database."""
+        # noinspection PyUnresolvedReferences
+        return self.fixedclass_set.filter(user_defined=False).exists()

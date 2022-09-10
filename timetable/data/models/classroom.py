@@ -18,10 +18,6 @@ class ClassroomQuerySet(models.QuerySet):
         """Method to return an individual classroom instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(classroom_id=classroom_id))
 
-    def school_has_classroom_data(self, school_id: int) -> bool:
-        """Method to return True/False depending on whether there's classroom data in the db for the given school"""
-        return self.filter(school_id=school_id).exists()
-
 
 class Classroom(models.Model):
     """

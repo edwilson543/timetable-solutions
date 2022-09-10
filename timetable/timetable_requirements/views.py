@@ -47,7 +47,7 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
     classroom_upload_status = school.has_classroom_data
     timetable_upload_status = school.has_timetable_structure_data
     unsolved_class_upload_status = school.has_unsolved_class_data
-    fixed_class_upload_status = school.has_fixed_class_data
+    fixed_class_upload_status = school.has_user_defined_fixed_class_data
 
     context = {"required_forms":
                {
