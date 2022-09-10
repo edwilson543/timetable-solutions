@@ -33,12 +33,12 @@ class RequiredUpload:
             self.upload_status = "Incomplete"
 
 
-# noinspection PyUnresolvedReferences
 def _get_all_form_context(request: HttpRequest) -> Dict:
     """
     Function to get a dictionary of forms that must be populated (note each form has just one file field
     to allow files to be uploaded separately).
     """
+    # noinspection PyUnresolvedReferences
     school = request.user.profile.school
 
     # We retrieve the upload status of each of the necessary datasets for the given school

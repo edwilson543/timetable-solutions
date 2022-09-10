@@ -10,7 +10,6 @@ from django.db.models import QuerySet
 from data import models
 
 
-# noinspection PyUnresolvedReferences
 def get_summary_stats(school_access_key: int) -> Dict:
     """
     Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
@@ -53,7 +52,6 @@ def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedCl
     for time in models.TimetableSlot.PeriodStart.values:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
         for day in models.TimetableSlot.WeekDay.values:
-            # noinspection PyUnresolvedReferences
             for klass, time_slots in class_indexed_timetable.items():
                 queryset = time_slots.filter(day_of_week=day, period_starts_at=time)
                 if queryset.exists():
