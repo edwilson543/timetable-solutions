@@ -1,6 +1,10 @@
+"""Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
+
+# Django imports
 from django.db import models
 
-from data.models import School
+# Local application imports (other models)
+from data.models.school import School
 from data.models.classroom import Classroom
 from data.models.fixed_class import FixedClass
 from data.models.pupil import Pupil

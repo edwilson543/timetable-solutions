@@ -1,5 +1,9 @@
+"""Module defining the model for a teacher and any ancillary objects."""
+
+# Django imports
 from django.db import models
 
+# Local application imports (other models)
 from data.models import School
 
 

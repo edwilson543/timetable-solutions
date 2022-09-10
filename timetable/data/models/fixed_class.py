@@ -1,7 +1,10 @@
+"""Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
+
+# Django imports
 from django.db import models
 
-# Create your models here.
-from data.models import School
+# Local application imports (other models)
+from data.models.school import School
 from data.models.classroom import Classroom
 from data.models.pupil import Pupil
 from data.models.teacher import Teacher
@@ -10,9 +13,9 @@ from data.models.timetable_slot import TimetableSlot
 
 class FixedClass(models.Model):
     """
-    Model for storing the unique list of classes that take place, when they take place, the teacher that takes the
-    class, and the pupils that attend the class.
-    Note that teacher is nullable so that a FixedClass can be made for breaks.
+    Model storing the classes that take place, when they take place, the teacher that takes the class, and the pupils
+    that attend the class.
+    Note that teacher is nullable so that a FixedClass can be made for breaks e.g. lunch time.
     """
     class SubjectColour(models.TextChoices):
         """Enum to list the options and colour that each colour of the timetable should be."""

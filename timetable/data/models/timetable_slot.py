@@ -1,8 +1,13 @@
+"""Module defining the model for a timetable slot and any ancillary objects."""
+
+# Standard library imports
 import datetime as dt
 
+# Django imports
 from django.db import models
 
-from data.models import School
+# Local application imports (other models)
+from data.models.school import School
 
 
 class TimetableSlot(models.Model):
