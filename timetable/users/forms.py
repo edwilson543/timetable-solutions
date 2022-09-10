@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 
 # Local application imports
-from data.models.school import School
+from data import models
 
 
 class CustomUserCreationForm(UserCreationForm):
@@ -29,7 +29,7 @@ class SchoolRegistrationForm(forms.ModelForm):
     error_message = None
 
     class Meta:
-        model = School
+        model = models.School
         fields = ["school_access_key", "school_name"]
 
     def is_valid(self):
@@ -58,7 +58,7 @@ class ProfileRegistrationForm(forms.Form):
             return False
         access_key = self.cleaned_data.get("school_access_key")
 
-        if School.objects.filter(school_access_key=access_key).exists():
+        if models.School.objects.filter(school_access_key=access_key).exists():
             return True
         else:
             self.error_message = "Access key not found, please try again"

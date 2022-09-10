@@ -8,7 +8,7 @@ from django.views import View
 from django.urls import reverse
 
 # Local application imports
-from data.models.user_profile import Profile
+from data import models
 from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
 
 
@@ -94,7 +94,7 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             # noinspection PyUnresolvedReferences
-            profile = Profile.create_new(user=request.user, school_id=access_key)
+            profile = models.Profile.create_new(user=request.user, school_id=access_key)
             profile.save()
             return redirect(reverse("dashboard"))
         else:
