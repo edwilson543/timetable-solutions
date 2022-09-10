@@ -17,6 +17,12 @@ class PupilQuerySet(models.QuerySet):
         """Method returning the queryset of pupils registered at the given school"""
         return self.filter(school_id=school_id)
 
+    def get_school_year_group(self, school_id: int, year_group: int) -> models.QuerySet:
+        """method returning the queryset of pupils belonging to a specific school and year group"""
+        query_set = self.filter(models.Q(school_id=school_id) & models.Q(year_group=year_group))
+        query_set.order_by("surname")
+        return query_set
+
     def get_specific_pupils(self, school_id: int, pupil_ids: Set[int]) -> models.QuerySet:
         """Method returning a queryset of pupils with the passed set of ids"""
         return self.filter(models.Q(school_id=school_id) & models.Q(pupil_id__in=pupil_ids))

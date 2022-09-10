@@ -28,10 +28,9 @@ class TestFileUploadProcessor(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
-        school = models.School.objects.get_individual_school(school_id=123456)
-        all_teachers = models.Teacher.objects.filter(school=school)
+        all_teachers = models.Teacher.objects.get_all_school_teachers(school_id=123456)
         self.assertEqual(len(all_teachers), 11)
-        greg = models.Teacher.objects.get(teacher_id=6)
+        greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertIsInstance(greg, models.Teacher)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")

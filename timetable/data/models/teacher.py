@@ -1,8 +1,5 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
-# Standard library imports
-from typing import Set
-
 # Django imports
 from django.db import models
 
@@ -13,13 +10,19 @@ from data.models import School
 class TeacherQuerySet(models.QuerySet):
     """Custom queryset manager for the Teacher model"""
 
-    def get_all_school_pupils(self, school_id: int) -> models.QuerySet:
+    def get_all_school_teachers(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of teachers registered at the given school"""
         return self.filter(school_id=school_id)
 
     def get_individual_teacher(self, school_id: int, teacher_id: int):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(teacher_id=teacher_id))
+
+    def get_teachers_surnames_starting_with_x(self, school_id: int, letter: str):
+        """Method returning the queryset of Teacher instances whose surname starts with the letter x."""
+        query_set = self.filter(models.Q(school_id=school_id) & models.Q(surname__startswith=letter))
+        query_set.order_by("firstname")
+        return query_set
 
 
 class Teacher(models.Model):

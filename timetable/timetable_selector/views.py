@@ -4,11 +4,8 @@ from django.http import HttpResponse
 from django.template import loader
 
 # Local application imports
-from data.models.fixed_class import FixedClass
-from data.models.pupil import Pupil
-from data.models.teacher import Teacher
+from data import models
 from .utils import get_timetable_slot_indexed_timetable, get_summary_stats
-from data.models.school import School
 
 
 @login_required(login_url="/login")
@@ -27,10 +24,9 @@ def pupil_navigator(request) -> HttpResponse:
     This is pre-processed to be indexed by year group for display in the template.
     """
     school_id = request.user.profile.school.school_access_key
-    school = School.objects.get_individual_school(school_id=school_id)
     # noinspection PyUnresolvedReferences
-    year_indexed_pupils = {year: Pupil.objects.filter(
-        year_group=year, school=school).order_by("surname").values() for year in Pupil.YearGroup.values}
+    year_indexed_pupils = {year: models.Pupil.objects.get_school_year_group(
+        school_id=school_id, year_group=year).values() for year in models.Pupil.YearGroup.values}
     year_indexed_pupils = {key: value for key, value in year_indexed_pupils.items() if len(value) > 0}
     template = loader.get_template("pupils_navigator.html")
     context = {
@@ -46,11 +42,10 @@ def teacher_navigator(request) -> HttpResponse:
     Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
     """
     school_id = request.user.profile.school.school_access_key
-    school = School.objects.get_individual_school(school_id=school_id)
     alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     # noinspection PyUnresolvedReferences
-    teachers = {letter: Teacher.objects.filter(
-        surname__startswith=letter, school=school).order_by("firstname").values() for letter in alphabet}
+    teachers = {letter: models.Teacher.objects.get_teachers_surnames_starting_with_x(
+        school_id=school_id, letter=letter).values() for letter in alphabet}
     teachers = {key: value for key, value in teachers.items() if len(value) > 0}
     template = loader.get_template("teachers_navigator.html")
     context = {
@@ -69,14 +64,15 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     timetable - see _get_timetable_slot_indexed_timetable
     class_colours - a dictionary with keys of subject name strings, and values of hexadecimal colour strings
     """
-    # noinspection PyUnresolvedReferences
-    pupil = Pupil.objects.get(id=id)
+    school_id = request.user.profile.school.school_access_key
+
+    pupil = models.Pupil.objects.get_individual_pupil(school_id=school_id, pupil_id=id)
     classes = pupil.classes.all()
     timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
-    class_colours = {klass.subject_name: FixedClass.SubjectColour.get_colour_from_subject(
+    class_colours = {klass.subject_name: models.FixedClass.SubjectColour.get_colour_from_subject(
         subject_name=klass.subject_name) for klass in classes}
-    class_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.label
+    class_colours[models.FixedClass.SubjectColour.FREE.name] = models.FixedClass.SubjectColour.FREE.label
 
     template = loader.get_template("pupil_timetable.html")
     context = {
@@ -98,7 +94,7 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
         class_colours - a dictionary with keys as year group integers, and values as hexadecimal colour strings
     """
     # noinspection PyUnresolvedReferences
-    teacher = Teacher.objects.get(id=id)
+    teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
     classes = teacher.classes.all()
     timetable = get_timetable_slot_indexed_timetable(classes=classes)
 
@@ -108,9 +104,9 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
         if all_pupils.exists():  # Take first pupil from queryset since all have same year group
             first_pupil = klass.pupils.all()[0]
             year_group: int = first_pupil.year_group
-            year_group_colours[year_group] = Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
-    year_group_colours[FixedClass.SubjectColour.FREE.name] = FixedClass.SubjectColour.FREE.label
-    year_group_colours[FixedClass.SubjectColour.LUNCH.name] = FixedClass.SubjectColour.LUNCH.label
+            year_group_colours[year_group] = models.Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
+    year_group_colours[models.FixedClass.SubjectColour.FREE.name] = models.FixedClass.SubjectColour.FREE.label
+    year_group_colours[models.FixedClass.SubjectColour.LUNCH.name] = models.FixedClass.SubjectColour.LUNCH.label
 
     template = loader.get_template("teacher_timetable.html")
     context = {

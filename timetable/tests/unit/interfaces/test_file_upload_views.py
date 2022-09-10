@@ -34,10 +34,9 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
 
         # Test that the database is as expected
-        school = models.School.objects.get_individual_school(school_id=123456)
-        all_teachers = models.Teacher.objects.filter(school=school)
+        all_teachers = models.Teacher.objects.get_all_school_teachers(school_id=123456)
         self.assertEqual(len(all_teachers), 11)
-        greg = models.Teacher.objects.get(teacher_id=6)
+        greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
 
@@ -51,8 +50,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
         # Assert that nothing has happened
-        school = models.School.objects.get_individual_school(school_id=123456)
-        self.assertEqual(len(models.Teacher.objects.filter(school=school)), 0)
+        self.assertEqual(len(models.Teacher.objects.get_all_school_teachers(school_id=123456)), 0)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
@@ -124,7 +122,7 @@ class TestFileUploadViews(TestCase):
         klass = models.UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
 
         self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
-        self.assertEqual(klass.teacher, models.Teacher.objects.get(teacher_id=1))
+        self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
 
     def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
         """
@@ -144,6 +142,8 @@ class TestFileUploadViews(TestCase):
         all_classes = models.FixedClass.objects.get_all_school_fixed_classes(school_id=123456)
         assert len(all_classes) == 12
         pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
-        self.assertQuerysetEqual(pup_lunch.pupils.all(), models.Pupil.objects.all(), ordered=False)
+        self.assertQuerysetEqual(pup_lunch.pupils.all(),
+                                 models.Pupil.objects.get_all_school_pupils(school_id=123456), ordered=False)
         teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
-        self.assertEqual(teach_ten_lunch.teacher, models.Teacher.objects.get(teacher_id=10))
+        self.assertEqual(teach_ten_lunch.teacher,
+                         models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
