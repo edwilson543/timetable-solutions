@@ -79,6 +79,10 @@ class TestRegistration(TestCase):
         new_school = models.School.objects.get_individual_school(school_id=654321)
         self.assertIsInstance(new_school, models.School)
 
+        # Test the school has become associated with the user
+        user_school_id = response.wsgi_request.user.profile.school.school_access_key
+        self.assertEqual(user_school_id, 654321)
+
     def test_register_new_school_access_key_not_6_digits(self):
         """Should return the same form with an error message that tells users access key is not 6 digits."""
         self.login_dummy_user()

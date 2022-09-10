@@ -26,7 +26,7 @@ class Profile(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, user: int, school_id: int):
-        """Method to create a new Profile instance."""
+    def create_and_save_new(cls, user: User, school_id: int) -> None:
+        """Method to create a new Profile instance, and then save it into the database"""
         profile = cls.objects.create(user=user, school_id=school_id)
-        return profile
+        profile.save()

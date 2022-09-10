@@ -1,3 +1,14 @@
+"""
+Views relating to user authentication and registration.
+
+User registration has the following steps:
+Step 1 - provide basic details (name, email address, password etc.)
+Step 2 - a pivot - either the user belongs to a school that is already registered at TTS (c) or must the must also
+register their school
+Step 3a - the user must also register themselves with the school
+Step 3b - the user must provide a school access key to associate themselves with a school that is already registered.
+"""
+
 # Standard library imports
 from typing import Dict
 
@@ -38,7 +49,7 @@ class Register(View):
 
 
 class SchoolRegisterPivot(View):
-    """View for step 2 of registering - whether or not school_id also needs registering"""
+    """View for step 2 of registering - whether the user's school also needs registering"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -59,7 +70,7 @@ class SchoolRegisterPivot(View):
 
 
 class SchoolRegistration(View):
-    """View for step 3a of registering - when the school_id is not registered"""
+    """View for step 3a of registering - when the school is not registered"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -70,7 +81,10 @@ class SchoolRegistration(View):
     def post(self, request):
         form = SchoolRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()  # Note this is a model form
+            form.save()  # Note this is a model form, so save the School instance to the database automatically
+
+            # We have created the school instance but not yet associated this school with the user, so we do this now
+            models.Profile.create_and_save_new(user=request.user, school_id=form.cleaned_data.get("school_access_key"))
             return redirect(reverse("dashboard"))
         else:
             context = {
@@ -81,7 +95,7 @@ class SchoolRegistration(View):
 
 
 class ProfileRegistration(View):
-    """View for step 3b of registering - when the school_id is already registered, just need the access key"""
+    """View for step 3b of registering - when the school is already registered, just need the access key"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -93,9 +107,7 @@ class ProfileRegistration(View):
         form = ProfileRegistrationForm(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
-            # noinspection PyUnresolvedReferences
-            profile = models.Profile.create_new(user=request.user, school_id=access_key)
-            profile.save()
+            models.Profile.create_and_save_new(user=request.user, school_id=access_key)
             return redirect(reverse("dashboard"))
         else:
             context = {
