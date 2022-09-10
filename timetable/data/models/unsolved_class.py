@@ -1,7 +1,7 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
 # Standard library imports
-from typing import List
+from typing import Set
 
 # Django imports
 from django.db import models
@@ -49,6 +49,11 @@ class UnsolvedClass(models.Model):
         return unsolved_cls
 
     # MUTATION METHODS
-    def add_pupils(self):
-        # TODO
-        pass
+    def add_pupils(self, pupil_ids: Set[int]) -> None:
+        """
+        Method to associate a set of pupils with an individual UnsolvedClass instance
+        :param pupil_ids - a set of primary keys relating to pupils, with the fixed class to become associate with each
+        """
+        # noinspection PyUnresolvedReferences
+        self.pupils.add(*pupil_ids)
+        self.save()

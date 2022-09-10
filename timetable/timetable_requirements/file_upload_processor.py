@@ -163,9 +163,9 @@ class FileUploadProcessor:
             model_instance = self._model.create_new(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])  # TODO update to use mutation method
+            pups = ast.literal_eval(row[Header.PUPIL_IDS])
             pups = {int(val) for val in pups}
-            model_instance.pupils.add(*pups)
+            model_instance.add_pupils(pupil_ids=pups)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
@@ -184,11 +184,11 @@ class FileUploadProcessor:
             model_instance = self._model.create_new(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils / slots
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])  # TODO update to use mutation method
+            pups = ast.literal_eval(row[Header.PUPIL_IDS])
             pups = {int(val) for val in pups}
             model_instance.add_pupils(pupil_ids=pups)
 
-            slots = ast.literal_eval(row[Header.SLOT_IDS])  # TODO update to use mutation method
+            slots = ast.literal_eval(row[Header.SLOT_IDS])
             slots = {int(val) for val in slots}
             model_instance.add_timetable_slots(slot_ids=slots)
 
