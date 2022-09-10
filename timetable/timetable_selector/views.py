@@ -1,3 +1,6 @@
+# Standard library imports
+from string import ascii_uppercase
+
 # Django imports
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
@@ -24,7 +27,6 @@ def pupil_navigator(request) -> HttpResponse:
     This is pre-processed to be indexed by year group for display in the template.
     """
     school_id = request.user.profile.school.school_access_key
-    # noinspection PyUnresolvedReferences
     year_indexed_pupils = {year: models.Pupil.objects.get_school_year_group(
         school_id=school_id, year_group=year).values() for year in models.Pupil.YearGroup.values}
     year_indexed_pupils = {key: value for key, value in year_indexed_pupils.items() if len(value) > 0}
@@ -42,8 +44,7 @@ def teacher_navigator(request) -> HttpResponse:
     Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
     """
     school_id = request.user.profile.school.school_access_key
-    alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-    # noinspection PyUnresolvedReferences
+    alphabet = list(ascii_uppercase)
     teachers = {letter: models.Teacher.objects.get_teachers_surnames_starting_with_x(
         school_id=school_id, letter=letter).values() for letter in alphabet}
     teachers = {key: value for key, value in teachers.items() if len(value) > 0}
