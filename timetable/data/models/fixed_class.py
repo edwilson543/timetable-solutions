@@ -72,7 +72,7 @@ class FixedClass(models.Model):
 
     def add_timetable_slots(self, slot_ids: Set[int]) -> None:
         """
-        Method to associate a set of timetable slots with an individual fixed class
+        Method to associate a set of timetable slots with an individual FixedClass
         :param slot_ids - a set of primary keys relating to timetable slots to associate this fixed class instance with
         """
         # noinspection PyUnresolvedReferences
