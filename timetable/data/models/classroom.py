@@ -8,7 +8,7 @@ from data.models.school import School
 
 
 class ClassroomQuerySet(models.QuerySet):
-    """Custom queryset manager for the classroom class"""
+    """Custom queryset manager for the Classroom model"""
 
     def get_all_school_classrooms(self, school_id: int) -> models.QuerySet:
         """Method to return the full queryset of classrooms for a given school"""
