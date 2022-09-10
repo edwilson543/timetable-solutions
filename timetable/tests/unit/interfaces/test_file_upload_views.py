@@ -60,10 +60,9 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
 
         # Test that the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
-        all_pupils = models.Pupil.objects.filter(school=school)
+        all_pupils = models.Pupil.objects.get_all_school_pupils(school_id=123456)
         self.assertEqual(len(all_pupils), 6)
-        teemu = models.Pupil.objects.get(pupil_id=5)
+        teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
         self.assertEqual(teemu.surname, "Pukki")
 
@@ -77,8 +76,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
 
         # Assert that nothing has happened
-        school = models.School.objects.get(school_access_key=123456)
-        self.assertEqual(len(models.Pupil.objects.filter(school=school)), 0)
+        self.assertEqual(len(models.Pupil.objects.get_all_school_pupils(school_id=123456)), 0)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
