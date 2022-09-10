@@ -21,8 +21,8 @@
         30
       ],
       "class_id": "YEAR_ONE_MATHS_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -47,8 +47,8 @@
         35
       ],
       "class_id": "YEAR_ONE_MATHS_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -73,8 +73,8 @@
         32
       ],
       "class_id": "YEAR_ONE_ENGLISH_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -98,8 +98,8 @@
         32
       ],
       "class_id": "YEAR_ONE_ENGLISH_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -125,8 +125,8 @@
         35
       ],
       "class_id": "YEAR_ONE_FRENCH_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -150,8 +150,8 @@
         30
       ],
       "class_id": "YEAR_ONE_FRENCH_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -176,8 +176,8 @@
         32
       ],
       "class_id": "YEAR_TWO_MATHS_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -201,8 +201,8 @@
         30
       ],
       "class_id": "YEAR_TWO_MATHS_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -227,8 +227,8 @@
         30
       ],
       "class_id": "YEAR_TWO_ENGLISH_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -252,8 +252,8 @@
         32
       ],
       "class_id": "YEAR_TWO_ENGLISH_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -279,8 +279,8 @@
         35
       ],
       "class_id": "YEAR_TWO_FRENCH_A",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -305,8 +305,8 @@
         35
       ],
       "class_id": "YEAR_TWO_FRENCH_B",
-      "school": 123456,
-      "user_defined": false
+      "user_defined": false,
+      "school": 123456
     }
   },
   {
@@ -332,8 +332,8 @@
         25
       ],
       "class_id": "LUNCH_PUPILS",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -352,8 +352,8 @@
         25
       ],
       "class_id": "LUNCH_1",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -372,8 +372,8 @@
         25
       ],
       "class_id": "LUNCH_2",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -392,8 +392,8 @@
         25
       ],
       "class_id": "LUNCH_3",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -412,8 +412,8 @@
         25
       ],
       "class_id": "LUNCH_4",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -432,8 +432,8 @@
         25
       ],
       "class_id": "LUNCH_5",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -452,8 +452,8 @@
         25
       ],
       "class_id": "LUNCH_6",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -472,8 +472,8 @@
         25
       ],
       "class_id": "LUNCH_7",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -492,8 +492,8 @@
         25
       ],
       "class_id": "LUNCH_8",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -512,8 +512,8 @@
         25
       ],
       "class_id": "LUNCH_9",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -532,8 +532,8 @@
         25
       ],
       "class_id": "LUNCH_10",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   },
   {
@@ -552,8 +552,8 @@
         25
       ],
       "class_id": "LUNCH_11",
-      "school": 123456,
-      "user_defined": true
+      "user_defined": true,
+      "school": 123456
     }
   }
 ]

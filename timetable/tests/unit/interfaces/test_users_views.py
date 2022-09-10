@@ -44,8 +44,8 @@ class TestRegistration(TestCase):
     # PIVOT TESTS
     def test_register_school_pivot_towards_profile_registration(self):
         """
-        If the user is part of an existing school, they should be redirected to enter profile details (i.e. associate
-        themselves with the relevant school)
+        If the user is part of an existing school_id, they should be redirected to enter profile details (i.e. associate
+        themselves with the relevant school_id)
         """
         self.login_dummy_user()
         url = reverse('registration_pivot')
@@ -55,7 +55,7 @@ class TestRegistration(TestCase):
 
     def test_register_school_pivot_towards_school_registration(self):
         """
-        Test that stating they are not part of an existing school redirects user to register their school for first
+        Test that stating they are not part of an existing school_id redirects user to register their school_id for first
         time
         """
         self.login_dummy_user()
@@ -67,7 +67,7 @@ class TestRegistration(TestCase):
     # SCHOOL REGISTRATION TESTS
     def test_register_new_school(self):
         """
-        Test that a school can be registered via the relevant form, and the user then gets redirected to their
+        Test that a school_id can be registered via the relevant form, and the user then gets redirected to their
         dashboard.
         """
         self.login_dummy_user()
@@ -108,7 +108,7 @@ class TestRegistration(TestCase):
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
-        """Test that a user can register themselves to an existing school"""
+        """Test that a user can register themselves to an existing school_id"""
         self.login_dummy_user()
         url = reverse("profile_registration")
 

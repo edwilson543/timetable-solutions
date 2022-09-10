@@ -14,7 +14,7 @@ from data.models.school import School
 @login_required(login_url="/login")
 def selection_dashboard(request) -> HttpResponse:
     """View providing the context for the information displayed on the selection dashboard"""
-    school_access_ley = request.user.profile.school.school_access_key
+    school_access_ley = request.user.profile.school_id.school_access_key
     context = get_summary_stats(school_access_key=school_access_ley)
     template = loader.get_template("selection_dashboard.html")
     return HttpResponse(template.render(context, request))

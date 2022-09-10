@@ -25,7 +25,7 @@ class Header:
     PERIOD_DURATION = "period_duration"
     SUBJECT_NAME = "subject_name"
     TOTAL_SLOTS = "total_slots"
-    MIN_SLOTS = "min_slots"
+    MIN_DISTINCT_SLOTS = "min_distinct_slots"
 
     # Headers in files containing many-to-many relationships
     PUPIL_IDS = "pupil_ids"
@@ -50,7 +50,7 @@ class CSVUplaodFiles:
     TIMETABLE = CSVFile(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
                         id_column=Header.SLOT_ID)
     CLASS_REQUIREMENTS = CSVFile(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
-                                          Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_SLOTS],
+                                          Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_DISTINCT_SLOTS],
                                  id_column=Header.CLASS_ID)
     FIXED_CLASSES = CSVFile(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
                                           Header.CLASSROOM_ID, Header.SLOT_IDS],

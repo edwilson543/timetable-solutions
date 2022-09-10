@@ -30,7 +30,7 @@ class FileUploadProcessor:
     def __init__(self,
                  csv_file: UploadedFile,
                  csv_headers: List[str],
-                 school_access_key: int,  # Unique identifier for the school which the data corresponds to
+                 school_access_key: int,  # Unique identifier for the school_id which the data corresponds to
                  id_column_name: str | None,
                  model: Type[ModelInstance],
                  is_unsolved_class_upload: bool = False,
@@ -135,7 +135,7 @@ class FileUploadProcessor:
         model_dict = dict(row.to_dict())
         model_dict["school_id"] = self._school_access_key
         try:
-            model_instance = self._model.objects.create(**model_dict)
+            model_instance = self._model.create_new(**model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
@@ -151,13 +151,13 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_SLOTS: row[Header.MIN_SLOTS],
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_DISTINCT_SLOTS: row[Header.MIN_DISTINCT_SLOTS],
             "school_id": self._school_access_key}
         try:
-            model_instance = self._model.objects.create(**model_dict)
+            model_instance = self._model.create_new(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
+            pups = ast.literal_eval(row[Header.PUPIL_IDS])  # TODO update to use mutation method
             pups = {int(val) for val in pups}
             model_instance.pupils.add(*pups)
             model_instance.full_clean()
@@ -175,14 +175,14 @@ class FileUploadProcessor:
         model_dict["school_id"] = self._school_access_key
         model_dict["user_defined"] = True  # Since any fixed class uploaded by the user is user defined
         try:
-            model_instance = self._model.objects.create(**model_dict)
+            model_instance = self._model.create_new(**model_dict)
             model_instance.save()  # Need to save to be able to add pupils / slots
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
+            pups = ast.literal_eval(row[Header.PUPIL_IDS])  # TODO update to use mutation method
             pups = {int(val) for val in pups}
             model_instance.pupils.add(*pups)
 
-            slots = ast.literal_eval(row[Header.SLOT_IDS])
+            slots = ast.literal_eval(row[Header.SLOT_IDS])  # TODO update to use mutation method
             slots = {int(val) for val in slots}
             model_instance.time_slots.add(*slots)
 

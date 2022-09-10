@@ -1,4 +1,4 @@
-class_id,subject_name,teacher_id,pupil_ids,classroom_id,total_slots,min_slots
+class_id,subject_name,teacher_id,pupil_ids,classroom_id,total_slots,min_distinct_slots
 YEAR_ONE_MATHS_A,MATHS,1,"[1, 2]",1,8,8
 YEAR_ONE_MATHS_B,MATHS,2,[3],2,8,6
 YEAR_ONE_ENGLISH_A,ENGLISH,3,"[1, 2]",3,8,6

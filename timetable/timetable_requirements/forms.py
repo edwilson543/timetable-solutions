@@ -1,5 +1,5 @@
 """
-Module containing forms that allow users to upload their school data (pupil lists, timetable structure etc.)
+Module containing forms that allow users to upload their school_id data (pupil lists, timetable structure etc.)
 These get uploaded as csv files and then used to populate the relevant model in the database using the ORM.
 """
 

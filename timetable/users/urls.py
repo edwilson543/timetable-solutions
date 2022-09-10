@@ -10,6 +10,6 @@ urlpatterns = [
     re_path(r"^dashboard/", dashboard_view, name="dashboard"),
     path("register/", Register.as_view(), name="register"),
     path("register/pivot/", SchoolRegisterPivot.as_view(), name="registration_pivot"),
-    path("register/pivot/school/", SchoolRegistration.as_view(), name="school_registration"),
+    path("register/pivot/school_id/", SchoolRegistration.as_view(), name="school_registration"),
     path("register/pivot/profile/", ProfileRegistration.as_view(), name="profile_registration"),
 ]

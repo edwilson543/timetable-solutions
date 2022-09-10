@@ -162,8 +162,9 @@ class UnsolvedClassUploadView(View):
         form = UnsolvedClassUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["unsolved_classes"]
-            upload_processor = FileUploadProcessor(is_unsolved_class_upload=True,
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+            upload_processor = FileUploadProcessor(
+                is_unsolved_class_upload=True, csv_file=file, csv_headers=self.csv_headers,
+                id_column_name=self.id_column_name, model=self.model,
                 school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)
 
@@ -182,7 +183,8 @@ class FixedClassUploadView(View):
         form = FixedClassUploadForm(request.POST, request.FILES)
         if form.is_valid():
             file = request.FILES["fixed_classes"]
-            upload_processor = FileUploadProcessor(is_fixed_class_upload=True,
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
+            upload_processor = FileUploadProcessor(
+                is_fixed_class_upload=True, csv_file=file, csv_headers=self.csv_headers,
+                id_column_name=self.id_column_name, model=self.model,
                 school_access_key=request.user.profile.school.school_access_key)
         return upload_page_view(request)

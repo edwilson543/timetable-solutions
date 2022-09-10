@@ -15,16 +15,16 @@ class CustomUserCreationForm(UserCreationForm):
 
 class SchoolRegistrationPivot(forms.Form):
     """
-    Pivot to decide whether the 2nd stage of user sign-up also requires them to register their school, or if
-    they just need to enter their school access key. No doubt unnecessary with javascript...
+    Pivot to decide whether the 2nd stage of user sign-up also requires them to register their school_id, or if
+    they just need to enter their school_id access key. No doubt unnecessary with javascript...
     """
-    CHOICES = [("EXISTING", "I have an existing school access key"),
-               ("NEW", "I am registering my school for the first time")]
+    CHOICES = [("EXISTING", "I have an existing school_id access key"),
+               ("NEW", "I am registering my school_id for the first time")]
     existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect, label="")
 
 
 class SchoolRegistrationForm(forms.ModelForm):
-    """Form to fill in at registration, if the user also needs to register their school."""
+    """Form to fill in at registration, if the user also needs to register their school_id."""
 
     error_message = None
 
@@ -33,7 +33,7 @@ class SchoolRegistrationForm(forms.ModelForm):
         fields = ["school_access_key", "school_name"]
 
     def is_valid(self):
-        """Check that the requested school access key is taken and meets the requirements"""
+        """Check that the requested school_id access key is taken and meets the requirements"""
         form_valid = super().is_valid()
         if not form_valid:
             self.error_message = self.errors["school_access_key"][0]  # Manually extract auto django form error

@@ -23,8 +23,8 @@ class Pupil(models.Model):
             member = Pupil.YearGroup(year_group)
             return member.label
 
-    pupil_id = models.IntegerField()
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    pupil_id = models.IntegerField()
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     year_group = models.IntegerField(choices=YearGroup.choices)
@@ -32,3 +32,11 @@ class Pupil(models.Model):
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.surname}, {self.firstname}"
+
+    # FACTORY METHODS
+    @classmethod
+    def create_new(cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int):
+        """Method to create a new Pupil instance."""
+        pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
+                                   year_group=year_group)
+        return pupil

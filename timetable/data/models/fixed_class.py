@@ -1,5 +1,8 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
+# Standard library imports
+from typing import List
+
 # Django imports
 from django.db import models
 
@@ -34,11 +37,33 @@ class FixedClass(models.Model):
     class_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
-    pupils = models.ManyToManyField(Pupil, related_name="classes")
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
+    pupils = models.ManyToManyField(Pupil, related_name="classes")
     time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
     user_defined = models.BooleanField()  # If True, this is a class user has said must occur at a certain time
 
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
+
+    # FACTORY METHODS
+    @classmethod
+    def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
+                   teacher_id: int | None = None, classroom_id: int | None = None):
+        """
+        Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
+        since they have a many to many relationship to the FixedClass model.
+        """
+        fixed_cls = cls.objects.create(
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
+            classroom_id=classroom_id, user_defined=user_defined)
+        return fixed_cls
+
+    # MUTATION METHODS
+    def add_pupils(self):
+        # TODO
+        pass
+
+    def add_time_slots(self):
+        # TODO
+        pass

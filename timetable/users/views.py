@@ -38,7 +38,7 @@ class Register(View):
 
 
 class SchoolRegisterPivot(View):
-    """View for step 2 of registering - whether or not school also needs registering"""
+    """View for step 2 of registering - whether or not school_id also needs registering"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -59,7 +59,7 @@ class SchoolRegisterPivot(View):
 
 
 class SchoolRegistration(View):
-    """View for step 3a of registering - when the school is not registered"""
+    """View for step 3a of registering - when the school_id is not registered"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -81,7 +81,7 @@ class SchoolRegistration(View):
 
 
 class ProfileRegistration(View):
-    """View for step 3b of registering - when the school is already registered, just need the access key"""
+    """View for step 3b of registering - when the school_id is already registered, just need the access key"""
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -94,7 +94,7 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             # noinspection PyUnresolvedReferences
-            profile = Profile.objects.create(user=request.user, school_id=access_key)
+            profile = Profile.create_new(user=request.user, school_id=access_key)
             profile.save()
             return redirect(reverse("dashboard"))
         else:
