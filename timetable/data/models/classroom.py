@@ -15,7 +15,7 @@ class ClassroomQuerySet(models.QuerySet):
         return self.filter(school_id=school_id)
 
     def get_individual_classroom(self, school_id: int, classroom_id: int) -> models.QuerySet:
-        """Method to return an individual classroom object"""
+        """Method to return an individual classroom instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(classroom_id=classroom_id))
 
     def school_has_classroom_data(self, school_id: int) -> bool:
