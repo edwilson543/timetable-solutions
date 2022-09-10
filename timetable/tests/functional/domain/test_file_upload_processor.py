@@ -1,23 +1,21 @@
 """Module containing unit tests for the FileUploadProcessor"""
 
-# Standard library imports
-from pathlib import Path
-
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 # Local application imports
-from ..constants.csv_headers import CSVUplaodFiles
-from ..file_upload_processor import FileUploadProcessor
+from base_files.settings import BASE_DIR
 from data.models.teacher import Teacher
 from data.models.school import School
+from timetable_requirements.constants.csv_headers import CSVUplaodFiles
+from timetable_requirements.file_upload_processor import FileUploadProcessor
 
 
 class TestFileUploadProcessor(TestCase):
 
     fixtures = ["user_school_profile.json"]
-    test_data_folder = Path(__file__).parents[1] / "test_data"
+    test_data_folder = BASE_DIR / "tests" / "test_data"
 
     def test_upload_teachers_to_database_valid_upload(self):
         """Unit test that the FileUploadProcessor is able to take a csv file and save it to the database."""

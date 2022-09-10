@@ -115,5 +115,5 @@ class TestViews(TestCase):
         colours = response.context["colours"]
         self.assertIsInstance(colours, dict)
         self.assertEqual(colours[Pupil.YearGroup.ONE.value], Pupil.YearGroup.ONE.label)
-        self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.value)
-        self.assertEqual(colours[FixedClass.SubjectColour.LUNCH.name], FixedClass.SubjectColour.LUNCH.value)
+        self.assertEqual(colours[FixedClass.SubjectColour.FREE.name], FixedClass.SubjectColour.FREE.label)
+        self.assertEqual(colours[FixedClass.SubjectColour.LUNCH.name], FixedClass.SubjectColour.LUNCH.label)

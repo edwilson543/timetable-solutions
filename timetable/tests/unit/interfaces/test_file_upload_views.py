@@ -2,7 +2,6 @@
 
 # Standard library imports
 from datetime import time, timedelta
-from pathlib import Path
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -17,12 +16,13 @@ from data.models.pupil import Pupil
 from data.models.teacher import Teacher
 from data.models.unsolved_class import UnsolvedClass
 from data.models.school import School
+from base_files.settings import BASE_DIR
 
 
 class TestFileUploadViews(TestCase):
 
     fixtures = ["user_school_profile.json"]
-    test_data_folder = Path(__file__).parents[1] / "test_data"
+    test_data_folder = BASE_DIR / "tests" / "test_data"
 
     def upload_test_file(self, filename: str, url_data_name: str) -> None:
         """
