@@ -5,21 +5,16 @@ from typing import Dict
 
 # Django imports
 from django.forms import Form
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
 from .constants.csv_headers import CSVUplaodFiles
+from data import models
 from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
     UnsolvedClassUploadForm, FixedClassUploadForm
 from .file_upload_processor import FileUploadProcessor
-from data.models.unsolved_class import UnsolvedClass
-from data.models.fixed_class import FixedClass
-from data.models.classroom import Classroom
-from data.models.timetable_slot import TimetableSlot
-from data.models.pupil import Pupil
-from data.models.teacher import Teacher
 
 
 @dataclass
@@ -39,15 +34,16 @@ class RequiredUpload:
 
 
 # noinspection PyUnresolvedReferences
-def _get_all_form_context() -> Dict:
+def _get_all_form_context(request: HttpRequest) -> Dict:
     """Function to get a dictionary of forms that must be populated (note each form has just one file field
     to allow files to be uploaded separately)."""
-    teacher_upload_status = len(Teacher.objects.all()) > 0  # In due course, status will depend on authenticated user
-    pupil_upload_status = len(Pupil.objects.all()) > 0
-    classroom_upload_status = len(Classroom.objects.all()) > 0
-    timetable_upload_status = len(TimetableSlot.objects.all()) > 0
-    unsolved_class_upload_status = len(UnsolvedClass.objects.all()) > 0
-    fixed_class_upload_status = len(FixedClass.objects.all()) > 0
+    school_id = request.user.profile.school.school_access_key
+    teacher_upload_status = len(models.Teacher.objects.filter(school_id=school_id)) > 0  # TODO move to models
+    pupil_upload_status = len(models.Pupil.objects.filter(school_id=school_id)) > 0
+    classroom_upload_status = len(models.Classroom.objects.filter(school_id=school_id)) > 0
+    timetable_upload_status = len(models.TimetableSlot.objects.filter(school_id=school_id)) > 0
+    unsolved_class_upload_status = len(models.UnsolvedClass.objects.filter(school_id=school_id)) > 0
+    fixed_class_upload_status = len(models.FixedClass.objects.filter(school_id=school_id)) > 0
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=teacher_upload_status,
@@ -73,7 +69,7 @@ def _get_all_form_context() -> Dict:
 def upload_page_view(request, error_message: str | None = None):
     """View called by the individual views for each of the form upload views."""
     template = loader.get_template("file_upload.html")
-    context = _get_all_form_context()
+    context = _get_all_form_context(request=request)
     context["error_message"] = error_message
     return HttpResponse(template.render(context, request))
 
@@ -82,7 +78,7 @@ class TeacherListUploadView(View):
     """View to control upload of teacher list to database"""
     csv_headers = CSVUplaodFiles.TEACHERS.headers
     id_column_name = CSVUplaodFiles.TEACHERS.id_column
-    model = Teacher
+    model = models.Teacher
 
     # TODO add get request method
 
@@ -104,7 +100,7 @@ class PupilListUploadView(View):
     """View to control upload of pupil list to database"""
     csv_headers = CSVUplaodFiles.PUPILS.headers
     id_column_name = CSVUplaodFiles.PUPILS.id_column
-    model = Pupil
+    model = models.Pupil
 
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
@@ -121,7 +117,7 @@ class ClassroomListUploadView(View):
     """View to control upload of the classroom list to database"""
     csv_headers = CSVUplaodFiles.CLASSROOMS.headers
     id_column_name = CSVUplaodFiles.CLASSROOMS.id_column
-    model = Classroom
+    model = models.Classroom
 
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
@@ -138,7 +134,7 @@ class TimetableStructureUploadView(View):
     """View to control upload of the timetable structure to database"""
     csv_headers = CSVUplaodFiles.TIMETABLE.headers
     id_column_name = CSVUplaodFiles.TIMETABLE.id_column
-    model = TimetableSlot
+    model = models.TimetableSlot
 
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
@@ -155,7 +151,7 @@ class UnsolvedClassUploadView(View):
     """View to control upload of the unsolved classes to the database"""
     csv_headers = CSVUplaodFiles.CLASS_REQUIREMENTS.headers
     id_column_name = CSVUplaodFiles.CLASS_REQUIREMENTS.id_column
-    model = UnsolvedClass
+    model = models.UnsolvedClass
 
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
@@ -176,7 +172,7 @@ class FixedClassUploadView(View):
     """
     csv_headers = CSVUplaodFiles.FIXED_CLASSES.headers
     id_column_name = CSVUplaodFiles.FIXED_CLASSES.id_column
-    model = FixedClass
+    model = models.FixedClass
 
     def post(self, request, *args, **kwargs):
         """Method for handling a POST request"""
