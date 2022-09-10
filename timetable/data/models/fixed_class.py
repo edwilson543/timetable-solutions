@@ -17,6 +17,14 @@ from data.models.timetable_slot import TimetableSlot
 class FixedClassQuerySet(models.QuerySet):
     """Custom queryset manager for the FixedClass model"""
 
+    def get_all_school_fixed_classes(self, school_id: int) -> models.QuerySet:
+        """Method to return the full queryset of fixed classes for a given school"""
+        return self.filter(school_id=school_id)
+
+    def get_individual_fixed_class(self, school_id: int, class_id: int) -> models.QuerySet:
+        """Method to return an individual FixedClass instance"""
+        return self.get(models.Q(school_id=school_id) & models.Q(class_id=class_id))
+
     def get_non_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))

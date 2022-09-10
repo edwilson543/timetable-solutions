@@ -143,10 +143,9 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
 
         # Test the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
-        all_classes = models.FixedClass.objects.filter(school=school)
+        all_classes = models.FixedClass.objects.get_all_school_fixed_classes(school_id=123456)
         assert len(all_classes) == 12
-        pup_lunch = models.FixedClass.objects.get(class_id="LUNCH_PUPILS")
+        pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
         self.assertQuerysetEqual(pup_lunch.pupils.all(), models.Pupil.objects.all(), ordered=False)
-        teach_ten_lunch = models.FixedClass.objects.get(class_id="LUNCH_10")
+        teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
         self.assertEqual(teach_ten_lunch.teacher, models.Teacher.objects.get(teacher_id=10))
