@@ -21,7 +21,7 @@ class Header:
     BUILDING = "building"
     ROOM_NUMBER = "room_number"
     DAY_OF_WEEK = "day_of_week"
-    PERIOD_START_TIME = "period_start_time"
+    PERIOD_STARTS_AT = "period_starts_at"
     PERIOD_DURATION = "period_duration"
     SUBJECT_NAME = "subject_name"
     TOTAL_SLOTS = "total_slots"
@@ -47,7 +47,7 @@ class CSVUplaodFiles:
                        id_column=Header.TEACHER_ID)
     CLASSROOMS = CSVFile(headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
                          id_column=Header.CLASSROOM_ID)
-    TIMETABLE = CSVFile(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_START_TIME, Header.PERIOD_DURATION],
+    TIMETABLE = CSVFile(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
                         id_column=Header.SLOT_ID)
     CLASS_REQUIREMENTS = CSVFile(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
                                           Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_SLOTS],

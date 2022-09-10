@@ -95,8 +95,8 @@ class FileUploadProcessor:
         """Method to ensure timestamps / timedelta are converted to the correct type"""
         if Header.PERIOD_DURATION in upload_df.columns:
             upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(upload_df[Header.PERIOD_DURATION])
-        if Header.PERIOD_START_TIME in upload_df.columns:
-            upload_df[Header.PERIOD_START_TIME] = pd.to_datetime(upload_df[Header.PERIOD_START_TIME])
+        if Header.PERIOD_STARTS_AT in upload_df.columns:
+            upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(upload_df[Header.PERIOD_STARTS_AT])
         return upload_df
 
     def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:

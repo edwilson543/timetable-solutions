@@ -103,7 +103,7 @@ class TestFileUploadViews(TestCase):
         self.assertEqual(len(all_slots), 35)
         slot = models.TimetableSlot.objects.get(slot_id=1)
         self.assertEqual(slot.day_of_week, "MONDAY")
-        self.assertEqual(slot.period_start_time, time(hour=9))
+        self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
 
     def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):

@@ -1,4 +1,4 @@
-slot_id,day_of_week,period_start_time,period_duration
+slot_id,day_of_week,period_starts_at,period_duration
 1,MONDAY,09:00:00,01:00:00
 2,TUESDAY,09:00:00,01:00:00
 3,WEDNESDAY,09:00:00,01:00:00

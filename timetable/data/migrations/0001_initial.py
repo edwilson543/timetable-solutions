@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('slot_id', models.IntegerField()),
                 ('day_of_week', models.CharField(choices=[('MONDAY', 'Monday'), ('TUESDAY', 'Tuesday'), ('WEDNESDAY', 'Wednesday'), ('THURSDAY', 'Thursday'), ('FRIDAY', 'Friday')], max_length=9)),
-                ('period_start_time', models.TimeField(choices=[(datetime.time(9, 0), 'PERIOD_ONE'), (datetime.time(10, 0), 'PERIOD_TWO'), (datetime.time(11, 0), 'PERIOD_THREE'), (datetime.time(12, 0), 'PERIOD_FOUR'), (datetime.time(13, 0), 'LUNCH'), (datetime.time(14, 0), 'PERIOD_FIVE'), (datetime.time(15, 0), 'PERIOD_SIX')])),
+                ('period_starts_at', models.TimeField(choices=[(datetime.time(9, 0), 'PERIOD_ONE'), (datetime.time(10, 0), 'PERIOD_TWO'), (datetime.time(11, 0), 'PERIOD_THREE'), (datetime.time(12, 0), 'PERIOD_FOUR'), (datetime.time(13, 0), 'LUNCH'), (datetime.time(14, 0), 'PERIOD_FIVE'), (datetime.time(15, 0), 'PERIOD_SIX')])),
                 ('period_duration', models.DurationField(default=datetime.timedelta(seconds=3600))),
                 ('school', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data.school')),
             ],
