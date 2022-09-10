@@ -1,9 +1,10 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import List
+from typing import Set
 
 # Django imports
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
 # Local application imports (other models)
@@ -42,7 +43,7 @@ class FixedClass(models.Model):
     time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
     user_defined = models.BooleanField()  # If True, this is a class user has said must occur at a certain time
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
 
@@ -60,10 +61,20 @@ class FixedClass(models.Model):
         return fixed_cls
 
     # MUTATION METHODS
-    def add_pupils(self):
-        # TODO
-        pass
+    def add_pupils(self, pupil_ids: Set[int]) -> None:
+        """
+        Method to associate a set of pupils with an individual fixed class
+        :param pupil_ids - a set of primary keys relating to pupils, with the fixed class to become associate with each
+        """
+        # noinspection PyUnresolvedReferences
+        self.pupils.add(*pupil_ids)
+        self.save()
 
-    def add_time_slots(self):
-        # TODO
-        pass
+    def add_timetable_slots(self, slot_ids: Set[int]) -> None:
+        """
+        Method to associate a set of timetable slots with an individual fixed class
+        :param slot_ids - a set of primary keys relating to timetable slots to associate this fixed class instance with
+        """
+        # noinspection PyUnresolvedReferences
+        self.time_slots.add(*slot_ids)
+        self.save()

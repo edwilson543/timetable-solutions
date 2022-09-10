@@ -25,7 +25,7 @@ class FileUploadProcessor:
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
     """
-    __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float(nan) is error-prone
+    __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
 
     def __init__(self,
                  csv_file: UploadedFile,
@@ -67,11 +67,13 @@ class FileUploadProcessor:
         upload_df = self._convert_df_to_correct_types(upload_df)
 
         if not self._check_headers_valid_and_ids_unique(upload_df=upload_df):
+            # Note that the _check_headers_valid_and_ids_unique sets the error message attribute
             return
 
         valid_model_instances = self._get_valid_model_instances(upload_df=upload_df)
 
         if valid_model_instances is None:
+            # Note here a relevant error message is set
             return
         for model in valid_model_instances:
             model.save()
@@ -91,7 +93,7 @@ class FileUploadProcessor:
         return True
 
     @staticmethod
-    def _convert_df_to_correct_types(upload_df: pd.DataFrame):
+    def _convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
         """Method to ensure timestamps / timedelta are converted to the correct type"""
         if Header.PERIOD_DURATION in upload_df.columns:
             upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(upload_df[Header.PERIOD_DURATION])
@@ -100,20 +102,24 @@ class FileUploadProcessor:
         return upload_df
 
     def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
+        """
+        Method to iterate through the rows of the dataframe, and create a model instance for each row.
+        :return A list of valid model instances, unless at least one error is found, in which case None is returned
+        """
         valid_model_instances = []
         for _, data_ser in upload_df.iterrows():
 
             if self._is_unsolved_class_upload:
                 model_instance = self._create_unsolved_class_instance_from_row(row=data_ser)
-                if model_instance is None:
-                    for md_inst in valid_model_instances:  # Since we must save in _create_unsolved_clas_instance
+                if model_instance is None:  # An error has occurred so delete any pre-saved instances
+                    for md_inst in valid_model_instances:  # Since we must save in _create_unsolved_class_instance
                         md_inst.delete()
                     return None
                 valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
 
             elif self._is_fixed_class_upload:
                 model_instance = self._create_fixed_class_instance_from_row(row=data_ser)
-                if model_instance is None:
+                if model_instance is None:  # An error has occurred so delete any pre-saved instances
                     for md_inst in valid_model_instances:
                         md_inst.delete()
                     return None
@@ -180,11 +186,11 @@ class FileUploadProcessor:
 
             pups = ast.literal_eval(row[Header.PUPIL_IDS])  # TODO update to use mutation method
             pups = {int(val) for val in pups}
-            model_instance.pupils.add(*pups)
+            model_instance.add_pupils(pupil_ids=pups)
 
             slots = ast.literal_eval(row[Header.SLOT_IDS])  # TODO update to use mutation method
             slots = {int(val) for val in slots}
-            model_instance.time_slots.add(*slots)
+            model_instance.add_timetable_slots(slot_ids=slots)
 
             model_instance.full_clean()
             return model_instance
