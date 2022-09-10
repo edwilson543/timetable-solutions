@@ -14,8 +14,12 @@ from .constants.csv_headers import CSVUplaodFiles
 from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
     UnsolvedClassUploadForm, FixedClassUploadForm
 from .file_upload_processor import FileUploadProcessor
-from .models import UnsolvedClass
-from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot, FixedClass
+from data.models.unsolved_class import UnsolvedClass
+from data.models.fixed_class import FixedClass
+from data.models.classroom import Classroom
+from data.models.timetable_slot import TimetableSlot
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
 
 
 @dataclass

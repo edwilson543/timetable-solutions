@@ -4,9 +4,11 @@ from django.http import HttpResponse
 from django.template import loader
 
 # Local application imports
-from .models import Pupil, Teacher, FixedClass
+from data.models.fixed_class import FixedClass
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
 from .utils import get_timetable_slot_indexed_timetable, get_summary_stats
-from users.models import School
+from data.models.school import School
 
 
 @login_required(login_url="/login")

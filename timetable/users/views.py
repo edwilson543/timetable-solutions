@@ -8,7 +8,7 @@ from django.views import View
 from django.urls import reverse
 
 # Local application imports
-from .models import Profile
+from data.models.user_profile import Profile
 from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
 
 

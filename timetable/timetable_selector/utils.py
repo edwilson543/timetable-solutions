@@ -7,8 +7,11 @@ from typing import Dict, List
 from django.db.models import QuerySet, Q
 
 # Local application imports
-from .models import FixedClass, TimetableSlot, Pupil, Teacher
-from users.models import School
+from data.models.fixed_class import FixedClass
+from data.models.timetable_slot import TimetableSlot
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
+from data.models.school import School
 
 
 # noinspection PyUnresolvedReferences

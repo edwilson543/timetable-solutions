@@ -10,13 +10,13 @@ from django.test import TestCase
 # Local application imports
 from ..constants.csv_headers import CSVUplaodFiles
 from ..file_upload_processor import FileUploadProcessor
-from timetable_selector.models import Teacher
-from users.models import School
+from data.models.teacher import Teacher
+from data.models.school import School
 
 
 class TestFileUploadProcessor(TestCase):
 
-    fixtures = ["users.json"]
+    fixtures = ["user_school_profile.json"]
     test_data_folder = Path(__file__).parents[1] / "test_data"
 
     def test_upload_teachers_to_database_valid_upload(self):

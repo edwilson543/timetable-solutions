@@ -1,9 +1,10 @@
-# Django imports
 from django.db import models
 
-# Local application imports
-from timetable_selector.models import FixedClass, Teacher, Pupil, Classroom
-from users.models import School
+from data.models import School
+from data.models.classroom import Classroom
+from data.models.fixed_class import FixedClass
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
 
 
 class UnsolvedClass(models.Model):

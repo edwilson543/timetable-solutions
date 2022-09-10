@@ -6,12 +6,15 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from ..models import Pupil, TimetableSlot, FixedClass, Teacher
+from data.models.fixed_class import FixedClass
+from data.models.timetable_slot import TimetableSlot
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
 
 
 class TestViews(TestCase):
     """Test class for the timetable_selector views"""
-    fixtures = ["users.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "fixed_classes.json"]
 
     def test_pupil_navigator_response(self):
         """

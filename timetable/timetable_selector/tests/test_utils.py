@@ -4,13 +4,13 @@
 from django.test import TestCase
 
 # Local application imports
-from ..models import TimetableSlot
+from data.models.timetable_slot import TimetableSlot
 from ..utils import get_summary_stats
 
 
 class TestViews(TestCase):
     """Test class for function in the utils.py module of timetable_selector views"""
-    fixtures = ["users.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "classes.json"]
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "fixed_classes.json"]
 
     def test_get_summary_stats_correct(self):
         """

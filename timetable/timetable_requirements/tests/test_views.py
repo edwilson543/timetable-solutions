@@ -10,14 +10,18 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from timetable_selector.models import Teacher, Pupil, Classroom, TimetableSlot, FixedClass
-from timetable_requirements.models import UnsolvedClass
-from users.models import School
+from data.models.fixed_class import FixedClass
+from data.models.classroom import Classroom
+from data.models.timetable_slot import TimetableSlot
+from data.models.pupil import Pupil
+from data.models.teacher import Teacher
+from data.models.unsolved_class import UnsolvedClass
+from data.models.school import School
 
 
 class TestFileUploadViews(TestCase):
 
-    fixtures = ["users.json"]
+    fixtures = ["user_school_profile.json"]
     test_data_folder = Path(__file__).parents[1] / "test_data"
 
     def upload_test_file(self, filename: str, url_data_name: str) -> None:

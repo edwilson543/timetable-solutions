@@ -8,8 +8,8 @@ from typing import List
 
 # io settings
 loc = Path(__file__).parents[1] / "timetable" / "timetable_selector" / "fixtures"
-input_filenames = ["classes.json"]
-output_filenames = ["classes.json"]
+input_filenames = ["fixed_classes.json"]
+output_filenames = ["fixed_classes.json"]
 school_access_key = 123456
 # old_id_column = "pupil_id"
 

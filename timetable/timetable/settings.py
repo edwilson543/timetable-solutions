@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'data',
     'users',
     'timetable_selector',
     'timetable_requirements',

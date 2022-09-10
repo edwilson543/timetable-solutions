@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 
 # Local application imports
-from .models import School
+from data.models.school import School
 
 
 class CustomUserCreationForm(UserCreationForm):

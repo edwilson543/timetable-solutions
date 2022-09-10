@@ -5,12 +5,12 @@ from django.urls import reverse
 
 # Local application imports
 from ..forms import CustomUserCreationForm, ProfileRegistrationForm, SchoolRegistrationForm
-from ..models import School
+from data.models.school import School
 
 
 class TestRegistration(TestCase):
     """Tests for the Register view class"""
-    fixtures = ["users.json"]
+    fixtures = ["user_school_profile.json"]
 
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
