@@ -27,3 +27,7 @@ class UnsolvedClass(models.Model):
                                   related_name="unsolved_classes", blank=True, null=True)
     total_slots = models.PositiveSmallIntegerField()
     min_slots = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.class_id} (unsolved)"

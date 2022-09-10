@@ -28,3 +28,7 @@ class Pupil(models.Model):
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     year_group = models.IntegerField(choices=YearGroup.choices)
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.surname}, {self.firstname}"

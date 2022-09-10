@@ -19,3 +19,7 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"Profile of: {self.user}"

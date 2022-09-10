@@ -18,3 +18,7 @@ class Teacher(models.Model):
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     title = models.CharField(max_length=10)
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.title} {self.surname}, {self.firstname}"

@@ -34,3 +34,7 @@ class TimetableSlot(models.Model):
     day_of_week = models.CharField(max_length=9, choices=WeekDay.choices)
     period_start_time = models.TimeField(choices=PeriodStart.choices)
     period_duration = models.DurationField(default=dt.timedelta(hours=1))
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.day_of_week}, {self.period_start_time}"

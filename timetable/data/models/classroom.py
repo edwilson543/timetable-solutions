@@ -17,3 +17,7 @@ class Classroom(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     building = models.CharField(max_length=20)
     room_number = models.IntegerField()
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.building},  {self.room_number}"

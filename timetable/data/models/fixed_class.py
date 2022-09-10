@@ -30,11 +30,15 @@ class FixedClass(models.Model):
             """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
             return getattr(FixedClass.SubjectColour, subject_name).label
 
-    class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    class_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     pupils = models.ManyToManyField(Pupil, related_name="classes")
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     time_slots = models.ManyToManyField(TimetableSlot, related_name="classes")
     user_defined = models.BooleanField()  # If True, this is a class user has said must occur at a certain time
+
+    def __str__(self):
+        """String representation of the model for the django admin site"""
+        return f"{self.school}: {self.class_id} (fixed)"
