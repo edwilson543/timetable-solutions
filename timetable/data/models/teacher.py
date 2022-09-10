@@ -1,10 +1,25 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
+# Standard library imports
+from typing import Set
+
 # Django imports
 from django.db import models
 
 # Local application imports (other models)
 from data.models import School
+
+
+class TeacherQuerySet(models.QuerySet):
+    """Custom queryset manager for the Teacher model"""
+
+    def get_all_school_pupils(self, school_id: int) -> models.QuerySet:
+        """Method returning the queryset of teachers registered at the given school"""
+        return self.filter(school_id=school_id)
+
+    def get_individual_teacher(self, school_id: int, teacher_id: int):
+        """Method returning an individual Teacher"""
+        return self.get(models.Q(school_id=school_id) & models.Q(teacher_id=teacher_id))
 
 
 class Teacher(models.Model):
@@ -18,6 +33,9 @@ class Teacher(models.Model):
     firstname = models.CharField(max_length=20)
     surname = models.CharField(max_length=20)
     title = models.CharField(max_length=10)
+
+    # Introduce a custom manager
+    objects = TeacherQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""
