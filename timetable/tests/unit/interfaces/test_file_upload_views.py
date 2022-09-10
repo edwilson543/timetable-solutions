@@ -115,10 +115,10 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
-        school = models.School.objects.get_individual_school(school_id=123456)
-        all_classes = models.UnsolvedClass.objects.filter(school=school)
+        all_classes = models.UnsolvedClass.objects.get_all_school_unsolved_classes(school_id=123456)
         assert len(all_classes) == 12
-        klass = models.UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
+        klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
+                                                                           class_id="YEAR_ONE_MATHS_A")
 
         self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
         self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))

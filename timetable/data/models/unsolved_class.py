@@ -14,6 +14,18 @@ from data.models.pupil import Pupil
 from data.models.teacher import Teacher
 
 
+class UnsolvedClassQuerySet(models.QuerySet):
+    """Custom queryset manager for the UnsolvedClass model"""
+
+    def get_all_school_unsolved_classes(self, school_id: int) -> models.QuerySet:
+        """Method to return the full queryset of fixed classes for a given school"""
+        return self.filter(school_id=school_id)
+
+    def get_individual_unsolved_class(self, school_id: int, class_id: int):
+        """Method to return an individual FixedClass instance"""
+        return self.get(models.Q(school_id=school_id) & models.Q(class_id=class_id))
+
+
 class UnsolvedClass(models.Model):
     """
     Model used to specify the school_id classes that must take place, including who must be able to attend them,
@@ -30,6 +42,9 @@ class UnsolvedClass(models.Model):
                                   related_name="unsolved_classes", blank=True, null=True)
     total_slots = models.PositiveSmallIntegerField()
     min_distinct_slots = models.PositiveSmallIntegerField()
+
+    # Introduce a custom manager
+    objects = UnsolvedClassQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""
