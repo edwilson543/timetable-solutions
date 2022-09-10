@@ -86,10 +86,9 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
 
         # Test that the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
-        all_classrooms = models.Classroom.objects.filter(school=school)
+        all_classrooms = models.Classroom.objects.get_all_school_classrooms(school_id=123456)
         self.assertEqual(len(all_classrooms), 12)
-        room = models.Classroom.objects.get(classroom_id=11)
+        room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):

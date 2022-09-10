@@ -7,6 +7,22 @@ from django.db import models
 from data.models.school import School
 
 
+class ClassroomQuerySet(models.QuerySet):
+    """Custom queryset manager for the classroom class"""
+
+    def get_all_school_classrooms(self, school_id: int) -> models.QuerySet:
+        """Method to return the full queryset of classrooms for a given school"""
+        return self.filter(school_id=school_id)
+
+    def get_individual_classroom(self, school_id: int, classroom_id: int) -> models.QuerySet:
+        """Method to return an individual classroom object"""
+        return self.get(models.Q(school_id=school_id) & models.Q(classroom_id=classroom_id))
+
+    def school_has_classroom_data(self, school_id: int) -> bool:
+        """Method to return True/False depending on whether there's classroom data in the db for the given school"""
+        return self.filter(school_id=school_id).exists()
+
+
 class Classroom(models.Model):
     """
     Model storing the classroom (location) in which a FixedClass/UnsolvedClass takes place.
@@ -17,6 +33,9 @@ class Classroom(models.Model):
     classroom_id = models.IntegerField()
     building = models.CharField(max_length=20)
     room_number = models.IntegerField()
+
+    # Introduce a custom manager
+    objects = ClassroomQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""

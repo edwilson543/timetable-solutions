@@ -40,7 +40,7 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
     school_id = request.user.profile.school.school_access_key
     teacher_upload_status = len(models.Teacher.objects.filter(school_id=school_id)) > 0  # TODO move to models
     pupil_upload_status = len(models.Pupil.objects.filter(school_id=school_id)) > 0
-    classroom_upload_status = len(models.Classroom.objects.filter(school_id=school_id)) > 0
+    classroom_upload_status = models.Classroom.objects.school_has_classroom_data(school_id=school_id)
     timetable_upload_status = len(models.TimetableSlot.objects.filter(school_id=school_id)) > 0
     unsolved_class_upload_status = len(models.UnsolvedClass.objects.filter(school_id=school_id)) > 0
     fixed_class_upload_status = len(models.FixedClass.objects.filter(school_id=school_id)) > 0
