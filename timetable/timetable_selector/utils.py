@@ -20,7 +20,7 @@ def get_summary_stats(school_access_key: int) -> Dict:
     Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
     the selection_dashboard
     """
-    school = School.objects.get(school_access_key=school_access_key)
+    school = School.objects.get_individual_school(school_id=school_access_key)
 
     # Get the query sets used to create summary statistics
     all_classes = FixedClass.objects.get_non_user_defined_fixed_classes(school_id=school_access_key)

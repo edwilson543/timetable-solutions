@@ -76,7 +76,7 @@ class TestRegistration(TestCase):
         response = self.client.post(url, data=form_data)
         self.assertRedirects(response, reverse("dashboard"))
 
-        new_school = models.School.objects.get(school_access_key=654321)
+        new_school = models.School.objects.get_individual_school(school_id=654321)
         self.assertIsInstance(new_school, models.School)
 
     def test_register_new_school_access_key_not_6_digits(self):

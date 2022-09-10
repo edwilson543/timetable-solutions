@@ -58,8 +58,10 @@ class ProfileRegistrationForm(forms.Form):
             return False
         access_key = self.cleaned_data.get("school_access_key")
 
-        if models.School.objects.filter(school_access_key=access_key).exists():
+        try:
+            models.School.objects.get_individual_school(school_id=access_key)
             return True
-        else:
+
+        except ObjectDoesNotExist:
             self.error_message = "Access key not found, please try again"
             return False

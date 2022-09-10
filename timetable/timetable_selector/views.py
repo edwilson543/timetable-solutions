@@ -26,7 +26,8 @@ def pupil_navigator(request) -> HttpResponse:
     View to provide a dictionary of pupils which can be linked out to each of their timetables.
     This is pre-processed to be indexed by year group for display in the template.
     """
-    school = School.objects.get(school_access_key=request.user.profile.school.school_access_key)
+    school_id = request.user.profile.school.school_access_key
+    school = School.objects.get_individual_school(school_id=school_id)
     # noinspection PyUnresolvedReferences
     year_indexed_pupils = {year: Pupil.objects.filter(
         year_group=year, school=school).order_by("surname").values() for year in Pupil.YearGroup.values}
@@ -44,7 +45,8 @@ def teacher_navigator(request) -> HttpResponse:
     View to bring up a list of teachers which can be linked out to each of their timetables.
     Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
     """
-    school = School.objects.get(school_access_key=request.user.profile.school.school_access_key)
+    school_id = request.user.profile.school.school_access_key
+    school = School.objects.get_individual_school(school_id=school_id)
     alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     # noinspection PyUnresolvedReferences
     teachers = {letter: Teacher.objects.filter(

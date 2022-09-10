@@ -34,7 +34,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
 
         # Test that the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
+        school = models.School.objects.get_individual_school(school_id=123456)
         all_teachers = models.Teacher.objects.filter(school=school)
         self.assertEqual(len(all_teachers), 11)
         greg = models.Teacher.objects.get(teacher_id=6)
@@ -51,7 +51,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
         # Assert that nothing has happened
-        school = models.School.objects.get(school_access_key=123456)
+        school = models.School.objects.get_individual_school(school_id=123456)
         self.assertEqual(len(models.Teacher.objects.filter(school=school)), 0)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
@@ -95,7 +95,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
+        school = models.School.objects.get_individual_school(school_id=123456)
         all_slots = models.TimetableSlot.objects.filter(school=school)
         self.assertEqual(len(all_slots), 35)
         slot = models.TimetableSlot.objects.get(slot_id=1)
@@ -118,7 +118,7 @@ class TestFileUploadViews(TestCase):
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
-        school = models.School.objects.get(school_access_key=123456)
+        school = models.School.objects.get_individual_school(school_id=123456)
         all_classes = models.UnsolvedClass.objects.filter(school=school)
         assert len(all_classes) == 12
         klass = models.UnsolvedClass.objects.get(class_id="YEAR_ONE_MATHS_A")
