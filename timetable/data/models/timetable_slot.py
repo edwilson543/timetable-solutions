@@ -10,6 +10,18 @@ from django.db import models
 from data.models.school import School
 
 
+class TimetableSlotQuerySet(models.QuerySet):
+    """Custom queryset manager for the TimetableSlot model"""
+
+    def get_all_school_timeslots(self, school_id: int) -> models.QuerySet:
+        """Method returning the queryset of all timetable slots at the given school"""
+        return self.filter(school_id=school_id)
+
+    def get_individual_timeslot(self, school_id: int, slot_id: int):
+        """Method returning an individual Teacher"""
+        return self.get(models.Q(school_id=school_id) & models.Q(slot_id=slot_id))
+
+
 class TimetableSlot(models.Model):
     """Model for stating the unique timetable slots when classes can take place"""
 
@@ -34,6 +46,9 @@ class TimetableSlot(models.Model):
     day_of_week = models.CharField(max_length=9, choices=WeekDay.choices)
     period_starts_at = models.TimeField(choices=PeriodStart.choices)
     period_duration = models.DurationField(default=dt.timedelta(hours=1))
+
+    # Introduce a custom manager
+    objects = TimetableSlotQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""
