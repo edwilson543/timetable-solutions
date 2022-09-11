@@ -108,7 +108,10 @@ class DataUploadView(View):
         self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
         self.error_message = None
 
-    # TODO add get request method
+    @staticmethod
+    def get(request, *arg, **kwarg):
+        """If the user accesses the class' url directly, we simply return the upload page view"""
+        return upload_page_view(request)
 
     def post(self, request, *args, **kwargs):
         """All instances of this view class upload one file - as such the post method handles this."""
