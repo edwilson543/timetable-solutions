@@ -7,8 +7,8 @@ from django.test import TestCase
 # Local application imports
 from base_files.settings import BASE_DIR
 from data import models
-from interfaces.timetable_requirements.constants.csv_headers import CSVUplaodFiles
-from interfaces.timetable_requirements.file_upload_processor import FileUploadProcessor
+from interfaces.data_upload.constants.csv_headers import CSVUplaodFiles
+from interfaces.data_upload.file_upload_processor import FileUploadProcessor
 
 
 class TestFileUploadProcessor(TestCase):

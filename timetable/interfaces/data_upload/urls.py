@@ -1,4 +1,4 @@
-"""Urls module for the timetable_requirements app"""
+"""Urls module for the data_upload app"""
 
 # Django imports
 from django.urls import path

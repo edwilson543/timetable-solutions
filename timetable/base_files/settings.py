@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'data',
     'interfaces.users',
     'interfaces.timetable_selector',
-    'interfaces.timetable_requirements',
+    'interfaces.data_upload',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -1,4 +1,4 @@
-"""Unit tests for views of the timetable_requirements app"""
+"""Unit tests for views of the data_upload app"""
 
 # Standard library imports
 from datetime import time, timedelta

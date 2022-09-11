@@ -21,7 +21,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('view/', include('interfaces.timetable_selector.urls')),
-    path('requirements/', include('interfaces.timetable_requirements.urls')),
+    path('requirements/', include('interfaces.data_upload.urls')),
     path('users/', include('interfaces.users.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
