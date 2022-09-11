@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class TimetableSelectorConfig(AppConfig):
+class TimetableRequirementsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'timetable_selector'
+    name = 'interfaces.timetable_requirements'

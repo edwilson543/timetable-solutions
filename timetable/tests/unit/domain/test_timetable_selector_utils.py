@@ -5,7 +5,7 @@ from django.test import TestCase
 
 # Local application imports
 from data import models
-from timetable_selector.utils import get_summary_stats
+from interfaces.timetable_selector.utils import get_summary_stats
 
 
 class TestViews(TestCase):

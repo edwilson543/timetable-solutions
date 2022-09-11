@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from users.forms import CustomUserCreationForm, ProfileRegistrationForm, SchoolRegistrationForm
+from interfaces.users.forms import CustomUserCreationForm, ProfileRegistrationForm, SchoolRegistrationForm
 from data import models
 
 
