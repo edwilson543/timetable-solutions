@@ -1,7 +1,7 @@
 """
 A separate view is used for each file that gets uploaded, since they are uploaded separately.
 These views are virtually identical, and thus can just be instances of some generic view class.
-This module defines that generic view class, and its ancillaries
+This module defines that generic view class, and its ancillaries.
 """
 
 # Standard library imports
