@@ -5,31 +5,20 @@ from django.views.generic.base import View
 # Local application imports
 from data import models
 from domain import data_upload_processing
+from interfaces.data_upload import forms
 from .forms import TeacherListUpload, PupilListUpload, ClassroomListUpload, TimetableStructureUpload, \
     UnsolvedClassUpload, FixedClassUpload
-from .generic_view_class import upload_page_view
+from .upload_view_base_class import upload_page_view
+from .upload_view_base_class import DataUploadView
 
 
-class TeacherListUploadView(View):
-    """View to control upload of teacher list to database"""
-    csv_headers = data_upload_processing.UploadFileStructure.TEACHERS.headers
-    id_column_name = data_upload_processing.UploadFileStructure.TEACHERS.id_column
-    model = models.Teacher
-
-    # TODO add get request method
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = TeacherListUpload(request.POST, request.FILES)
-        error_message = None
-        if form.is_valid():
-            file = request.FILES["teacher_list"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-            error_message = upload_processor.upload_error_message  # Will just be None if no errors
-
-        return upload_page_view(request, error_message)
+class TeacherListUploadView(DataUploadView):
+    """View class to control the uploading of the list of teachers by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.TEACHERS,
+            model=models.Teacher,
+            form=forms.TeacherListUpload)
 
 
 class PupilListUploadView(View):

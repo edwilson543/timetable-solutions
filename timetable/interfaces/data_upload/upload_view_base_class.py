@@ -87,33 +87,35 @@ class DataUploadView(View):
                  file_structure: data_upload_processing.FileStructure,
                  model: Type[ModelSubclass],
                  form: Type[forms.FormSubclass],
-                 file_field_name: str,
                  is_fixed_class_upload_view: bool = False,
                  is_unsolved_class_upload_view: bool = False):
         """
-        View class representing the upload of a single file to the database. One instance is create per file that gets
-        uploaded.
+        Base view class for the upload of a single file to the database. One subclass is create per file that gets
+        uploaded. The class is subclasses, rather than creating instances, since View.as_view(), used in the url
+        dispatcher, is only available on classes and not on instances.
+
         :param file_structure - the column headers and id column of the uploaded file
         :param model - the model the uploaded file is seeking to create instances of
         :param form - the form that the view receives input from
-        :param file_field_name - the name of the field on the Form subclass that the uploaded file is stored in
-        is_fixed/unsolved_class_upload_view - T/F for the two special cases that require different upload processing
+        :param is_unsolved_class_upload_view & is_fixed_class_upload_view - boolean values handling special cases
+        requiring different processing of the user uploaded file
         """
         super().__init__()
         self._file_structure = file_structure
         self._model = model
         self._form = form
-        self._file_field_name = file_field_name
         self._is_fixed_class_upload_view = is_fixed_class_upload_view
         self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
         self.error_message = None
+
+    # TODO add get request method
 
     def post(self, request, *args, **kwargs):
         """All instances of this view class upload one file - as such the post method handles this."""
         form = self._form(request.POST, request.FILES)
         school_access_key = request.user.profile.school.school_access_key
         if form.is_valid():
-            file = request.FILES[self._file_field_name]
+            file = request.FILES[self._form.Meta.file_field_name]
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=file, csv_headers=self._file_structure.headers, id_column_name=self._file_structure.id_column,
                 model=self._model, school_access_key=school_access_key,

@@ -4,11 +4,11 @@
 from django.urls import path
 
 # Local application imports
-import interfaces.data_upload.generic_view_class
+import interfaces.data_upload.upload_view_base_class
 from . import views
 
 urlpatterns = [
-    path('file_upload/', interfaces.data_upload.generic_view_class.upload_page_view, name='file_upload_page'),
+    path('file_upload/', interfaces.data_upload.upload_view_base_class.upload_page_view, name='file_upload_page'),
     path('file_upload/teacher_list/', views.TeacherListUploadView.as_view(), name='teacher_list'),
     path('file_upload/pupil_list/', views.PupilListUploadView.as_view(), name='pupil_list'),
     path('file_upload/classroom_list/', views.ClassroomListUploadView.as_view(), name='classroom_list'),

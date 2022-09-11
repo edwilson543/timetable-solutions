@@ -25,13 +25,13 @@ class TestFileUploadViews(TestCase):
         """
         with open(self.test_data_folder / filename, "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            url = reverse(url_data_name)  # Corresponds to TeacherListUploadView
+            url = reverse(url_data_name)
             self.client.post(url, data={url_data_name: upload_file})
 
     def test_teacher_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of teachers successfully populates the central database."""
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
+        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")  # TeacherListUploadView
 
         # Test that the database is as expected
         all_teachers = models.Teacher.objects.get_all_school_teachers(school_id=123456)
