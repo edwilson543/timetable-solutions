@@ -33,7 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'data',
     'interfaces.users',
-    'interfaces.timetable_selector',
+    'interfaces.view_timetables',
     'interfaces.data_upload',
     'django.contrib.admin',
     'django.contrib.auth',

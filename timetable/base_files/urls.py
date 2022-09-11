@@ -20,7 +20,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('view/', include('interfaces.timetable_selector.urls')),
+    path('view/', include('interfaces.view_timetables.urls')),
     path('requirements/', include('interfaces.data_upload.urls')),
     path('users/', include('interfaces.users.urls')),
     path('admin/', admin.site.urls),

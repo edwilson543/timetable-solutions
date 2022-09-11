@@ -1,4 +1,4 @@
-"""Module containing unit tests for the views in timetable_selector app."""
+"""Module containing unit tests for the views in view_timetables app."""
 
 # Django imports
 from django.db.models import QuerySet
@@ -10,7 +10,7 @@ from data import models
 
 
 class TestViews(TestCase):
-    """Test class for the timetable_selector views"""
+    """Test class for the view_timetables views"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "fixed_classes.json"]
 
     def test_pupil_navigator_response(self):

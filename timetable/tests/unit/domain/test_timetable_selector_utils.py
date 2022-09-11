@@ -1,15 +1,15 @@
-"""Module containing unit tests for the utility functions in timetable_selector app."""
+"""Module containing unit tests for the utility functions in view_timetables app."""
 
 # Django imports
 from django.test import TestCase
 
 # Local application imports
 from data import models
-from interfaces.timetable_selector.utils import get_summary_stats
+from interfaces.view_timetables.utils import get_summary_stats
 
 
 class TestViews(TestCase):
-    """Test class for function in the utils.py module of timetable_selector views"""
+    """Test class for function in the utils.py module of view_timetables views"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json", "fixed_classes.json"]
 
     def test_get_summary_stats_correct(self):

@@ -1,4 +1,4 @@
-"""URLs module for timetable_selector app."""
+"""URLs module for view_timetables app."""
 
 # Django imports
 from django.urls import path
