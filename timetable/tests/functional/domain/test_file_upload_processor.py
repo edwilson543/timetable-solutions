@@ -7,8 +7,7 @@ from django.test import TestCase
 # Local application imports
 from base_files.settings import BASE_DIR
 from data import models
-from domain.data_upload_processor.constant_csv_headers import CSVUplaodFiles
-from domain.data_upload_processor.file_upload_processor import FileUploadProcessor
+from domain import data_upload_processing
 
 
 class TestFileUploadProcessor(TestCase):
@@ -20,9 +19,10 @@ class TestFileUploadProcessor(TestCase):
         """Unit test that the FileUploadProcessor is able to take a csv file and save it to the database."""
         with open(self.test_data_folder / "teachers.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = FileUploadProcessor(
-                csv_file=upload_file, csv_headers=CSVUplaodFiles.TEACHERS.headers,
-                id_column_name=CSVUplaodFiles.TEACHERS.id_column, model=models.Teacher, school_access_key=123456)
+            upload_processor = data_upload_processing.FileUploadProcessor(
+                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
+                id_column_name=data_upload_processing.UploadFileStructure.TEACHERS.id_column,
+                model=models.Teacher, school_access_key=123456)
 
         # Test that attribute 'upload_successful' has been set to True, indicating that everything has worked
         self.assertTrue(upload_processor.upload_successful)

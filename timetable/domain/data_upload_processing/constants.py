@@ -39,7 +39,7 @@ class CSVFile:
 
 
 @dataclass(frozen=True)
-class CSVUplaodFiles:
+class UploadFileStructure:
     """Storage of the file structure of all csv files that get uploaded / downloaded from the database by users."""
     PUPILS = CSVFile(headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
                      id_column=Header.PUPIL_ID)

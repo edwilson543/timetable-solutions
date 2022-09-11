@@ -15,7 +15,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db.models import Model
 
 # Local application imports
-from .constant_csv_headers import Header
+from .constants import Header
 
 ModelInstance = TypeVar("ModelInstance", bound=Model)  # Typehint when referring to specific django Model subclasses
 
