@@ -1,14 +1,9 @@
-
-# Django imports
-from django.views.generic.base import View
+"""Views relating to the upload of user data"""
 
 # Local application imports
 from data import models
 from domain import data_upload_processing
 from interfaces.data_upload import forms
-from .forms import TeacherListUpload, PupilListUpload, ClassroomListUpload, TimetableStructureUpload, \
-    UnsolvedClassUpload, FixedClassUpload
-from .upload_view_base_class import upload_page_view
 from .upload_view_base_class import DataUploadView
 
 
@@ -21,91 +16,48 @@ class TeacherListUploadView(DataUploadView):
             form=forms.TeacherListUpload)
 
 
-class PupilListUploadView(View):
-    """View to control upload of pupil list to database"""
-    csv_headers = data_upload_processing.UploadFileStructure.PUPILS.headers
-    id_column_name = data_upload_processing.UploadFileStructure.PUPILS.id_column
-    model = models.Pupil
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = PupilListUpload(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["pupil_list"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-        return upload_page_view(request)
+class PupilListUploadView(DataUploadView):
+    """View class to control the uploading of the list of pupils by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.PUPILS,
+            model=models.Pupil,
+            form=forms.PupilListUpload)
 
 
-class ClassroomListUploadView(View):
-    """View to control upload of the classroom list to database"""
-    csv_headers = data_upload_processing.UploadFileStructure.CLASSROOMS.headers
-    id_column_name = data_upload_processing.UploadFileStructure.CLASSROOMS.id_column
-    model = models.Classroom
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = ClassroomListUpload(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["classroom_list"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-        return upload_page_view(request)
+class ClassroomListUploadView(DataUploadView):
+    """View class to control the uploading of the list of classrooms by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.CLASSROOMS,
+            model=models.Classroom,
+            form=forms.ClassroomListUpload)
 
 
-class TimetableStructureUploadView(View):
-    """View to control upload of the timetable structure to database"""
-    csv_headers = data_upload_processing.UploadFileStructure.TIMETABLE.headers
-    id_column_name = data_upload_processing.UploadFileStructure.TIMETABLE.id_column
-    model = models.TimetableSlot
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = TimetableStructureUpload(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["timetable_structure"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=file, csv_headers=self.csv_headers, id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-        return upload_page_view(request)
+class TimetableStructureUploadView(DataUploadView):
+    """View class to control the uploading of the list of teachers by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.TIMETABLE,
+            model=models.TimetableSlot,
+            form=forms.TimetableStructureUpload)
 
 
-class UnsolvedClassUploadView(View):
-    """View to control upload of the unsolved classes to the database"""
-    csv_headers = data_upload_processing.UploadFileStructure.CLASS_REQUIREMENTS.headers
-    id_column_name = data_upload_processing.UploadFileStructure.CLASS_REQUIREMENTS.id_column
-    model = models.UnsolvedClass
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = UnsolvedClassUpload(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["unsolved_classes"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                is_unsolved_class_upload=True, csv_file=file, csv_headers=self.csv_headers,
-                id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-        return upload_page_view(request)
+class UnsolvedClassUploadView(DataUploadView):
+    """View class to control the uploading of the requirements for classes that must take place by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.UNSOLVED_CLASSES,
+            model=models.UnsolvedClass,
+            form=forms.UnsolvedClassUpload,
+            is_unsolved_class_upload_view=True)
 
 
-class FixedClassUploadView(View):
-    """
-    View to control upload of the fixed classes to the database (i.e. classes which are already known to have to
-    occur at a certain times.
-    """
-    csv_headers = data_upload_processing.UploadFileStructure.FIXED_CLASSES.headers
-    id_column_name = data_upload_processing.UploadFileStructure.FIXED_CLASSES.id_column
-    model = models.FixedClass
-
-    def post(self, request, *args, **kwargs):
-        """Method for handling a POST request"""
-        form = FixedClassUpload(request.POST, request.FILES)
-        if form.is_valid():
-            file = request.FILES["fixed_classes"]
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                is_fixed_class_upload=True, csv_file=file, csv_headers=self.csv_headers,
-                id_column_name=self.id_column_name, model=self.model,
-                school_access_key=request.user.profile.school.school_access_key)
-        return upload_page_view(request)
+class FixedClassUploadView(DataUploadView):
+    """View class to control the uploading of the list of classes that must occur at a certain time by the user"""
+    def __init__(self):
+        super().__init__(
+            file_structure=data_upload_processing.constants.UploadFileStructure.FIXED_CLASSES,
+            model=models.FixedClass,
+            form=forms.FixedClassUpload,
+            is_fixed_class_upload_view=True)

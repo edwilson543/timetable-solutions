@@ -88,7 +88,7 @@ class TestFileUploadViews(TestCase):
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
+        """Unit test that simulating a csv file upload of tt slots successfully populates the central database."""
         self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
