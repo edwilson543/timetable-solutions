@@ -33,7 +33,7 @@ class Header:
 
 
 @dataclass(frozen=True)
-class CSVFile:
+class FileStructure:
     headers: List[str]
     id_column: str
 
@@ -41,17 +41,17 @@ class CSVFile:
 @dataclass(frozen=True)
 class UploadFileStructure:
     """Storage of the file structure of all csv files that get uploaded / downloaded from the database by users."""
-    PUPILS = CSVFile(headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
-                     id_column=Header.PUPIL_ID)
-    TEACHERS = CSVFile(headers=[Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
-                       id_column=Header.TEACHER_ID)
-    CLASSROOMS = CSVFile(headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
-                         id_column=Header.CLASSROOM_ID)
-    TIMETABLE = CSVFile(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
-                        id_column=Header.SLOT_ID)
-    CLASS_REQUIREMENTS = CSVFile(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
-                                          Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_DISTINCT_SLOTS],
-                                 id_column=Header.CLASS_ID)
-    FIXED_CLASSES = CSVFile(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
-                                          Header.CLASSROOM_ID, Header.SLOT_IDS],
-                            id_column=Header.CLASS_ID)
+    PUPILS = FileStructure(headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+                           id_column=Header.PUPIL_ID)
+    TEACHERS = FileStructure(headers=[Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
+                             id_column=Header.TEACHER_ID)
+    CLASSROOMS = FileStructure(headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
+                               id_column=Header.CLASSROOM_ID)
+    TIMETABLE = FileStructure(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
+                              id_column=Header.SLOT_ID)
+    CLASS_REQUIREMENTS = FileStructure(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
+                                                Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_DISTINCT_SLOTS],
+                                       id_column=Header.CLASS_ID)
+    FIXED_CLASSES = FileStructure(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
+                                           Header.CLASSROOM_ID, Header.SLOT_IDS],
+                                  id_column=Header.CLASS_ID)
