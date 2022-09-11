@@ -1,0 +1,37 @@
+* {
+    margin:0;
+    padding:0;
+    font-family: Arial;
+}
+
+/* Download button */
+.download_button {
+  border: 1px solid black;
+  margin-top: 10px;
+}
+
+/* Title settings */
+.heading {text-align: center;}
+
+/* Table formatting */
+table {width:100%;}
+
+.perimeter {
+  background-color: #4d4141;
+  color: white;
+  border-radius: 3px;
+}
+td:hover {
+  background-color: #0a2fa8;
+  color: white;
+}
+th, td {
+  padding: 5px;
+  background-color: #c9c9c9; /* default colour if subject is not found */
+  text-align: center;
+}
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  border-radius: 3px;
+}

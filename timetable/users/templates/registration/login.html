@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block head_content %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'stylesheets/login_registration_forms.css' %}">
+<title>Login or register</title>
+{% endblock %}
+
+<style>
+{% block style_block %}
+#parent_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 90%;
+}
+
+#register_button {
+    border-radius: 5px;
+    border: 1px solid #33003d;
+    width: 330px;
+    font-size: 20px;
+    padding: 5px;
+    color: white;
+    text-align: center;
+    background-color: #004000;
+}
+
+{% endblock %}
+</style>
+
+
+{% block content %}
+
+<div id="parent_container">
+    <div id="form_container">
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Login">
+        </form>
+
+        <hr style="color:black;width:90%;margin-bottom:15px;">
+        <a href="{% url 'register' %}" id="register_button">Register</a>
+
+    </div>
+</div>
+
+<hr>
+{% endblock %}

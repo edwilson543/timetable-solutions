@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1">
+{% load static %}
+<link rel="icon" type="image/x-icon" href="{% static 'img/favicon2.png' %}">
+<link rel="stylesheet" href="{% static 'stylesheets/base.css' %}">
+
+{% block head_content %}
+{% endblock %}
+
+<style>
+body {
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: cover;
+    background-repeat: repeat;
+    background-size: contain;
+}
+
+{% block style_block %}
+{% endblock %}
+</style>
+
+</head>
+
+<body>
+<!--Add a 'head strap'-->
+<div class="head_strap">
+    <i class="head_strap_text">Timetable Solutions</i>
+    {% if user.is_authenticated %}
+        <span class="login_info">
+            {{user.profile.school.school_name}} | {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
+        </span>
+    {% endif %}
+</div>
+
+<!--Add a navigation bar-->
+{% if user.is_authenticated %}
+<div class="navbar">
+    <p class="navbar_text">
+        <a href="{% url 'dashboard' %}">Home</a> |
+        <a href="{% url 'file_upload_page' %}">Data</a> |
+        <a href="">Create</a> |
+        <a href="{% url 'selection_dashboard' %}">View</a>
+    </p>
+</div>
+{% endif %}
+
+{% block content %}
+{% endblock %}
+
+<hr style="border-color:black;border-width:1px;">
+<footer class="footer_info">
+    <span>
+        Copyright Timetable Solutions Ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
+    </span>
+</footer>
+
+</body>
+
+</html>
