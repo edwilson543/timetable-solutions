@@ -83,7 +83,6 @@ def upload_page_view(request, error_message: str | None = None):
 
 
 class DataUploadView(View):
-
     def __init__(self,
                  file_structure: data_upload_processing.FileStructure,
                  model: Type[ModelSubclass],
@@ -91,6 +90,15 @@ class DataUploadView(View):
                  file_field_name: str,
                  is_fixed_class_upload_view: bool = False,
                  is_unsolved_class_upload_view: bool = False):
+        """
+        View class representing the upload of a single file to the database. One instance is create per file that gets
+        uploaded.
+        :param file_structure - the column headers and id column of the uploaded file
+        :param model - the model the uploaded file is seeking to create instances of
+        :param form - the form that the view receives input from
+        :param file_field_name - the name of the field on the Form subclass that the uploaded file is stored in
+        is_fixed/unsolved_class_upload_view - T/F for the two special cases that require different upload processing
+        """
         super().__init__()
         self._file_structure = file_structure
         self._model = model
@@ -115,4 +123,3 @@ class DataUploadView(View):
             self.error_message = upload_processor.upload_error_message  # Will just be None if no errors
 
         return upload_page_view(request, self.error_message)
-
