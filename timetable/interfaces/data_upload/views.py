@@ -10,11 +10,11 @@ from django.template import loader
 from django.views.generic.base import View
 
 # Local application imports
-from .constants.csv_headers import CSVUplaodFiles
+from domain.data_upload_processor.constant_csv_headers import CSVUplaodFiles
 from data import models
 from .forms import TeacherListUploadForm, PupilListUploadForm, ClassroomListUploadForm, TimetableStructureUploadForm, \
     UnsolvedClassUploadForm, FixedClassUploadForm
-from .file_upload_processor import FileUploadProcessor
+from domain.data_upload_processor.file_upload_processor import FileUploadProcessor
 
 
 @dataclass
