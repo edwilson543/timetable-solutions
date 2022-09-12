@@ -16,12 +16,14 @@ from base_files.settings import BASE_DIR
 class TestCaseWithUpload(TestCase):
     """Subclass of the TestCase class, capable of uploading test csv files (subclasses twice below)."""
     test_data_folder = BASE_DIR / "tests" / "test_data"
+    fixtures = ["user_school_profile.json"]
 
     def upload_test_file(self, filename: str, url_data_name: str) -> None:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
         """
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         with open(self.test_data_folder / filename, "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             url = reverse(url_data_name)
@@ -34,11 +36,8 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
     uploads
     """
 
-    fixtures = ["user_school_profile.json"]
-
     def test_teacher_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of teachers successfully populates the central database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")  # TeacherListUploadView
 
         # Test that the database is as expected
@@ -53,7 +52,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         We try uploading the demo pupils file, to check that this does not work, and also that the database
         is unaffected.
         """
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         # Try uploading the wrong file (pupils.csv)
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
@@ -62,7 +60,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
 
         # Test that the database is as expected
@@ -78,7 +75,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         is unaffected.
         """
         # Try uploading the wrong file (teachers.csv)
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
 
         # Assert that nothing has happened
@@ -86,7 +82,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
 
         # Test that the database is as expected
@@ -97,7 +92,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of tt slots successfully populates the central database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
@@ -113,21 +107,9 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
     """Unit tests for the views controlling the upload of files which depend on the prior success of earlier uploads"""
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
-    test_data_folder = BASE_DIR / "tests" / "test_data"
-
-    def upload_test_file(self, filename: str, url_data_name: str) -> None:
-        """
-        :param filename: the name of the csv file we are simulating the upload of
-        :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
-        """
-        with open(self.test_data_folder / filename, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            url = reverse(url_data_name)
-            self.client.post(url, data={url_data_name: upload_file})
 
     def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of unsolved classes successfully populates the database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
@@ -140,7 +122,6 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
 
     def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of fixed classes successfully populates the database."""
-        self.client.login(username="dummy_teacher", password="dt123dt123")
         self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
 
         # Test the database is as expected
