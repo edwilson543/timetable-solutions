@@ -13,9 +13,8 @@ from data import models
 from base_files.settings import BASE_DIR
 
 
-class TestFileUploadViews(TestCase):
-
-    fixtures = ["user_school_profile.json"]
+class TestCaseWithUpload(TestCase):
+    """Subclass of the TestCase class, capable of uploading test csv files (subclasses twice below)."""
     test_data_folder = BASE_DIR / "tests" / "test_data"
 
     def upload_test_file(self, filename: str, url_data_name: str) -> None:
@@ -27,6 +26,15 @@ class TestFileUploadViews(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             url = reverse(url_data_name)
             self.client.post(url, data={url_data_name: upload_file})
+
+
+class TestIndependentFileUploadViews(TestCaseWithUpload):
+    """
+    Unit tests for the views controlling the upload of files which do not depend on the prior success of earlier
+    uploads
+    """
+
+    fixtures = ["user_school_profile.json"]
 
     def test_teacher_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of teachers successfully populates the central database."""
@@ -100,18 +108,26 @@ class TestFileUploadViews(TestCase):
         self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
 
+
+class TestDependentFileUploadViews(TestCaseWithUpload):
+    """Unit tests for the views controlling the upload of files which depend on the prior success of earlier uploads"""
+
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+    test_data_folder = BASE_DIR / "tests" / "test_data"
+
+    def upload_test_file(self, filename: str, url_data_name: str) -> None:
+        """
+        :param filename: the name of the csv file we are simulating the upload of
+        :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
+        """
+        with open(self.test_data_folder / filename, "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+            url = reverse(url_data_name)
+            self.client.post(url, data={url_data_name: upload_file})
+
     def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):
-        """
-        Unit test that simulating a csv file upload of unsolved classes successfully populates the central database.
-        Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
-        """
+        """Unit test that simulating a csv file upload of unsolved classes successfully populates the database."""
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        # First we need the pupils, teachers, classrooms and timetable structure
-        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
-        self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
-        self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
-        self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
-        # Now can upload the unsolved classes csv
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
@@ -119,22 +135,12 @@ class TestFileUploadViews(TestCase):
         assert len(all_classes) == 12
         klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
                                                                            class_id="YEAR_ONE_MATHS_A")
-
         self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
         self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
 
     def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
-        """
-        Unit test that simulating a csv file upload of fixed classes successfully populates the central database.
-        Note that we first have to upload the pupils, teachers, timetable structure and classrooms.
-        """
+        """Unit test that simulating a csv file upload of fixed classes successfully populates the database."""
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        # First we need the pupils, teachers, classrooms and timetable structure
-        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")
-        self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
-        self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
-        self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
-        # Now can upload the unsolved classes csv
         self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
 
         # Test the database is as expected
