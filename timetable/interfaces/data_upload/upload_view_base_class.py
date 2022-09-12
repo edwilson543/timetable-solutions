@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Dict, Type
 
 # Django imports
+from django.contrib.auth.decorators import login_required
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
@@ -71,6 +72,7 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
     return context
 
 
+@login_required
 def upload_page_view(request, error_message: str | None = None):
     """
     View called by the individual views for each of the form upload views.
