@@ -9,8 +9,8 @@ import pandas as pd
 
 
 # io settings
-loc = Path(__file__).parent / "timetable" / "timetable_selector" / "fixtures"
-output_loc = Path(__file__).parent / "timetable" / "timetable_requirements" / "test_data"
+loc = Path(__file__).parent / "timetable" / "view_timetables" / "fixtures"
+output_loc = Path(__file__).parent / "timetable" / "data_upload" / "test_data"
 files = ["classes"]
 
 if __name__ == "__main__":
