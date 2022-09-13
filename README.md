@@ -30,16 +30,9 @@ The core functionality of the application is / will be:
         Migrate the models (the migrations are all committed)<br>
         <code>python manage.py migrate</code>
     </li>
-    <li>Install the fixtures if you want some dummy data to view, in the following order:
-        <ol>
-            <li>users.json</li>
-            <li>pupils.json, teachers.json, classrooms.json, timetable.json</li>
-            <li>classes.json</li>
-        </ol>
-    </li>
+    <li>Install the fixtures if you want some dummy data to view, by running scripts/load_all_fixtures.py:
     <li>
-        Alternatively, create/upload your own data through the app. Note that not all functionality has been
-        implemented yet.
+        Alternatively, create/upload your own data through the app.
     </li>
 </ol>
 
