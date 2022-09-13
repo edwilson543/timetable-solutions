@@ -114,7 +114,7 @@ class TestViews(TestCase):
         self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
 
         # Test the colours context
-        colours = response.context["colours"]
+        colours = response.context["year_group_colours"]
         self.assertIsInstance(colours, dict)
         self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], models.Pupil.YearGroup.ONE.label)
         self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)

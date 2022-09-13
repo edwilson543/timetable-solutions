@@ -34,7 +34,7 @@
     box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
 }
 
-{% for year_group, colour in colours.items %}
+{% for year_group, colour in year_group_colours.items %}
 .color_{{ year_group }} {
   background-color: {{colour}};
 }
