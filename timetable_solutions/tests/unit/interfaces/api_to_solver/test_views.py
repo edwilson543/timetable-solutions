@@ -9,7 +9,6 @@ from rest_framework.response import Response
 
 # Django imports
 from django import test
-from django import urls
 
 # Local application imports
 from base_files.settings import BASE_DIR
@@ -54,23 +53,22 @@ class TestFixedClassViewSet(test.TestCase):
         # TODO add test for status code 204 once implemented
 
     # POST REQUESTS
-    # TODO - make work
     def test_post_request_for_valid_fixed_class_instance(self):
         """Method to test that we can post a valid instance of the FixedClass model via the API"""
         # Set test parameters
-        fixed_class_1 = {
+        fixed_class = {
             "school": 123456, "class_id": "TEST_1", "subject_name": "MATHS", "teacher": 1,
             "classroom": 1, "pupils": [1, 2], "time_slots": [1, 2], "user_defined": False
         }
-        fixed_class_2 = {
-            "school": 123456, "class_id": "TEST_2", "subject_name": "MATHS", "teacher": 1,
-            "classroom": 1, "pupils": [1, 2], "time_slots": [3, 4], "user_defined": False
-        }
-        fixed_classes = [fixed_class_1, fixed_class_2]
+        school_access_key = 123456
+        url = f"/api/fixedclasses/?school_access_key={school_access_key}"
 
         # # Submit the POST request to API
-        response = self.client.post("/api/fixedclasses/?school_access_key=123456", data=fixed_class_1)
+        response = self.client.post(url, data=fixed_class)
 
         # # Test the outcome to the database - i.e. the POST request has made a FixedClass instance
         fc = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_1")
         self.assertEqual(fc.class_id, "TEST_1")
+        self.assertEqual(response.status_code, 201)  # Status code for successful creation
+
+    # TODO - extend functionality to allow posting of a list of FixedClass instances in one POST request
