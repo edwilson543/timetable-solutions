@@ -53,7 +53,7 @@ class TestFixedClassViewSet(test.TestCase):
         # TODO add test for status code 204 once implemented
 
     # POST REQUESTS
-    def test_post_request_for_valid_fixed_class_instance(self):
+    def test_post_request_for_individual_valid_fixed_class_instance(self):
         """Method to test that we can post a valid instance of the FixedClass model via the API"""
         # Set test parameters
         fixed_class = {
@@ -66,9 +66,46 @@ class TestFixedClassViewSet(test.TestCase):
         # # Submit the POST request to API
         response = self.client.post(url, data=fixed_class, content_type="application/json")
 
-        # # Test the outcome to the database - i.e. the POST request has made a FixedClass instance
+        # Test the outcome - i.e. the POST request has made a FixedClass instance
+        self.assertEqual(response.status_code, 201)  # Status code for successful creation
         fc = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_1")
         self.assertEqual(fc.class_id, "TEST_1")
+
+    def test_post_request_for_list_of_valid_fixed_class_instances(self):
+        """Method to test that we can post a LIST of valid instances of the FixedClass model via the API"""
+        # Set test parameters
+        fixed_class_1 = {
+            "school": 123456, "class_id": "TEST_1", "subject_name": "MATHS", "teacher": 1,
+            "classroom": 1, "pupils": [1, 2], "time_slots": [1, 2], "user_defined": False
+        }
+        fixed_class_2 = {
+            "school": 123456, "class_id": "TEST_2", "subject_name": "ENGLISH", "teacher": 1,
+            "classroom": 1, "pupils": [1, 2], "time_slots": [1, 2], "user_defined": False
+        }
+        classes = [fixed_class_1, fixed_class_2]
+        school_access_key = 123456
+        url = f"/api/fixedclasses/?school_access_key={school_access_key}"
+
+        # Submit the POST request to API
+        response = self.client.post(url, data=classes, content_type="application/json")
+
+        # Test the outcome - i.e. the POST request has made two FixedClass instances
         self.assertEqual(response.status_code, 201)  # Status code for successful creation
 
-    # TODO - extend functionality to allow posting of a list of FixedClass instances in one POST request
+        fc_1 = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_1")
+        self.assertEqual(fc_1.class_id, "TEST_1")
+
+        fc_2 = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_2")
+        self.assertEqual(fc_2.class_id, "TEST_2")
+
+    def test_post_request_for_invalid_data_type(self):
+        """Method to test that we receive a HTTP 400 status code for posting junk data"""
+        # Set test parameters
+        school_access_key = 123456
+        url = f"/api/fixedclasses/?school_access_key={school_access_key}"
+
+        # Submit the POST request to API
+        response = self.client.post(url, data=["JUNK"], content_type="application/json")
+
+        # Test the outcome - i.e. the POST request has made two FixedClass instances
+        self.assertEqual(response.status_code, 400)  # Status code for bad request
