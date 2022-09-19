@@ -35,6 +35,8 @@ INSTALLED_APPS = [
     'interfaces.users',
     'interfaces.view_timetables',
     'interfaces.data_upload',
+    'interfaces.api_to_solver',
+    'rest_framework'
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
