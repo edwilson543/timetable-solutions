@@ -11,6 +11,6 @@ from interfaces.api_to_solver import views
 router = routers.DefaultRouter()
 router.register(r"fixedclasses", viewset=views.FixedClassViewSet, basename="fixedclasses")
 
-url_patterns = [
+urlpatterns = [
     urls.path("", urls.include(router.urls))
 ]
