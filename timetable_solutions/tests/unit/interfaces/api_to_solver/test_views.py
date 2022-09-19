@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 # Django imports
 from django import test
+from django import urls
 
 # Local application imports
 from base_files.settings import BASE_DIR
@@ -54,25 +55,22 @@ class TestFixedClassViewSet(test.TestCase):
 
     # POST REQUESTS
     # TODO - make work
-    # def test_post_request_for_valid_fixed_class_instance(self):
-    #     """Method to test that we can post a valid instance of the FixedClass model via the API"""
-    #     # Set test parameters
-    #     fixed_class_1 = {
-    #         "school": 123456, "class_id": "TEST_1", "subject_name": "MATHS", "teacher": 1,
-    #         "classroom": 1, "pupils": [1, 2], "time_slots": [1, 2], "user_defined": False
-    #     }
-    #     fixed_class_2 = {
-    #         "school": 123456, "class_id": "TEST_2", "subject_name": "MATHS", "teacher": 1,
-    #         "classroom": 1, "pupils": [1, 2], "time_slots": [3, 4], "user_defined": False
-    #     }
-    #     fixed_classes = [fixed_class_1, fixed_class_2]
-    #
-    #     # Submit the POST request to API
-    #     request_factory = APIRequestFactory()
-    #     request = request_factory.post("/fixedclasses/", fixed_classes, format="json")
-    #     view = views.FixedClassViewSet.as_view({"post": "list"})
-    #     response = view(request)
-    #
-    #     # Test the outcome to the database
-    #     fc = models.FixedClass.objects.get_all_school_fixed_classes(school_id=123456)
-    #     self.assertEqual(fc.count(), 26)
+    def test_post_request_for_valid_fixed_class_instance(self):
+        """Method to test that we can post a valid instance of the FixedClass model via the API"""
+        # Set test parameters
+        fixed_class_1 = {
+            "school": 123456, "class_id": "TEST_1", "subject_name": "MATHS", "teacher": 1,
+            "classroom": 1, "pupils": [1, 2], "time_slots": [1, 2], "user_defined": False
+        }
+        fixed_class_2 = {
+            "school": 123456, "class_id": "TEST_2", "subject_name": "MATHS", "teacher": 1,
+            "classroom": 1, "pupils": [1, 2], "time_slots": [3, 4], "user_defined": False
+        }
+        fixed_classes = [fixed_class_1, fixed_class_2]
+
+        # # Submit the POST request to API
+        response = self.client.post("/api/fixedclasses/?school_access_key=123456", data=fixed_class_1)
+
+        # # Test the outcome to the database - i.e. the POST request has made a FixedClass instance
+        fc = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_1")
+        self.assertEqual(fc.class_id, "TEST_1")
