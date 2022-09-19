@@ -64,7 +64,7 @@ class TestFixedClassViewSet(test.TestCase):
         url = f"/api/fixedclasses/?school_access_key={school_access_key}"
 
         # # Submit the POST request to API
-        response = self.client.post(url, data=fixed_class)
+        response = self.client.post(url, data=fixed_class, content_type="application/json")
 
         # # Test the outcome to the database - i.e. the POST request has made a FixedClass instance
         fc = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="TEST_1")
