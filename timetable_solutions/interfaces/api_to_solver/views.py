@@ -27,3 +27,7 @@ class FixedClassViewSet(viewsets.ModelViewSet):
                 return None
         else:
             return None
+
+# TODO UnsolvedClassViewSet; make fixture for unsolved classes (from csv)
+
+# TODO TimetableSlotViewSet

@@ -10,3 +10,8 @@ class FixedClassSerialiser(serializers.ModelSerializer):
     class Meta:
         model = models.FixedClass
         fields = ["school", "class_id", "subject_name", "teacher", "classroom", "pupils", "time_slots", "user_defined"]
+
+
+# TODO UnsolvedClassSerialiser
+
+# TODO TimetableSlotSerialiser
