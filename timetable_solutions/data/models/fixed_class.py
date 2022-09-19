@@ -96,3 +96,9 @@ class FixedClass(models.Model):
         # noinspection PyUnresolvedReferences
         self.time_slots.add(*slot_ids)
         self.save()
+
+    # PROPERTIES
+    @property
+    def number_slots_per_week(self) -> int:
+        """Method to get the number of TimetableSlot instances associated with a given FixedClass"""
+        return self.time_slots.count()
