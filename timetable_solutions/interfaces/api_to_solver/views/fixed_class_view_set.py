@@ -51,7 +51,3 @@ class FixedClass(viewsets.ModelViewSet):
             return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
             return response.Response(status=status.HTTP_400_BAD_REQUEST)
-
-# TODO UnsolvedClassViewSet; http_method_names = ["get"]
-
-# TODO TimetableSlotViewSet; http_method_names = ["get"]
