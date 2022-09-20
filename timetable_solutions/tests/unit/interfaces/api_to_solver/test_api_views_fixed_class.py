@@ -1,4 +1,4 @@
-"""Tests for the ModelViewSet classes"""
+"""Tests for the FixedClass ModelViewSet, which allows both GET and POST requests."""
 
 # Standard library imports
 import json
