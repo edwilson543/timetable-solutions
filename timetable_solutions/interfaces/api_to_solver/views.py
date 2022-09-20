@@ -14,6 +14,7 @@ class FixedClass(viewsets.ModelViewSet):
     of individual or list of FixedClass model instances
     """
     serializer_class = serialisers.FixedClass
+    http_method_names = ["get", "post"]
 
     def get_queryset(self):
         """
@@ -51,6 +52,6 @@ class FixedClass(viewsets.ModelViewSet):
         else:
             return response.Response(status=status.HTTP_400_BAD_REQUEST)
 
-# TODO UnsolvedClassViewSet; make fixture for unsolved classes (from csv)
+# TODO UnsolvedClassViewSet; http_method_names = ["get"]
 
-# TODO TimetableSlotViewSet
+# TODO TimetableSlotViewSet; http_method_names = ["get"]
