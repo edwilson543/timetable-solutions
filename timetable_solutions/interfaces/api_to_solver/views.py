@@ -8,9 +8,12 @@ from data import models
 from interfaces.api_to_solver import serialisers
 
 
-class FixedClassViewSet(viewsets.ModelViewSet):
-    """Viewset for the FixedClass model"""
-    serializer_class = serialisers.FixedClassSerialiser
+class FixedClass(viewsets.ModelViewSet):
+    """
+    Viewset for the FixedClass model, which allows for GET requests to a specific school's data, and POST request
+    of individual or list of FixedClass model instances
+    """
+    serializer_class = serialisers.FixedClass
 
     def get_queryset(self):
         """
