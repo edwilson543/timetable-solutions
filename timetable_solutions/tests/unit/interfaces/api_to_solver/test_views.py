@@ -28,7 +28,7 @@ class TestFixedClassViewSet(test.TestCase):
         """Method to submit a get request for a given school access key's FixedClass data, and return the response"""
         url = f"/fixedclasses/?school_access_key={school_access_key}"  # URL with school access key query
         request_factory = APIRequestFactory()
-        view = views.FixedClassViewSet.as_view({"get": "list"})
+        view = views.FixedClass.as_view({"get": "list"})
 
         # Submit a GET to API request
         request = request_factory.get(url)

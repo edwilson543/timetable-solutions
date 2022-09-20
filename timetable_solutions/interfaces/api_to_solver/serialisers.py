@@ -5,7 +5,7 @@ from rest_framework import serializers
 from data import models
 
 
-class FixedClassSerialiser(serializers.ModelSerializer):
+class FixedClass(serializers.ModelSerializer):  # TODO remove Serialiser suffix
     """Serialiser for the FixedClass model"""
     class Meta:
         model = models.FixedClass
