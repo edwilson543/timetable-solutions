@@ -10,7 +10,7 @@ from django import test
 from base_files.settings import BASE_DIR
 
 
-class TestFixedClassViewSet(test.TestCase):
+class TestUnsolvedClassViewSet(test.TestCase):
     """Tests for the FixedClass ModelViewSet"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "unsolved_classes.json"]
