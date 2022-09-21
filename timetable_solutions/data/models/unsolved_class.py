@@ -32,7 +32,7 @@ class UnsolvedClass(models.Model):
     and also teaching hours / min number of slots etc. "Unsolved" since it represents an input to the solver which
     finds the timetable structure that works across the board. Twin to "FixedClass" in view_timetables app.
     """
-    class_id = models.CharField(max_length=20, primary_key=True)
+    class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     subject_name = models.CharField(max_length=20, choices=FixedClass.SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,

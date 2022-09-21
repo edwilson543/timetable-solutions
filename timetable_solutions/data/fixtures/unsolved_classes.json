@@ -1,7 +1,7 @@
 [
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_ENGLISH_A",
+    "pk": 1,
     "fields": {
       "school": 123456,
       "subject_name": "ENGLISH",
@@ -12,12 +12,13 @@
       "pupils": [
         1,
         2
-      ]
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_ENGLISH_B",
+    "pk": 2,
     "fields": {
       "school": 123456,
       "subject_name": "ENGLISH",
@@ -27,12 +28,13 @@
       "min_distinct_slots": 8,
       "pupils": [
         3
-      ]
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_B"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_FRENCH_A",
+    "pk": 3,
     "fields": {
       "school": 123456,
       "subject_name": "FRENCH",
@@ -43,12 +45,13 @@
       "pupils": [
         1,
         2
-      ]
+      ],
+      "class_id": "YEAR_ONE_FRENCH_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_FRENCH_B",
+    "pk": 4,
     "fields": {
       "school": 123456,
       "subject_name": "FRENCH",
@@ -58,12 +61,13 @@
       "min_distinct_slots": 7,
       "pupils": [
         3
-      ]
+      ],
+      "class_id": "YEAR_ONE_FRENCH_B"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_MATHS_A",
+    "pk": 5,
     "fields": {
       "school": 123456,
       "subject_name": "MATHS",
@@ -74,12 +78,13 @@
       "pupils": [
         1,
         2
-      ]
+      ],
+      "class_id": "YEAR_ONE_MATHS_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_ONE_MATHS_B",
+    "pk": 6,
     "fields": {
       "school": 123456,
       "subject_name": "MATHS",
@@ -89,12 +94,13 @@
       "min_distinct_slots": 6,
       "pupils": [
         3
-      ]
+      ],
+      "class_id": "YEAR_ONE_MATHS_B"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_ENGLISH_A",
+    "pk": 7,
     "fields": {
       "school": 123456,
       "subject_name": "ENGLISH",
@@ -105,12 +111,13 @@
       "pupils": [
         4,
         6
-      ]
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_ENGLISH_B",
+    "pk": 8,
     "fields": {
       "school": 123456,
       "subject_name": "ENGLISH",
@@ -120,12 +127,13 @@
       "min_distinct_slots": 8,
       "pupils": [
         5
-      ]
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_B"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_FRENCH_A",
+    "pk": 9,
     "fields": {
       "school": 123456,
       "subject_name": "FRENCH",
@@ -136,12 +144,13 @@
       "pupils": [
         4,
         6
-      ]
+      ],
+      "class_id": "YEAR_TWO_FRENCH_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_FRENCH_B",
+    "pk": 10,
     "fields": {
       "school": 123456,
       "subject_name": "FRENCH",
@@ -151,12 +160,13 @@
       "min_distinct_slots": 7,
       "pupils": [
         5
-      ]
+      ],
+      "class_id": "YEAR_TWO_FRENCH_B"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_MATHS_A",
+    "pk": 11,
     "fields": {
       "school": 123456,
       "subject_name": "MATHS",
@@ -167,12 +177,13 @@
       "pupils": [
         4,
         6
-      ]
+      ],
+      "class_id": "YEAR_TWO_MATHS_A"
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": "YEAR_TWO_MATHS_B",
+    "pk": 12,
     "fields": {
       "school": 123456,
       "subject_name": "MATHS",
@@ -182,7 +193,8 @@
       "min_distinct_slots": 7,
       "pupils": [
         5
-      ]
+      ],
+      "class_id": "YEAR_TWO_MATHS_B"
     }
   }
 ]
