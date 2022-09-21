@@ -18,7 +18,7 @@ class TestFixedClassViewSet(test.TestCase):
 
     # GET REQUESTS
     def test_correct_data_returned_for_get_request_with_valid_school_access_key(self):
-        """Test that the full set of serialised fixed classes in the fixture is returned"""
+        """Test that the full set of serialised unsolved classes in the fixture is returned for the school"""
         # Set test parameters
         school_access_key = 123456
         url = f"/api/unsolvedclasses/?school_access_key={school_access_key}"  # URL with school access key query
