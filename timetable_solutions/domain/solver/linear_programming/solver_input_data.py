@@ -1,4 +1,11 @@
+"""
+Module defining how data is accessed by the solver from the API and then stored.
+Clearly an API is not necessary here, and instead the TimetableSolverInputs could just call the data layer directly.
+The API was implemented for the sake of learning about the Django Rest Framework.
+"""
+
 # Standard library imports
+import requests
 from typing import Dict, List
 
 # Local application imports
@@ -16,7 +23,9 @@ class TimetableSolverInputs:
     @staticmethod
     def _get_fixed_class_data(url: str) -> List[Dict]:
         """Method will use the requests library to access data"""
-        pass
+        response = requests.get(url)
+        data = response.json()
+        return data
 
     @staticmethod
     def _get_unsolved_class_data(url: str) -> List[Dict]:
