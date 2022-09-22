@@ -7,6 +7,8 @@ class CustomModelViewSet(viewsets.ModelViewSet):
     """
     Tailoring of the implementation of the DRF ModelViewSet for the purposes of this application.
     In particular, we want to be able to GET the data relevant to one specific school.
+
+    Duck typing on the relevant Model's manager is used, to access the data relevant to one specific school
     """
 
     def get_queryset(self, *args, **kwargs):
