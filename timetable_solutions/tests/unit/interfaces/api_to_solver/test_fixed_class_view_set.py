@@ -47,10 +47,10 @@ class TestFixedClassViewSet(test.TestCase):
 
     def test_no_data_returned_for_get_request_with_invalid_school_access_key(self):
         """Test that an empty json list is returned for a get request specifying an invalid school access key"""
+        response = self.submit_get_request_for_fixed_classes(school_access_key=12345)  # No data for s.a.k. 12345
 
-        response = self.submit_get_request_for_fixed_classes(school_access_key=12345)
+        self.assertEqual(response.status_code, 204)
         self.assertEqual(response.data, [])
-        # TODO add test for status code 204 once implemented
 
     # POST REQUESTS
     def test_post_request_for_individual_valid_fixed_class_instance(self):
