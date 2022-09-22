@@ -14,6 +14,8 @@ def produce_timetable_solutions(school_access_key: int, domain_name: str | None 
     """
     Function to be used by the web app to produce the timetable solutions.
     A button is clicked, which corresponds to a view, where that view calls this function.
+    :param school_access_key - the unique integer used to access a given school's data via the API
+    :param domain_name - the domain name of the main web application using this solver
     """
     # Locate the API endpoints for the necessary data
     if domain_name is None:
