@@ -1,38 +1,20 @@
 # Third party imports
 from rest_framework import response
 from rest_framework import status
-from rest_framework import viewsets
 
 # Local application imports
-from data import models
+from .model_view_set_base_class import CustomModelViewSet
 from interfaces.api_to_solver import serialisers
 
 
-class FixedClass(viewsets.ModelViewSet):
+class FixedClass(CustomModelViewSet):
     """
-    Viewset for the FixedClass model, which allows for GET requests to a specific school's data, and POST request
-    of individual or list of FixedClass model instances
+    ViewSet for the FixedClass model, which allows for:
+        GET requests to a specific school's data;
+        POST requests of individual or list of FixedClass model instances
     """
     serializer_class = serialisers.FixedClass
     http_method_names = ["get", "post"]
-
-    def get_queryset(self):
-        """
-        Optionally restricts the returned serialised FixedClass instances, by checking the url for filtering against a
-        specific school.
-        e.g. domain/api/fixedclasses?school_access_key=123456
-        """
-        school_access_key = self.request.query_params.get("school_access_key")
-        if school_access_key is not None:
-            try:
-                school_access_key = int(school_access_key)
-                fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=school_access_key)
-                return fixed_classes
-            except ValueError:  # URL query specified a school access key but it was not an integer
-                # TODO in this instance ensure response status code is 204
-                return None
-        else:
-            return None
 
     def create(self, request, *args, **kwargs):
         """
