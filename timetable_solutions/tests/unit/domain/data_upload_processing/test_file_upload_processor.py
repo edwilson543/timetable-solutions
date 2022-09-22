@@ -33,7 +33,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test the database is as expected
-        all_teachers = models.Teacher.objects.get_all_school_teachers(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_teachers), 11)
         greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertIsInstance(greg, models.Teacher)
@@ -54,7 +54,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
-        all_pupils = models.Pupil.objects.get_all_school_pupils(school_id=123456)
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_pupils), 6)
         teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
@@ -74,7 +74,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
-        all_classrooms = models.Classroom.objects.get_all_school_classrooms(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_classrooms), 12)
         room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
         self.assertEqual(room.room_number, 40)
@@ -93,7 +93,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_slots), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
         self.assertEqual(slot.day_of_week, "MONDAY")
@@ -124,7 +124,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test the database is as expected
-        all_classes = models.UnsolvedClass.objects.get_all_school_unsolved_classes(school_id=123456)
+        all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
         klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
                                                                            class_id="YEAR_ONE_MATHS_A")
@@ -145,11 +145,11 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         self.assertTrue(upload_processor.upload_successful)
 
         # Test the database is as expected
-        all_classes = models.FixedClass.objects.get_all_school_fixed_classes(school_id=123456)
+        all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
         pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
         self.assertQuerysetEqual(pup_lunch.pupils.all(),
-                                 models.Pupil.objects.get_all_school_pupils(school_id=123456), ordered=False)
+                                 models.Pupil.objects.get_all_instances_for_school(school_id=123456), ordered=False)
         teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
         self.assertEqual(teach_ten_lunch.teacher,
                          models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))

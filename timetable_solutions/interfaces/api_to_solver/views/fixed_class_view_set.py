@@ -26,7 +26,7 @@ class FixedClass(viewsets.ModelViewSet):
         if school_access_key is not None:
             try:
                 school_access_key = int(school_access_key)
-                fixed_classes = models.FixedClass.objects.get_all_school_fixed_classes(school_id=school_access_key)
+                fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=school_access_key)
                 return fixed_classes
             except ValueError:  # URL query specified a school access key but it was not an integer
                 # TODO in this instance ensure response status code is 204

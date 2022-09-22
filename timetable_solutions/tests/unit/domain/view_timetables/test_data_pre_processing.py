@@ -72,7 +72,7 @@ class TestDataPreProcessing(TestCase):
         # Data setup
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
         classes = pupil.classes.all()
-        timetable_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=123456)
+        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
 
         # Run the relevant domain unit
         timetable = view_timetables.data_pre_processing.get_timetable_slot_indexed_timetable(
@@ -92,7 +92,7 @@ class TestDataPreProcessing(TestCase):
         # Data setup
         teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         classes = teacher.classes.all()
-        timetable_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=123456)
+        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
 
         # Run the relevant domain unit
         timetable = view_timetables.data_pre_processing.get_timetable_slot_indexed_timetable(

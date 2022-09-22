@@ -8,6 +8,7 @@ from data import models
 from interfaces.api_to_solver import serialisers
 
 
+# TODO create a custom subclass of the ModelViewSet implementing .get_queryset() and .list()
 class UnsolvedClass(viewsets.ModelViewSet):
     """
     ViewSet for the UnsolvedClass - which the solver needs to be able to GET to understand what it is trying to
@@ -22,7 +23,7 @@ class UnsolvedClass(viewsets.ModelViewSet):
         if school_access_key is not None:
             try:
                 school_access_key = int(school_access_key)
-                unsolved_classes = models.UnsolvedClass.objects.get_all_school_unsolved_classes(
+                unsolved_classes = models.UnsolvedClass.objects.get_all_instances_for_school(
                     school_id=school_access_key)
                 return unsolved_classes
             except ValueError:

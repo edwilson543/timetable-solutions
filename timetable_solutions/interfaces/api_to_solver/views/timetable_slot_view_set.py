@@ -20,7 +20,7 @@ class TimetableSlot(viewsets.ModelViewSet):
         if school_access_key is not None:
             try:
                 school_access_key = int(school_access_key)
-                slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=school_access_key)
+                slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_access_key)
                 return slots
             except ValueError:
                 # TODO in this instance ensure response status code is 204

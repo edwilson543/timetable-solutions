@@ -17,7 +17,7 @@ from data.models.teacher import Teacher
 class UnsolvedClassQuerySet(models.QuerySet):
     """Custom queryset manager for the UnsolvedClass model"""
 
-    def get_all_school_unsolved_classes(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method to return the full queryset of fixed classes for a given school"""
         return self.filter(school_id=school_id)
 

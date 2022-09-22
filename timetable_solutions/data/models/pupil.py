@@ -13,7 +13,7 @@ from data.models.school import School
 class PupilQuerySet(models.QuerySet):
     """Custom queryset manager for the Pupil model"""
 
-    def get_all_school_pupils(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of pupils registered at the given school"""
         return self.filter(school_id=school_id)
 

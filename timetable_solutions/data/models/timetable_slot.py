@@ -13,7 +13,7 @@ from data.models.school import School
 class TimetableSlotQuerySet(models.QuerySet):
     """Custom queryset manager for the TimetableSlot model"""
 
-    def get_all_school_timeslots(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of all timetable slots at the given school"""
         return self.filter(school_id=school_id)
 
