@@ -47,5 +47,5 @@ class TestTimetableSlotViewSet(test.TestCase):
         response = self.client.get(url)
 
         # Test the outcome
+        self.assertEqual(response.status_code, 204)  # No content relevant to request
         self.assertEqual(response.data, [])
-        # TODO add test for status code 204 once implemented
