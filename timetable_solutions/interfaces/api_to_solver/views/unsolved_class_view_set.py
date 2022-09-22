@@ -1,5 +1,4 @@
 # Third party imports
-from rest_framework import response
 from rest_framework import status
 from rest_framework import viewsets
 
@@ -37,15 +36,7 @@ class UnsolvedClass(viewsets.ModelViewSet):
         Custom implementation of the list method to allow provision of status code 204 when no data corresponds
         to the school access key.
         """
-        queryset = self.filter_queryset(self.get_queryset())
-
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-
-        serializer = self.get_serializer(queryset, many=True)
-        if queryset.exists():
-            return response.Response(serializer.data)
-        else:
-            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        response = super().list(request, *args, **kwargs)
+        if len(response.data) == 0:
+            response.status_code = status.HTTP_204_NO_CONTENT
+        return response
