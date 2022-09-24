@@ -24,8 +24,13 @@ class TimetableSolverInputs:
     def _get_fixed_class_data(url: str) -> List[Dict]:
         """Method will use the requests library to access data"""
         response = requests.get(url)
-        data = response.json()
-        return data
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        elif response.status_code == 204:
+            raise ValueError(f"No Fixed Class data available at the specified url: {url}")
+        else:
+            raise ValueError(f"Specified url not a valid API end point: {url}")
 
     @staticmethod
     def _get_unsolved_class_data(url: str) -> List[Dict]:
