@@ -1,0 +1,200 @@
+[
+  {
+    "model": "data.unsolvedclass",
+    "pk": 1,
+    "fields": {
+      "school": 123456,
+      "subject_name": "ENGLISH",
+      "teacher": 3,
+      "classroom": 3,
+      "total_slots": 8,
+      "min_distinct_slots": 6,
+      "pupils": [
+        1,
+        2
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 2,
+    "fields": {
+      "school": 123456,
+      "subject_name": "ENGLISH",
+      "teacher": 4,
+      "classroom": 4,
+      "total_slots": 8,
+      "min_distinct_slots": 8,
+      "pupils": [
+        3
+      ],
+      "class_id": "YEAR_ONE_ENGLISH_B"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 3,
+    "fields": {
+      "school": 123456,
+      "subject_name": "FRENCH",
+      "teacher": 5,
+      "classroom": 5,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        1,
+        2
+      ],
+      "class_id": "YEAR_ONE_FRENCH_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 4,
+    "fields": {
+      "school": 123456,
+      "subject_name": "FRENCH",
+      "teacher": 6,
+      "classroom": 6,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        3
+      ],
+      "class_id": "YEAR_ONE_FRENCH_B"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 5,
+    "fields": {
+      "school": 123456,
+      "subject_name": "MATHS",
+      "teacher": 1,
+      "classroom": 1,
+      "total_slots": 8,
+      "min_distinct_slots": 8,
+      "pupils": [
+        1,
+        2
+      ],
+      "class_id": "YEAR_ONE_MATHS_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 6,
+    "fields": {
+      "school": 123456,
+      "subject_name": "MATHS",
+      "teacher": 2,
+      "classroom": 2,
+      "total_slots": 8,
+      "min_distinct_slots": 6,
+      "pupils": [
+        3
+      ],
+      "class_id": "YEAR_ONE_MATHS_B"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 7,
+    "fields": {
+      "school": 123456,
+      "subject_name": "ENGLISH",
+      "teacher": 9,
+      "classroom": 9,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        4,
+        6
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 8,
+    "fields": {
+      "school": 123456,
+      "subject_name": "ENGLISH",
+      "teacher": 10,
+      "classroom": 10,
+      "total_slots": 8,
+      "min_distinct_slots": 8,
+      "pupils": [
+        5
+      ],
+      "class_id": "YEAR_TWO_ENGLISH_B"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 9,
+    "fields": {
+      "school": 123456,
+      "subject_name": "FRENCH",
+      "teacher": 11,
+      "classroom": 11,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        4,
+        6
+      ],
+      "class_id": "YEAR_TWO_FRENCH_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 10,
+    "fields": {
+      "school": 123456,
+      "subject_name": "FRENCH",
+      "teacher": 1,
+      "classroom": 12,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        5
+      ],
+      "class_id": "YEAR_TWO_FRENCH_B"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 11,
+    "fields": {
+      "school": 123456,
+      "subject_name": "MATHS",
+      "teacher": 7,
+      "classroom": 7,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        4,
+        6
+      ],
+      "class_id": "YEAR_TWO_MATHS_A"
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 12,
+    "fields": {
+      "school": 123456,
+      "subject_name": "MATHS",
+      "teacher": 8,
+      "classroom": 8,
+      "total_slots": 8,
+      "min_distinct_slots": 7,
+      "pupils": [
+        5
+      ],
+      "class_id": "YEAR_TWO_MATHS_B"
+    }
+  }
+]

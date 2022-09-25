@@ -17,7 +17,7 @@ from data.models.teacher import Teacher
 class UnsolvedClassQuerySet(models.QuerySet):
     """Custom queryset manager for the UnsolvedClass model"""
 
-    def get_all_school_unsolved_classes(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method to return the full queryset of fixed classes for a given school"""
         return self.filter(school_id=school_id)
 
@@ -32,7 +32,7 @@ class UnsolvedClass(models.Model):
     and also teaching hours / min number of slots etc. "Unsolved" since it represents an input to the solver which
     finds the timetable structure that works across the board. Twin to "FixedClass" in view_timetables app.
     """
-    class_id = models.CharField(max_length=20, primary_key=True)
+    class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     subject_name = models.CharField(max_length=20, choices=FixedClass.SubjectColour.choices)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,

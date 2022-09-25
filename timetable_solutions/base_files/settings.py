@@ -35,12 +35,14 @@ INSTALLED_APPS = [
     'interfaces.users',
     'interfaces.view_timetables',
     'interfaces.data_upload',
+    'interfaces.api_to_solver',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
