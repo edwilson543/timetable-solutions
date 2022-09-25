@@ -34,3 +34,4 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         # META DATA
         assert input_data.pupil_set == {1, 2, 3, 4, 5, 6}
         assert input_data.teacher_set == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+        assert input_data.days_set == {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"}

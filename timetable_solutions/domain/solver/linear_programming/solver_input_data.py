@@ -26,8 +26,9 @@ class TimetableSolverInputs:
         self.timetable_slot_data = self._get_timetable_slot_data(url=data_location.timetable_slots_url)
 
         # Extract meta data
-        self.pupil_set = self._get_pupil_set()
+        self.pupil_set = self._get_pupil_set()  # These will become iterables later in the application
         self.teacher_set = self._get_teacher_set()
+        self.days_set = self._get_days_of_weeks_used_set()
 
     @staticmethod
     def _get_fixed_class_data(url: str) -> List[school_dataclasses.FixedClass] | None:
@@ -88,7 +89,7 @@ class TimetableSolverInputs:
         else:
             raise ValueError(f"Specified url not a valid API end point: {url}")
 
-    # DATA PRE-PROCESSING METHODS
+    # METHODS EXTRACTING META DATA FROM THE LOADED DATA
     def _get_pupil_set(self) -> Set[int]:
         """
         Method to get the exhaustive set of pupils relevant to the solution.
@@ -112,8 +113,11 @@ class TimetableSolverInputs:
         teacher_set.remove(None)
         return teacher_set
 
-    def _get_days_of_weeks_used(self) -> List[str]:
-        pass
-
-    def _get_slots_within_days_used(self) -> List[str]:
-        pass
+    def _get_days_of_weeks_used_set(self) -> Set[str]:
+        """
+        Method to get the exhaustive set of days of the week taught on by the school
+        :return days_set - a set of strings representing the days of the week
+        """
+        days = {slot.day_of_week for slot in self.timetable_slot_data}
+        assert len(days) <= 7  # !!! - Could also include some stricter validation here
+        return days
