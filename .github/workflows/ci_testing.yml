@@ -1,8 +1,7 @@
 name: TTS CI testing
 
-on:
-  push:
-#  pull_request:
+# Currently, (at 14:16 25/09/2022, not yet implemented full solver functionality), build + test takes ~51 seconds.
+on: [push, pull_request]
 
 jobs:
   build:
