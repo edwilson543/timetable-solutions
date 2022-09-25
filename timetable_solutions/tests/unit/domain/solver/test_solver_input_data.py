@@ -39,7 +39,7 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
             assert isinstance(fixed_class, school_dataclasses.FixedClass)
 
     def test_get_fixed_class_invalid_url(self):
-        """Test that an invalid API end-point leads to a ValueError"""
+        """Test that an invalid API end-point leads to a ValueError when trying to get FixedClass data"""
         url = f"{self.live_server_url}/api/bad-url"
         with pytest.raises(ValueError):
             lp.TimetableSolverInputs._get_fixed_class_data(url=url)
@@ -61,7 +61,28 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
             assert isinstance(unsolved_class, school_dataclasses.UnsolvedClass)
 
     def test_get_unsolved_class_invalid_url(self):
-        """Test that an invalid API end-point leads to a ValueError"""
+        """Test that an invalid API end-point leads to a ValueError when trying to get UnsolvedClass data"""
         url = f"{self.live_server_url}/api/bad-url"
         with pytest.raises(ValueError):
             lp.TimetableSolverInputs._get_unsolved_class_data(url=url)
+
+    def test_get_timetable_slot_data_valid_url_and_school_access_key(self):
+        """Test the solver data loader is able to consume the internal REST API and retrieve TimetableSlot instances"""
+        # Set test parameters
+        school_access_key = 123456
+        url = f"{self.live_server_url}/api/timetableslots/?school_access_key={school_access_key}"
+
+        # Execute test unit
+        data = lp.TimetableSolverInputs._get_timetable_slot_data(url=url)
+
+        # Check the outcome is as expected
+        assert isinstance(data, list)  # Since we expect multiple UnsolvedClass instances in a list
+        assert len(data) == 35
+        for timetable_slot in data:
+            assert isinstance(timetable_slot, school_dataclasses.TimetableSlot)
+
+    def test_get_timetable_slots_invalid_url(self):
+        """Test that an invalid API end-point leads to a ValueError when trying to get TimetableSlot data"""
+        url = f"{self.live_server_url}/api/bad-url"
+        with pytest.raises(ValueError):
+            lp.TimetableSolverInputs._get_timetable_slot_data(url=url)
