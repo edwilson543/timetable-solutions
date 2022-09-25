@@ -23,9 +23,7 @@ The core functionality of the application is / will be:
     <li>Setup virtual environment</li>
     <li>Install the dependencies from requirements.txt (with pip is fine)</li>
     <li>
-        Check tests are working - once in the timetable directory:<br>
-        <code>python manage.py test</code><br>
-        Alternatively, the project is also configured to use pytest - at src/timetable_solutions/:<br>
+        The project is configured to use pytest-django - at src/timetable_solutions/:<br>
         <code>pytest</code>
     </li>
     <li>
@@ -57,6 +55,7 @@ framework - see: interfaces/api_to_solver.
 - Each app contains a mixture of views, forms, templates, css and other static files
 #### Tests
 - These all live in tests/ rather than being located within each app
+- The test runner used is pytest-django
 <hr>
 
 
