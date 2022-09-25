@@ -1,4 +1,5 @@
 # Third party imports
+from rest_framework import exceptions
 from rest_framework import response
 from rest_framework import status
 
@@ -27,7 +28,12 @@ class FixedClass(CustomModelViewSet):
         elif isinstance(request.data, list):
             # In this case multiple FixedClass instances are being posted (represented by a list of dicts)
             serializer = self.get_serializer(data=request.data, many=True)  # Note the many=True kwarg
-            serializer.is_valid(raise_exception=True)
+
+            try:
+                serializer.is_valid(raise_exception=True)
+            except exceptions.APIException as e:
+                return response.Response(status=status.HTTP_400_BAD_REQUEST)
+
             self.perform_create(serializer)
             headers = self.get_success_headers(serializer.data)
             return response.Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
