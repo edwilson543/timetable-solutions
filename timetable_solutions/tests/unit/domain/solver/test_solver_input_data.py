@@ -17,6 +17,8 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
     this repository and thus uses the requests module to consume the REST API.
     Therefore we need a full url to pass to requests.get()
 
+    This class only tests the data getter methods - data pre-processing done with integration tests since it depends
+    on the prior success of data getting.
     """
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
@@ -44,7 +46,6 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         with pytest.raises(ValueError):
             lp.TimetableSolverInputs._get_fixed_class_data(url=url)
 
-    # TEST FOR DATA GETTER METHODS
     def test_get_unsolved_class_data_valid_url_and_school_access_key(self):
         """Test the solver data loader is able to consume the internal REST API and retrieve UnsolvedClass instances"""
         # Set test parameters
