@@ -20,18 +20,19 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         data_location = DataLocation(school_access_key=123456, protocol_domain=self.live_server_url)
 
         # Execute the logic
-        input_data = lp.TimetableSolverInputs(data_location=data_location)
+        input_data_loader = lp.TimetableSolverInputs(data_location=data_location)
+        input_data_loader.get_and_set_all_data()
 
         # Test the outcome
         # LOADED DATA
-        for fc in input_data.fixed_class_data:
+        for fc in input_data_loader.fixed_class_data:
             assert isinstance(fc, school_dataclasses.FixedClass)
-        for uc in input_data.unsolved_class_data:
+        for uc in input_data_loader.unsolved_class_data:
             assert isinstance(uc, school_dataclasses.UnsolvedClass)
-        for ts in input_data.timetable_slot_data:
+        for ts in input_data_loader.timetable_slot_data:
             assert isinstance(ts, school_dataclasses.TimetableSlot)
 
         # META DATA
-        assert input_data.pupil_set == {1, 2, 3, 4, 5, 6}
-        assert input_data.teacher_set == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
-        assert input_data.days_set == {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"}
+        assert input_data_loader.pupil_set == {1, 2, 3, 4, 5, 6}
+        assert input_data_loader.teacher_set == {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11}
+        assert input_data_loader.days_set == {"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"}
