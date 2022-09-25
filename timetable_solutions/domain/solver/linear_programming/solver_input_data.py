@@ -27,6 +27,7 @@ class TimetableSolverInputs:
 
         # Extract meta data
         self.pupil_set = self._get_pupil_set()
+        self.teacher_set = self._get_teacher_set()
 
     @staticmethod
     def _get_fixed_class_data(url: str) -> List[school_dataclasses.FixedClass] | None:
@@ -90,7 +91,7 @@ class TimetableSolverInputs:
     # DATA PRE-PROCESSING METHODS
     def _get_pupil_set(self) -> Set[int]:
         """
-        Method to get the exhaustive set of pupil's relevant to the solution.
+        Method to get the exhaustive set of pupils relevant to the solution.
         :return pupil_set - a set of integers, where each integer represents a pupil
         """
         fixed_class_pupil_set = {pupil for fixed_class in self.fixed_class_data for pupil in fixed_class.pupils}
@@ -99,8 +100,17 @@ class TimetableSolverInputs:
         pupil_set = fixed_class_pupil_set | unsolved_class_pupil_set
         return pupil_set
 
-    def _get_teacher_list(self) -> List[int]:
-        pass
+    def _get_teacher_set(self) -> Set[int]:
+        """
+        Method to get the exhaustive set of teachers relevant to the solution.
+        :return teacher_set - a set of integers, where each integer represents a teacher
+        """
+        fixed_class_teacher_set = {fixed_class.teacher for fixed_class in self.fixed_class_data}
+        unsolved_class_teacher_set = {unsolved_class.teacher for unsolved_class in self.unsolved_class_data}
+
+        teacher_set = fixed_class_teacher_set | unsolved_class_teacher_set
+        teacher_set.remove(None)
+        return teacher_set
 
     def _get_days_of_weeks_used(self) -> List[str]:
         pass
