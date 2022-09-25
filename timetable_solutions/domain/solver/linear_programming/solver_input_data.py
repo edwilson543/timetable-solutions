@@ -125,7 +125,8 @@ class TimetableSolverInputs:
         unsolved_class_teacher_set = {unsolved_class.teacher for unsolved_class in self.unsolved_class_data}
 
         teacher_set = fixed_class_teacher_set | unsolved_class_teacher_set
-        teacher_set.remove(None)
+        if None in teacher_set:
+            teacher_set.remove(None)
         return teacher_set
 
     def _get_days_of_weeks_used_set(self) -> Set[str]:

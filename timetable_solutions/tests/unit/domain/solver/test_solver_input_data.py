@@ -120,7 +120,7 @@ class TestTimetableSolverInputsMetaDataExtraction:
         slot_1 = school_dataclasses.TimetableSlot(
             slot_id=1, day_of_week="MONDAY", period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
         slot_2 = school_dataclasses.TimetableSlot(
-            slot_id=2, day_of_week="MONDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
+            slot_id=2, day_of_week="TUESDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
         return [slot_1, slot_2]
 
     # TESTS
@@ -137,3 +137,31 @@ class TestTimetableSolverInputsMetaDataExtraction:
 
         # Check outcome
         assert pupil_set == {1, 2, 3, 4}
+
+    def test_get_teacher_set(self, fixed_class_data, unsolved_class_data):
+        """Test for the get_teacher_set_method on the TimetableSolverInputs class"""
+        # Set test parameters
+        # noinspection PyTypeChecker
+        solver = lp.TimetableSolverInputs(data_location=None)
+        solver.fixed_class_data = fixed_class_data
+        solver.unsolved_class_data = unsolved_class_data
+
+        # Execute test unit
+        teacher_set = solver._get_teacher_set()
+
+        # Check outcome
+        assert teacher_set == {1, 2}
+
+    def test_get_days_of_weeks_used(self, timetable_slot_data):
+        """Test for the get_days_of_weeks_used_set on the TimetableSolverInputs class"""
+        # Set test parameters
+        # noinspection PyTypeChecker
+        solver = lp.TimetableSolverInputs(data_location=None)
+        solver.timetable_slot_data = timetable_slot_data
+
+        # Execute test unit
+        days_set = solver._get_days_of_weeks_used_set()
+
+        # Check outcome
+        assert days_set == {"MONDAY", "TUESDAY"}
+
