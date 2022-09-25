@@ -1,9 +1,13 @@
 """Unit tests for the TimetableSolverInputs class"""
 
+# Third party imports
+import pytest
+
 # Django imports
 from django import test
 
 # Local application imports
+from domain.solver.constants import school_dataclasses
 from domain.solver import linear_programming as lp
 
 
@@ -30,12 +34,9 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         # Check the outcome is as expected
         assert isinstance(data, list)  # Since we expect multiple FixedClass instances in a list
         assert len(data) == 24
-        for fc in data:
-            assert fc["school"] == 123456
-            assert isinstance(fc["class_id"], str)
-            assert isinstance(fc["subject_name"], str)
-            assert (isinstance(fc["teacher"], int) or (fc["teacher"] is None))
-            assert (isinstance(fc["classroom"], int) or (fc["classroom"] is None))
-            assert isinstance(fc["pupils"], list)
-            assert isinstance(fc["time_slots"], list)
-            assert isinstance(fc["user_defined"], bool)
+        for fixed_class in data:
+            assert isinstance(fixed_class, school_dataclasses.FixedClass)
+
+    # def test_test(self):
+    #     with pytest.raises(ValueError):
+    #         raise ValueError

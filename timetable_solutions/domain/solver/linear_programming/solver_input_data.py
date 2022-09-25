@@ -10,6 +10,7 @@ from typing import Dict, List
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
+from domain.solver.constants import school_dataclasses
 
 
 class TimetableSolverInputs:
@@ -21,21 +22,42 @@ class TimetableSolverInputs:
         self.timetable_slot_data = self._get_timetable_slot_data(url=data_location.timetable_slots_url)
 
     @staticmethod
-    def _get_fixed_class_data(url: str) -> List[Dict]:
-        """Method will use the requests library to access data"""
+    def _get_fixed_class_data(url: str) -> List[school_dataclasses.FixedClass]:
+        """
+        Method retrieving data on (user-defined) FixedClass instances from the API and converting them into the
+        dataclass structure used by the solver.
+        :param url - the API endpoint (on a live server) where FixedClass data for the relevant school is available
+        :return - data
+        """
         response = requests.get(url)
         if response.status_code == 200:
-            data = response.json()
+            data_list = response.json()
+            data = [school_dataclasses.FixedClass(**instance) for instance in data_list]
             return data
         elif response.status_code == 204:
-            raise ValueError(f"No Fixed Class data available at the specified url: {url}")
+            # This does not represent an error since users do not have to define any FixedClass instances
+            return []
         else:
             raise ValueError(f"Specified url not a valid API end point: {url}")
 
+    # DATA IMPORT
     @staticmethod
     def _get_unsolved_class_data(url: str) -> List[Dict]:
         pass
 
     @staticmethod
     def _get_timetable_slot_data(url: str) -> List[Dict]:
+        pass
+
+    # DATA PRE PROCESSING
+    def _get_pupil_list_and_check_consistent(self) -> List[int]:
+        pass
+
+    def _get_teacher_list_and_check_consistent(self) -> List[int]:
+        pass
+
+    def _get_days_of_weeks_used(self) -> List[str]:
+        pass
+
+    def _get_slots_within_days_used(self) -> List[str]:
         pass

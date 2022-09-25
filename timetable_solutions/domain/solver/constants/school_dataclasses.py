@@ -17,8 +17,8 @@ class FixedClass:
     school: int
     class_id: str
     subject_name: str
-    teacher: str
-    classroom: int
+    teacher: str | None
+    classroom: int | None
     pupils: List[int]
     time_slots: List[int]
     user_defined: bool
