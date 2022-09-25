@@ -22,7 +22,7 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
 
-    def test_get_fixed_class_data(self):
+    def test_get_fixed_class_data_valid_school_access_key(self):
         """Test that the solver input data loader is able to consume the internal REST API"""
         # Set test parameters
         school_access_key = 123456
@@ -37,6 +37,8 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         for fixed_class in data:
             assert isinstance(fixed_class, school_dataclasses.FixedClass)
 
-    # def test_test(self):
-    #     with pytest.raises(ValueError):
-    #         raise ValueError
+    def test_get_fixed_class_invalid_school_access_key(self):
+        """Test that an invalid API end-point leads to a ValueError"""
+        url = f"{self.live_server_url}/api/bad-url"
+        with pytest.raises(ValueError):
+            lp.TimetableSolverInputs._get_fixed_class_data(url=url)
