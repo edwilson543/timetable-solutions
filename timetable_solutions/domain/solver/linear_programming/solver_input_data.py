@@ -6,7 +6,7 @@ The API was implemented for the sake of learning about the Django Rest Framework
 
 # Standard library imports
 import requests
-from typing import Dict, List
+from typing import List, Set
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
@@ -17,11 +17,16 @@ class TimetableSolverInputs:
     """Class responsible for loading in all schools data (i.e. consuming the API), and then storing this data"""
     def __init__(self, data_location: DataLocation):
 
+        # Store data location
         self.data_location = data_location
 
+        # Submit get requests to timetable solutions ltd. server
         self.fixed_class_data = self._get_fixed_class_data(url=data_location.fixed_classes_url)
         self.unsolved_class_data = self._get_unsolved_class_data(url=data_location.unsolved_classes_url)
         self.timetable_slot_data = self._get_timetable_slot_data(url=data_location.timetable_slots_url)
+
+        # Extract meta data
+        self.pupil_set = self._get_pupil_set()
 
     @staticmethod
     def _get_fixed_class_data(url: str) -> List[school_dataclasses.FixedClass] | None:
@@ -82,11 +87,19 @@ class TimetableSolverInputs:
         else:
             raise ValueError(f"Specified url not a valid API end point: {url}")
 
-    # DATA PRE PROCESSING
-    def _get_pupil_list_and_check_consistent(self) -> List[int]:
-        pass
+    # DATA PRE-PROCESSING METHODS
+    def _get_pupil_set(self) -> Set[int]:
+        """
+        Method to get the exhaustive set of pupil's relevant to the solution.
+        :return pupil_set - a set of integers, where each integer represents a pupil
+        """
+        fixed_class_pupil_set = {pupil for fixed_class in self.fixed_class_data for pupil in fixed_class.pupils}
+        unsolved_class_pupil_set = {pupil for usc in self.unsolved_class_data for pupil in usc.pupils}
 
-    def _get_teacher_list_and_check_consistent(self) -> List[int]:
+        pupil_set = fixed_class_pupil_set | unsolved_class_pupil_set
+        return pupil_set
+
+    def _get_teacher_list(self) -> List[int]:
         pass
 
     def _get_days_of_weeks_used(self) -> List[str]:
