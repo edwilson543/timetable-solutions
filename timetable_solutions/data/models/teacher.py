@@ -10,7 +10,7 @@ from data.models import School
 class TeacherQuerySet(models.QuerySet):
     """Custom queryset manager for the Teacher model"""
 
-    def get_all_school_teachers(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of teachers registered at the given school"""
         return self.filter(school_id=school_id)
 

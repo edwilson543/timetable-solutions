@@ -22,13 +22,13 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
     # Get the query sets used to create summary statistics
     all_classes = models.FixedClass.objects.get_non_user_defined_fixed_classes(school_id=school_access_key)
 
-    all_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=school_access_key)
+    all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_access_key)
     all_slot_classes = {slot: slot.classes for slot in all_slots}
     slot_class_count = {key: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
                         key, klasses in all_slot_classes.items()}
 
-    pupils = models.Pupil.objects.get_all_school_pupils(school_id=school_access_key)
-    teachers = models.Teacher.objects.get_all_school_teachers(school_id=school_access_key)
+    pupils = models.Pupil.objects.get_all_instances_for_school(school_id=school_access_key)
+    teachers = models.Teacher.objects.get_all_instances_for_school(school_id=school_access_key)
 
     stats = {
         "total_classes": len(all_classes),
@@ -72,7 +72,8 @@ def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.P
     """
     pupil = models.Pupil.objects.get_individual_pupil(school_id=school_id, pupil_id=pupil_id)
     classes = pupil.classes.all()
-    timetable = get_timetable_slot_indexed_timetable(classes=classes)
+    timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
+    timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
     timetable_colours = get_colours_for_pupil_timetable(classes=classes)
     return pupil, timetable, timetable_colours
 
@@ -86,17 +87,21 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
     """
     teacher = models.Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
     classes = teacher.classes.all()
-    timetable = get_timetable_slot_indexed_timetable(classes=classes)
+    timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
+    timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
     timetable_colours = get_colours_for_teacher_timetable(classes=classes)
     return teacher, timetable, timetable_colours
 
 
 # Functions called by get pupil / teacher timetable context
-def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedClass]) -> Dict:
+def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedClass],
+                                         timetable_slots: QuerySet | List[models.TimetableSlot]) -> Dict:
     """
     Function to return a timetable data structure that can easily be iterated over in a django template.
 
-    Parameters: classes - this is a filtered QuerySet from the FixedClass model, for exactly 1 teacher/pupil
+    Parameters:
+        classes - this is a filtered QuerySet from the FixedClass model, for exactly 1 teacher/pupil
+        timetable_slots - filtered QuerySet from the TimetableSlot model, specific to the teacher/pupil's school
     Returns: timetable - a nested dictionary where the outermost key is the time/period (9am/10am/...), the
     innermost key is the day of the week, and the values are the subject objects at each relevant timeslot, with the
     exception that a free period is just a string 'FREE'.
@@ -104,8 +109,10 @@ def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedCl
     This structure is chosen such that it can be efficiently iterated over in the template to create a html table.
     """
     class_indexed_timetable = {klass: klass.time_slots.all().values() for klass in classes}
+    period_start_times = {time_slot.period_starts_at for time_slot in timetable_slots}  # Use set to get unique times
+    sorted_period_start_times = sorted(list(period_start_times))
     timetable = {}
-    for time in models.TimetableSlot.PeriodStart.values:
+    for time in sorted_period_start_times:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
         for day in models.TimetableSlot.WeekDay.values:
             for klass, time_slots in class_indexed_timetable.items():

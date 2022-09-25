@@ -17,7 +17,7 @@ from data.models.timetable_slot import TimetableSlot
 class FixedClassQuerySet(models.QuerySet):
     """Custom queryset manager for the FixedClass model"""
 
-    def get_all_school_fixed_classes(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method to return the full queryset of fixed classes for a given school"""
         return self.filter(school_id=school_id)
 
@@ -96,3 +96,9 @@ class FixedClass(models.Model):
         # noinspection PyUnresolvedReferences
         self.time_slots.add(*slot_ids)
         self.save()
+
+    # PROPERTIES
+    @property
+    def number_slots_per_week(self) -> int:
+        """Method to get the number of TimetableSlot instances associated with a given FixedClass"""
+        return self.time_slots.count()

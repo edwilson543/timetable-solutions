@@ -41,7 +41,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")  # TeacherListUploadView
 
         # Test that the database is as expected
-        all_teachers = models.Teacher.objects.get_all_school_teachers(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_teachers), 11)
         greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertEqual(greg.firstname, "Greg")
@@ -56,14 +56,14 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
 
         # Assert that nothing has happened
-        self.assertEqual(len(models.Teacher.objects.get_all_school_teachers(school_id=123456)), 0)
+        self.assertEqual(len(models.Teacher.objects.get_all_instances_for_school(school_id=123456)), 0)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
         self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
 
         # Test that the database is as expected
-        all_pupils = models.Pupil.objects.get_all_school_pupils(school_id=123456)
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_pupils), 6)
         teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
@@ -78,14 +78,14 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
 
         # Assert that nothing has happened
-        self.assertEqual(len(models.Pupil.objects.get_all_school_pupils(school_id=123456)), 0)
+        self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
         self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
 
         # Test that the database is as expected
-        all_classrooms = models.Classroom.objects.get_all_school_classrooms(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_classrooms), 12)
         room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
         self.assertEqual(room.room_number, 40)
@@ -95,7 +95,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
 
         # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_school_timeslots(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_slots), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
         self.assertEqual(slot.day_of_week, "MONDAY")
@@ -113,7 +113,7 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
 
         # Test the database is as expected
-        all_classes = models.UnsolvedClass.objects.get_all_school_unsolved_classes(school_id=123456)
+        all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
         klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
                                                                            class_id="YEAR_ONE_MATHS_A")
@@ -125,11 +125,11 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
         self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
 
         # Test the database is as expected
-        all_classes = models.FixedClass.objects.get_all_school_fixed_classes(school_id=123456)
+        all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
         pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
         self.assertQuerysetEqual(pup_lunch.pupils.all(),
-                                 models.Pupil.objects.get_all_school_pupils(school_id=123456), ordered=False)
+                                 models.Pupil.objects.get_all_instances_for_school(school_id=123456), ordered=False)
         teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
         self.assertEqual(teach_ten_lunch.teacher,
                          models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
