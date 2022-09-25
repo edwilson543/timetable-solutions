@@ -20,10 +20,25 @@ class TimetableSolverInputs:
         # Store data location
         self.data_location = data_location
 
+        # Instance attributes storing data received from the API
+        self.fixed_class_data: List[school_dataclasses.FixedClass] | None = None
+        self.unsolved_class_data: List[school_dataclasses.UnsolvedClass] | None = None
+        self.timetable_slot_data: List[school_dataclasses.TimetableSlot] | None = None
+
+        # Meta data - these later becomes iterables when setting constraints / the objective
+        self.pupil_set: List[int] | None = None
+        self.teacher_set: List[int] | None = None
+        self.days_set: List[str] | None = None
+
+    def get_and_set_all_data(self):
+        """
+        Method executing all core methods on this class - loading the data, setting it on the class instance,
+        extracting meta data from this data, and then also storing it on the class instance
+        """
         # Submit get requests to timetable solutions ltd. server
-        self.fixed_class_data = self._get_fixed_class_data(url=data_location.fixed_classes_url)
-        self.unsolved_class_data = self._get_unsolved_class_data(url=data_location.unsolved_classes_url)
-        self.timetable_slot_data = self._get_timetable_slot_data(url=data_location.timetable_slots_url)
+        self.fixed_class_data = self._get_fixed_class_data(url=self.data_location.fixed_classes_url)
+        self.unsolved_class_data = self._get_unsolved_class_data(url=self.data_location.unsolved_classes_url)
+        self.timetable_slot_data = self._get_timetable_slot_data(url=self.data_location.timetable_slots_url)
 
         # Extract meta data
         self.pupil_set = self._get_pupil_set()  # These will become iterables later in the application
