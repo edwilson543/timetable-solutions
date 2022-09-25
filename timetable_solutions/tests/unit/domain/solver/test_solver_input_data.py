@@ -20,10 +20,11 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
     """
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "fixed_classes.json", "unsolved_classes.json"]
 
-    def test_get_fixed_class_data_valid_school_access_key(self):
-        """Test that the solver input data loader is able to consume the internal REST API"""
+    # TEST FOR DATA GETTER METHODS
+    def test_get_fixed_class_data_valid_url_and_school_access_key(self):
+        """Test the solver data loader is able to consume the internal REST API and retrieve FixedClass instances"""
         # Set test parameters
         school_access_key = 123456
         url = f"{self.live_server_url}/api/fixedclasses/?school_access_key={school_access_key}"
@@ -37,8 +38,30 @@ class TestTimetableSolverInputs(test.LiveServerTestCase):
         for fixed_class in data:
             assert isinstance(fixed_class, school_dataclasses.FixedClass)
 
-    def test_get_fixed_class_invalid_school_access_key(self):
+    def test_get_fixed_class_invalid_url(self):
         """Test that an invalid API end-point leads to a ValueError"""
         url = f"{self.live_server_url}/api/bad-url"
         with pytest.raises(ValueError):
             lp.TimetableSolverInputs._get_fixed_class_data(url=url)
+
+    # TEST FOR DATA GETTER METHODS
+    def test_get_unsolved_class_data_valid_url_and_school_access_key(self):
+        """Test the solver data loader is able to consume the internal REST API and retrieve UnsolvedClass instances"""
+        # Set test parameters
+        school_access_key = 123456
+        url = f"{self.live_server_url}/api/unsolvedclasses/?school_access_key={school_access_key}"
+
+        # Execute test unit
+        data = lp.TimetableSolverInputs._get_unsolved_class_data(url=url)
+
+        # Check the outcome is as expected
+        assert isinstance(data, list)  # Since we expect multiple UnsolvedClass instances in a list
+        assert len(data) == 12
+        for unsolved_class in data:
+            assert isinstance(unsolved_class, school_dataclasses.UnsolvedClass)
+
+    def test_get_unsolved_class_invalid_url(self):
+        """Test that an invalid API end-point leads to a ValueError"""
+        url = f"{self.live_server_url}/api/bad-url"
+        with pytest.raises(ValueError):
+            lp.TimetableSolverInputs._get_unsolved_class_data(url=url)
