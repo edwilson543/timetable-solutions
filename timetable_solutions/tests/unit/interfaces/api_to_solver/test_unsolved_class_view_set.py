@@ -7,14 +7,14 @@ import json
 from django import test
 
 # Local application imports
-from base_files.settings import BASE_DIR
+from tests.input_settings import FIXTURE_DIR
 
 
 class TestUnsolvedClassViewSet(test.TestCase):
     """Tests for the FixedClass ModelViewSet"""
+
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "unsolved_classes.json"]
-    fixture_location = BASE_DIR / "data" / "fixtures"
 
     # GET REQUESTS
     def test_correct_data_returned_for_get_request_with_valid_school_access_key(self):
@@ -30,7 +30,7 @@ class TestUnsolvedClassViewSet(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         actual_data_unordered = [dict(ordered_dict) for ordered_dict in response.data]
-        with open((self.fixture_location / "unsolved_classes.json")) as used_fixture:
+        with open(FIXTURE_DIR / "unsolved_classes.json") as used_fixture:
             fixture_json_data = json.load(used_fixture)
         expected_data = [item["fields"] for item in fixture_json_data]
 
