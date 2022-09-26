@@ -9,3 +9,5 @@ SECRET_KEY = ""  # TODO
 DEBUG = False
 
 ALLOWED_HOSTS = []  # TODO add domain name
+
+DATABASES = {}  # TODO
