@@ -13,6 +13,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # Per Django security warning, debug is turned off for production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["timetable-solutions.eu-west-2.elasticbeanstalk.com"]  # TODO add domain name
+ALLOWED_HOSTS = ["timetable-solutions.eu-west-2.elasticbeanstalk.com"]
 
 DATABASES = {}  # TODO
