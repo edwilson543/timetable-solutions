@@ -6,7 +6,7 @@ The API was implemented for the sake of learning about the Django Rest Framework
 
 # Standard library imports
 import requests
-from typing import List, Set
+from typing import List, Set, Union
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
@@ -15,20 +15,20 @@ from domain.solver.constants import school_dataclasses
 
 class TimetableSolverInputs:
     """Class responsible for loading in all schools data (i.e. consuming the API), and then storing this data"""
+    # Instance attributes storing data received from the API
+    fixed_class_data: List[school_dataclasses.FixedClass]
+    unsolved_class_data: List[school_dataclasses.UnsolvedClass]
+    timetable_slot_data: List[school_dataclasses.TimetableSlot]
+
+    # Meta data - these later becomes iterables when setting constraints / the objective
+    pupil_set: Set[int]
+    teacher_set: Set[int]
+    days_set: Set[str]
+
     def __init__(self, data_location: DataLocation):
 
         # Store data location
         self.data_location = data_location
-
-        # Instance attributes storing data received from the API
-        self.fixed_class_data: List[school_dataclasses.FixedClass] | None = None
-        self.unsolved_class_data: List[school_dataclasses.UnsolvedClass] | None = None
-        self.timetable_slot_data: List[school_dataclasses.TimetableSlot] | None = None
-
-        # Meta data - these later becomes iterables when setting constraints / the objective
-        self.pupil_set: List[int] | None = None
-        self.teacher_set: List[int] | None = None
-        self.days_set: List[str] | None = None
 
     def get_and_set_all_data(self):
         """
@@ -46,7 +46,7 @@ class TimetableSolverInputs:
         self.days_set = self._get_days_of_weeks_used_set()
 
     @staticmethod
-    def _get_fixed_class_data(url: str) -> List[school_dataclasses.FixedClass] | None:
+    def _get_fixed_class_data(url: str) -> Union[List[school_dataclasses.FixedClass], None]:
         """
         Method retrieving data on (user-defined) FixedClass instances from the API and converting them into the
         dataclass structure used by the solver.

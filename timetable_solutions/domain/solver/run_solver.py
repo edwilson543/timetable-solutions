@@ -1,7 +1,7 @@
 """Entry point to the solver"""
 
 # Standard library imports
-from typing import List
+from typing import List, Optional, Union
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
@@ -10,7 +10,8 @@ from domain.solver.linear_programming.solver import TimetableSolver
 from domain.solver.linear_programming.solver_output_data import TimetableSolverOutcome
 
 
-def produce_timetable_solutions(school_access_key: int, protocol_domain: str | None = None) -> None | List[str]:
+def produce_timetable_solutions(school_access_key: int,
+                                protocol_domain: Optional[str] = None) -> Union[None, List[str]]:
     """
     Function to be used by the web app to produce the timetable solutions.
     A button is clicked, which corresponds to a view, where that view calls this function.

@@ -8,7 +8,7 @@ models, however the solver is intentionally being implemented entirely independe
 # Standard library imports
 from dataclasses import dataclass
 import datetime as dt
-from typing import List
+from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -17,8 +17,8 @@ class FixedClass:
     school: int
     class_id: str
     subject_name: str
-    teacher: int | None
-    classroom: int | None
+    teacher: Optional[int]
+    classroom: Optional[int]
     pupils: List[int]
     time_slots: List[int]
     user_defined: bool
@@ -31,7 +31,7 @@ class UnsolvedClass:
     subject_name: str
     teacher: int
     pupils: List[int]
-    classroom : int
+    classroom: int
     total_slots: int
     min_distinct_slots: int
 
