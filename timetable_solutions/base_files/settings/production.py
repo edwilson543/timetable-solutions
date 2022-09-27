@@ -16,5 +16,3 @@ DEBUG = False
 ALLOWED_HOSTS = ["timetable-solutions.eu-west-2.elasticbeanstalk.com"]
 
 DATABASES = {}  # TODO
-
-STATIC_ROOT = 'static'
