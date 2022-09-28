@@ -27,7 +27,7 @@ class TimetableSolverVariables:
         :return - A dictionary of pulp variables, indexed by unique class / timetable slot tuples
         """
         variables = {
-            (unsolved_class, timetable_slot): lp.LpVariable(
+            (unsolved_class.class_id, timetable_slot.slot_id): lp.LpVariable(
                 f"{unsolved_class.class_id}_occurs_at_slot_{timetable_slot.slot_id}", cat="Binary") for
             unsolved_class in self._inputs.unsolved_class_data for timetable_slot in self._inputs.timetable_slot_data
         }
@@ -41,6 +41,8 @@ class TimetableSolverVariables:
         Known class times are then handled when defining the constraints.
 
         """
-        for unsolved_class in self._inputs.fixed_class_data:
-            for timetable_slot in unsolved_class.time_slots:
-                variables.pop((unsolved_class, timetable_slot))
+        for fixed_class in self._inputs.fixed_class_data:
+            for timetable_slot in fixed_class.time_slots:
+                if (fixed_class.class_id, timetable_slot) in variables.keys():
+                    # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
+                    variables.pop((fixed_class.class_id, timetable_slot))
