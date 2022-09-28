@@ -1,7 +1,7 @@
 # Standard library imports
 from dataclasses import asdict
 import requests
-from typing import List
+from typing import List, Optional
 
 # Local application imports
 from domain.solver.constants import school_dataclasses
@@ -16,7 +16,7 @@ class TimetableSolverOutcome:
 
     def __init__(self, timetable_solver: TimetableSolver):
         self.timetable_solver = timetable_solver
-        self.solver_fixed_class_data: List[school_dataclasses.FixedClass] | None = None
+        self.solver_fixed_class_data: Optional[List[school_dataclasses.FixedClass]] = None
         self.error_messages = None
 
     def extract_and_post_results(self) -> None:

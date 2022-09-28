@@ -6,7 +6,7 @@ This module defines that generic view class, and its ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Dict, Type
+from typing import Dict, Type, Union, Optional
 
 # Django imports
 from django.contrib.auth.decorators import login_required
@@ -28,7 +28,7 @@ class RequiredUpload:
     form in the template, or instead to render some message indicating that the data has already been uploaded.
     """
     form_name: str
-    upload_status: str | bool
+    upload_status: Union[str, bool]
     empty_form: Form
     url_name: str
 
@@ -73,7 +73,7 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
 
 
 @login_required
-def upload_page_view(request, error_message: str | None = None):
+def upload_page_view(request, error_message: Optional[str] = None):
     """
     View called by the individual views for each of the form upload views.
     This is then used in the POST method of the generic view class.

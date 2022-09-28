@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Set
+from typing import Set, Optional
 
 # Django imports
 from django.db import models
@@ -68,7 +68,7 @@ class FixedClass(models.Model):
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   teacher_id: int | None = None, classroom_id: int | None = None):
+                   teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
         since they have a many to many relationship to the FixedClass model.

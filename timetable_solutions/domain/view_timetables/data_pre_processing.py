@@ -5,7 +5,7 @@ format for a view to render in the template.
 
 # Standard library imports
 from string import ascii_uppercase
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 # Django imports
 from django.db.models import QuerySet
@@ -40,7 +40,7 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
     return stats
 
 
-def get_year_indexed_pupils(school_id: int) -> Dict[str, QuerySet | List[models.Pupil]]:
+def get_year_indexed_pupils(school_id: int) -> Dict[str, Union[QuerySet, List[models.Pupil]]]:
     """
     Function returning a dictionary of the pupils at a specific school, where the keys are the year groups, and the
     values the queryset of pupils in that year group.
@@ -51,7 +51,7 @@ def get_year_indexed_pupils(school_id: int) -> Dict[str, QuerySet | List[models.
     return year_indexed_pupils
 
 
-def get_letter_indexed_teachers(school_id: int) -> Dict[str, QuerySet | List[models.Teacher]]:
+def get_letter_indexed_teachers(school_id: int) -> Dict[str, Union[QuerySet, List[models.Teacher]]]:
     """
     Function returning a dictionary of the teachers at a specific school, where the keys are letters of the alphabet,
     and the values the queryset of teachers who's surname starts with that letter.
@@ -94,8 +94,8 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
 
 
 # Functions called by get pupil / teacher timetable context
-def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedClass],
-                                         timetable_slots: QuerySet | List[models.TimetableSlot]) -> Dict:
+def get_timetable_slot_indexed_timetable(classes: Union[QuerySet, List[models.FixedClass]],
+                                         timetable_slots: Union[QuerySet, List[models.TimetableSlot]]) -> Dict:
     """
     Function to return a timetable data structure that can easily be iterated over in a django template.
 
@@ -125,7 +125,7 @@ def get_timetable_slot_indexed_timetable(classes: QuerySet | List[models.FixedCl
     return timetable
 
 
-def get_colours_for_pupil_timetable(classes: QuerySet | List[models.FixedClass]) -> Dict:
+def get_colours_for_pupil_timetable(classes: Union[QuerySet, List[models.FixedClass]]) -> Dict:
     """
     Pupil timetables are colour coded using the FixedClass (one colour per FixedClass instance)
     :return A dictionary whose keys are subject names, and values are corresponding hexadecimal colour codes
@@ -136,7 +136,7 @@ def get_colours_for_pupil_timetable(classes: QuerySet | List[models.FixedClass])
     return class_colours
 
 
-def get_colours_for_teacher_timetable(classes: QuerySet | List[models.FixedClass]) -> Dict:
+def get_colours_for_teacher_timetable(classes: Union[QuerySet, List[models.FixedClass]]) -> Dict:
     """
     Pupil timetables are colour coded using the pupils' year group (one colour per pupil year group)
     :return A dictionary whose keys are year groups, and values are corresponding hexadecimal colour codes

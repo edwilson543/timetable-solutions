@@ -11,16 +11,15 @@ from rest_framework.response import Response
 from django import test
 
 # Local application imports
-from base_files.settings import BASE_DIR
 from data import models
 from interfaces.api_to_solver import views
+from tests.input_settings import FIXTURE_DIR
 
 
 class TestFixedClassViewSet(test.TestCase):
     """Tests for the FixedClass ModelViewSet"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
-    fixture_location = BASE_DIR / "data" / "fixtures"
 
     # GET REQUESTS
     @staticmethod
@@ -40,7 +39,7 @@ class TestFixedClassViewSet(test.TestCase):
         response = self.submit_get_request_for_fixed_classes(school_access_key=123456)
 
         actual_data_unordered = [dict(ordered_dict) for ordered_dict in response.data]
-        with open((self.fixture_location / "fixed_classes.json")) as used_fixture:
+        with open(FIXTURE_DIR / "fixed_classes.json") as used_fixture:
             fixture_json_data = json.load(used_fixture)
         expected_data = [item["fields"] for item in fixture_json_data]
         self.assertEqual(actual_data_unordered, expected_data)

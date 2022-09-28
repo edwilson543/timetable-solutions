@@ -1,0 +1,21 @@
+name: TTS CI testing
+
+# Currently, (at 14:16 25/09/2022, not yet implemented full solver functionality), build + test takes ~51 seconds.
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install project dependencies
+      run:
+        pip install -r requirements.txt
+    - name: Test with pytest
+      run: |
+        cd timetable_solutions
+        pytest
