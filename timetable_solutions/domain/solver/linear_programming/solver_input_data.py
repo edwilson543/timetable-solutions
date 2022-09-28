@@ -6,7 +6,7 @@ The API was implemented for the sake of learning about the Django Rest Framework
 
 # Standard library imports
 import requests
-from typing import List, Set, Union
+from typing import List, Set, Union, Optional
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
@@ -25,7 +25,7 @@ class TimetableSolverInputs:
     teacher_set: Set[int]
     days_set: Set[str]
 
-    def __init__(self, data_location: DataLocation):
+    def __init__(self, data_location: Optional[DataLocation]):
 
         # Store data location
         self.data_location = data_location
