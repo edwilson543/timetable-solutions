@@ -40,5 +40,9 @@ def timetable_slot_data() -> List[school_dataclasses.TimetableSlot]:
     slot_1 = school_dataclasses.TimetableSlot(
         slot_id=1, day_of_week="MONDAY", period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
     slot_2 = school_dataclasses.TimetableSlot(
-        slot_id=2, day_of_week="TUESDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
-    return [slot_1, slot_2]
+        slot_id=2, day_of_week="MONDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
+    slot_3 = school_dataclasses.TimetableSlot(
+        slot_id=3, day_of_week="TUESDAY", period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
+    slot_4 = school_dataclasses.TimetableSlot(
+        slot_id=4, day_of_week="TUESDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
+    return [slot_1, slot_2, slot_3, slot_4]
