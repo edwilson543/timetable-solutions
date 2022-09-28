@@ -4,7 +4,7 @@
 {% block head_content %}
 <title>{{teacher.firstname}} {{teacher.surname}} Timetable</title>
 {% load static %}
-<link rel="stylesheet" href="{% static 'stylesheets/pupil_teacher_timetable.css' %}">
+<link rel="stylesheet" href="{% static 'view_timetables/stylesheets/pupil_teacher_timetable.css' %}">
 {% endblock %}
 
 <style>
@@ -84,7 +84,7 @@
         <button type="button" class="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
             Download as CSV
         </button>
-        <script src="{% static 'javascript/table_to_csv.js' %}"></script>
+        <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>
     </div>
 </div>
 
