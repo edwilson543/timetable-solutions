@@ -1,9 +1,5 @@
 """Unit tests for the TimetableSolverInputs class"""
 
-# Standard library imports
-import datetime as dt
-from typing import List
-
 # Third party imports
 import pytest
 
@@ -95,35 +91,6 @@ class TestTimetableSolverInputsLoading(test.LiveServerTestCase):
 class TestTimetableSolverInputsMetaDataExtraction:
     """TESTS FOR META DATA EXTRACTION METHODS"""
 
-    # FIXTURES
-    @pytest.fixture(scope="class")
-    def fixed_class_data(self) -> List[school_dataclasses.FixedClass]:
-        """Dummy fixed class data to be added to the input data loader, for testing meta data extraction"""
-        fc1 = school_dataclasses.FixedClass(school=1, class_id="A", teacher=1, pupils=[1, 2], classroom=1,
-                                            time_slots=[1, 2], subject_name="Maths", user_defined=True)
-        fc2 = school_dataclasses.FixedClass(school=1, class_id="B", teacher=2, pupils=[3, 4], classroom=2,
-                                            time_slots=[3, 4], subject_name="English", user_defined=True)
-        return [fc1, fc2]
-
-    @pytest.fixture(scope="class")
-    def unsolved_class_data(self) -> List[school_dataclasses.UnsolvedClass]:
-        """Dummy unsolved class data to be added to the input data loader, for testing meta data extraction"""
-        uc1 = school_dataclasses.UnsolvedClass(class_id="A", teacher=1, pupils=[1, 2], classroom=1, total_slots=3,
-                                               subject_name="Maths", min_distinct_slots=3)
-        uc2 = school_dataclasses.UnsolvedClass(class_id="B", teacher=2, pupils=[3, 4], classroom=2, total_slots=2,
-                                               subject_name="English", min_distinct_slots=3)
-        return [uc1, uc2]
-
-    @pytest.fixture(scope="class")
-    def timetable_slot_data(self) -> List[school_dataclasses.TimetableSlot]:
-        """Dummy timetable slot data to be added to the input data loader, for testing meta data extraction"""
-        slot_1 = school_dataclasses.TimetableSlot(
-            slot_id=1, day_of_week="MONDAY", period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
-        slot_2 = school_dataclasses.TimetableSlot(
-            slot_id=2, day_of_week="TUESDAY", period_starts_at=dt.time(hour=10), period_duration=dt.timedelta(hours=1))
-        return [slot_1, slot_2]
-
-    # TESTS
     def test_get_pupil_set(self, fixed_class_data, unsolved_class_data):
         """Test for the get_pupil_set_method on the TimetableSolverInputs class"""
         # Set test parameters
