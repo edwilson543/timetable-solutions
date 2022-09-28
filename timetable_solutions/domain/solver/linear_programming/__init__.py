@@ -1,3 +1,4 @@
 from .solver_input_data import TimetableSolverInputs
+from .solver_variables import TimetableSolverVariables
 from .solver import TimetableSolver
 from .solver_output_data import TimetableSolverOutcome
