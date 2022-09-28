@@ -12,7 +12,8 @@ from domain.solver.linear_programming.solver_input_data import TimetableSolverIn
 
 class TimetableSolverVariables:
     """
-    Class to stored solver inputs needed to define the variables, and implement the methods needed to defined them.
+    Class to stored solver inputs needed to define the variables, and implement the methods needed to instantiate and
+    process them.
     """
 
     def __init__(self, inputs: TimetableSolverInputs):
@@ -31,7 +32,6 @@ class TimetableSolverVariables:
             unsolved_class in self._inputs.unsolved_class_data for timetable_slot in self._inputs.timetable_slot_data
         }
         self._strip_variables(variables=variables)
-
         return variables
 
     def _strip_variables(self, variables: Dict[Tuple, lp.LpVariable]) -> None:
