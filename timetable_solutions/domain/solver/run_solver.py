@@ -5,9 +5,7 @@ from typing import List, Optional, Union
 
 # Local application imports
 from domain.solver.constants.api_endpoints import DataLocation
-from domain.solver.linear_programming.solver_input_data import TimetableSolverInputs
-from domain.solver.linear_programming.solver import TimetableSolver
-from domain.solver.linear_programming.solver_output_data import TimetableSolverOutcome
+import linear_programming
 
 
 def produce_timetable_solutions(school_access_key: int,
@@ -23,14 +21,17 @@ def produce_timetable_solutions(school_access_key: int,
         data_location = DataLocation(school_access_key=school_access_key)
     else:
         data_location = DataLocation(school_access_key=school_access_key, protocol_domain=protocol_domain)
-    input_data = TimetableSolverInputs(data_location=data_location)
+    input_data = linear_programming.TimetableSolverInputs(data_location=data_location)
+    input_data.get_and_set_all_data()
 
     # Formulate the linear programming problem and try to solve
-    solver = TimetableSolver(input_data=input_data)
+    variable_maker = linear_programming.TimetableSolverVariables(inputs=input_data)
+    variables = variable_maker.get_variables()
+    solver = linear_programming.TimetableSolver(input_data=input_data)
 
     # Assess the outcome and either post the solutions or return why solutions have not been found
-    outcome = TimetableSolverOutcome(timetable_solver=solver)
+    outcome = linear_programming.TimetableSolverOutcome(timetable_solver=solver)
     if outcome.error_messages is None:
-        outcome.post_results()
+        outcome.extract_and_post_results()
     else:
         return outcome.error_messages

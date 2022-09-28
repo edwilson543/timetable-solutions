@@ -30,7 +30,7 @@ class TimetableSolverInputs:
         # Store data location
         self.data_location = data_location
 
-    def get_and_set_all_data(self):
+    def get_and_set_all_data(self) -> None:
         """
         Method executing all core methods on this class - loading the data, setting it on the class instance,
         extracting meta data from this data, and then also storing it on the class instance
