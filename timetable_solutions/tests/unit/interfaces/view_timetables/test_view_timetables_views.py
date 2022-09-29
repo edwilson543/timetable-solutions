@@ -15,7 +15,7 @@ from data import models
 class TestViews(TestCase):
     """Test class for the view_timetables views"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "fixed_classes.json", "fixed_classes_lunch.json"]
 
     def test_pupil_navigator_response(self):
         """

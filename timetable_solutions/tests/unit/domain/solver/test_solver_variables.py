@@ -2,50 +2,48 @@
 
 # Third party imports
 import pulp as lp
-import pytest
+
+# Django imports
+from django import test
 
 # Local application imports
 from domain.solver import linear_programming
 
 
-class TestTimetableSolverVariables:
+class TestTimetableSolverVariables(test.TestCase):
 
-    @pytest.fixture(scope="class")
-    def solver_variables(self, unsolved_class_data, fixed_class_data,
-                         timetable_slot_data) -> linear_programming.TimetableSolverVariables:
-        """
-        Fixture for the class used to make pulp variables, bound to some simulated input data
-        """
-        inputs = linear_programming.TimetableSolverInputs(data_location=None)
-        inputs.unsolved_class_data = unsolved_class_data
-        inputs.fixed_class_data = fixed_class_data
-        inputs.timetable_slot_data = timetable_slot_data
-        variables_maker = linear_programming.TimetableSolverVariables(inputs=inputs)
-        return variables_maker
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
+                "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    def test_timetable_solver_get_variables(self, solver_variables):
+    def test_timetable_solver_get_variables(self):
         """
         Test of the variable instantiation process for some basic input data
         """
+        # Set parameters
+        input_data = linear_programming.TimetableSolverInputs(school_id=123456)
+
         # Execute test unit
-        variables = solver_variables.get_variables()
+        variables = linear_programming.TimetableSolverVariables(inputs=input_data).get_variables()
 
-        # Test the outcome - fixed classes at A-1, A-2 and B-3, B-4, so these get stripped out
-        assert set(variables.keys()) == {("A", 3), ("A", 4), ("B", 1), ("B", 2)}
-        for var in variables.values():
-            assert isinstance(var, lp.LpVariable)
+        # Test the outcome - we expect one variable per timetable slot / unsolved class pair
+        assert len(variables) == 12 * 35
 
-    def test_timetable_solver_strip_variables(self, solver_variables):
+    def test_timetable_solver_strip_variables(self):
         """
         Test for the method removing irrelevant variables from the variables dict.
         """
-        # Set test parameters
-        variable_keys = {("A", 1),  # Should get stripped, since class "A" is fixed for timetable slot 1 in the inputs
-                     ("A", 3), ("A", 4), ("B", 1), ("B", 2)}
-        variables = {key: lp.LpVariable("Note that lp variable is irrelevant to test") for key in variable_keys}
+        # Set parameters
+        input_data = linear_programming.TimetableSolverInputs(school_id=123456)
+        variable_maker = linear_programming.TimetableSolverVariables(inputs=input_data)
+        variables = variable_maker.get_variables(strip=False)
 
-        # Execute the test unit
-        solver_variables._strip_variables(variables=variables)
+        # We add and additional variable to the variables dictionary, to be stripped out, since we know lunch 1 happens
+        # during slot 4
+        additional_variable = {("LUNCH_1", 4): lp.LpVariable("Note that lp variable is irrelevant to test")}
+        variables = variables | additional_variable
+
+        # Execute the test unit  - note that LUNCH_1 is a know fixed class so we don't need a variable for it
+        variable_maker._strip_variables(variables=variables)
 
         # Test the outcome
-        assert set(variables.keys()) == {("A", 3), ("A", 4), ("B", 1), ("B", 2)}
+        assert ("LUNCH_4", 1) not in variables.keys()

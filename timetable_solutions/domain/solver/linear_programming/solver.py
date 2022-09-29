@@ -16,5 +16,5 @@ class TimetableSolver(lp.LpProblem):
                  variables: TimetableSolverVariables,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._input_data = input_data
-        self._variables = variables
+        self.input_data = input_data
+        self.variables = variables
