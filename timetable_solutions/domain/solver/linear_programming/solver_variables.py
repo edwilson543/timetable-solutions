@@ -47,4 +47,3 @@ class TimetableSolverVariables:
                 if (fixed_class.class_id, timetable_slot.slot_id) in variables.keys():
                     # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
                     variables.pop((fixed_class.class_id, timetable_slot.slot_id))
-
