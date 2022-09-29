@@ -30,10 +30,20 @@ class TimetableSolverConstraints:
         """
 
     def _get_all_pupil_constraints(self) -> Generator[lp.LpConstraint]:
-        # def pupil_constraint(pupil) -> lp.LpConstraint:
-        #     ...
-        #     return constraint
-        # return (pupil_constraint(pupil) for pupil in self.inputs.pupil_list)
+        """
+        Method defining the constraints that each pupil can only be in one class at a time,and returning these as a
+        generator that is iterated through once to add each one to the LpProblem
+        """
+        def pupil_constraint(pupil: int) -> lp.LpConstraint:
+            """
+            Defines the one-class-at-a-time constraint for and individual pupil, across every timeslot.
+            :param pupil - represented by their id number, an integer
+            """
+            for timeslot in self._inputs.timetable_slot_data:
+                pass
+            constraint = lp.lpSum([self._variables])
+            return constraint
+        return (pupil_constraint(pupil) for pupil in self.inputs.pupil_list)
         pass
 
     def _get_all_teacher_constraints(self) -> Generator[lp.LpConstraint]:

@@ -19,7 +19,7 @@ class TimetableSolverVariables:
     def __init__(self, inputs: TimetableSolverInputs):
         self._inputs = inputs
 
-    def get_variables(self) -> Dict[Tuple, lp.LpVariable]:
+    def get_variables(self, strip: bool = True) -> Dict[Tuple, lp.LpVariable]:
         """
         Method to get the pulp variables relevant to a given solution.
         For each (unsolved class, timetable slot) pair, there is a binary variable indicating whether that class happens
@@ -29,9 +29,10 @@ class TimetableSolverVariables:
         variables = {
             (unsolved_class.class_id, timetable_slot.slot_id): lp.LpVariable(
                 f"{unsolved_class.class_id}_occurs_at_slot_{timetable_slot.slot_id}", cat="Binary") for
-            unsolved_class in self._inputs.unsolved_class_data for timetable_slot in self._inputs.timetable_slot_data
+            unsolved_class in self._inputs.unsolved_classes for timetable_slot in self._inputs.timetable_slots
         }
-        self._strip_variables(variables=variables)
+        if strip:
+            self._strip_variables(variables=variables)
         return variables
 
     def _strip_variables(self, variables: Dict[Tuple, lp.LpVariable]) -> None:
@@ -41,8 +42,9 @@ class TimetableSolverVariables:
         Known class times are then handled when defining the constraints.
 
         """
-        for fixed_class in self._inputs.fixed_class_data:
-            for timetable_slot in fixed_class.time_slots:
-                if (fixed_class.class_id, timetable_slot) in variables.keys():
+        for fixed_class in self._inputs.fixed_classes:
+            for timetable_slot in fixed_class.time_slots.all():
+                if (fixed_class.class_id, timetable_slot.slot_id) in variables.keys():
                     # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
-                    variables.pop((fixed_class.class_id, timetable_slot))
+                    variables.pop((fixed_class.class_id, timetable_slot.slot_id))
+
