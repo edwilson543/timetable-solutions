@@ -2,7 +2,7 @@
 
 # Standard library imports
 from collections import namedtuple
-from typing import Dict, Tuple
+from typing import Dict
 
 # Third party imports
 import pulp as lp
@@ -23,7 +23,7 @@ class TimetableSolverVariables:
     def __init__(self, inputs: TimetableSolverInputs):
         self._inputs = inputs
 
-    def get_variables(self, strip: bool = True) -> Dict[Tuple, lp.LpVariable]:
+    def get_variables(self, strip: bool = True) -> Dict[variables_key, lp.LpVariable]:
         """
         Method to get the pulp variables relevant to a given solution.
         For each (unsolved class, timetable slot) pair, there is a binary variable indicating whether that class happens
@@ -39,7 +39,7 @@ class TimetableSolverVariables:
             self._strip_variables(variables=variables)
         return variables
 
-    def _strip_variables(self, variables: Dict[Tuple, lp.LpVariable]) -> None:
+    def _strip_variables(self, variables: Dict[variables_key, lp.LpVariable]) -> None:
         """
         Method to remove variables corresponding to classes that are already known to occur at a certain time, since we
         know their value must be 1, so do not want to slow down the solver unnecessarily.
