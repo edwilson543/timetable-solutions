@@ -1,6 +1,7 @@
 """Module defining the handling of PuLP variables by the solver"""
 
 # Standard library imports
+from collections import namedtuple
 from typing import Dict, Tuple
 
 # Third party imports
@@ -8,6 +9,9 @@ import pulp as lp
 
 # Local application imports
 from domain.solver.linear_programming.solver_input_data import TimetableSolverInputs
+
+
+variables_key = namedtuple("variables_key", "class_id slot_id")  # To be used as the keys of the dictionary
 
 
 class TimetableSolverVariables:
@@ -27,7 +31,7 @@ class TimetableSolverVariables:
         :return - A dictionary of pulp variables, indexed by unique class / timetable slot tuples
         """
         variables = {
-            (unsolved_class.class_id, timetable_slot.slot_id): lp.LpVariable(
+            variables_key(class_id=unsolved_class.class_id, slot_id=timetable_slot.slot_id): lp.LpVariable(
                 f"{unsolved_class.class_id}_occurs_at_slot_{timetable_slot.slot_id}", cat="Binary") for
             unsolved_class in self._inputs.unsolved_classes for timetable_slot in self._inputs.timetable_slots
         }
@@ -44,6 +48,7 @@ class TimetableSolverVariables:
         """
         for fixed_class in self._inputs.fixed_classes:
             for timetable_slot in fixed_class.time_slots.all():
-                if (fixed_class.class_id, timetable_slot.slot_id) in variables.keys():
+                variable_key = variables_key(class_id=fixed_class.class_id, slot_id=timetable_slot.slot_id)
+                if variable_key in variables.keys():
                     # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
-                    variables.pop((fixed_class.class_id, timetable_slot.slot_id))
+                    variables.pop(variable_key)
