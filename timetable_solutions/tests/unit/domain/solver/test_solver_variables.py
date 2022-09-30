@@ -38,8 +38,8 @@ class TestTimetableSolverVariables(test.TestCase):
         variables = variable_maker.get_variables(strip=False)
 
         # We add an additional variable to the variables dictionary, to be stripped out
-        variable_key = linear_programming.variables_key(class_id="LUNCH_1", slot_id=21)
-        additional_variable = {variable_key: lp.LpVariable("Note that lp variable is irrelevant to test")}
+        variable_key = linear_programming.var_key(class_id="LUNCH_1", slot_id=21)
+        additional_variable = {variable_key: lp.LpVariable("Note that l_p variable is irrelevant to test")}
         variables = variables | additional_variable
 
         # Execute the test unit  - note that LUNCH_1 is a know fixed class so we don't need a variable for it
