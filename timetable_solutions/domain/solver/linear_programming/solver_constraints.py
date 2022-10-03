@@ -41,6 +41,10 @@ class TimetableSolverConstraints:
         for constraint in teacher_constraints:
             problem += constraint
 
+        classroom_constraints = self._get_all_classroom_constraints()
+        for constraint in classroom_constraints:
+            problem += constraint
+
     def _get_all_fulfillment_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining the constraints that each unsolved class must be taught for the required number of periods.
