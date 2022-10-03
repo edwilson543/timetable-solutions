@@ -13,9 +13,7 @@ class TimetableSolver:
     Subclass of the pulp LpProblem class to allow use of solve method
     """
     def __init__(self,
-                 input_data: TimetableSolverInputs,
-                 *args, **kwargs):
-        super().__init__(*args, **kwargs)
+                 input_data: TimetableSolverInputs):
         """
         :param - input_data - passing this to __init__ triggers the formulation of the timetable solution problem as
         a linear programming problem 
