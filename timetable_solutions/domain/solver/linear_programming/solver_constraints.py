@@ -2,7 +2,7 @@
 Module defining the constraints on the timetabling problem
 """
 # Standard library imports
-from typing import Generator, TypeVar, Dict, Tuple
+from typing import Generator, Dict, Tuple
 
 # Third party imports
 import pulp as lp
@@ -11,9 +11,6 @@ import pulp as lp
 from data import models
 from .solver_input_data import TimetableSolverInputs
 from .solver_variables import var_key
-
-
-LpProblem = TypeVar("LpProblem", bound=lp.LpProblem)  # Type hint to use for referencing l_p problem subclasses
 
 
 # TODO add min distinct slots constraint - or alternative improvement
@@ -26,10 +23,10 @@ class TimetableSolverConstraints:
         self._inputs = inputs
         self._variables = variables
 
-    def add_constraints_to_problem(self, problem: LpProblem) -> None:
+    def add_constraints_to_problem(self, problem: lp.LpProblem) -> None:
         """
         Method to add all constraints to the passed problem - what this class is used for outside this module.
-        :param problem - an instance of TimetableSolver, which is a subclass of pulp.LpProblem
+        :param problem - an instance of pulp.LpProblem, which collects constraints/objective and solves
         :return None - since the passed problem will be modified in-place
         """
         pupil_constraints = self._get_all_pupil_constraints()
