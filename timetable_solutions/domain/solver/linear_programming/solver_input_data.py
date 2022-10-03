@@ -21,3 +21,4 @@ class TimetableSolverInputs:
         self.timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=self.school_id)
         self.pupils = models.Pupil.objects.get_all_instances_for_school(school_id=self.school_id)
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
+        self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
