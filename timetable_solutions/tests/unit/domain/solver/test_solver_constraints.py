@@ -31,6 +31,24 @@ class TestSolverConstraints(test.TestCase):
         constraint_maker = l_p.TimetableSolverConstraints(inputs=data, variables=variables)
         return constraint_maker
 
+    def test_get_all_fulfillment_constraints(self):
+        """
+        Test that the correct set of fulfillment constraints is returned for all the unsolved classes
+        """
+        # Execute test unit
+        constraint_maker = self.get_constraint_maker()
+        constraints = constraint_maker._get_all_fulfillment_constraints()
+
+        # Check outcome
+        constraint_count = 0
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            assert len(constraint) == 35  # Since each variable is included
+            assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
+            constraint_count += 1
+        assert constraint_count == 12
+
     def test_get_all_pupil_constraints(self):
         """
         Test that the correct set of constraints is returned for pupils
@@ -70,27 +88,32 @@ class TestSolverConstraints(test.TestCase):
 
             constant = constraint_tuple[0].constant
             if constant == 0:
-                existing_commitment_count += 1  # Constraint specifies that the pupil is unavailable at the time
+                existing_commitment_count += 1  # Constraint specifies that the teacher is unavailable at the time
             elif constant == -1:
                 free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
 
-        assert free_constraint_count + existing_commitment_count == 11 * 35  # = n_pupils * n_timetable_slots
-        assert free_constraint_count == 11 * (35 - 5)  # Since we have 5 fixed lunch slots (deducted per pupil)
+        assert free_constraint_count + existing_commitment_count == 11 * 35  # = n_teachers * n_timetable_slots
+        assert free_constraint_count == 11 * (35 - 5)  # Since we have 5 fixed lunch slots (deducted per teacher)
 
-    def test_get_all_fulfillment_constraints(self):
+    def test_get_all_classroom_constraints(self):
         """
-        Test that the correct set of fulfillment constraints is returned for all the unsolved classes
+        Test that the correct set of constraints is returned for classrooms
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        constraints = constraint_maker._get_all_fulfillment_constraints()
+        classroom_constraints = constraint_maker._get_all_classroom_constraints()
 
         # Check outcome
-        constraint_count = 0
-        for constraint_tuple in constraints:
-            constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 35  # Since each variable is included
-            assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
-            constraint_count += 1
-        assert constraint_count == 12
+        existing_occupied_count = 0  # constraints where the LpAffineExpression must always equal 0
+        free_constraint_count = 0  # constraints where the LpAffineExpression could equal 1
+        for constraint_tuple in classroom_constraints:
+            assert isinstance(constraint_tuple[0], LpConstraint)
+
+            constant = constraint_tuple[0].constant
+            if constant == 0:
+                existing_occupied_count += 1  # Constraint specifies that the classroom is occupied at the time
+            elif constant == -1:
+                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
+
+        assert free_constraint_count + existing_occupied_count == 12 * 35  # = n_classrooms * n_timetable_slots
+        assert free_constraint_count == 12 * 35  # No lunch hall in fixture for now...
