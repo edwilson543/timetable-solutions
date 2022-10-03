@@ -91,5 +91,28 @@ class TimetableSolverConstraints:
                        teacher in self._inputs.teachers for time_slot in self._inputs.timetable_slots)
         return constraints
 
-    def _get_all_fulfillment_constraints(self) -> Generator[lp.LpConstraint, None, None]:
-        pass
+    def _get_all_fulfillment_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+        """
+        Method defining the constraints that each unsolved class must be taught for the required number of periods.
+        """
+        def fulfillment_constraint(unsolved_class: models.UnsolvedClass) -> Tuple[lp.LpConstraint, str]:
+            """
+            States that the passed unsolved_class must be taught for the number of required periods, less any
+            existing FixedClass timeslots
+            """
+            variables_sum = lp.lpSum(
+                [var for var_key, var in self._variables.items() if var_key.class_id == unsolved_class.class_id])
+
+            corresponding_fixed_class = self._inputs.fixed_classes.filter(class_id=unsolved_class.class_id)
+            if corresponding_fixed_class.count() == 1:
+                corresponding_fixed_class = corresponding_fixed_class.first()
+                existing_commitments = corresponding_fixed_class.time_slots.all().count()
+            else:
+                existing_commitments = 0
+
+            constraint = (variables_sum <= (unsolved_class.total_slots - existing_commitments),
+                          f"usc_{unsolved_class.class_id}_taught_for_{unsolved_class.total_slots}")
+            return constraint
+
+        constraints = (fulfillment_constraint(unsolved_class) for unsolved_class in self._inputs.unsolved_classes)
+        return constraints
