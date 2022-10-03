@@ -74,6 +74,7 @@ class Pupil(models.Model):
     def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the given pupil has already been assigned a fixed class at the given slot.
+        :return - True if BUSY at the given timeslot.
         """
         # noinspection PyUnresolvedReferences
         slot_classes = self.classes.filter(time_slots=slot)
