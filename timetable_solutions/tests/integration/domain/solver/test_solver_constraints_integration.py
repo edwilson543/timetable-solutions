@@ -32,4 +32,4 @@ class TestSolverConstraints(test.TestCase):
 
         # Check outcome - note the dummy_problem is modified in-place
         constraints = dummy_problem.constraints
-        assert len(constraints) == (6 * 35) + (11 * 35) + 12  # Pupil constraints + teacher constraints + fulfillment
+        assert len(constraints) == 12 + (6 * 35) + (11 * 35) + (12 * 35)   # fulfillment + pupil + teacher + classroom
