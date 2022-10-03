@@ -1,5 +1,8 @@
 """Unit tests for the methods on the TimetableSolverConstraints class"""
 
+# Standard library imports
+from functools import lru_cache
+
 # Django imports
 from django import test
 
@@ -15,17 +18,25 @@ class TestSolverConstraints(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    def test_get_all_pupil_constraints(self):
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def get_constraint_maker() -> l_p.TimetableSolverConstraints:
         """
-        Test that the correct set of constraints is returned for pupils
+        Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixture, but this does not work
+        since the test class subclasses the Django TestCase
         """
-        # Set test parameters
         school_access_key = 123456
         data = l_p.TimetableSolverInputs(school_id=school_access_key)
         variables = l_p.TimetableSolverVariables(inputs=data).get_variables()
         constraint_maker = l_p.TimetableSolverConstraints(inputs=data, variables=variables)
+        return constraint_maker
 
+    def test_get_all_pupil_constraints(self):
+        """
+        Test that the correct set of constraints is returned for pupils
+        """
         # Execute test unit
+        constraint_maker = self.get_constraint_maker()
         pup_constraints = constraint_maker._get_all_pupil_constraints()
 
         # Check outcome
@@ -47,20 +58,14 @@ class TestSolverConstraints(test.TestCase):
         """
         Test that the correct set of constraints is returned for teachers
         """
-        # Set test parameters
-        school_access_key = 123456
-        data = l_p.TimetableSolverInputs(school_id=school_access_key)
-        variables = l_p.TimetableSolverVariables(inputs=data).get_variables()
-        constraint_maker = l_p.TimetableSolverConstraints(inputs=data, variables=variables)
-
         # Execute test unit
+        constraint_maker = self.get_constraint_maker()
         teacher_constraints = constraint_maker._get_all_teacher_constraints()
 
         # Check outcome
         existing_commitment_count = 0  # constraints where the LpAffineExpression must always equal 0
         free_constraint_count = 0  # constraints where the LpAffineExpression could equal 1
         for constraint_tuple in teacher_constraints:
-            print(constraint_tuple)
             assert isinstance(constraint_tuple[0], LpConstraint)
 
             constant = constraint_tuple[0].constant
@@ -71,3 +76,18 @@ class TestSolverConstraints(test.TestCase):
 
         assert free_constraint_count + existing_commitment_count == 11 * 35  # = n_pupils * n_timetable_slots
         assert free_constraint_count == 11 * (35 - 5)  # Since we have 5 fixed lunch slots (deducted per pupil)
+
+    def test_get_all_fulfillment_constraints(self):
+        """
+        Test that the correct set of fulfillment constraints is returned for all the unsolved classes
+        """
+        # Execute test unit
+        constraint_maker = self.get_constraint_maker()
+        constraints = constraint_maker._get_all_fulfillment_constraints()
+
+        # Check outcome
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            assert len(constraint) == 35  # Since each variable is included
+            assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
