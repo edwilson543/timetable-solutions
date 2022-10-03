@@ -16,6 +16,8 @@ from .solver_variables import var_key
 LpProblem = TypeVar("LpProblem", bound=lp.LpProblem)  # Type hint to use for referencing l_p problem subclasses
 
 
+# TODO add min distinct slots constraint - or alternative improvement
+
 class TimetableSolverConstraints:
 
     def __init__(self,
