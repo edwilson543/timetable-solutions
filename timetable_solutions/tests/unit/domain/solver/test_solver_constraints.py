@@ -86,8 +86,11 @@ class TestSolverConstraints(test.TestCase):
         constraints = constraint_maker._get_all_fulfillment_constraints()
 
         # Check outcome
+        constraint_count = 0
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
             assert len(constraint) == 35  # Since each variable is included
             assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
+            constraint_count += 1
+        assert constraint_count == 12

@@ -28,10 +28,21 @@ class TimetableSolverConstraints:
 
     def add_constraints_to_problem(self, problem: LpProblem) -> None:
         """
-        Method add all constraints to the passed problem
+        Method to add all constraints to the passed problem - what this class is used for outside this module.
         :param problem - an instance of TimetableSolver, which is a subclass of pulp.LpProblem
+        :return None - since the passed problem will be modified in-place
         """
-        pass
+        pupil_constraints = self._get_all_pupil_constraints()
+        for constraint in pupil_constraints:
+            problem += constraint
+
+        teacher_constraints = self._get_all_teacher_constraints()
+        for constraint in teacher_constraints:
+            problem += constraint
+
+        fulfillment_constraints = self._get_all_fulfillment_constraints()
+        for constraint in fulfillment_constraints:
+            problem += constraint
 
     def _get_all_pupil_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
