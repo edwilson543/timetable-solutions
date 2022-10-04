@@ -4,7 +4,9 @@
 from typing import List, Optional, Union
 
 # Local application imports
-import linear_programming as l_p
+from .solver_input_data import TimetableSolverInputs
+from .solver_output_data import TimetableSolverOutcome
+from .linear_programming.solver import TimetableSolver
 
 
 def produce_timetable_solutions(school_access_key: int) -> Union[str, None]:
@@ -13,12 +15,12 @@ def produce_timetable_solutions(school_access_key: int) -> Union[str, None]:
     A button is clicked, which corresponds to a view, where that view calls this function.
     :param school_access_key - the unique integer used to access a given school's data via the API
     """
-    input_data = l_p.TimetableSolverInputs(school_id=school_access_key)
-    solver = l_p.TimetableSolver(input_data=input_data)
+    input_data = TimetableSolverInputs(school_id=school_access_key)
+    solver = TimetableSolver(input_data=input_data)
     solver.solve()
 
     # Assess the outcome and either post the solutions or return why solutions have not been found
-    outcome = l_p.TimetableSolverOutcome(timetable_solver=solver)
+    outcome = TimetableSolverOutcome(timetable_solver=solver)
     if outcome.error_messages is None:
         outcome.extract_and_post_results()
     else:

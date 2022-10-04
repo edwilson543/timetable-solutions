@@ -8,7 +8,7 @@ from typing import Dict
 import pulp as lp
 
 # Local application imports
-from domain.solver.linear_programming.solver_input_data import TimetableSolverInputs
+from domain.solver.solver_input_data import TimetableSolverInputs
 
 
 var_key = namedtuple("var_key", "class_id slot_id")  # To be used as the keys of the dictionary

@@ -5,7 +5,7 @@ from django import test
 
 # Local application imports
 from data import models
-from domain.solver import linear_programming as l_p
+from domain import solver as slvr
 
 
 class TestTimetableSolverInputsLoading(test.TestCase):
@@ -21,7 +21,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         school_access_key = 123456
 
         # Execute test unit
-        data = l_p.TimetableSolverInputs(school_id=school_access_key)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key)
 
         # Check the outcome is as expected
         assert len(data.fixed_classes) == 12
