@@ -64,7 +64,7 @@ class TimetableSolverConstraints:
             else:
                 existing_commitments = 0
 
-            constraint = (variables_sum <= (unsolved_class.total_slots - existing_commitments),
+            constraint = (variables_sum == (unsolved_class.total_slots - existing_commitments),
                           f"usc_{unsolved_class.class_id}_taught_for_{unsolved_class.total_slots}")
             return constraint
 
