@@ -2,6 +2,7 @@
 
 # Standard library imports
 import datetime as dt
+from typing import Set
 
 # Django imports
 from django.db import models
@@ -20,6 +21,10 @@ class TimetableSlotQuerySet(models.QuerySet):
     def get_individual_timeslot(self, school_id: int, slot_id: int):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(slot_id=slot_id))
+
+    def get_specific_timeslots(self, school_id: int, slot_ids: Set[int]):
+        """Method returning the list of slots and the school with corresponding slot_id"""
+        return self.filter(models.Q(school_id=school_id) & models.Q(slot_id__in=slot_ids))
 
 
 class TimetableSlot(models.Model):
