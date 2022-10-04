@@ -79,10 +79,19 @@ class FixedClass(models.Model):
             classroom_id=classroom_id, user_defined=user_defined)
         fixed_cls.save()
 
-        fixed_cls.pupils.add(*pupils)
-        fixed_cls.time_slots.add(*time_slots)
+        fixed_cls.add_pupils(pupils=pupils)
+        fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
+
+    # MUTATORS
+    def add_pupils(self, pupils: PupilQuerySet) -> None:
+        """Method adding adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
+        self.pupils.add(*pupils)
+
+    def add_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
+        """Method adding adding a queryset of time slots to the FixedClass instance's many-to-many time_slot field"""
+        self.time_slots.add(*time_slots)
 
     # PROPERTIES
     @property
