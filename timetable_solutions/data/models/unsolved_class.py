@@ -64,13 +64,3 @@ class UnsolvedClass(models.Model):
         unsolved_cls.save()
         unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
-
-    # MUTATION METHODS
-    def add_pupils(self, pupil_ids: Set[int]) -> None:
-        """
-        Method to associate a set of pupils with an individual UnsolvedClass instance
-        :param pupil_ids - a set of primary keys relating to pupils, with the fixed class to become associate with each
-        """
-        # noinspection PyUnresolvedReferences
-        self.pupils.add(*pupil_ids)
-        self.save()
