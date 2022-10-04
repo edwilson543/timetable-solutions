@@ -39,12 +39,12 @@ class TestSolverScenarioSolutions(test.TestCase):
     Tests where we are after a specific solution
     """
 
-    fixtures = ["test_scenario_1.json", "test_scenario_2.json"]
+    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json"]
 
     def test_solver_solution_test_scenario_1(self):
         """
-        Test scenario 1 essentially represents a test of the fulfillment constraint. There are 2 pupils / teachers /
-        timeslots / fixed classes / unsolved classes. Each fixed class occupies one of the slots, and the unsolved class
+        Test scenario 1 represents a test of the fulfillment constraint. There are 2 pupils / teachers / timeslots /
+        fixed classes / unsolved classes. Each fixed class occupies one of the slots, and the unsolved class
         states 2 slots must be used, so the solution is just to occupy the remaining slot, for each class.
         """
         # Set test parameters
@@ -84,3 +84,22 @@ class TestSolverScenarioSolutions(test.TestCase):
         c2_t2 = solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue
         assert c1_t1 + c1_t2 == 1
         assert c2_t1 + c2_t2 == 1
+
+    def test_solver_solution_test_scenario_3(self):
+        """
+        Test scenario 3 represents a test of the teacher one-place-at-a-time constraint. A teacher must take 2 classes,
+        one of which is fixed and one of which is unsolved. Both use 1 slot, and there are 2 possible time slots
+        """
+        # Set test parameters
+        school_access_key = 333333
+        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Teacher taking other class
+        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
