@@ -10,7 +10,7 @@ from django import test
 from pulp import LpConstraint
 
 # Local application imports
-from domain.solver import linear_programming as l_p
+from domain import solver as slvr
 
 
 class TestSolverConstraints(test.TestCase):
@@ -20,15 +20,15 @@ class TestSolverConstraints(test.TestCase):
 
     @staticmethod
     @lru_cache(maxsize=1)
-    def get_constraint_maker() -> l_p.TimetableSolverConstraints:
+    def get_constraint_maker() -> slvr.TimetableSolverConstraints:
         """
         Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixture, but this does not work
         since the test class subclasses the Django TestCase
         """
         school_access_key = 123456
-        data = l_p.TimetableSolverInputs(school_id=school_access_key)
-        variables = l_p.TimetableSolverVariables(inputs=data).get_variables()
-        constraint_maker = l_p.TimetableSolverConstraints(inputs=data, variables=variables)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        variables = slvr.TimetableSolverVariables(inputs=data).get_variables()
+        constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
         return constraint_maker
 
     def test_get_all_fulfillment_constraints(self):

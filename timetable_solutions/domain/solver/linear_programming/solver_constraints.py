@@ -9,7 +9,7 @@ import pulp as lp
 
 # Local application imports
 from data import models
-from .solver_input_data import TimetableSolverInputs
+from domain.solver.solver_input_data import TimetableSolverInputs
 from .solver_variables import var_key
 
 
