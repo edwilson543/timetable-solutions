@@ -39,7 +39,7 @@ class TestSolverScenarioSolutions(test.TestCase):
     Tests where we are after a specific solution
     """
 
-    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json"]
+    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json"]
 
     def test_solver_solution_test_scenario_1(self):
         """
@@ -102,4 +102,23 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert lp.LpStatus[solver.problem.status] == "Optimal"
         assert len(solver.variables) == 2  # Unsolved class' 1 slot could go in either time slot
         assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Teacher taking other class
+        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+
+    def test_solver_solution_test_scenario_4(self):
+        """
+        Two classes share a classroom, but neither pupils nor teachers. One must take place at a certain time, leaving
+        only one option for the remaining class.
+        """
+        # Set test parameters
+        school_access_key = 444444
+        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Classroom occupied
         assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
