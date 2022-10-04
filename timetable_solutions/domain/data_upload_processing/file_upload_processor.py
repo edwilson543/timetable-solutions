@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
+from data import models
 from data.utils import ModelSubclass
 from .constants import Header
 
@@ -178,18 +179,20 @@ class FileUploadProcessor:
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
         model_dict["school_id"] = self._school_access_key
         model_dict["user_defined"] = True  # Since any fixed class uploaded by the user is user defined
+
+        pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
+        pup_ids = {int(val) for val in pup_ids}
+        pupils = models.Pupil.objects.get_specific_pupils(school_id=self._school_access_key, pupil_ids=pup_ids)
+        model_dict["pupils"] = pupils
+
+        slot_ids = ast.literal_eval(row[Header.SLOT_IDS])
+        slot_ids = {int(val) for val in slot_ids}
+        slots = models.TimetableSlot.objects.get_specific_timeslots(
+            school_id=self._school_access_key, slot_ids=slot_ids)
+        model_dict["time_slots"] = slots
+
         try:
             model_instance = self._model.create_new(**model_dict)
-            model_instance.save()  # Need to save to be able to add pupils / slots
-
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
-            pups = {int(val) for val in pups}
-            model_instance.add_pupils(pupil_ids=pups)
-
-            slots = ast.literal_eval(row[Header.SLOT_IDS])
-            slots = {int(val) for val in slots}
-            model_instance.add_timetable_slots(slot_ids=slots)
-
             model_instance.full_clean()
             return model_instance
         except ValidationError:
