@@ -1,144 +1,151 @@
 [
   {
+    "model": "data.school",
+    "pk": 111111,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
     "model": "data.timetableslot",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "day_of_week": "MONDAY",
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.timetableslot",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "day_of_week": "TUESDAY",
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.pupil",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "firstname": "John",
       "surname": "Smith",
       "year_group": 1,
       "pupil_id": 1,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.pupil",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "firstname": "Lynn",
       "surname": "Brindley",
       "year_group": 1,
       "pupil_id": 2,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.teacher",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "firstname": "Theresa",
       "surname": "May",
       "title": "Mrs",
       "teacher_id": 1,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.teacher",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "firstname": "Nims",
       "surname": "Purja",
       "title": "Mr",
       "teacher_id": 2,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.classroom",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "building": "MB",
       "room_number": 47,
       "classroom_id": 1,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.classroom",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "building": "MB",
       "room_number": 14,
       "classroom_id": 2,
-      "school": 123456
+      "school": 111111
     }
   },
   {
     "model": "data.fixedclass",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "class_id": "YEAR_ONE_MATHS_A",
       "subject_name": "MATHS",
-      "teacher": 1,
-      "pupils": [1],
-      "classroom": 1,
-      "time_slots": [1],
-      "user_defined": false,
-      "school": 123456
+      "teacher": 101,
+      "pupils": [101],
+      "classroom": 101,
+      "time_slots": [101],
+      "user_defined": true,
+      "school": 111111
     }
   },
   {
     "model": "data.fixedclass",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "class_id": "YEAR_ONE_MATHS_B",
       "subject_name": "MATHS",
-      "teacher": 2,
-      "pupils": [2],
-      "classroom": 2,
-      "time_slots": [2],
-      "user_defined": false,
-      "school": 123456
+      "teacher": 102,
+      "pupils": [102],
+      "classroom": 102,
+      "time_slots": [102],
+      "user_defined": true,
+      "school": 111111
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": 1,
+    "pk": 101,
     "fields": {
       "class_id": "YEAR_ONE_MATHS_A",
-      "school": 123456,
+      "school": 111111,
       "subject_name": "MATHS",
-      "teacher": 1,
-      "classroom": 1,
+      "teacher": 101,
+      "classroom": 101,
       "total_slots": 2,
       "min_distinct_slots": 1,
-      "pupils": [1]
+      "pupils": [101]
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": 2,
+    "pk": 102,
     "fields": {
       "class_id": "YEAR_ONE_MATHS_B",
-      "school": 123456,
+      "school": 111111,
       "subject_name": "MATHS",
-      "teacher": 2,
-      "classroom": 2,
+      "teacher": 102,
+      "classroom": 102,
       "total_slots": 2,
       "min_distinct_slots": 1,
-      "pupils": [2]
+      "pupils": [102]
     }
   }
 ]
