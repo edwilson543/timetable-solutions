@@ -40,6 +40,17 @@
     }
   },
   {
+    "model": "data.pupil",
+    "pk": 302,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 1,
+      "pupil_id": 2,
+      "school": 333333
+    }
+  },
+  {
     "model": "data.teacher",
     "pk": 301,
     "fields": {
@@ -92,10 +103,10 @@
       "school": 333333,
       "subject_name": "ENGLISH",
       "teacher": 301,
-      "classroom": 301,
+      "classroom": 302,
       "total_slots": 1,
       "min_distinct_slots": 1,
-      "pupils": [301]
+      "pupils": [302]
     }
   }
 ]
