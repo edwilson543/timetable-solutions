@@ -177,22 +177,19 @@ class FileUploadProcessor:
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID]}
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
-        model_dict["school_id"] = self._school_access_key
-        model_dict["user_defined"] = True  # Since any fixed class uploaded by the user is user defined
 
         pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
         pup_ids = {int(val) for val in pup_ids}
         pupils = models.Pupil.objects.get_specific_pupils(school_id=self._school_access_key, pupil_ids=pup_ids)
-        model_dict["pupils"] = pupils
 
         slot_ids = ast.literal_eval(row[Header.SLOT_IDS])
         slot_ids = {int(val) for val in slot_ids}
         slots = models.TimetableSlot.objects.get_specific_timeslots(
             school_id=self._school_access_key, slot_ids=slot_ids)
-        model_dict["time_slots"] = slots
 
         try:
-            model_instance = self._model.create_new(**model_dict)
+            model_instance = self._model.create_new(
+                school_id=self._school_access_key,pupils=pupils, time_slots=slots, user_defined=True, **model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
