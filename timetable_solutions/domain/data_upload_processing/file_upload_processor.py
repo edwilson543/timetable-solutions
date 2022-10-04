@@ -156,15 +156,15 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_DISTINCT_SLOTS: row[Header.MIN_DISTINCT_SLOTS],
-            "school_id": self._school_access_key}
-        try:
-            model_instance = self._model.create_new(**model_dict)
-            model_instance.save()  # Need to save to be able to add pupils
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_DISTINCT_SLOTS: row[Header.MIN_DISTINCT_SLOTS]}
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
-            pups = {int(val) for val in pups}
-            model_instance.add_pupils(pupil_ids=pups)
+        pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
+        pup_ids = {int(val) for val in pup_ids}
+        pupils = models.Pupil.objects.get_specific_pupils(school_id=self._school_access_key, pupil_ids=pup_ids)
+
+        try:
+            model_instance = self._model.create_new(
+                school_id=self._school_access_key, pupils=pupils,  **model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
@@ -189,7 +189,7 @@ class FileUploadProcessor:
 
         try:
             model_instance = self._model.create_new(
-                school_id=self._school_access_key,pupils=pupils, time_slots=slots, user_defined=True, **model_dict)
+                school_id=self._school_access_key, pupils=pupils, time_slots=slots, user_defined=True, **model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:

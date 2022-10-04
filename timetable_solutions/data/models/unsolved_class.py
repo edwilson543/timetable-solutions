@@ -10,7 +10,7 @@ from django.db import models
 from data.models.school import School
 from data.models.classroom import Classroom
 from data.models.fixed_class import FixedClass
-from data.models.pupil import Pupil
+from data.models.pupil import Pupil, PupilQuerySet
 from data.models.teacher import Teacher
 
 
@@ -53,14 +53,16 @@ class UnsolvedClass(models.Model):
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int,
-                   classroom_id: int, total_slots: int, min_distinct_slots: int):
+                   classroom_id: int, total_slots: int, min_distinct_slots: int, pupils: PupilQuerySet):
         """
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
-        Many-to-many relationship with UnsolvedClasses.
+        Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
-        unsolved_cls = cls.objects.create(school_id=school_id, class_id=class_id, subject_name=subject_name,
-                                          teacher_id=teacher_id, classroom_id=classroom_id, total_slots=total_slots,
-                                          min_distinct_slots=min_distinct_slots)
+        unsolved_cls = cls.objects.create(
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
+            classroom_id=classroom_id, total_slots=total_slots, min_distinct_slots=min_distinct_slots)
+        unsolved_cls.save()
+        unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 
     # MUTATION METHODS
