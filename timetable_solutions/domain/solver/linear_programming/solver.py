@@ -24,7 +24,7 @@ class TimetableSolver:
 
         # Formulate the linear programming problem
         self.input_data = input_data
-        self.variables = TimetableSolverVariables(inputs=input_data).get_variables()
+        self.variables = TimetableSolverVariables(inputs=input_data)
         constraint_maker = TimetableSolverConstraints(inputs=input_data, variables=self.variables)
         constraint_maker.add_constraints_to_problem(problem=self.problem)
 

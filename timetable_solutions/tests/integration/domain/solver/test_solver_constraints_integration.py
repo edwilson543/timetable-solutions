@@ -22,7 +22,7 @@ class TestSolverConstraints(test.TestCase):
         # Set test parameters
         school_access_key = 123456
         data = slvr.TimetableSolverInputs(school_id=school_access_key)
-        variables = slvr.TimetableSolverVariables(inputs=data).get_variables()
+        variables = slvr.TimetableSolverVariables(inputs=data)
         constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
 
         dummy_problem = lp.LpProblem()  # In real life, will be the defined LpProblem subclass

@@ -12,7 +12,7 @@ class TimetableSolverOutcome:
                  timetable_solver: TimetableSolver):
         self._timetable_solver = timetable_solver
         self._input_data = timetable_solver.input_data
-        self._variables = timetable_solver.variables
+        self._decision_variables = timetable_solver.variables.decision_variables
         self.error_messages = timetable_solver.error_messages
 
         if len(self.error_messages) == 0:
@@ -24,7 +24,7 @@ class TimetableSolverOutcome:
         existing FixedClass instances already with some known time slots
         """
         for unsolved_class in self._input_data.unsolved_classes:
-            solved_timeslot_ids = [var_key.slot_id for var_key, var in self._variables.items() if
+            solved_timeslot_ids = [var_key.slot_id for var_key, var in self._decision_variables.items() if
                                    (var.varValue == 1.0) and (var_key.class_id == unsolved_class.class_id)]
             solved_timeslots = self._input_data.timetable_slots.filter(slot_id__in=solved_timeslot_ids)
             if solved_timeslots.count() == 0:

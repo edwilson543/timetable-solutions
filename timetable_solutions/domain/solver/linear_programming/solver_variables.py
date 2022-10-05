@@ -20,10 +20,19 @@ class TimetableSolverVariables:
     process them.
     """
 
-    def __init__(self, inputs: TimetableSolverInputs):
+    def __init__(self,
+                 inputs: TimetableSolverInputs,
+                 set_variables: bool = True):
+        """
+        :param inputs: data used to create the data - one decision variable is created per unique (class, slot)
+        :param set_variables: - whether or not to instantiate all variables at the point of class instantiation
+        """
         self._inputs = inputs
 
-    def get_variables(self, strip: bool = True) -> Dict[var_key, lp.LpVariable]:
+        if set_variables:
+            self.decision_variables = self._get_decision_variables()
+
+    def _get_decision_variables(self, strip: bool = True) -> Dict[var_key, lp.LpVariable]:
         """
         Method to get the pulp variables relevant to a given solution.
         For each (unsolved class, timetable slot) pair, there is a binary variable indicating whether that class happens
