@@ -22,3 +22,10 @@ class TimetableSolverInputs:
         self.pupils = models.Pupil.objects.get_all_instances_for_school(school_id=self.school_id)
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
+
+    def _get_consecutive_periods(self):
+        """
+        Method to work out which of the timetable_slots in the inputs are consecutive, and store these as named tuples
+        on the class.
+        """
+        pass
