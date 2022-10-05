@@ -165,3 +165,11 @@ class TimetableSolverConstraints:
         constraints = (one_class_at_a_time_constraint(classroom=classroom, time_slot=time_slot) for
                        classroom in self._inputs.classrooms for time_slot in self._inputs.timetable_slots)
         return constraints
+
+    def _get_consecutive_period_constraints(self):
+        """
+        Method defining the constraints that the number of double periods of a particular FixedClass cannot exceed what
+        the user has specified. (total_slots - min_distinct_slots
+        # TODO - rename min_distinct_slots as n_double_periods ???????????????????
+        """
+        pass

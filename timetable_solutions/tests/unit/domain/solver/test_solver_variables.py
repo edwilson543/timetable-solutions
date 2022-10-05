@@ -44,7 +44,7 @@ class TestTimetableSolverVariables(test.TestCase):
         variables = variables | additional_variable
 
         # Execute the test unit  - note that LUNCH_1 is a know fixed class so we don't need a variable for it
-        variable_maker._strip_variables(variables=variables)
+        variable_maker._strip_decision_variables(variables=variables)
 
         # Test the outcome
         assert variable_key not in variables.keys()

@@ -45,10 +45,14 @@ class TimetableSolverVariables:
             unsolved_class in self._inputs.unsolved_classes for timetable_slot in self._inputs.timetable_slots
         }
         if strip:
-            self._strip_variables(variables=variables)
+            self._strip_decision_variables(variables=variables)
         return variables
 
-    def _strip_variables(self, variables: Dict[var_key, lp.LpVariable]) -> None:
+    def _double_period_variables(self) -> Dict[object, lp.LpVariable]:
+        """Dependent variables indicating whether object is an"""
+        pass
+
+    def _strip_decision_variables(self, variables: Dict[var_key, lp.LpVariable]) -> None:
         """
         Method to remove variables corresponding to classes that are already known to occur at a certain time, since we
         know their value must be 1, so do not want to slow down the solver unnecessarily.
