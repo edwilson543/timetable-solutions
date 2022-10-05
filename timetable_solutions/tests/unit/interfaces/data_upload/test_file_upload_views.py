@@ -97,7 +97,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(len(all_slots), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
-        self.assertEqual(slot.day_of_week, "MONDAY")
+        self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
 

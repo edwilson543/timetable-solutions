@@ -10,7 +10,7 @@
     "model": "data.timetableslot",
     "pk": 401,
     "fields": {
-      "day_of_week": "MONDAY",
+      "day_of_week": 1,
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
@@ -21,7 +21,7 @@
     "model": "data.timetableslot",
     "pk": 402,
     "fields": {
-      "day_of_week": "TUESDAY",
+      "day_of_week": 2,
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "09:00:00",

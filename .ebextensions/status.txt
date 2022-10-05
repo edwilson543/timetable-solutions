@@ -1,3 +1,5 @@
+RUNNING python manage.py shell throws the same error as received in production - investigate
+
 CURRENT STATUS OF DEPLOYMENT:
 0) awsebcli installed in virtual environment
 1) Elastic beanstalk environment setup on AWS (via cli but also viewable in the aws console), including adding the

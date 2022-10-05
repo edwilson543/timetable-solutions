@@ -88,8 +88,10 @@ class TestViews(TestCase):
         # Test colours context
         colours = response.context["class_colours"]
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name], models.FixedClass.SubjectColour.MATHS.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name],
+                         models.FixedClass.SubjectColour.MATHS.label)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name],
+                         models.FixedClass.SubjectColour.FREE.label)
 
     def test_teacher_timetable_view_correct_response(self):
         """
