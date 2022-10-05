@@ -105,7 +105,7 @@
       "teacher": 301,
       "classroom": 302,
       "total_slots": 1,
-      "min_distinct_slots": 1,
+      "n_double_periods": 1,
       "pupils": [302]
     }
   }

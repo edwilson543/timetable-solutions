@@ -156,7 +156,7 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_DISTINCT_SLOTS: row[Header.MIN_DISTINCT_SLOTS]}
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.N_DOUBLE_PERIODS: row[Header.N_DOUBLE_PERIODS]}
 
         pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
         pup_ids = {int(val) for val in pup_ids}

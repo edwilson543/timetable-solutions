@@ -25,7 +25,7 @@ class Header:
     PERIOD_DURATION = "period_duration"
     SUBJECT_NAME = "subject_name"
     TOTAL_SLOTS = "total_slots"
-    MIN_DISTINCT_SLOTS = "min_distinct_slots"
+    N_DOUBLE_PERIODS = "n_double_periods"
 
     # Headers in files containing many-to-many relationships
     PUPIL_IDS = "pupil_ids"
@@ -47,11 +47,11 @@ class UploadFileStructure:
                              id_column=Header.TEACHER_ID)
     CLASSROOMS = FileStructure(headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
                                id_column=Header.CLASSROOM_ID)
-    TIMETABLE = FileStructure(headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
-                              id_column=Header.SLOT_ID)
+    TIMETABLE = FileStructure(
+        headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
+        id_column=Header.SLOT_ID)
     UNSOLVED_CLASSES = FileStructure(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
-                                              Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.MIN_DISTINCT_SLOTS],
+                                              Header.CLASSROOM_ID, Header.TOTAL_SLOTS, Header.N_DOUBLE_PERIODS],
                                      id_column=Header.CLASS_ID)
     FIXED_CLASSES = FileStructure(headers=[Header.CLASS_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS,
-                                           Header.CLASSROOM_ID, Header.SLOT_IDS],
-                                  id_column=Header.CLASS_ID)
+                                           Header.CLASSROOM_ID, Header.SLOT_IDS], id_column=Header.CLASS_ID)

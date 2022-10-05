@@ -17,7 +17,7 @@ from .solver_variables import var_key
 # TODO add min distinct slots constraint - or alternative improvement
 # TODO - introduce binary variable for each (class, consecutive period)
 # TODO - then this variable >= sum(variables[class, consecutive_period[0]], variables[class, consecutive_period[1]]) - 1
-# TODO - and then sum(consectuive variables for consecutive_periods in consecutive periods) == total_slots - min_distinct_slots
+# TODO - and then sum(consectuive variables for consecutive_periods in consecutive periods) == total_slots - N_DOUBLE_PERIODS
 # TODO - introducing an input object here for consecutive_periods would be pretty useful
 
 class TimetableSolverConstraints:
@@ -169,7 +169,7 @@ class TimetableSolverConstraints:
     def _get_consecutive_period_constraints(self):
         """
         Method defining the constraints that the number of double periods of a particular FixedClass cannot exceed what
-        the user has specified. (total_slots - min_distinct_slots
-        # TODO - rename min_distinct_slots as n_double_periods ???????????????????
+        the user has specified. (total_slots - N_DOUBLE_PERIODS
+        # TODO - rename N_DOUBLE_PERIODS as N_DOUBLE_PERIODS ???????????????????
         """
         pass

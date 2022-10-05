@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('class_id', models.CharField(max_length=20)),
                 ('subject_name', models.CharField(choices=[('MATHS', '#b3f2b3'), ('ENGLISH', '#ffbfd6'), ('FRENCH', '#c8d4e3'), ('LUNCH', '#b3b3b3'), ('FREE', '#feffba')], max_length=20)),
                 ('total_slots', models.PositiveSmallIntegerField()),
-                ('min_distinct_slots', models.PositiveSmallIntegerField()),
+                ('N_DOUBLE_PERIODS', models.PositiveSmallIntegerField()),
                 ('classroom', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='unsolved_classes', to='data.classroom')),
                 ('pupils', models.ManyToManyField(related_name='unsolved_classes', to='data.pupil')),
                 ('school', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='data.school')),
