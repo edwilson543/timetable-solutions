@@ -14,13 +14,10 @@ from domain.solver.linear_programming.solver_variables import TimetableSolverVar
 from .solver_variables import var_key
 
 
-# TODO add min distinct slots constraint - or alternative improvement
-# TODO - introduce binary variable for each (class, consecutive period)
-# TODO - then this variable >= sum(variables[class, consecutive_period[0]], variables[class, consecutive_period[1]]) - 1
-# TODO - and then sum(consectuive variables for consecutive_periods in consecutive periods) == total_slots - N_DOUBLE_PERIODS
-# TODO - introducing an input object here for consecutive_periods would be pretty useful
-
 class TimetableSolverConstraints:
+    """
+    Class used to define the constraints for the given timetabling problem, and then add them a LpProblem instance
+    """
 
     def __init__(self,
                  inputs: TimetableSolverInputs,
@@ -169,7 +166,12 @@ class TimetableSolverConstraints:
     def _get_consecutive_period_constraints(self):
         """
         Method defining the constraints that the number of double periods of a particular FixedClass cannot exceed what
-        the user has specified. (total_slots - N_DOUBLE_PERIODS
-        # TODO - rename N_DOUBLE_PERIODS as N_DOUBLE_PERIODS ???????????????????
+        the user has specified. (total_slots - n_double_periods)
         """
         pass
+
+    # TODO add double periods constraint - or alternative improvement
+    # TODO - introduce binary variable for each (class, consecutive period)
+    # TODO constraints 1: double period variable <= each individual period variable
+    # TODO constraints 2: sum(double period variable over class) == n_double_periods
+    # TODO - introducing an input object here for consecutive_periods would be pretty useful
