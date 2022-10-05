@@ -1,7 +1,7 @@
 """Entry point to the solver"""
 
 # Standard library imports
-from typing import List, Optional, Union
+from typing import Union
 
 # Local application imports
 from .solver_input_data import TimetableSolverInputs
@@ -21,7 +21,4 @@ def produce_timetable_solutions(school_access_key: int) -> Union[str, None]:
 
     # Assess the outcome and either post the solutions or return why solutions have not been found
     outcome = TimetableSolverOutcome(timetable_solver=solver)
-    if outcome.error_messages is None:
-        outcome.extract_and_post_results()
-    else:
-        return outcome.error_messages
+    return outcome.error_messages

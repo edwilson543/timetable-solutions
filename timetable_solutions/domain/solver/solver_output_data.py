@@ -24,7 +24,8 @@ class TimetableSolverOutcome:
         existing FixedClass instances already with some known time slots
         """
         for unsolved_class in self._input_data.unsolved_classes:
-            solved_timeslot_ids = [var_key.slot_id for var_key, var in self._variables.items() if var.varValue == 1.0]
+            solved_timeslot_ids = [var_key.slot_id for var_key, var in self._variables.items() if
+                                   (var.varValue == 1.0) and (var_key.class_id == unsolved_class.class_id)]
             solved_timeslots = self._input_data.timetable_slots.filter(slot_id__in=solved_timeslot_ids)
             if solved_timeslots.count() == 0:
                 continue
@@ -54,6 +55,6 @@ class TimetableSolverOutcome:
         """
         models.FixedClass.create_new(
             school_id=unsolved_class.school.school_access_key, user_defined=False, class_id=unsolved_class.class_id,
-            pupils=unsolved_class.pupils.all(), time_slots=timeslots, classroom_id=unsolved_class.classroom.classroom_id,
-            subject_name=unsolved_class.subject_name, teacher_id=unsolved_class.teacher.teacher_id
+            pupils=unsolved_class.pupils.all(), time_slots=timeslots, classroom_id=unsolved_class.classroom.pk,
+            subject_name=unsolved_class.subject_name, teacher_id=unsolved_class.teacher.pk
         )
