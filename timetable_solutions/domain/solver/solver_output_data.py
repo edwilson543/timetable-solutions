@@ -15,7 +15,8 @@ class TimetableSolverOutcome:
         self._variables = timetable_solver.variables
         self.error_messages = timetable_solver.error_messages
 
-        self._extract_results()
+        if len(self.error_messages) == 0:
+            self._extract_results()
 
     def _extract_results(self) -> None:
         """
