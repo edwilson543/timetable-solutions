@@ -1,8 +1,5 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
-# Standard library imports
-from typing import Set
-
 # Django imports
 from django.db import models
 
