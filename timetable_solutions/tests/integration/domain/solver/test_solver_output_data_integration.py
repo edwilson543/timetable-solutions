@@ -14,7 +14,7 @@ class TestTimetableSolverOutcome(test.TestCase):
 
     fixtures = ["test_scenario_1.json"]
 
-    def test_timetable_solver_integration(self):
+    def test_timetable_solver_integration_test_scenario_1(self):
         """
         Test for extracting a specific solution from the timetable solver. Instantiating te TimetableSolverOutcome
         instance should initiate and complete all processing, so we check that this is indeed the case.
