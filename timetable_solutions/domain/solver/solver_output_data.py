@@ -15,6 +15,8 @@ class TimetableSolverOutcome:
         self._variables = timetable_solver.variables
         self.error_messages = timetable_solver.error_messages
 
+        self._extract_results()
+
     def _extract_results(self) -> None:
         """
         Method to recover the variable values (1s / 0s) and use these to create FixedClass instances, and or update
@@ -51,6 +53,6 @@ class TimetableSolverOutcome:
         """
         models.FixedClass.create_new(
             school_id=unsolved_class.school.school_access_key, user_defined=False, class_id=unsolved_class.class_id,
-            pupils=unsolved_class.pupils, time_slots=timeslots, classroom_id=unsolved_class.classroom.classroom_id,
+            pupils=unsolved_class.pupils.all(), time_slots=timeslots, classroom_id=unsolved_class.classroom.classroom_id,
             subject_name=unsolved_class.subject_name, teacher_id=unsolved_class.teacher.teacher_id
         )
