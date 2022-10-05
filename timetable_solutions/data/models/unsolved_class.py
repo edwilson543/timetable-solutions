@@ -38,7 +38,7 @@ class UnsolvedClass(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT,
                                   related_name="unsolved_classes", blank=True, null=True)
     total_slots = models.PositiveSmallIntegerField()
-    min_distinct_slots = models.PositiveSmallIntegerField()
+    n_double_periods = models.PositiveSmallIntegerField()
 
     # Introduce a custom manager
     objects = UnsolvedClassQuerySet.as_manager()
@@ -50,14 +50,14 @@ class UnsolvedClass(models.Model):
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int,
-                   classroom_id: int, total_slots: int, min_distinct_slots: int, pupils: PupilQuerySet):
+                   classroom_id: int, total_slots: int, n_double_periods: int, pupils: PupilQuerySet):
         """
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
         Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
         unsolved_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
-            classroom_id=classroom_id, total_slots=total_slots, min_distinct_slots=min_distinct_slots)
+            classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
         unsolved_cls.save()
         unsolved_cls.pupils.add(*pupils)
         return unsolved_cls

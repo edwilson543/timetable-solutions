@@ -130,7 +130,7 @@
       "teacher": 101,
       "classroom": 101,
       "total_slots": 2,
-      "min_distinct_slots": 1,
+      "n_double_periods": 1,
       "pupils": [101]
     }
   },
@@ -144,7 +144,7 @@
       "teacher": 102,
       "classroom": 102,
       "total_slots": 2,
-      "min_distinct_slots": 1,
+      "n_double_periods": 1,
       "pupils": [102]
     }
   }
