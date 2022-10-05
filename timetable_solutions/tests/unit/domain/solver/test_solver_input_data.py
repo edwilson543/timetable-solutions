@@ -1,5 +1,8 @@
 """Test for the TimetableSolverInputs class """
 
+# Standard library imports
+import datetime as dt
+
 # Django imports
 from django import test
 
@@ -43,3 +46,11 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert len(data.pupils) == 6
         for pupil in data.pupils:
             assert isinstance(pupil, models.Pupil)
+
+        assert len(data.consecutive_slots) == 30  # 7 slots per day, 5 days a week...
+        # All timeslots are 1 hour apart, so we check this
+        for double_slot in data.consecutive_slots:
+            slot_0_start = dt.datetime.combine(dt.date(year=2020, month=1, day=1), time=double_slot[0].period_starts_at)
+            slot_1_start = dt.datetime.combine(dt.date(year=2020, month=1, day=1), time=double_slot[1].period_starts_at)
+            assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
+            assert double_slot[0].day_of_week == double_slot[1].day_of_week

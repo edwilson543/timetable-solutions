@@ -1,6 +1,8 @@
 """
 Module defining the data used by the solver, and how this data is accessed from the data layer
 """
+# Standard library imports
+from typing import List, Tuple
 
 # Local application imports
 from data import models
@@ -23,9 +25,23 @@ class TimetableSolverInputs:
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
 
-    def _get_consecutive_periods(self):
+        # Add any additional attributes derived from the existing attributes
+        self.consecutive_slots = self._get_consecutive_slots()
+
+    def _get_consecutive_slots(self) -> List[Tuple[models.TimetableSlot, models.TimetableSlot]]:
         """
-        Method to work out which of the timetable_slots in the inputs are consecutive, and store these as named tuples
-        on the class.
+        Method to find which of the timetable slots on the class instance are consecutive.
+        A key thing to note here is that the meta class on TimetableSlot pre-orders the slots by week and by day.
+
+        :return - as a list, the tuples of consecutive slots. The PURPOSE of these are to understand where are the
+        candidates for double periods.
         """
-        pass
+        consecutive_slots = []
+        previous_slot = None
+        for current_slot in self.timetable_slots:
+            if (previous_slot is not None) and (current_slot.day_of_week == previous_slot.day_of_week):
+                consecutive_slots.append((previous_slot, current_slot))
+
+            previous_slot = current_slot
+
+        return consecutive_slots
