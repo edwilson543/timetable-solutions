@@ -23,7 +23,8 @@ class TestTimetableSolverVariables(test.TestCase):
         input_data = slvr.TimetableSolverInputs(school_id=123456)
 
         # Execute test unit
-        variables = slvr.TimetableSolverVariables(inputs=input_data).get_variables()
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables = variables_maker._get_decision_variables()
 
         # Test the outcome - we expect one variable per timetable slot / unsolved class pair
         assert len(variables) == 12 * 35
@@ -34,8 +35,8 @@ class TestTimetableSolverVariables(test.TestCase):
         """
         # Set parameters
         input_data = slvr.TimetableSolverInputs(school_id=123456)
-        variable_maker = slvr.TimetableSolverVariables(inputs=input_data)
-        variables = variable_maker.get_variables(strip=False)
+        variable_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables = variable_maker._get_decision_variables(strip=False)
 
         # We add an additional variable to the variables dictionary, to be stripped out
         variable_key = slvr.var_key(class_id="LUNCH_1", slot_id=21)

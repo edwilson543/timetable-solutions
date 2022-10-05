@@ -10,6 +10,7 @@ import pulp as lp
 # Local application imports
 from data import models
 from domain.solver.solver_input_data import TimetableSolverInputs
+from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
 from .solver_variables import var_key
 
 
@@ -23,9 +24,9 @@ class TimetableSolverConstraints:
 
     def __init__(self,
                  inputs: TimetableSolverInputs,
-                 variables: Dict[var_key, lp.LpVariable]):
+                 variables: TimetableSolverVariables):
         self._inputs = inputs
-        self._variables = variables
+        self._decision_variables = variables.decision_variables
 
     def add_constraints_to_problem(self, problem: lp.LpProblem) -> None:
         """
@@ -59,7 +60,7 @@ class TimetableSolverConstraints:
             existing FixedClass timeslots
             """
             variables_sum = lp.lpSum(
-                [var for var_key, var in self._variables.items() if var_key.class_id == unsolved_class.class_id])
+                [var for var_key, var in self._decision_variables.items() if var_key.class_id == unsolved_class.class_id])
 
             corresponding_fixed_class = self._inputs.fixed_classes.filter(class_id=unsolved_class.class_id)
             if corresponding_fixed_class.count() == 1:
@@ -90,8 +91,8 @@ class TimetableSolverConstraints:
             """
             existing_commitment = pupil.check_if_busy_at_time_slot(slot=time_slot)
             possible_commitments = lp.lpSum(
-                [self._variables.get(key) for usc in self._inputs.unsolved_classes if (pupil in usc.pupils.all()) and
-                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._variables.keys()]
+                [self._decision_variables.get(key) for usc in self._inputs.unsolved_classes if (pupil in usc.pupils.all()) and
+                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._decision_variables.keys()]
             )
             if existing_commitment:
                 constraint = (possible_commitments == 0,
@@ -120,8 +121,8 @@ class TimetableSolverConstraints:
             """
             existing_commitment = teacher.check_if_busy_at_time_slot(slot=time_slot)
             possible_commitments = lp.lpSum(
-                [self._variables.get(key) for usc in self._inputs.unsolved_classes if (teacher == usc.teacher) and
-                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._variables.keys()]
+                [self._decision_variables.get(key) for usc in self._inputs.unsolved_classes if (teacher == usc.teacher) and
+                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._decision_variables.keys()]
             )
             if existing_commitment:
                 constraint = (possible_commitments == 0,
@@ -150,8 +151,8 @@ class TimetableSolverConstraints:
             """
             occupied = classroom.check_if_occupied_at_time_slot(slot=time_slot)
             possible_uses = lp.lpSum(
-                [self._variables.get(key) for usc in self._inputs.unsolved_classes if (classroom == usc.classroom) and
-                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._variables.keys()]
+                [self._decision_variables.get(key) for usc in self._inputs.unsolved_classes if (classroom == usc.classroom) and
+                 (key := var_key(class_id=usc.class_id, slot_id=time_slot.slot_id)) in self._decision_variables.keys()]
             )
             if occupied:
                 constraint = (possible_uses == 0,

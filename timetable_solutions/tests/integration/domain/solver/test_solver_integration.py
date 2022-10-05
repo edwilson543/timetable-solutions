@@ -57,9 +57,9 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables) == 2  # Only one option for where each unsolved class' remaining slots could go
-        assert solver.variables[slvr.var_key(class_id="YEAR_ONE_MATHS_A", slot_id=2)].varValue == 1
-        assert solver.variables[slvr.var_key(class_id="YEAR_ONE_MATHS_B", slot_id=1)].varValue == 1
+        assert len(solver.variables.decision_variables) == 2  # 1 option where each of 2 class' remaining slot could go
+        assert solver.variables.decision_variables[slvr.var_key(class_id="YEAR_ONE_MATHS_A", slot_id=2)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="YEAR_ONE_MATHS_B", slot_id=1)].varValue == 1
 
     def test_solver_solution_test_scenario_2(self):
         """
@@ -76,12 +76,12 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables) == 4  # Either class could be taught in either slot
+        assert len(solver.variables.decision_variables) == 4  # Either class could be taught in either slot
         # We test now that the sufficient classes take place, and not simultaneously
-        c1_t1 = solver.variables[slvr.var_key(class_id="MATHS", slot_id=1)].varValue
-        c1_t2 = solver.variables[slvr.var_key(class_id="MATHS", slot_id=2)].varValue
-        c2_t1 = solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue
-        c2_t2 = solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue
+        c1_t1 = solver.variables.decision_variables[slvr.var_key(class_id="MATHS", slot_id=1)].varValue
+        c1_t2 = solver.variables.decision_variables[slvr.var_key(class_id="MATHS", slot_id=2)].varValue
+        c2_t1 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue
+        c2_t2 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue
         assert c1_t1 + c1_t2 == 1
         assert c2_t1 + c2_t2 == 1
 
@@ -100,9 +100,9 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables) == 2  # Unsolved class' 1 slot could go in either time slot
-        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Teacher taking other class
-        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+        assert len(solver.variables.decision_variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
 
     def test_solver_solution_test_scenario_4(self):
         """
@@ -119,6 +119,6 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables) == 2  # Unsolved class' 1 slot could go in either time slot
-        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Classroom occupied
-        assert solver.variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+        assert len(solver.variables.decision_variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
