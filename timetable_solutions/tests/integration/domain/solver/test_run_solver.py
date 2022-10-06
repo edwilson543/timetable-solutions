@@ -11,7 +11,7 @@ from domain.solver.run_solver import produce_timetable_solutions
 
 
 class TestRunSolver(test.TestCase):
-    fixtures = ["test_scenario_2"]
+    fixtures = ["test_scenario_2.json"]
 
     def test_run_solver_test_scenario_2(self):
         """

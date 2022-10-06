@@ -49,6 +49,14 @@ class TimetableSolverConstraints:
         for constraint in classroom_constraints:
             problem += constraint
 
+        double_period_fulfillment_constraints = self._get_all_double_period_fulfillment_constraints()
+        for constraint in double_period_fulfillment_constraints:
+            problem += constraint
+
+        double_period_dependency_constraints = self._get_all_double_period_dependency_constraints()
+        for constraint in double_period_dependency_constraints:
+            problem += constraint
+
     def _get_all_fulfillment_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining the constraints that each unsolved class must be taught for the required number of periods.
@@ -197,27 +205,35 @@ class TimetableSolverConstraints:
         same class / time-slot.
         Note also that where a FixedClass occurs, a double period may be created by combining with this existing slot.
         """
-        def __dependency_constraint(key: doubles_var_key, decision_var_slot: int) -> Tuple | None:
+        def __dependency_constraint(key: doubles_var_key, is_slot_1: bool) -> Tuple | None:
             """
             Function defining the individual constraint that decision variable corresponding to the first / second slot
             of a double period must be non-zero if the double period variable is non-zero.
-            decision_var_slot is either equal to slot_1 or slot_2 in the doubles_var_key
+            :param key - the key for the double period variables dictionary, which contains info on the class + 2 slots
+            :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2
             """
+            if is_slot_1:
+                slot_id = key.slot_1_id
+                constraint_name = f"usc_{key.class_id}_double_could_start_at_{slot_id}"
+            else:
+                slot_id = key.slot_2_id
+                constraint_name = f"usc_{key.class_id}_double_could_end_at_{slot_id}"
+
             try:
-                decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=decision_var_slot)]
+                decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=slot_id)]
             except KeyError:
                 # A FixedClass already occurs at this time, so no need for a constraint
                 return None
             double_p_var = self._double_period_variables[key]
-            constraint = (decision_var >= double_p_var, f"usc_{key.class_id}_double_could_start_at_{key.slot_1_id}")
+            constraint = (decision_var >= double_p_var, constraint_name)
             return constraint
 
         slot_1_constraints = (
             constraint for key in self._double_period_variables.keys() if
-            (constraint := __dependency_constraint(key=key, decision_var_slot=key.slot_1_id)) is not None)
+            (constraint := __dependency_constraint(key=key, is_slot_1=True)) is not None)
         slot_2_constraints = (
             constraint for key in self._double_period_variables.keys() if
-            (constraint := __dependency_constraint(key=key, decision_var_slot=key.slot_2_id)) is not None)
-        constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
+            (constraint := __dependency_constraint(key=key, is_slot_1=False)) is not None)
 
-        return constraints
+        all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
+        return all_constraints
