@@ -56,7 +56,6 @@ class TimetableSolverVariables:
         Method to remove variables corresponding to classes that are already known to occur at a certain time, since we
         know their value must be 1, so do not want to slow down the solver unnecessarily.
         Known class times are then handled when defining the constraints.
-
         """
         for fixed_class in self._inputs.fixed_classes:
             for timetable_slot in fixed_class.time_slots.all():
