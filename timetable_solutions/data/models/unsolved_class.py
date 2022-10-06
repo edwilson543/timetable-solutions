@@ -28,6 +28,10 @@ class UnsolvedClass(models.Model):
     Model used to specify the school_id classes that must take place, including who must be able to attend them,
     and also teaching hours / min number of slots etc. "Unsolved" since it represents an input to the solver which
     finds the timetable structure that works across the board. Twin to "FixedClass" in view_timetables app.
+
+    total_slots - total number of lessons per week, including any FixedClasses and double periods (which count as 2)
+    n_double_periods - the number of ADDITIONAL double periods the unsolved class should be taught for, on top of any
+    specified as a FixedClass. Still subtracted from total slots.
     """
     class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
