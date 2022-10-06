@@ -11,7 +11,9 @@ import pulp as lp
 from domain.solver.solver_input_data import TimetableSolverInputs
 
 
-var_key = namedtuple("var_key", "class_id slot_id")  # To be used as the keys of the dictionary
+# Keys for the different dictionaries used to store variables
+var_key = namedtuple("var_key", "class_id slot_id")  # Decision variables
+doubles_var_key = namedtuple("doubles_var_key", "class_id slot_1_id slot_2_id")  # Double period variables
 
 
 class TimetableSolverVariables:
@@ -31,13 +33,14 @@ class TimetableSolverVariables:
 
         if set_variables:
             self.decision_variables = self._get_decision_variables()
+            self.double_period_variables = self._get_double_period_variables()
 
     def _get_decision_variables(self, strip: bool = True) -> Dict[var_key, lp.LpVariable]:
         """
-        Method to get the pulp variables relevant to a given solution.
+        Method to get the pulp decision variables used to solve the timetabling problem.
         For each (unsolved class, timetable slot) pair, there is a binary variable indicating whether that class happens
         at that time
-        :return - A dictionary of pulp variables, indexed by unique class / timetable slot tuples
+        :return - Dictionary of pulp variables, indexed by unique class / timetable slot tuples
         """
         variables = {
             var_key(class_id=unsolved_class.class_id, slot_id=timetable_slot.slot_id): lp.LpVariable(
@@ -47,10 +50,6 @@ class TimetableSolverVariables:
         if strip:
             self._strip_decision_variables(variables=variables)
         return variables
-
-    def _double_period_variables(self) -> Dict[object, lp.LpVariable]:
-        """Dependent variables indicating whether object is an"""
-        pass
 
     def _strip_decision_variables(self, variables: Dict[var_key, lp.LpVariable]) -> None:
         """
@@ -65,3 +64,22 @@ class TimetableSolverVariables:
                 if variable_key in variables.keys():
                     # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
                     variables.pop(variable_key)
+
+    def _get_double_period_variables(self) -> Dict[doubles_var_key, lp.LpVariable]:
+        """
+        Method to get the pulp dependent variables used to decide when double-periods should go.
+        For each (unsolved class, double period) pair, there is a binary variable indicating whether that class has
+        a double period at that time
+        :return - Dictionary of pulp variables, indexed by class / consecutive period tuples
+        """
+        variables = {}  # Dict comp a bit too long here
+        for unsolved_class in self._inputs.unsolved_classes:
+            if unsolved_class.n_double_periods == 0:
+                continue
+            for double_p in self._inputs.consecutive_slots:
+                var_key = doubles_var_key(class_id=unsolved_class.class_id,
+                                          slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
+                var_name = f"{unsolved_class.class_id}_double_period_at_{double_p[0].slot_id}_{double_p[1].slot_id}"
+                variable = lp.LpVariable(var_name, cat="Binary")
+                variables[var_key] = variable
+        return variables

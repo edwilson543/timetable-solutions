@@ -15,9 +15,9 @@ class TestTimetableSolverVariables(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    def test_timetable_solver_get_variables(self):
+    def test_get_decision_variables(self):
         """
-        Test of the variable instantiation process for some basic input data
+        Test for the decision variable instantiation
         """
         # Set parameters
         input_data = slvr.TimetableSolverInputs(school_id=123456)
@@ -28,8 +28,14 @@ class TestTimetableSolverVariables(test.TestCase):
 
         # Test the outcome - we expect one variable per timetable slot / unsolved class pair
         assert len(variables) == 12 * 35
+        random_var_key = slvr.var_key(class_id="YEAR_ONE_FRENCH_A", slot_id=19)
+        random_var = variables[random_var_key]
+        assert random_var.lowBound == 0
+        assert random_var.upBound == 1
+        assert random_var.cat == "Integer"
+        assert random_var.varValue is None
 
-    def test_timetable_solver_strip_variables(self):
+    def test_strip_decision_variables(self):
         """
         Test for the method removing irrelevant variables from the variables dict.
         """
@@ -48,3 +54,23 @@ class TestTimetableSolverVariables(test.TestCase):
 
         # Test the outcome
         assert variable_key not in variables.keys()
+
+    def test_get_double_period_variables(self):
+        """
+        Test for the decision variable instantiation
+        """
+        # Set parameters
+        input_data = slvr.TimetableSolverInputs(school_id=123456)
+
+        # Execute test unit
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables = variables_maker._get_double_period_variables()
+
+        # Test the outcome - we expect one variable per consecutive period
+        assert len(variables) == 12 * 6 * 5  # 12 unsolved classes, 6 consecutive periods / day, 5 days / week
+        random_var_key = slvr.doubles_var_key(class_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12)
+        random_var = variables[random_var_key]
+        assert random_var.lowBound == 0
+        assert random_var.upBound == 1
+        assert random_var.cat == "Integer"
+        assert random_var.varValue is None
