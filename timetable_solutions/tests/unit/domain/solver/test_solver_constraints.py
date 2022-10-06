@@ -33,7 +33,8 @@ class TestSolverConstraints(test.TestCase):
 
     def test_get_all_fulfillment_constraints(self):
         """
-        Test that the correct set of fulfillment constraints is returned for all the unsolved classes
+        Test that the correct set of fulfillment constraints is returned for all the unsolved classes.
+        We expect one constraint oer unsolved class.
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
@@ -44,7 +45,7 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 35  # Since each variable is included
+            assert len(constraint) == 35  # Since each decision variable is included in the sum
             assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
             constraint_count += 1
         assert constraint_count == 12
@@ -117,3 +118,21 @@ class TestSolverConstraints(test.TestCase):
 
         assert free_constraint_count + existing_occupied_count == 12 * 35  # = n_classrooms * n_timetable_slots
         assert free_constraint_count == 12 * 35  # No lunch hall in fixture for now...
+
+    def test_get_all_double_period_fulfillment_constraints(self):
+        """
+        Test that the correct set of constraints on the number of double periods is returned.
+        We expect one constraint per unsolved class.
+        """
+        # Execute test unit
+        constraint_maker = self.get_constraint_maker()
+        dp_constraints = constraint_maker._get_all_double_period_fulfillment_constraints()
+
+        # Check the outcome
+        constraint_count = 0
+        for constraint_tuple in dp_constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            assert len(constraint) == 30  # Since each double-period variable is included in the sum
+            constraint_count += 1
+        assert constraint_count == 12
