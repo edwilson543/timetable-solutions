@@ -195,23 +195,29 @@ class TimetableSolverConstraints:
         double period.
         Note that the core point is that the double period variable >= both decision variables corresponding to the
         same class / time-slot.
+        Note also that where a FixedClass occurs, a double period may be created by combining with this existing slot.
         """
-        def __dependency_constraint_slot_1(key: doubles_var_key) -> Tuple:
-            """Constraint that the first slot's variable must be non-zero if the double period is non-zero"""
+        def __dependency_constraint(key: doubles_var_key, decision_var_slot: int) -> Tuple | None:
+            """
+            Function defining the individual constraint that decision variable corresponding to the first / second slot
+            of a double period must be non-zero if the double period variable is non-zero.
+            decision_var_slot is either equal to slot_1 or slot_2 in the doubles_var_key
+            """
+            try:
+                decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=decision_var_slot)]
+            except KeyError:
+                # A FixedClass already occurs at this time, so no need for a constraint
+                return None
             double_p_var = self._double_period_variables[key]
-            slot_1_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=key.slot_1_id)]
-            constraint = (slot_1_var >= double_p_var, f"usc_{key.class_id}_double_could_start_at_{key.slot_1_id}")
+            constraint = (decision_var >= double_p_var, f"usc_{key.class_id}_double_could_start_at_{key.slot_1_id}")
             return constraint
 
-        def __dependency_constraint_slot_2(key: doubles_var_key) -> Tuple:
-            """Constraint that the second slot's variable must be non-zero if the double period is non-zero"""
-            double_p_var = self._double_period_variables[key]
-            slot_2_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=key.slot_2_id)]
-            constraint = (slot_2_var >= double_p_var, f"usc_{key.class_id}_double_could_end_at_{key.slot_1_id}")
-            return constraint
-
-        slot_1_constraints = (__dependency_constraint_slot_1(key=key) for key in self._double_period_variables.keys())
-        slot_2_constraints = (__dependency_constraint_slot_2(key=key) for key in self._double_period_variables.keys())
+        slot_1_constraints = (
+            constraint for key in self._double_period_variables.keys() if
+            (constraint := __dependency_constraint(key=key, decision_var_slot=key.slot_1_id)) is not None)
+        slot_2_constraints = (
+            constraint for key in self._double_period_variables.keys() if
+            (constraint := __dependency_constraint(key=key, decision_var_slot=key.slot_2_id)) is not None)
         constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
-        return constraints
 
+        return constraints
