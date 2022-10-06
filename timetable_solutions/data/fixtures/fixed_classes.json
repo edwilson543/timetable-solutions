@@ -1,559 +1,312 @@
 [
-  {
+ {
     "model": "data.fixedclass",
     "pk": 1,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_MATHS_A",
       "subject_name": "MATHS",
       "teacher": 1,
+      "classroom": 1,
+      "user_defined": false,
       "pupils": [
         1,
         2
       ],
-      "classroom": 1,
       "time_slots": [
         1,
+        16,
         2,
         8,
         9,
-        15,
-        16,
         29,
+        15,
         30
-      ],
-      "class_id": "YEAR_ONE_MATHS_A",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 2,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_MATHS_B",
       "subject_name": "MATHS",
       "teacher": 2,
+      "classroom": 2,
+      "user_defined": false,
       "pupils": [
         3
       ],
-      "classroom": 2,
       "time_slots": [
         6,
         7,
-        13,
-        14,
-        20,
         27,
+        13,
         28,
+        14,
         34,
+        20,
         35
-      ],
-      "class_id": "YEAR_ONE_MATHS_B",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 3,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_ENGLISH_A",
       "subject_name": "ENGLISH",
       "teacher": 3,
+      "classroom": 3,
+      "user_defined": false,
       "pupils": [
         1,
         2
       ],
-      "classroom": 3,
       "time_slots": [
-        3,
-        4,
-        10,
         11,
-        17,
-        18,
         31,
-        32
-      ],
-      "class_id": "YEAR_ONE_ENGLISH_A",
-      "user_defined": false,
-      "school": 123456
+        17,
+        32,
+        3,
+        18,
+        4,
+        10
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 4,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_ENGLISH_B",
       "subject_name": "ENGLISH",
       "teacher": 4,
+      "classroom": 4,
+      "user_defined": false,
       "pupils": [
         3
       ],
-      "classroom": 4,
       "time_slots": [
-        3,
-        4,
-        10,
         11,
-        17,
-        18,
         31,
-        32
-      ],
-      "class_id": "YEAR_ONE_ENGLISH_B",
-      "user_defined": false,
-      "school": 123456
+        17,
+        32,
+        3,
+        18,
+        4,
+        10
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 5,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_FRENCH_A",
       "subject_name": "FRENCH",
       "teacher": 5,
+      "classroom": 5,
+      "user_defined": false,
       "pupils": [
         1,
         2
       ],
-      "classroom": 5,
       "time_slots": [
         6,
         7,
-        13,
-        14,
-        20,
         27,
+        13,
         28,
+        14,
         34,
+        20,
         35
-      ],
-      "class_id": "YEAR_ONE_FRENCH_A",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 6,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_ONE_FRENCH_B",
       "subject_name": "FRENCH",
       "teacher": 6,
+      "classroom": 6,
+      "user_defined": false,
       "pupils": [
         3
       ],
-      "classroom": 6,
       "time_slots": [
         1,
+        16,
         2,
         8,
         9,
-        15,
-        16,
         29,
+        15,
         30
-      ],
-      "class_id": "YEAR_ONE_FRENCH_B",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 7,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_MATHS_A",
       "subject_name": "MATHS",
       "teacher": 7,
+      "classroom": 7,
+      "user_defined": false,
       "pupils": [
         4,
         6
       ],
-      "classroom": 7,
       "time_slots": [
-        3,
-        4,
-        10,
         11,
-        17,
-        18,
         31,
-        32
-      ],
-      "class_id": "YEAR_TWO_MATHS_A",
-      "user_defined": false,
-      "school": 123456
+        17,
+        32,
+        3,
+        18,
+        4,
+        10
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 8,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_MATHS_B",
       "subject_name": "MATHS",
       "teacher": 8,
+      "classroom": 8,
+      "user_defined": false,
       "pupils": [
         5
       ],
-      "classroom": 8,
       "time_slots": [
         1,
+        16,
         2,
         8,
         9,
-        15,
-        16,
         29,
+        15,
         30
-      ],
-      "class_id": "YEAR_TWO_MATHS_B",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 9,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_ENGLISH_A",
       "subject_name": "ENGLISH",
       "teacher": 9,
+      "classroom": 9,
+      "user_defined": false,
       "pupils": [
         4,
         6
       ],
-      "classroom": 9,
       "time_slots": [
         1,
+        16,
         2,
         8,
         9,
-        15,
-        16,
         29,
+        15,
         30
-      ],
-      "class_id": "YEAR_TWO_ENGLISH_A",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 10,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_ENGLISH_B",
       "subject_name": "ENGLISH",
       "teacher": 10,
+      "classroom": 10,
+      "user_defined": false,
       "pupils": [
         5
       ],
-      "classroom": 10,
       "time_slots": [
-        3,
-        4,
-        10,
         11,
-        17,
-        18,
         31,
-        32
-      ],
-      "class_id": "YEAR_TWO_ENGLISH_B",
-      "user_defined": false,
-      "school": 123456
+        17,
+        32,
+        3,
+        18,
+        4,
+        10
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 11,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_FRENCH_A",
       "subject_name": "FRENCH",
       "teacher": 11,
+      "classroom": 11,
+      "user_defined": false,
       "pupils": [
         4,
         6
       ],
-      "classroom": 11,
       "time_slots": [
         6,
         7,
-        13,
-        14,
-        20,
         27,
+        13,
         28,
+        14,
         34,
+        20,
         35
-      ],
-      "class_id": "YEAR_TWO_FRENCH_A",
-      "user_defined": false,
-      "school": 123456
+      ]
     }
   },
   {
     "model": "data.fixedclass",
     "pk": 12,
     "fields": {
+      "school": 123456,
+      "class_id": "YEAR_TWO_FRENCH_B",
       "subject_name": "FRENCH",
       "teacher": 1,
+      "classroom": 12,
+      "user_defined": false,
       "pupils": [
         5
       ],
-      "classroom": 12,
       "time_slots": [
         6,
         7,
-        13,
-        14,
-        20,
         27,
+        13,
         28,
+        14,
         34,
+        20,
         35
-      ],
-      "class_id": "YEAR_TWO_FRENCH_B",
-      "user_defined": false,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 13,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": null,
-      "pupils": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_PUPILS",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 14,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 1,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_1",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 15,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 2,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_2",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 16,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 3,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_3",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 17,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 4,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_4",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 18,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 5,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_5",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 19,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 6,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_6",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 20,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 7,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_7",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 21,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 8,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_8",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 22,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 9,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_9",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 23,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 10,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_10",
-      "user_defined": true,
-      "school": 123456
-    }
-  },
-  {
-    "model": "data.fixedclass",
-    "pk": 24,
-    "fields": {
-      "subject_name": "LUNCH",
-      "teacher": 11,
-      "pupils": [],
-      "classroom": null,
-      "time_slots": [
-        21,
-        22,
-        23,
-        24,
-        25
-      ],
-      "class_id": "LUNCH_11",
-      "user_defined": true,
-      "school": 123456
+      ]
     }
   }
 ]

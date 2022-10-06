@@ -1,16 +1,14 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
-# Standard library imports
-from typing import Set
-
 # Django imports
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
 from data.models.classroom import Classroom
 from data.models.fixed_class import FixedClass
-from data.models.pupil import Pupil
+from data.models.pupil import Pupil, PupilQuerySet
 from data.models.teacher import Teacher
 
 
@@ -31,6 +29,10 @@ class UnsolvedClass(models.Model):
     Model used to specify the school_id classes that must take place, including who must be able to attend them,
     and also teaching hours / min number of slots etc. "Unsolved" since it represents an input to the solver which
     finds the timetable structure that works across the board. Twin to "FixedClass" in view_timetables app.
+
+    total_slots - total number of lessons per week, including any FixedClasses and double periods (which count as 2)
+    n_double_periods - the number of ADDITIONAL double periods the unsolved class should be taught for, on top of any
+    specified as a FixedClass. Still subtracted from total slots.
     """
     class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -41,34 +43,39 @@ class UnsolvedClass(models.Model):
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT,
                                   related_name="unsolved_classes", blank=True, null=True)
     total_slots = models.PositiveSmallIntegerField()
-    min_distinct_slots = models.PositiveSmallIntegerField()
+    n_double_periods = models.PositiveSmallIntegerField()
 
     # Introduce a custom manager
     objects = UnsolvedClassQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.class_id} (unsolved)"
+        return f"USC: {self.school}, {self.class_id}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"USC: {self.school}, {self.class_id}"
 
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int,
-                   classroom_id: int, total_slots: int, min_distinct_slots: int):
+                   classroom_id: int, total_slots: int, n_double_periods: int, pupils: PupilQuerySet):
         """
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
-        Many-to-many relationship with UnsolvedClasses.
+        Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
-        unsolved_cls = cls.objects.create(school_id=school_id, class_id=class_id, subject_name=subject_name,
-                                          teacher_id=teacher_id, classroom_id=classroom_id, total_slots=total_slots,
-                                          min_distinct_slots=min_distinct_slots)
+        unsolved_cls = cls.objects.create(
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
+            classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
+        unsolved_cls.save()
+        unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 
-    # MUTATION METHODS
-    def add_pupils(self, pupil_ids: Set[int]) -> None:
+    def clean(self) -> None:
         """
-        Method to associate a set of pupils with an individual UnsolvedClass instance
-        :param pupil_ids - a set of primary keys relating to pupils, with the fixed class to become associate with each
+        Additional validation on UnsolvedClass instances. In particular we cannot imply a number of double periods that
+        would exceed the total number of slots.
         """
-        # noinspection PyUnresolvedReferences
-        self.pupils.add(*pupil_ids)
-        self.save()
+        if self.n_double_periods > (self.total_slots / 2):
+            raise ValidationError(f"{self.__repr__} with only {self.total_slots} total slots cannot have "
+                                  f"{self.n_double_periods} double periods.")

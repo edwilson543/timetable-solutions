@@ -5,6 +5,7 @@ from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
+from data.models.timetable_slot import TimetableSlot
 
 
 class ClassroomQuerySet(models.QuerySet):
@@ -44,3 +45,19 @@ class Classroom(models.Model):
         classroom = cls.objects.create(
             school_id=school_id, classroom_id=classroom_id, building=building, room_number=room_number)
         return classroom
+
+    # FILTER METHODS
+    def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:
+        """
+        Method to check whether the classroom has already been assigned a fixed class at the given slot.
+        :return - True if OCCUPIED at the given timeslot.
+        """
+        # noinspection PyUnresolvedReferences
+        slot_classes = self.classes.filter(time_slots=slot)
+        n_commitments = slot_classes.count()
+        if n_commitments == 1:
+            return True
+        elif n_commitments == 0:
+            return False
+        else:
+            raise ValueError(f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")

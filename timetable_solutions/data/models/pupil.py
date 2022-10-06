@@ -8,6 +8,7 @@ from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
+from data.models.timetable_slot import TimetableSlot
 
 
 class PupilQuerySet(models.QuerySet):
@@ -68,3 +69,19 @@ class Pupil(models.Model):
         pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
                                    year_group=year_group)
         return pupil
+
+    # FILTER METHODS
+    def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
+        """
+        Method to check whether the given pupil has already been assigned a fixed class at the given slot.
+        :return - True if BUSY at the given timeslot.
+        """
+        # noinspection PyUnresolvedReferences
+        slot_classes = self.classes.filter(time_slots=slot)
+        n_commitments = slot_classes.count()
+        if n_commitments == 1:
+            return True
+        elif n_commitments == 0:
+            return False
+        else:
+            raise ValueError(f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")

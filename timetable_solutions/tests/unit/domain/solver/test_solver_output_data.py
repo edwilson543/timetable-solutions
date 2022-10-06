@@ -1,75 +1,46 @@
-"""Unit tests for the TimetableSolverInputs class"""
+"""Unit tests for the TimetableSolverOutcome class"""
 
 # Django imports
 from django import test
 
 # Local application imports
 from data import models
-from domain.solver.constants import school_dataclasses
-from domain.solver import linear_programming as lp
+from domain import solver as slvr
 
 
-class TestTimetableSolverInputsLoading(test.LiveServerTestCase):
-    """
-    Note that we use the LiveServerTestCase since the solver is effectively (designed to be possible to be) outside of
-    this repository and thus uses the requests module to POST to the REST API.
-    Therefore we need a full url to pass to requests.post()
-    """
+class TestTimetableSolverInputsLoading(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
-    # We need the fixtures since we're posting fixed class instances related to other database tables
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
+                "fixed_classes.json", "unsolved_classes.json"]
 
-    def test_post_results_valid_fixed_class_data(self):
-        """
-        Test that the extracted FixedClass data can be posted back to the main django project's database via the
-        REST API
-        """
-        # Set test parameters
-        fc1 = school_dataclasses.FixedClass(school=123456, class_id="A", teacher=1, pupils=[1, 2], classroom=1,
-                                            time_slots=[1, 2], subject_name="MATHS", user_defined=False)
-        fc2 = school_dataclasses.FixedClass(school=123456, class_id="B", teacher=2, pupils=[3, 4], classroom=2,
-                                            time_slots=[3, 4], subject_name="ENGLISH", user_defined=False)
-        fixed_class_data = [fc1, fc2]
+    def test_add_slots_to_existing_fixed_class(self):
+        """Test for the method adding timeslots to an existing fixed class"""
+        # Test parameters
+        time_slots = models.TimetableSlot.objects.get_specific_timeslots(school_id=123456, slot_ids=[3, 4])
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(school_id=123456,
+                                                                           class_id="YEAR_ONE_MATHS_A")
 
-        # noinspection PyTypeChecker
-        outcome = lp.TimetableSolverOutcome(timetable_solver=None)
-        outcome.solver_fixed_class_data = fixed_class_data
+        # Execute test unit
+        slvr.TimetableSolverOutcome._add_slots_to_existing_fixed_class(fixed_class=fixed_class, timeslots=time_slots)
 
-        school_access_key = 123456
-        url = f"{self.live_server_url}/api/fixedclasses/?school_access_key={school_access_key}"
+        # Check outcome
+        assert set(time_slots).issubset(fixed_class.time_slots.all())
 
-        # Execute the test unit
-        response = outcome._post_results(url=url)
+    def test_create_new_fixed_class_from_time_slots(self):
+        """Test for the method adding timeslots to an existing fixed class"""
+        # Test parameters
+        time_slots = models.TimetableSlot.objects.get_specific_timeslots(school_id=123456, slot_ids=[3, 4])
+        unsolved_class = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
+                                                                                    class_id="YEAR_ONE_MATHS_A")
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(school_id=123456,
+                                                                           class_id="YEAR_ONE_MATHS_A")
+        fixed_class.delete()  # We make this class available for creation
 
-        # Check the outcome
-        assert response.status_code == 201
-        fc1 = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="A")
-        assert isinstance(fc1, models.FixedClass)
-        fc2 = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="B")
-        assert isinstance(fc2, models.FixedClass)
+        # Execute test unit
+        slvr.TimetableSolverOutcome._create_new_fixed_class_from_time_slots(
+            unsolved_class=unsolved_class, timeslots=time_slots)
 
-    def test_post_results_invalid_fixed_class_data(self):
-        """
-        Test that the extracted FixedClass data cannot be posted back to the main django project's database via the
-        REST API if it is invalid
-        """
-        # Set test parameters
-        fc1 = school_dataclasses.FixedClass(school=1,  # NOTE INVALID SCHOOL ACCESS KEY
-                                            class_id="A", teacher=1, pupils=[1, 2], classroom=1,
-                                            time_slots=[1, 2], subject_name="MATHS", user_defined=False)
-        fc2 = school_dataclasses.FixedClass(school=123456, class_id="B", teacher=2, pupils=[3, 4], classroom=2,
-                                            time_slots=[3, 4], subject_name="ENGLISH", user_defined=False)
-        fixed_class_data = [fc1, fc2]
-
-        # noinspection PyTypeChecker
-        outcome = lp.TimetableSolverOutcome(timetable_solver=None)
-        outcome.solver_fixed_class_data = fixed_class_data
-
-        school_access_key = 123456
-        url = f"{self.live_server_url}/api/fixedclasses/?school_access_key={school_access_key}"
-
-        # Execute the test unit
-        response = outcome._post_results(url=url)
-
-        # Check the outcome
-        assert response.status_code == 400
+        # Check outcome
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(school_id=123456,
+                                                                           class_id="YEAR_ONE_MATHS_A")
+        self.assertQuerysetEqual(time_slots, fixed_class.time_slots.all(), ordered=False)
