@@ -126,13 +126,32 @@ class TestSolverConstraints(test.TestCase):
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        dp_constraints = constraint_maker._get_all_double_period_fulfillment_constraints()
+        dp_fulfillment_constraints = constraint_maker._get_all_double_period_fulfillment_constraints()
 
         # Check the outcome
         constraint_count = 0
-        for constraint_tuple in dp_constraints:
+        for constraint_tuple in dp_fulfillment_constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
             assert len(constraint) == 30  # Since each double-period variable is included in the sum
             constraint_count += 1
         assert constraint_count == 12
+
+    def test_get_all_double_period_dependency_constraints(self):
+        """
+        Test that the correct set of constraints is returned linking the decision variables and the double period
+        variables
+        """
+        # Execute test unit
+        constraint_maker = self.get_constraint_maker()
+        dependency_constraints = constraint_maker._get_all_double_period_dependency_constraints()
+
+        # Check the outcome
+        constraint_count = 0
+        for constraint_tuple in dependency_constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            assert len(constraint) == 2
+            constraint_count += 1
+        # Note that we haveL 12 unsolved classes; 6 double options / day / class; 5 days; 2 related decision variables
+        assert constraint_count == 12 * 6 * 5 * 2

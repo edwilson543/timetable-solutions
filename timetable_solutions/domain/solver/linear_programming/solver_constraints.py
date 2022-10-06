@@ -2,6 +2,7 @@
 Module defining the constraints on the timetabling problem
 """
 # Standard library imports
+import itertools
 from typing import Generator, Tuple
 
 # Third party imports
@@ -57,8 +58,8 @@ class TimetableSolverConstraints:
             States that the passed unsolved_class must be taught for the number of required periods, less any
             existing FixedClass timeslots
             """
-            variables_sum = lp.lpSum([var for var_key, var in self._decision_variables.items()
-                                      if var_key.class_id == unsolved_class.class_id])
+            variables_sum = lp.lpSum([var for key, var in self._decision_variables.items()
+                                      if key.class_id == unsolved_class.class_id])
 
             corresponding_fixed_class = self._inputs.fixed_classes.filter(class_id=unsolved_class.class_id)
             if corresponding_fixed_class.count() == 1:
@@ -187,7 +188,30 @@ class TimetableSolverConstraints:
                        if usc.n_double_periods != 0)
         return constraints
 
-    def _get_consecutive_period_dependency_constraints(self):
-        # TODO constraints 2: double period variable <= each individual period variables
-        # TODO - watch out for existing classes
-        pass
+    def _get_all_double_period_dependency_constraints(self) -> itertools.chain:
+        """
+        Method defining all constraints relating the decision variables and the dependent double period variables.
+        We crete 2 separate generators and then chain them together, 1 generator for the first/second slot in each
+        double period.
+        Note that the core point is that the double period variable >= both decision variables corresponding to the
+        same class / time-slot.
+        """
+        def __dependency_constraint_slot_1(key: doubles_var_key) -> Tuple:
+            """Constraint that the first slot's variable must be non-zero if the double period is non-zero"""
+            double_p_var = self._double_period_variables[key]
+            slot_1_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=key.slot_1_id)]
+            constraint = (slot_1_var >= double_p_var, f"usc_{key.class_id}_double_could_start_at_{key.slot_1_id}")
+            return constraint
+
+        def __dependency_constraint_slot_2(key: doubles_var_key) -> Tuple:
+            """Constraint that the second slot's variable must be non-zero if the double period is non-zero"""
+            double_p_var = self._double_period_variables[key]
+            slot_2_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=key.slot_2_id)]
+            constraint = (slot_2_var >= double_p_var, f"usc_{key.class_id}_double_could_end_at_{key.slot_1_id}")
+            return constraint
+
+        slot_1_constraints = (__dependency_constraint_slot_1(key=key) for key in self._double_period_variables.keys())
+        slot_2_constraints = (__dependency_constraint_slot_2(key=key) for key in self._double_period_variables.keys())
+        constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
+        return constraints
+
