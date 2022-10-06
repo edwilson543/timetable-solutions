@@ -1,6 +1,7 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
 # Django imports
+from django.core.exceptions import ValidationError
 from django.db import models
 
 # Local application imports (other models)
@@ -49,7 +50,11 @@ class UnsolvedClass(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.class_id} (unsolved)"
+        return f"USC: {self.school}, {self.class_id}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"USC: {self.school}, {self.class_id}"
 
     # FACTORY METHODS
     @classmethod
@@ -65,3 +70,12 @@ class UnsolvedClass(models.Model):
         unsolved_cls.save()
         unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
+
+    def clean(self) -> None:
+        """
+        Additional validation on UnsolvedClass instances. In particular we cannot imply a number of double periods that
+        would exceed the total number of slots.
+        """
+        if self.n_double_periods > (self.total_slots / 2):
+            raise ValidationError(f"{self.__repr__} with only {self.total_slots} total slots cannot have "
+                                  f"{self.n_double_periods} double periods.")
