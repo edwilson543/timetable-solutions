@@ -39,13 +39,15 @@ class TestSolverScenarioSolutions(test.TestCase):
     Tests where we are after a specific solution
     """
 
-    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json"]
+    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
+                "test_scenario_5.json"]
 
     def test_solver_solution_test_scenario_1(self):
         """
-        Test scenario 1 represents a test of the fulfillment constraint. There are 2 pupils / teachers / timeslots /
-        fixed classes / unsolved classes. Each fixed class occupies one of the slots, and the unsolved class
-        states 2 slots must be used, so the solution is just to occupy the remaining slot, for each class.
+        Test scenario targeted at the fulfillment constraint.
+        There are 2 pupils / teachers / timeslots / fixed classes / unsolved classes. Each fixed class occupies one of
+        the slots, and the unsolved class states 2 slots must be used, so the solution is just to occupy the remaining
+        slot, for each class.
         """
         # Set test parameters
         school_access_key = 111111
@@ -63,6 +65,7 @@ class TestSolverScenarioSolutions(test.TestCase):
 
     def test_solver_solution_test_scenario_2(self):
         """
+        Test scenario targeted at the pupil one-place-at-a-time constraint.
         Test scenario 2 represents a test of the pupil one-place-at-a-time constraint. There is one pupil, who must
         go to 2 classes. There are 2 time slots. There are no fixed classes, or other constraints.
         """
@@ -87,8 +90,9 @@ class TestSolverScenarioSolutions(test.TestCase):
 
     def test_solver_solution_test_scenario_3(self):
         """
-        Test scenario 3 represents a test of the teacher one-place-at-a-time constraint. A teacher must take 2 classes,
-        one of which is fixed and one of which is unsolved. Both use 1 slot, and there are 2 possible time slots
+        Test scenario targeted at the teacher one-place-at-a-time constraint.
+        A teacher must take 2 classes, one of which is fixed and one of which is unsolved. Both use 1 slot, and there
+        are 2 possible time slots
         """
         # Set test parameters
         school_access_key = 333333
@@ -106,6 +110,7 @@ class TestSolverScenarioSolutions(test.TestCase):
 
     def test_solver_solution_test_scenario_4(self):
         """
+        Test scenario targeted at the classroom one-class-at-a-time constraint.
         Two classes share a classroom, but neither pupils nor teachers. One must take place at a certain time, leaving
         only one option for the remaining class.
         """
@@ -122,3 +127,25 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert len(solver.variables.decision_variables) == 2  # Unsolved class' 1 slot could go in either time slot
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+
+    def test_solver_solution_test_scenario_5(self):
+        """
+        Test scenario targeted at the double period fulfillment and dependency constraints.
+        There are 3 timeslots, and one UnsolvedClass that must have a total of 2 slots, which must be a double period.
+        Only 2 of the 3 timeslots are consecutive, so we must have the doubler period during these slots.
+        """
+        # Set test parameters
+        school_access_key = 555555
+        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 3  # 1 unsolved class must be taught in 2 / 3 time slots
+
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 1
