@@ -5,7 +5,7 @@ from django import urls
 from rest_framework import routers
 
 # Local application imports
-from interfaces.api_to_solver import views
+from interfaces.rest_api import views
 
 
 router = routers.DefaultRouter()

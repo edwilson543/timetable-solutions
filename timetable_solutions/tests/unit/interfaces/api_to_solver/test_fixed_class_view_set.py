@@ -12,7 +12,7 @@ from django import test
 
 # Local application imports
 from data import models
-from interfaces.api_to_solver import views
+from interfaces.rest_api import views
 from tests.input_settings import FIXTURE_DIR
 
 

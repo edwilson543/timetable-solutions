@@ -1,6 +1,6 @@
 # Local application imports
 from .model_view_set_base_class import CustomModelViewSet
-from interfaces.api_to_solver import serialisers
+from interfaces.rest_api import serialisers
 
 
 class TimetableSlot(CustomModelViewSet):

@@ -1,5 +1,5 @@
 # Local application imports
-from interfaces.api_to_solver import serialisers
+from interfaces.rest_api import serialisers
 from .model_view_set_base_class import CustomModelViewSet
 
 
