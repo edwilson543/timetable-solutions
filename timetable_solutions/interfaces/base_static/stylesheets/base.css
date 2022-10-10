@@ -35,6 +35,11 @@ span.helptext {
     vertical-align: middle;
     float: left;
 }
+@media screen and (max-width: 800px) {
+  .login_info {
+    display: none;
+  }
+}
 .login_info {
     color: white;
     text-align: center;
