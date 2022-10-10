@@ -105,7 +105,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 STATICFILES_DIRS = [
-   BASE_DIR / 'base_files' / 'static',
+   BASE_DIR / 'interfaces' / 'base_static',
 ]
 
 # Default primary key field type
