@@ -1,34 +1,19 @@
 /* Container styling */
-#parent_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: auto;
-    margin-top: 50px;
-    margin-bottom: 10px;
-}
-#parent_container:after {
-    content: "";
-    display: block;
-    * equal to footer height */
-    height: 20px;
-}
 #content_container {
+    z-index: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     background-color: white;
     width: 500px;
-    height: auto;
+    height: 70%;
     padding: 20px;
-    margin-bottom: 25px;
+    margin: 10px;
     border: 3px solid rgba(51, 0, 61, 0.5);
     border-radius: 10px;
     box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
 }
-
 
 /* Collapsible styling */
 .collapsible {
