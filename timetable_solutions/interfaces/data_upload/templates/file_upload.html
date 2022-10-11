@@ -2,31 +2,19 @@
 <html>
 
 {% extends "base.html" %}
+{% load static %}
 
 <head>
-
 {% block head_content %}
 <title> File upload </title>
+<link rel="stylesheet" href="{% static 'stylesheets/app_dashboard_base.css' %}">
 {% endblock %}
 
 <style>
 {% block style_block %}
 
-#table_container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    margin: 10%;
-    height: 50%;
-    background-color: white;
-    border: 5px solid black;
-    border-radius: 5px;
-}
-
 #reset_button {
     font-size: 15px;
-    margin: auto;
     color: black;
     background-color: grey;
     text-align: center;
@@ -51,7 +39,9 @@
   border-collapse: collapse;
   border-radius: 3px;
   text-align: center;
+  padding: 15px;
 }
+
 .upload_button {
     float: left;
     margin-left: 10%;
@@ -64,9 +54,8 @@
 
 <body>
 {% block content %}
-{% load static %}
 
-<div id="table_container">
+<div id="content_container">
 <table id="upload_file_table">
     <tr>
         <th>File name</th>
