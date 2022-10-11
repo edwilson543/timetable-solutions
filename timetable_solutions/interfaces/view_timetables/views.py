@@ -14,7 +14,7 @@ def selection_dashboard(request) -> HttpResponse:
     """View providing the context for the information displayed on the selection dashboard"""
     school_access_key = request.user.profile.school.school_access_key
     context = view_timetables.get_summary_stats_for_dashboard(school_access_key=school_access_key)
-    template = loader.get_template("selection_dashboard.html")
+    template = loader.get_template("view_timetables/selection_dashboard.html")
     return HttpResponse(template.render(context, request))
 
 
@@ -26,7 +26,7 @@ def pupil_navigator(request) -> HttpResponse:
     """
     school_id = request.user.profile.school.school_access_key
     year_indexed_pupils = view_timetables.get_year_indexed_pupils(school_id=school_id)
-    template = loader.get_template("pupils_navigator.html")
+    template = loader.get_template("view_timetables/pupils_navigator.html")
     context = {
         "all_pupils": year_indexed_pupils
     }
@@ -41,7 +41,7 @@ def teacher_navigator(request) -> HttpResponse:
     """
     school_id = request.user.profile.school.school_access_key
     all_teachers = view_timetables.get_letter_indexed_teachers(school_id=school_id)
-    template = loader.get_template("teachers_navigator.html")
+    template = loader.get_template("view_timetables/teachers_navigator.html")
     context = {
         "all_teachers": all_teachers
     }
@@ -54,7 +54,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
     school_id = request.user.profile.school.school_access_key
     pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(pupil_id=id, school_id=school_id)
 
-    template = loader.get_template("pupil_timetable.html")
+    template = loader.get_template("view_timetables/pupil_timetable.html")
     context = {
         "pupil": pupil,
         "timetable": timetable,
@@ -70,7 +70,7 @@ def teacher_timetable_view(request, id: int) -> HttpResponse:
     teacher, timetable, year_group_colours = view_timetables.get_teacher_timetable_context(
         teacher_id=id, school_id=school_id)
 
-    template = loader.get_template("teacher_timetable.html")
+    template = loader.get_template("view_timetables/teacher_timetable.html")
     context = {
         "teacher": teacher,
         "timetable": timetable,

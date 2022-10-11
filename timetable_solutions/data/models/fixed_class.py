@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Set
+from typing import Optional
 
 # Django imports
 from django.db import models
@@ -9,9 +9,9 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.classroom import Classroom
-from data.models.pupil import Pupil
+from data.models.pupil import Pupil, PupilQuerySet
 from data.models.teacher import Teacher
-from data.models.timetable_slot import TimetableSlot
+from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet
 
 
 class FixedClassQuerySet(models.QuerySet):
@@ -68,34 +68,30 @@ class FixedClass(models.Model):
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   teacher_id: int | None = None, classroom_id: int | None = None):
+                   pupils: PupilQuerySet, time_slots: TimetableSlotQuerySet,
+                   teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
-        since they have a many to many relationship to the FixedClass model.
+        since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
         """
         fixed_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, user_defined=user_defined)
+        fixed_cls.save()
+
+        fixed_cls.add_pupils(pupils=pupils)
+        fixed_cls.add_time_slots(time_slots=time_slots)
+
         return fixed_cls
 
-    # MUTATION METHODS
-    def add_pupils(self, pupil_ids: Set[int]) -> None:
-        """
-        Method to associate a set of pupils with an individual fixed class
-        :param pupil_ids - a set of primary keys relating to pupils, with the fixed class to become associate with each
-        """
-        # noinspection PyUnresolvedReferences
-        self.pupils.add(*pupil_ids)
-        self.save()
+    # MUTATORS
+    def add_pupils(self, pupils: PupilQuerySet) -> None:
+        """Method adding adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
+        self.pupils.add(*pupils)
 
-    def add_timetable_slots(self, slot_ids: Set[int]) -> None:
-        """
-        Method to associate a set of timetable slots with an individual FixedClass
-        :param slot_ids - a set of primary keys relating to timetable slots to associate this fixed class instance with
-        """
-        # noinspection PyUnresolvedReferences
-        self.time_slots.add(*slot_ids)
-        self.save()
+    def add_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
+        """Method adding adding a queryset of time slots to the FixedClass instance's many-to-many time_slot field"""
+        self.time_slots.add(*time_slots)
 
     # PROPERTIES
     @property

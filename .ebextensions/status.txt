@@ -1,0 +1,41 @@
+RUNNING python manage.py shell throws the same error as received in production - investigate
+
+CURRENT STATUS OF DEPLOYMENT:
+0) awsebcli installed in virtual environment
+1) Elastic beanstalk environment setup on AWS (via cli but also viewable in the aws console), including adding the
+secret access key using eb setenv SECRET_KEY="XYZ"
+2) Initialised repository directory (AT SOURCE), for the environment - would need redoing on a different local machine
+3) Split out the django settings files into development and production
+3) Setup a django.config file in .ebextensions, which references the production settings, and also executes static file
+collection
+4) Committed latest version of project / config files
+5) Deployment from the command line appears successful (including static file collection, see exert below)
+6) But then the server can't import the django apps (because of something to do with the app / WSGI configuration ??)
+- see 2nd log exert below - cannot import the first django app in INSTALLED_APPS
+
+
+
+2022-09-28 04:15:58,859 P5803 [INFO] 	171 static files copied to '/var/app/staging/static'.
+2022-09-28 04:15:58,859 P5803 [INFO] ------------------------------------------------------------
+2022-09-28 04:15:58,859 P5803 [INFO] Completed successfully.
+
+
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/var/app/current/timetable_solutions/base_files/wsgi.py", line 16, in <module>
+Sep 28 04:16:04 ip-172-31-20-126 web: application = get_wsgi_application()
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/var/app/venv/staging-LQM1lest/lib/python3.8/site-packages/django/core/wsgi.py", line 12, in get_wsgi_application
+Sep 28 04:16:04 ip-172-31-20-126 web: django.setup(set_prefix=False)
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/var/app/venv/staging-LQM1lest/lib/python3.8/site-packages/django/__init__.py", line 24, in setup
+Sep 28 04:16:04 ip-172-31-20-126 web: apps.populate(settings.INSTALLED_APPS)
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/var/app/venv/staging-LQM1lest/lib/python3.8/site-packages/django/apps/registry.py", line 91, in populate
+Sep 28 04:16:04 ip-172-31-20-126 web: app_config = AppConfig.create(entry)
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/var/app/venv/staging-LQM1lest/lib/python3.8/site-packages/django/apps/config.py", line 228, in create
+Sep 28 04:16:04 ip-172-31-20-126 web: import_module(entry)
+Sep 28 04:16:04 ip-172-31-20-126 web: File "/usr/lib64/python3.8/importlib/__init__.py", line 127, in import_module
+Sep 28 04:16:04 ip-172-31-20-126 web: return _bootstrap._gcd_import(name[level:], package, level)
+Sep 28 04:16:04 ip-172-31-20-126 web: File "<frozen importlib._bootstrap>", line 1014, in _gcd_import
+Sep 28 04:16:04 ip-172-31-20-126 web: File "<frozen importlib._bootstrap>", line 991, in _find_and_load
+Sep 28 04:16:04 ip-172-31-20-126 web: File "<frozen importlib._bootstrap>", line 973, in _find_and_load_unlocked
+Sep 28 04:16:04 ip-172-31-20-126 web: ModuleNotFoundError: No module named 'data'
+Sep 28 04:16:04 ip-172-31-20-126 web: [2022-09-28 04:16:04 +0000] [6110] [INFO] Worker exiting (pid: 6110)
+Sep 28 04:16:04 ip-172-31-20-126 web: [2022-09-28 04:16:04 +0000] [6104] [INFO] Shutting down: Master
+Sep 28 04:16:04 ip-172-31-20-126 web: [2022-09-28 04:16:04 +0000] [6104] [INFO] Reason: Worker failed to boot.

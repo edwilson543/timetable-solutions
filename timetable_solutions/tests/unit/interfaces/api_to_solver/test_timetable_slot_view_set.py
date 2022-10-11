@@ -7,13 +7,12 @@ import json
 from django import test
 
 # Local application imports
-from base_files.settings import BASE_DIR
+from tests.input_settings import FIXTURE_DIR
 
 
 class TestTimetableSlotViewSet(test.TestCase):
     """Tests for the TimetableSlot ModelViewSet"""
     fixtures = ["user_school_profile.json", "timetable.json"]
-    fixture_location = BASE_DIR / "data" / "fixtures"
 
     # GET REQUESTS
     def test_correct_data_returned_for_get_request_with_valid_school_access_key(self):
@@ -29,7 +28,7 @@ class TestTimetableSlotViewSet(test.TestCase):
         self.assertEqual(response.status_code, 200)
 
         actual_data_unordered = [dict(ordered_dict) for ordered_dict in response.data]
-        with open((self.fixture_location / "timetable.json")) as used_fixture:
+        with open(FIXTURE_DIR / "timetable.json") as used_fixture:
             fixture_json_data = json.load(used_fixture)
         expected_data = [item["fields"] for item in fixture_json_data]
 

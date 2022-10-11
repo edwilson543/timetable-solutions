@@ -1,0 +1,113 @@
+[
+  {
+    "model": "data.school",
+    "pk": 444444,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 401,
+    "fields": {
+      "day_of_week": 1,
+      "period_duration": "01:00:00",
+      "slot_id": 1,
+      "period_starts_at": "09:00:00",
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 402,
+    "fields": {
+      "day_of_week": 2,
+      "period_duration": "01:00:00",
+      "slot_id": 2,
+      "period_starts_at": "09:00:00",
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 401,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 1,
+      "pupil_id": 1,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 402,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 1,
+      "pupil_id": 2,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 401,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 1,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 402,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 2,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 401,
+    "fields": {
+      "building": "MB",
+      "room_number": 47,
+      "classroom_id": 1,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.fixedclass",
+    "pk": 401,
+    "fields": {
+      "class_id": "MATHS",
+      "subject_name": "MATHS",
+      "teacher": 401,
+      "pupils": [401],
+      "classroom": 401,
+      "time_slots": [401],
+      "user_defined": true,
+      "school": 444444
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 401,
+    "fields": {
+      "class_id": "ENGLISH",
+      "school": 444444,
+      "subject_name": "ENGLISH",
+      "teacher": 402,
+      "classroom": 401,
+      "total_slots": 1,
+      "n_double_periods": 0,
+      "pupils": [401]
+    }
+  }
+]

@@ -3,7 +3,7 @@
 # Standard library imports
 import ast
 from io import StringIO
-from typing import List, Type
+from typing import List, Type, Optional, Union
 
 # Third party imports
 import pandas as pd
@@ -14,6 +14,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
+from data import models
 from data.utils import ModelSubclass
 from .constants import Header
 
@@ -29,7 +30,7 @@ class FileUploadProcessor:
                  csv_file: UploadedFile,
                  csv_headers: List[str],
                  school_access_key: int,  # Unique identifier for the school_id which the data corresponds to
-                 id_column_name: str | None,
+                 id_column_name: Optional[str],
                  model: Type[ModelSubclass],
                  is_unsolved_class_upload: bool = False,
                  is_fixed_class_upload: bool = False):
@@ -99,7 +100,7 @@ class FileUploadProcessor:
             upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(upload_df[Header.PERIOD_STARTS_AT])
         return upload_df
 
-    def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
+    def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> Union[List, None]:
         """
         Method to iterate through the rows of the dataframe, and create a model instance for each row.
         :return A list of valid model instances, unless at least one error is found, in which case None is returned
@@ -131,7 +132,7 @@ class FileUploadProcessor:
 
         return valid_model_instances
 
-    def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
+    def _create_model_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
         """
         Method to take an individual row from the csv file, validate that it corresponds to a valid model instance,
         and then create that model instance.
@@ -147,7 +148,7 @@ class FileUploadProcessor:
                                         f"row: {row.to_dict()}"
             return None
 
-    def _create_unsolved_class_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
+    def _create_unsolved_class_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
         """
         Method to process each row of the unsolved class csv file upload and try to return a UnsolvedClass
         instance
@@ -155,41 +156,40 @@ class FileUploadProcessor:
         model_dict = {  # Note we don't include the pupil_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID],
-            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.MIN_DISTINCT_SLOTS: row[Header.MIN_DISTINCT_SLOTS],
-            "school_id": self._school_access_key}
-        try:
-            model_instance = self._model.create_new(**model_dict)
-            model_instance.save()  # Need to save to be able to add pupils
+            Header.TOTAL_SLOTS: row[Header.TOTAL_SLOTS], Header.N_DOUBLE_PERIODS: row[Header.N_DOUBLE_PERIODS]}
 
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
-            pups = {int(val) for val in pups}
-            model_instance.add_pupils(pupil_ids=pups)
+        pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
+        pup_ids = {int(val) for val in pup_ids}
+        pupils = models.Pupil.objects.get_specific_pupils(school_id=self._school_access_key, pupil_ids=pup_ids)
+
+        try:
+            model_instance = self._model.create_new(
+                school_id=self._school_access_key, pupils=pupils,  **model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:
             self.upload_error_message = f"Could not create valid UnsolvedClass instance from row: {row.to_dict()}"
             return None
 
-    def _create_fixed_class_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
+    def _create_fixed_class_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
         """Method to process each row of the fixed class csv file upload and try to return a FixedClass instance"""
         model_dict = {  # Note we don't include the pupil_ids or slot_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],
             Header.TEACHER_ID: row[Header.TEACHER_ID], Header.CLASSROOM_ID: row[Header.CLASSROOM_ID]}
         model_dict = {key: value for key, value in model_dict.items() if value != self.__nan_handler}
-        model_dict["school_id"] = self._school_access_key
-        model_dict["user_defined"] = True  # Since any fixed class uploaded by the user is user defined
+
+        pup_ids = ast.literal_eval(row[Header.PUPIL_IDS])
+        pup_ids = {int(val) for val in pup_ids}
+        pupils = models.Pupil.objects.get_specific_pupils(school_id=self._school_access_key, pupil_ids=pup_ids)
+
+        slot_ids = ast.literal_eval(row[Header.SLOT_IDS])
+        slot_ids = {int(val) for val in slot_ids}
+        slots = models.TimetableSlot.objects.get_specific_timeslots(
+            school_id=self._school_access_key, slot_ids=slot_ids)
+
         try:
-            model_instance = self._model.create_new(**model_dict)
-            model_instance.save()  # Need to save to be able to add pupils / slots
-
-            pups = ast.literal_eval(row[Header.PUPIL_IDS])
-            pups = {int(val) for val in pups}
-            model_instance.add_pupils(pupil_ids=pups)
-
-            slots = ast.literal_eval(row[Header.SLOT_IDS])
-            slots = {int(val) for val in slots}
-            model_instance.add_timetable_slots(slot_ids=slots)
-
+            model_instance = self._model.create_new(
+                school_id=self._school_access_key, pupils=pupils, time_slots=slots, user_defined=True, **model_dict)
             model_instance.full_clean()
             return model_instance
         except ValidationError:

@@ -1,35 +1,24 @@
 """Entry point to the solver"""
 
 # Standard library imports
-from typing import List
+from typing import Union
 
 # Local application imports
-from domain.solver.constants.api_endpoints import DataLocation
-from domain.solver.linear_programming.solver_input_data import TimetableSolverInputs
-from domain.solver.linear_programming.solver import TimetableSolver
-from domain.solver.linear_programming.solver_output_data import TimetableSolverOutcome
+from .solver_input_data import TimetableSolverInputs
+from .solver_output_data import TimetableSolverOutcome
+from .linear_programming.solver import TimetableSolver
 
 
-def produce_timetable_solutions(school_access_key: int, protocol_domain: str | None = None) -> None | List[str]:
+def produce_timetable_solutions(school_access_key: int) -> Union[str, None]:
     """
     Function to be used by the web app to produce the timetable solutions.
     A button is clicked, which corresponds to a view, where that view calls this function.
     :param school_access_key - the unique integer used to access a given school's data via the API
-    :param protocol_domain - the protocol and domain name of the main web application using this solver
     """
-    # Locate the API endpoints for the necessary data
-    if protocol_domain is None:
-        data_location = DataLocation(school_access_key=school_access_key)
-    else:
-        data_location = DataLocation(school_access_key=school_access_key, protocol_domain=protocol_domain)
-    input_data = TimetableSolverInputs(data_location=data_location)
-
-    # Formulate the linear programming problem and try to solve
+    input_data = TimetableSolverInputs(school_id=school_access_key)
     solver = TimetableSolver(input_data=input_data)
+    solver.solve()
 
     # Assess the outcome and either post the solutions or return why solutions have not been found
     outcome = TimetableSolverOutcome(timetable_solver=solver)
-    if outcome.error_messages is None:
-        outcome.post_results()
-    else:
-        return outcome.error_messages
+    return outcome.error_messages

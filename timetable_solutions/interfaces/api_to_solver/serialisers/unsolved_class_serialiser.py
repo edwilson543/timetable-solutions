@@ -14,4 +14,4 @@ class UnsolvedClass(serializers.ModelSerializer):
     """
     class Meta:
         model = models.UnsolvedClass
-        fields = ["class_id", "subject_name", "teacher", "pupils", "classroom", "total_slots", "min_distinct_slots"]
+        fields = ["class_id", "subject_name", "teacher", "pupils", "classroom", "total_slots", "n_double_periods"]
