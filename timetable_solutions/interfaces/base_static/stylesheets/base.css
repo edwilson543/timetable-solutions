@@ -21,14 +21,14 @@ span.helptext {
 }
 
 /* Head strap styling */
-.head_strap {
+#head_strap {
     width: 100%;
     height: 60px;
     background-color: #11014A;
     line-height: 60px;
     vertical-align: middle;
 }
-.head_strap_text {
+#head_strap_text {
     color: white;
     font-size: 30px;
     margin-left: 20px;
@@ -36,11 +36,11 @@ span.helptext {
     float: left;
 }
 @media screen and (max-width: 800px) {
-  .login_info {
+  #login_info {
     display: none;
   }
 }
-.login_info {
+#login_info {
     color: white;
     text-align: center;
     font-size: 20px;
@@ -50,7 +50,7 @@ span.helptext {
 }
 
 /* Navbar styling */
-.navbar {
+#navbar {
     position: absolute;
     top: 60px; /* Since this corresponds to the bottom of the head strap */
     background-color: rgba(0, 0, 0, 0.3);
@@ -60,19 +60,19 @@ span.helptext {
     vertical-align: middle;
     z-index: 100;
 }
-.navbar_text {
+#navbar_text {
     color: white;
     opacity: 1.0;
     font-size: 20px;
     vertical-align: middle;
     margin-left: 20px
 }
-.navbar:hover {
+#navbar:hover {
 background-color: rgba(0, 0, 0, 1.0);
 }
 
 /* Footer styling */
-.footer_info {
+#footer_info {
     text-align: center;
     vertical-align: middle;
     width: 100%;

@@ -27,10 +27,10 @@ body {
 
 <body>
 <!--Add a 'head strap'-->
-<div class="head_strap">
-    <i class="head_strap_text">Timetable Solutions</i>
+<div id="head_strap">
+    <i id="head_strap_text">Timetable Solutions</i>
     {% if user.is_authenticated %}
-        <span class="login_info">
+        <span id="login_info">
             {{user.profile.school.school_name}} | {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
         </span>
     {% endif %}
@@ -38,8 +38,8 @@ body {
 
 <!--Add a navigation bar-->
 {% if user.is_authenticated %}
-<div class="navbar">
-    <p class="navbar_text">
+<div id="navbar">
+    <p id="navbar_text">
         <a href="{% url 'dashboard' %}">Home</a> |
         <a href="{% url 'file_upload_page' %}">Data</a> |
         <a href="">Create</a> |
@@ -52,7 +52,7 @@ body {
 {% endblock %}
 
 <hr style="border-color:black;border-width:1px;">
-<footer class="footer_info">
+<footer id="footer_info">
     <span>
         Copyright Timetable Solutions Ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
     </span>
