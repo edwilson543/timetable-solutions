@@ -2,17 +2,15 @@
 
 {% block style_block %}
 @media screen and (max-width: 800px) {
-  div.bg {
-    display: none;
-  }
+    #background_image {display: none;}
 }
-.bg {
-  height: 65%;
-  width: 100%;
-  padding: 0px;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
+#background_image {
+    height: 65%;
+    width: 100%;
+    padding: 0px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 #parent_container {
     display: flex;
@@ -64,7 +62,7 @@
 
 {% load static %}
 
-<div class="bg">
+<div id="background_image">
     <img src="{% static 'users/img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%>
 </div>
 <div id="parent_container">
