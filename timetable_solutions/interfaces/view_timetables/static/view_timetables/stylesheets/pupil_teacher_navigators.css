@@ -9,7 +9,8 @@
     width: 500px;
     height: 70%;
     padding: 20px;
-    margin: 10px;
+    margin-top: 10px;
+    margin-bottom: 40px;
     border: 3px solid rgba(51, 0, 61, 0.5);
     border-radius: 10px;
     box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
