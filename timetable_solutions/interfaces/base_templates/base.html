@@ -48,16 +48,18 @@ body {
 </div>
 {% endif %}
 
-{% block content %}
-{% endblock %}
-
-<hr style="border-color:black;border-width:1px;">
-<footer id="footer_info">
-    <span>
-        Copyright Timetable Solutions Ltd 2022 | edward.e.j.wilson@gmail.com | +447810804531 | London | New York | Singapore
-    </span>
-</footer>
+<div id="parent_container">
+    {% block content %}
+    {% endblock %}
+    <div id="footer_info">
+        <p>
+            Copyright Timetable Solutions Ltd 2022 |
+            edward.e.j.wilson@gmail.com |
+            +447810804531 |
+            London | New York | Singapore
+        </p>
+    </div>
+</div>
 
 </body>
-
 </html>

@@ -80,19 +80,41 @@ Navbar styling
 }
 
 /* ====================
+Parent content container styling
+==================== */
+#parent_container {
+    /* Positioning - at the top of the head strap */
+    position: absolute;
+    top: 60px;
+
+    /* Display and box model */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 80%;
+}
+
+/* ====================
 Footer styling
 ==================== */
 #footer_info {
     /* Display */
     width: 100%;
     height: 20px;
-    padding-top: 1px;
-    padding-bottom: 1px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-top: auto;
 
     /* Typography */
     font-size: 12px;
     text-align: center;
     vertical-align: middle;
+
+    /* Border */
+    border-top: 1px solid black;
+    border-top-style: double;
 }
 
 /* ====================
