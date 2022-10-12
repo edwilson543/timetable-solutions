@@ -8,7 +8,9 @@ from django import forms
 
 class SolutionSpecification(forms.Form):
     """Form that the user must fill in each time they generate some solutions."""
-    placeholder_1 = forms.BooleanField(label="PLACEHOLDER - Minimise year groups per teacher per day",
+    placeholder_1 = forms.BooleanField(label="Minimise year groups per teacher per day (ph)", label_suffix="",
                                        widget=forms.CheckboxInput)
-    placeholder_2 = forms.BooleanField(label="PLACEHOLDER - Maximise free period spacing", widget=forms.CheckboxInput)
-    placeholder_3 = forms.BooleanField(label="PLACEHOLDER - Do not allow XYZ", widget=forms.CheckboxInput)
+    placeholder_2 = forms.BooleanField(label="Maximise free period spacing (ph)", label_suffix="",
+                                       widget=forms.CheckboxInput)
+    placeholder_3 = forms.BooleanField(label="Do not allow XYZ (ph)", label_suffix="",
+                                       widget=forms.CheckboxInput)
