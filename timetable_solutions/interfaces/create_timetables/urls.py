@@ -5,6 +5,6 @@ from django import urls
 from interfaces.create_timetables import views
 
 
-url_patterns = [
+urlpatterns = [
     urls.path("", views.CreateTimetable.as_view(), name="create_timetables")
 ]
