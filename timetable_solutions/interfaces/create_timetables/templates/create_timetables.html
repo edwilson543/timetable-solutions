@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+{% extends "base.html" %}
+{% load static %}
+
+<head>
+{% block head_content %}
+<title> File upload </title>
+<link rel="stylesheet" href="{% static 'stylesheets/app_dashboard_base.css' %}">
+{% endblock %}
+
+<style>
+{% block style_block %}
+
+#info_container {
+    grid-row: 2 / 4;
+    grid-column: 1;
+}
+#form_container {
+    grid-row: 2 / 4;
+    grid-column: 2;
+}
+
+{% endblock %}
+</style>
+
+</head>
+
+<body>
+{% block content %}
+
+<div id="content_container">
+    <div id="grid_container">
+        <div id="dashboard_title">Generate new timetable solutions</div>
+        <div id="info_container" class="info_frame">PLACEHOLDER</div>
+        <div id="form_container" class="info_frame">
+            <form enctype="multipart/form-data" action="{% url 'create_timetables' %}" method="post">
+                {% csrf_token %}
+                <table>
+                    {{ form }}
+                </table>
+                <button class="" type="submit">Get solutions</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+</body>
+</html>
