@@ -22,7 +22,7 @@ from django.urls import path, include
 urlpatterns = [
     path('api/', include('interfaces.rest_api.urls')),
     path('view/', include('interfaces.view_timetables.urls')),
-    path('requirements/', include('interfaces.data_upload.urls')),
+    path('data/', include('interfaces.data_upload.urls')),
     path('users/', include('interfaces.users.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

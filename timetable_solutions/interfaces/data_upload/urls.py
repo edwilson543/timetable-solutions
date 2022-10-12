@@ -8,11 +8,11 @@ import interfaces.data_upload.upload_view_base_class
 from . import views
 
 urlpatterns = [
-    path('file_upload/', interfaces.data_upload.upload_view_base_class.upload_page_view, name='file_upload_page'),
-    path('file_upload/teacher_list/', views.TeacherListUploadView.as_view(), name='teacher_list'),
-    path('file_upload/pupil_list/', views.PupilListUploadView.as_view(), name='pupil_list'),
-    path('file_upload/classroom_list/', views.ClassroomListUploadView.as_view(), name='classroom_list'),
-    path('file_upload/timetable_structure/', views.TimetableStructureUploadView.as_view(), name='timetable_structure'),
-    path('file_upload/unsolved_classes/', views.UnsolvedClassUploadView.as_view(), name='unsolved_classes'),
-    path('file_upload/fixed_classes/', views.FixedClassUploadView.as_view(), name='fixed_classes'),
+    path('', interfaces.data_upload.upload_view_base_class.upload_page_view, name='file_upload_page'),
+    path('teacher_list/', views.TeacherListUploadView.as_view(), name='teacher_list'),
+    path('pupil_list/', views.PupilListUploadView.as_view(), name='pupil_list'),
+    path('classroom_list/', views.ClassroomListUploadView.as_view(), name='classroom_list'),
+    path('timetable_structure/', views.TimetableStructureUploadView.as_view(), name='timetable_structure'),
+    path('unsolved_classes/', views.UnsolvedClassUploadView.as_view(), name='unsolved_classes'),
+    path('fixed_classes/', views.FixedClassUploadView.as_view(), name='fixed_classes'),
 ]
