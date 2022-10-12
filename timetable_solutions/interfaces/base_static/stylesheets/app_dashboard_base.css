@@ -39,3 +39,16 @@
     padding: 10px;
     font-size: 20px;
 }
+
+.info_frame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    font-size: 15px;
+    padding: 10px;
+}
