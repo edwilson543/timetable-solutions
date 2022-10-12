@@ -6,5 +6,5 @@ from interfaces.create_timetables import views
 
 
 url_patterns = [
-    urls.path("", views.CreateTimetable.as_view(), name="create")
+    urls.path("", views.CreateTimetable.as_view(), name="create_timetables")
 ]

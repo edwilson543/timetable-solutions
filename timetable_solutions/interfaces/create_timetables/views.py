@@ -15,7 +15,7 @@ class CreateTimetable(views.View):
     """
     @staticmethod
     def get(request, *args, **kwargs):
-        template = loader.get_template("create")
+        template = loader.get_template("create_timetables.html")
         context = {
             "form": forms.SolutionSpecification()
         }
