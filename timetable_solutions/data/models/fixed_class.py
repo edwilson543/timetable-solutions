@@ -29,13 +29,6 @@ class FixedClassQuerySet(models.QuerySet):
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
 
-    def delete_all_non_user_defined_fixed_classes(self, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
-        """Method deleting the queryset of FixedClass instances previously produced by the solver"""
-        fcs = self.get_non_user_defined_fixed_classes(school_id=school_id)
-        info = fcs.delete()
-        if return_info:
-            return info
-
 
 class FixedClass(models.Model):
     """
@@ -90,6 +83,14 @@ class FixedClass(models.Model):
         fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
+
+    @classmethod
+    def delete_all_non_user_defined_fixed_classes(cls, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
+        """Method deleting the queryset of FixedClass instances previously produced by the solver"""
+        fcs = cls.objects.get_non_user_defined_fixed_classes(school_id=school_id)
+        info = fcs.delete()
+        if return_info:
+            return info
 
     # MUTATORS
     def add_pupils(self, pupils: PupilQuerySet) -> None:

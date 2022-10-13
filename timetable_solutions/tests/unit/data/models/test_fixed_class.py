@@ -9,7 +9,7 @@ from django import test
 from data import models
 
 
-class TestFixedClassQuerySet(test.TestCase):
+class TestFixedClass(test.TestCase):
     """Unit tests for the FixedClass model's custom queryset manager"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
@@ -25,7 +25,7 @@ class TestFixedClassQuerySet(test.TestCase):
         expected_tt_slot_ref_count = sum(fc.time_slots.all().count() for fc in all_fc if not fc.user_defined)
 
         # Execute test unit
-        info = models.FixedClass.objects.delete_all_non_user_defined_fixed_classes(school_id=123456, return_info=True)
+        info = models.FixedClass.delete_all_non_user_defined_fixed_classes(school_id=123456, return_info=True)
 
         # Check outcome - that the correct instances and references have been deleted
         deleted = info[1]
