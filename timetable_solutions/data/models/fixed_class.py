@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Optional
+from typing import Optional, Union, Tuple
 
 # Django imports
 from django.db import models
@@ -28,6 +28,13 @@ class FixedClassQuerySet(models.QuerySet):
     def get_non_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
+
+    def delete_all_user_defined_fixed_classes(self, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
+        """Method returning the queryset of FixedClass instances defined by the user"""
+        fcs = self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True))
+        info = fcs.delete()
+        if return_info:
+            return info
 
 
 class FixedClass(models.Model):
