@@ -22,9 +22,10 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
 
         # Execute test unit
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
 
         # Check the outcome is as expected
         assert len(data.fixed_classes) == 12

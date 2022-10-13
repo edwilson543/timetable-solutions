@@ -26,7 +26,8 @@ class TestSolverConstraints(test.TestCase):
         since the test class subclasses the Django TestCase
         """
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         variables = slvr.TimetableSolverVariables(inputs=data)
         constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
         return constraint_maker

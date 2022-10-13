@@ -20,7 +20,8 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the decision variable instantiation
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
 
         # Execute test unit
         variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
@@ -40,7 +41,8 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the method removing irrelevant variables from the variables dict.
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
         variable_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
         variables = variable_maker._get_decision_variables(strip=False)
 
@@ -60,7 +62,8 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the decision variable instantiation
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
 
         # Execute test unit
         variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
