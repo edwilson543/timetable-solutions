@@ -35,10 +35,6 @@ class TimetableSolverVariables:
             self.decision_variables = self._get_decision_variables()
             self.double_period_variables = self._get_double_period_variables()
 
-            if not self._inputs.solution_specification.allow_split_classes_within_each_day:
-                # For now, we only need these variables in this instance
-                self.single_period_variables = self._get_single_period_variables()
-
     def _get_decision_variables(self, strip: bool = True) -> Dict[var_key, lp.LpVariable]:
         """
         Method to get the pulp decision variables used to solve the timetabling problem.
@@ -81,22 +77,9 @@ class TimetableSolverVariables:
             if unsolved_class.n_double_periods == 0:
                 continue
             for double_p in self._inputs.consecutive_slots:
-                var_key = doubles_var_key(class_id=unsolved_class.class_id,
-                                          slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
+                key = doubles_var_key(
+                    class_id=unsolved_class.class_id,slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
                 var_name = f"{unsolved_class.class_id}_double_period_at_{double_p[0].slot_id}_{double_p[1].slot_id}"
                 variable = lp.LpVariable(var_name, cat="Binary")
-                variables[var_key] = variable
-        return variables
-
-    def _get_single_period_variables(self) -> Dict[var_key, lp.LpVariable]:
-        """
-        Method to get the pulp dependent variables used to decide when single periods should go.
-        Note that by 'single period' we mean that UnsolvedClass A has a single period at slot 2 if and only if class A
-        occurs at slot 2, and does not occur at slot 1 and slot 3.
-        :return - Dictionary of pulp variables, indexed by unique class / timetable slot tuples.
-
-        Notes: decision variables must already be set, as there is a one-to-one correspondence with them.
-        """
-        variables = {key: lp.LpVariable(f"{key.class_id}_single_period_at_{key.slot_id}", cat="Binary") for
-                     key in self.decision_variables.keys()}
+                variables[key] = variable
         return variables
