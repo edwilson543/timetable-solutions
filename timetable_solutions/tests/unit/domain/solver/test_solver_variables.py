@@ -17,14 +17,14 @@ class TestTimetableSolverVariables(test.TestCase):
 
     def test_get_decision_variables(self):
         """
-        Test for the decision variable instantiation
+        Test for the decision variable instantiation.
         """
         # Set parameters
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
         input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
 
         # Execute test unit
-        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
         variables = variables_maker._get_decision_variables()
 
         # Test the outcome - we expect one variable per timetable slot / unsolved class pair
@@ -59,14 +59,14 @@ class TestTimetableSolverVariables(test.TestCase):
 
     def test_get_double_period_variables(self):
         """
-        Test for the decision variable instantiation
+        Test of the dependent, double period variables instantiation.
         """
         # Set parameters
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
         input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
 
         # Execute test unit
-        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
         variables = variables_maker._get_double_period_variables()
 
         # Test the outcome - we expect one variable per consecutive period
@@ -77,3 +77,27 @@ class TestTimetableSolverVariables(test.TestCase):
         assert random_var.upBound == 1
         assert random_var.cat == "Integer"
         assert random_var.varValue is None
+
+    def test_get_single_period_variables(self):
+        """
+        Test of the dependent, single period variables instantiation.
+        """
+        # Set parameters
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables_maker.decision_variables = {
+            slvr.var_key(slot_id=1, class_id=1): lp.LpVariable("Variable 1", cat="Binary"),
+            slvr.var_key(slot_id=1, class_id=1): lp.LpVariable("Variable 2", cat="Binary")
+        }
+
+        expected_sp_vars = {
+            slvr.var_key(slot_id=1, class_id=1): lp.LpVariable("1_single_period_at_1", cat="Binary"),
+            slvr.var_key(slot_id=1, class_id=1): lp.LpVariable("1_single_period_at_1", cat="Binary")
+        }
+
+        # Execute test unit
+        sp_variables = variables_maker._get_single_period_variables()
+
+        # Check outcome
+        assert expected_sp_vars == sp_variables
