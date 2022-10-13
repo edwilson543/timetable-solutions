@@ -2,6 +2,7 @@
 
 # Standard library imports
 import datetime as dt
+from functools import lru_cache
 from typing import Set, List
 
 # Django imports
@@ -79,8 +80,12 @@ class TimetableSlot(models.Model):
 
     # FILTER METHODS
     @classmethod
+    @lru_cache(maxsize=8)
     def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> List[int]:
-        """Method returning the timetable slot IDs for the school on the given day of the week"""
+        """
+        Method returning the timetable slot IDs for the school on the given day of the week
+        Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
+        """
         timeslots = cls.objects.get_timeslots_on_given_day(school_id=school_id, day_of_week=day_of_week)
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids
