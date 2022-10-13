@@ -20,7 +20,7 @@ class TestRunSolver(test.TestCase):
         to load the required data, produce a timetable solution, and then save it back into the database.
         """
         # Set test parameters
-        spec = slvr.SolutionSpecification(disallow_split_classes_within_each_day=False)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
 
         # Execute
         error_messages = produce_timetable_solutions(school_access_key=222222, solution_specification=spec)

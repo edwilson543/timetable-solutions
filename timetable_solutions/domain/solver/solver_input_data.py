@@ -17,7 +17,7 @@ class SolutionSpecification:
     :param - whether or not to prevent having one class to be taught more than once in a day, with a gap in between
     either session.
     """
-    disallow_split_classes_within_each_day: bool
+    allow_split_classes_within_each_day: bool
 
 
 class TimetableSolverInputs:
