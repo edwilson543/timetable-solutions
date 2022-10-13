@@ -2,20 +2,35 @@
 Module defining the data used by the solver, and how this data is accessed from the data layer
 """
 # Standard library imports
+from dataclasses import dataclass
 from typing import List, Tuple
 
 # Local application imports
 from data import models
 
 
+@dataclass(frozen=True)
+class SolutionSpecification:
+    """
+    Data class for storing any parameters relating to how the solution should be generated. These parameters are all
+    user-defined.
+    :param - whether or not to prevent having one class to be taught more than once in a day, with a gap in between
+    either session.
+    """
+    disallow_split_classes_within_each_day: bool
+
+
 class TimetableSolverInputs:
-    def __init__(self, school_id: int):
+    def __init__(self,
+                 school_id: int,
+                 solution_specification: SolutionSpecification):
         """
         Class responsible for loading in all of a school's data and storing it.
         """
 
-        # Store data location
+        # Store passed information
         self.school_id = school_id
+        self.solution_specification = solution_specification
 
         # Call the data layer to get all necessary data
         self.fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=self.school_id)
