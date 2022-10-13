@@ -2,7 +2,7 @@
 
 # Standard library imports
 import datetime as dt
-from typing import Set
+from typing import Set, List
 
 # Django imports
 from django.db import models
@@ -21,7 +21,10 @@ class WeekDay(models.IntegerChoices):
 
 
 class TimetableSlotQuerySet(models.QuerySet):
-    """Custom queryset manager for the TimetableSlot model"""
+    """
+    Custom queryset manager for the TimetableSlot model.
+    Note that this manager intentionally only includes filtration methods that return QuerySets
+    """
 
     def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of all timetable slots at the given school"""
@@ -73,3 +76,11 @@ class TimetableSlot(models.Model):
         slot = cls.objects.create(school_id=school_id, slot_id=slot_id, day_of_week=day_of_week,
                                   period_starts_at=period_starts_at, period_duration=period_duration)
         return slot
+
+    # FILTER METHODS
+    @classmethod
+    def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> List[int]:
+        """Method returning the timetable slot IDs for the school on the given day of the week"""
+        timeslots = cls.objects.get_timeslots_on_given_day(school_id=school_id, day_of_week=day_of_week)
+        timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
+        return timeslot_ids
