@@ -24,7 +24,8 @@ class TestSolver(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -41,7 +42,7 @@ class TestSolverScenarioSolutions(test.TestCase):
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
                 "test_scenario_5.json", "test_scenario_6.json"]
-
+    
     def test_solver_solution_test_scenario_1(self):
         """
         Test scenario targeted at the fulfillment constraint.
@@ -51,7 +52,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 111111
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -71,7 +73,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 222222
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -96,7 +99,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 333333
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -116,7 +120,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 444444
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -136,7 +141,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 555555
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -162,7 +168,8 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         # Set test parameters
         school_access_key = 666666
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
