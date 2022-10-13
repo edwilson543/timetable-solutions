@@ -237,3 +237,50 @@ class TimetableSolverConstraints:
 
         all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
         return all_constraints
+
+    def _get_all_double_period_no_repetition_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+        """
+        Method restricting the number of double periods that can be taught for a single class on a single day to 1.
+        :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
+        """
+
+        def __no_repetition_day_constraint(unsolved_class: models.UnsolvedClass,
+                                           day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
+            """
+            States that the given unsolved class can only have one double period on the given day
+            :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
+            """
+            slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
+                school_id=self._inputs.school_id, day_of_week=day_of_week)
+            double_periods_on_day = lp.lpSum([  # We only check slot_1_id is in slot_ids, since 1 & 2 are on same day
+                var for key, var in self._double_period_variables.items() if
+                (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
+            ])
+            dp_constraint = (double_periods_on_day <= 1, f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
+            return dp_constraint
+
+        relevant_days = {slot.day_of_week for slot in self._inputs.timetable_slots}
+        constraints = (__no_repetition_day_constraint(unsolved_class=usc, day_of_week=day) for
+                       usc in self._inputs.unsolved_classes for day in relevant_days)
+        # TODO - add a dataclass in the same tab as run solver that stores the requirements for a given run
+        # TODO - ensure this initially has both single and double period restriction fields
+        # TODO - add this dataclass to init method for the input class
+        # TODO - add the constraint to the add constraints method, only adding if the dataclass field for restricting
+        # double periods per day is set to False
+        # TODO - add a test to the solver test scenarios where we are testing this constraint
+        # TODO - update the form on the UI which is relevant to this constraint
+        return constraints
+
+    def _get_all_single_period_no_repetition_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+        # TODO - define single period variables
+        # TODO - constrain their sum on a single day to 1
+        # TODO - also constrain them as sum(single period vars day x) + sum(double period vars day x) == 1
+        pass
+
+        # slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
+        #     school_id=self._inputs.school_id, day_of_week=day_of_week)
+        # periods_on_day = lp.lpSum([
+        #     var for key, var in self._decision_variables.items() if
+        #     (key.class_id == unsolved_class.class_id) and (key.slot_id in day_of_week)
+        # ])
+        # periods_on_day = (periods_on_day <= 2, f"max_two_{unsolved_class.class_id}_periods_day_{day_of_week}")
