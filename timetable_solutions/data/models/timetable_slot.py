@@ -11,6 +11,15 @@ from django.db import models
 from data.models.school import School
 
 
+class WeekDay(models.IntegerChoices):
+    """Choices for the different days of the week a lesson can take place at"""
+    MONDAY = 1, "Monday"
+    TUESDAY = 2, "Tuesday"
+    WEDNESDAY = 3, "Wednesday"
+    THURSDAY = 4, "Thursday"
+    FRIDAY = 5, "Friday"
+
+
 class TimetableSlotQuerySet(models.QuerySet):
     """Custom queryset manager for the TimetableSlot model"""
 
@@ -22,18 +31,13 @@ class TimetableSlotQuerySet(models.QuerySet):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(slot_id=slot_id))
 
-    def get_specific_timeslots(self, school_id: int, slot_ids: Set[int]):
-        """Method returning the list of slots and the school with corresponding slot_id"""
+    def get_specific_timeslots(self, school_id: int, slot_ids: Set[int]) -> models.QuerySet:
+        """Method returning the slots at the given school, with the corresponding slot_ids"""
         return self.filter(models.Q(school_id=school_id) & models.Q(slot_id__in=slot_ids))
 
-
-class WeekDay(models.IntegerChoices):
-    """Choices for the different days of the week a lesson can take place at"""
-    MONDAY = 1, "Monday"
-    TUESDAY = 2, "Tuesday"
-    WEDNESDAY = 3, "Wednesday"
-    THURSDAY = 4, "Thursday"
-    FRIDAY = 5, "Friday"
+    def get_timeslots_on_given_day(self, school_id: int, day_of_week: WeekDay) -> models.QuerySet:
+        """Method returning the timetable slots for the school on the given day of the week"""
+        return self.filter(models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week))
 
 
 class TimetableSlot(models.Model):
