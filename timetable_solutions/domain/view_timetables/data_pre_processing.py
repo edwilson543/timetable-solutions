@@ -114,7 +114,7 @@ def get_timetable_slot_indexed_timetable(classes: Union[QuerySet, List[models.Fi
     timetable = {}
     for time in sorted_period_start_times:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
-        for day in models.TimetableSlot.WeekDay.values:
+        for day in models.WeekDay.values:
             for klass, time_slots in class_indexed_timetable.items():
                 queryset = time_slots.filter(day_of_week=day, period_starts_at=time)
                 if queryset.exists():
