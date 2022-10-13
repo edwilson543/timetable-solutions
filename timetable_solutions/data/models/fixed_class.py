@@ -29,9 +29,9 @@ class FixedClassQuerySet(models.QuerySet):
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
 
-    def delete_all_user_defined_fixed_classes(self, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
-        """Method returning the queryset of FixedClass instances defined by the user"""
-        fcs = self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True))
+    def delete_all_non_user_defined_fixed_classes(self, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
+        """Method deleting the queryset of FixedClass instances previously produced by the solver"""
+        fcs = self.get_non_user_defined_fixed_classes(school_id=school_id)
         info = fcs.delete()
         if return_info:
             return info
