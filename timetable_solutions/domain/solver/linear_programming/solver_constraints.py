@@ -243,23 +243,46 @@ class TimetableSolverConstraints:
         all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
         return all_constraints
 
-    def _get_all_no_split_period_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+    def _get_all_no_split_classes_within_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
-        Method # TODO
+        Method defining all constraints to disallow classes to be taught at split times across a single day.
         :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
 
-        Notes: These constraints to still allow a triple period (since 3 - 2 <= 1), hence the need for the constraint
-        below restricting to no two double periods in a day
+        Note: These constraints still allow a stacked triple or quadruple period, hence the need for the constraints
+        below restricting the solution to no two double periods in a day (if we do not want triple periods).
         """
         # TODO TODO TODO write this method
         # TODO add test for it, also an integration test that adds it
         # TODO - add a test to the solver test scenarios where we are testing this constraint
         # TODO - update the form on the UI which is relevant to this constraint
-        def __dependency_constraint() -> Tuple[lp.LpConstraint, str]:
-            # TODO: (TOTAL NUMBER PERIODS IN DAY) - (TOTAL NUMBER DOUBLE PERIODS IN DAY) <= 1
-            # TODO: NOTE THAT WE STILL NEED THE GET ALL NO DOUBLE PERIOD
-            pass
+        def __no_split_classes_within_day_constraint(unsolved_class: models.UnsolvedClass,
+                                                     day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
+            """
+            We limit: (total number of periods - number of double periods) to 1 in each day, noting that the double
+            periods count towards 2 in the total number of periods.
 
+            :param unsolved_class: the class we are disallowing the splitting of
+            :param day_of_week: the day of week we are disallowing the splitting on
+            :return: a tuple of the constraint and the name for that constraint
+            """
+            slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
+                school_id=self._inputs.school_id, day_of_week=day_of_week)
+
+            periods_on_day = lp.lpSum([var for key, var in self._decision_variables.items() if
+                                       (key.slot_id in slot_ids_on_day) and (key.class_id == unsolved_class.class_id)])
+
+            double_periods_on_day = lp.lpSum([  # We only check slot_1_id is in slot_ids, since 1 & 2 are on same day
+                var for key, var in self._double_period_variables.items() if
+                (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
+            ])
+
+            constraint = (periods_on_day - double_periods_on_day <= 1,
+                          f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
+            return constraint
+
+        constraints = (__no_split_classes_within_day_constraint(unsolved_class=usc, day_of_week=day) for
+                       usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
+        return constraints
 
     def _get_all_no_two_double_periods_in_a_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
@@ -279,14 +302,9 @@ class TimetableSolverConstraints:
                 var for key, var in self._double_period_variables.items() if
                 (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
             ])
-            # TODO - define single period variables
-            # TODO - also constrain them as sum(single period vars day x) + sum(double period vars day x) <= 1
-            # TODO - we don't actually need the independent double period constraint for this
-
             dp_constraint = (double_periods_on_day <= 1, f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
             return dp_constraint
 
-        relevant_days = {slot.day_of_week for slot in self._inputs.timetable_slots}
         constraints = (__no_two_double_periods_in_a_day_constraint(unsolved_class=usc, day_of_week=day) for
-                       usc in self._inputs.unsolved_classes for day in relevant_days)
+                       usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints

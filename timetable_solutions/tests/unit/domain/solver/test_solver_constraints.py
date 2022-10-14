@@ -157,7 +157,25 @@ class TestSolverConstraints(test.TestCase):
         # Note that we haveL 12 unsolved classes; 6 double options / day / class; 5 days; 2 related decision variables
         assert constraint_count == 12 * 6 * 5 * 2
 
-    def test_get_all_double_period_no_repetition_constraints(self):
+    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
+        """
+        Test that the correct set of constraints is returned preventing split periods.
+        """
+        # Execute test unit
+        constraint_maker = self.get_constraint_maker()
+        constraints = constraint_maker._get_all_no_split_classes_within_day_constraints()
+
+        # Check the outcome
+        constraint_count = 0
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            assert len(constraint) == 13  # Since we have 7 decision variables and 6 double period variables in the mix
+            assert constraint.constant == - 1  # 1 Double period per day
+            constraint_count += 1
+        assert constraint_count == 5 * 12  # number days * number unsolved classes
+
+    def test_get_all_no_two_double_periods_in_a_day_constraints(self):
         """
         Test that the correct set of constraints is returned limiting the number of double periods that can take place
         on one day to 1.
@@ -171,7 +189,7 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 6, constraint  # Since there are 6 double periods that can happen in each day
+            assert len(constraint) == 6  # Since there are 6 double periods that can happen in each day
             assert constraint.constant == - 1  # 1 Double period per day
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number unsolved classes
