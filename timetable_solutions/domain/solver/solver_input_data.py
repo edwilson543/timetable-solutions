@@ -19,6 +19,7 @@ class SolutionSpecification:
     either session.
     """
     allow_split_classes_within_each_day: bool
+    allow_triple_periods_and_above: bool
 
 
 class TimetableSolverInputs:
