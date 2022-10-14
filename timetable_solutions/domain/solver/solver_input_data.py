@@ -40,10 +40,9 @@ class TimetableSolverInputs:
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
 
-        # Add any additional attributes derived from the existing attributes
-        self.consecutive_slots = self._get_consecutive_slots()
-
-    def _get_consecutive_slots(self) -> List[Tuple[models.TimetableSlot, models.TimetableSlot]]:
+    # Additional attributes derived from the existing attributes
+    @property
+    def consecutive_slots(self) -> List[Tuple[models.TimetableSlot, models.TimetableSlot]]:
         """
         Method to find which of the timetable slots on the class instance are consecutive.
         A key thing to note here is that the meta class on TimetableSlot pre-orders the slots by week and by day.
@@ -60,3 +59,13 @@ class TimetableSolverInputs:
             previous_slot = current_slot
 
         return consecutive_slots
+
+    @property
+    def available_days(self) -> List[models.WeekDay]:
+        """
+        Property method to get the weekdays that the user has specified in their timetable structure.
+        :return - days_list - a list of the days, sorted from lowest to highest.
+        """
+        days = {slot.day_of_week for slot in self.timetable_slots}
+        days_list = sorted(list(days))
+        return days_list
