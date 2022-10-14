@@ -176,14 +176,14 @@ class TestSolverConstraints(test.TestCase):
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number unsolved classes
 
-    def test_get_all_no_two_double_periods_in_a_day_constraints(self):
+    def test_get_all_no_triple_periods_and_above_constraints(self):
         """
         Test that the correct set of constraints is returned limiting the number of double periods that can take place
         on one day to 1.
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        constraints = constraint_maker._get_all_no_two_double_periods_in_a_day_constraints()
+        constraints = constraint_maker._get_all_no_triple_periods_and_above_constraints()
 
         # Check the outcome
         constraint_count = 0

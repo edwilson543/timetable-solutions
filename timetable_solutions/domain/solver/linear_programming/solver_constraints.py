@@ -33,6 +33,8 @@ class TimetableSolverConstraints:
         :param problem - an instance of pulp.LpProblem, which collects constraints/objective and solves
         :return None - since the passed problem will be modified in-place
         """
+
+        # COMPULSORY CONSTRAINTS
         fulfillment_constraints = self._get_all_fulfillment_constraints()
         for constraint in fulfillment_constraints:
             problem += constraint
@@ -57,11 +59,18 @@ class TimetableSolverConstraints:
         for constraint in double_period_dependency_constraints:
             problem += constraint
 
+        # OPTIONAL CONSTRAINTS
         if not self._inputs.solution_specification.allow_split_classes_within_each_day:
-            double_period_no_repetition_constraints = self._get_all_no_two_double_periods_in_a_day_constraints()
-            for constraint in double_period_no_repetition_constraints:
+            no_split_constraints = self._get_all_no_split_classes_within_day_constraints()
+            for constraint in no_split_constraints:
                 problem += constraint
 
+        if not self._inputs.solution_specification.allow_triple_periods_and_above:
+            triple_period_constraints = self._get_all_no_triple_periods_and_above_constraints()
+            for constraint in triple_period_constraints:
+                problem += constraint
+
+    # BASIC CONSTRAINTS ON FULFILLMENT AND CLASH AVOIDANCE
     def _get_all_fulfillment_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining the constraints that each unsolved class must be taught for the required number of periods.
@@ -181,6 +190,7 @@ class TimetableSolverConstraints:
                        classroom in self._inputs.classrooms for time_slot in self._inputs.timetable_slots)
         return constraints
 
+    # DOUBLE PERIOD CONSTRAINTS
     def _get_all_double_period_fulfillment_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining all constraints on the number of double periods of each class has each week, and returning them
@@ -243,6 +253,7 @@ class TimetableSolverConstraints:
         all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
         return all_constraints
 
+    # CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
     def _get_all_no_split_classes_within_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining all constraints to disallow classes to be taught at split times across a single day.
@@ -251,10 +262,6 @@ class TimetableSolverConstraints:
         Note: These constraints still allow a stacked triple or quadruple period, hence the need for the constraints
         below restricting the solution to no two double periods in a day (if we do not want triple periods).
         """
-        # TODO TODO TODO write this method
-        # TODO add test for it, also an integration test that adds it
-        # TODO - add a test to the solver test scenarios where we are testing this constraint
-        # TODO - update the form on the UI which is relevant to this constraint
         def __no_split_classes_within_day_constraint(unsolved_class: models.UnsolvedClass,
                                                      day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
@@ -284,13 +291,14 @@ class TimetableSolverConstraints:
                        usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints
 
-    def _get_all_no_two_double_periods_in_a_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+    def _get_all_no_triple_periods_and_above_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
-        Method restricting the number of double periods that can be taught for a single class on a single day to 1.
+        Method restricting the cumulative length of a class to a double, by restricting the number of double periods
+        that can be taught for a single class on a single day to 1.
         :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
         """
 
-        def __no_two_double_periods_in_a_day_constraint(unsolved_class: models.UnsolvedClass,
+        def __no_triple_periods_and_above_constraint(unsolved_class: models.UnsolvedClass,
                                                         day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
             States that the given unsolved class can only have one double period on the given day
@@ -305,6 +313,6 @@ class TimetableSolverConstraints:
             dp_constraint = (double_periods_on_day <= 1, f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
             return dp_constraint
 
-        constraints = (__no_two_double_periods_in_a_day_constraint(unsolved_class=usc, day_of_week=day) for
+        constraints = (__no_triple_periods_and_above_constraint(unsolved_class=usc, day_of_week=day) for
                        usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints
