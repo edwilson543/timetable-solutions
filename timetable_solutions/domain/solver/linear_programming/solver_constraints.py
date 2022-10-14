@@ -90,8 +90,8 @@ class TimetableSolverConstraints:
             else:
                 existing_commitments = 0
 
-            constraint = (variables_sum == (unsolved_class.total_slots - existing_commitments),
-                          f"usc_{unsolved_class.class_id}_taught_for_{unsolved_class.total_slots}_periods")
+            constraint = (variables_sum == (n_periods := unsolved_class.total_slots - existing_commitments),
+                          f"usc_{unsolved_class.class_id}_taught_for_{n_periods}_periods")
             return constraint
 
         constraints = (__fulfillment_constraint(unsolved_class) for unsolved_class in self._inputs.unsolved_classes)
