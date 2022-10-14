@@ -78,7 +78,7 @@ class TimetableSolverVariables:
                 continue
             for double_p in self._inputs.consecutive_slots:
                 key = doubles_var_key(
-                    class_id=unsolved_class.class_id,slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
+                    class_id=unsolved_class.class_id, slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
                 var_name = f"{unsolved_class.class_id}_double_period_at_{double_p[0].slot_id}_{double_p[1].slot_id}"
                 variable = lp.LpVariable(var_name, cat="Binary")
                 variables[key] = variable

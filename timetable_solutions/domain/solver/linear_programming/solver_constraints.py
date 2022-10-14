@@ -83,15 +83,15 @@ class TimetableSolverConstraints:
             variables_sum = lp.lpSum([var for key, var in self._decision_variables.items()
                                       if key.class_id == unsolved_class.class_id])
 
-            corresponding_fixed_class = self._inputs.fixed_classes.filter(class_id=unsolved_class.class_id)
-            if corresponding_fixed_class.count() == 1:
-                corresponding_fixed_class = corresponding_fixed_class.first()
+            corresponding_fixed_class = self._inputs.get_fixed_class_corresponding_to_unsolved_class(
+                unsolved_class_id=unsolved_class.class_id)
+            if corresponding_fixed_class is not None:
                 existing_commitments = corresponding_fixed_class.time_slots.all().count()
             else:
                 existing_commitments = 0
 
             constraint = (variables_sum == (unsolved_class.total_slots - existing_commitments),
-                          f"usc_{unsolved_class.class_id}_taught_for_{unsolved_class.total_slots}")
+                          f"usc_{unsolved_class.class_id}_taught_for_{unsolved_class.total_slots}_periods")
             return constraint
 
         constraints = (__fulfillment_constraint(unsolved_class) for unsolved_class in self._inputs.unsolved_classes)
@@ -227,6 +227,8 @@ class TimetableSolverConstraints:
             :param key - the key for the double period variables dictionary, which contains info on the class + 2 slots
             :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2
             """
+
+            # Set a name for the new constraint
             if is_slot_1:
                 slot_id = key.slot_1_id
                 constraint_name = f"usc_{key.class_id}_double_could_start_at_{slot_id}"
@@ -234,11 +236,13 @@ class TimetableSolverConstraints:
                 slot_id = key.slot_2_id
                 constraint_name = f"usc_{key.class_id}_double_could_end_at_{slot_id}"
 
+            # Retrieve corresponding decision variable
             try:
                 decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=slot_id)]
             except KeyError:
                 # A FixedClass already occurs at this time, so no need for a constraint
                 return None
+
             double_p_var = self._double_period_variables[key]
             constraint = (decision_var >= double_p_var, constraint_name)
             return constraint
@@ -283,7 +287,17 @@ class TimetableSolverConstraints:
                 (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
             ])
 
-            constraint = (periods_on_day - double_periods_on_day <= 1,
+            corresponding_fixed_class = self._inputs.get_fixed_class_corresponding_to_unsolved_class(
+                unsolved_class_id=unsolved_class.class_id)
+            if corresponding_fixed_class is not None:
+                occupied_slots = corresponding_fixed_class.time_slots.all()
+                fixed_on_day_qs = occupied_slots.get_timeslots_on_given_day(
+                    school_id=self._inputs.school_id, day_of_week=day_of_week)
+                fixed_periods_on_day = fixed_on_day_qs.count()
+            else:
+                fixed_periods_on_day = 0
+
+            constraint = (fixed_periods_on_day + periods_on_day - double_periods_on_day <= 1,
                           f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
             return constraint
 
@@ -299,7 +313,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_triple_periods_and_above_constraint(unsolved_class: models.UnsolvedClass,
-                                                        day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
+                                                     day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
             States that the given unsolved class can only have one double period on the given day
             :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
