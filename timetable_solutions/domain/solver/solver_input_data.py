@@ -4,7 +4,10 @@ Module defining the data used by the solver, and how this data is accessed from 
 # Standard library imports
 from dataclasses import dataclass
 from functools import cached_property
-from typing import List, Tuple
+from typing import List, Tuple, Union
+
+# Django imports
+from django.core.exceptions import ObjectDoesNotExist
 
 # Local application imports
 from data import models
@@ -73,3 +76,18 @@ class TimetableSolverInputs:
         days = {slot.day_of_week for slot in self.timetable_slots}
         days_list = sorted(list(days))
         return days_list
+
+    # Other methods
+    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: int) -> Union[models.FixedClass, None]:
+        """
+        Method to retrieve the FixedClass instance corresponding to an UnsolvedClass id
+        :return either the FixedClass instance, or None if there is not a corresponding instance.
+
+        Note - this could be defined on the FixedClass itself (and is, via the .get_fixed_class...), but is define here
+        since it only is used by the solver, and relates to filtering specifically the solver's querysets.
+        """
+        corresponding_fixed_class = self.fixed_classes.filter(class_id=unsolved_class_id)
+        if corresponding_fixed_class.count() == 1:
+            return corresponding_fixed_class.first()
+        else:
+            return None
