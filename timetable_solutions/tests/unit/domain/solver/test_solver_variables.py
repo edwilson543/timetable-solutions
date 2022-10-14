@@ -15,13 +15,15 @@ class TestTimetableSolverVariables(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
+    solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
+                                               allow_triple_periods_and_above=True)
+
     def test_get_decision_variables(self):
         """
         Test for the decision variable instantiation.
         """
         # Set parameters
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
         variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
 
         # Execute test unit
@@ -41,8 +43,7 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the method removing irrelevant variables from the variables dict.
         """
         # Set parameters
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
         variable_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
         variables = variable_maker._get_decision_variables(strip=False)
 
@@ -62,8 +63,7 @@ class TestTimetableSolverVariables(test.TestCase):
         Test of the dependent, double period variables instantiation.
         """
         # Set parameters
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
         variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
 
         # Execute test unit

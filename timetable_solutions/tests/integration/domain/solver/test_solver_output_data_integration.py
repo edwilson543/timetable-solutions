@@ -21,7 +21,8 @@ class TestTimetableSolverOutcome(test.TestCase):
         """
         # Set test parameters
         school_access_key = 111111
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
+                                          allow_triple_periods_and_above=True)
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
         solver.solve()

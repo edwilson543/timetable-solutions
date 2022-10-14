@@ -16,16 +16,15 @@ class TestTimetableSolverInputsLoading(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "unsolved_classes.json"]
 
+    solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
+                                               allow_triple_periods_and_above=True)
+
     def test_instantiation_of_timetable_solver_inputs(self):
         """
         Test the solver data loader retrieves all data from the 'data' layer as expected
         """
-        # Set test parameters
-        school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-
         # Execute test unit
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
 
         # Check the outcome is as expected
         assert len(data.fixed_classes) == 12
@@ -55,8 +54,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
 
         # Execute test unit
         consecutive_slots = data.consecutive_slots
@@ -77,8 +75,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
 
         # Execute test unit
         available_days = data.available_days
