@@ -64,7 +64,7 @@ class TimetableSlot(models.Model):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.day_of_week}, {self.period_starts_at}"
 
-    # FACTORY METHODS
+    # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, slot_id: int, day_of_week: str, period_starts_at: dt.time,
                    period_duration: dt.timedelta):
@@ -78,7 +78,7 @@ class TimetableSlot(models.Model):
                                   period_starts_at=period_starts_at, period_duration=period_duration)
         return slot
 
-    # FILTER METHODS
+    # QUERIES
     @classmethod
     @lru_cache(maxsize=8)
     def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> List[int]:
