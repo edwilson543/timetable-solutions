@@ -1,8 +1,10 @@
-"""Entry point to the solver"""
+"""
+Entry point to the solver, both in terms of using it, and in terms of the interfaces layer.
+The function below and SolutionSpecification are the only two objects used outside of domain/solver
+"""
 
 # Standard library imports
-from dataclasses import dataclass
-from typing import Union
+from typing import List
 
 # Local application imports
 from data import models
@@ -12,10 +14,12 @@ from .linear_programming.solver import TimetableSolver
 
 
 def produce_timetable_solutions(school_access_key: int, solution_specification: SolutionSpecification,
-                                clear_existing: bool = True) -> Union[str, None]:
+                                clear_existing: bool = True) -> List[str]:
     """
     Function to be used by the web app to produce the timetable solutions.
-    A button is clicked, which corresponds to a view, where that view calls this function.
+    A button is clicked, which corresponds to the CreateTimetable view, which then calls this function, also providing
+    the solution spec via a form.
+
     :param school_access_key - the unique integer used to access a given school's data.
     :param solution_specification - the user-defined requirements for how the solution should be generated.
     :param clear_existing - whether or not to produce any existing solutions found by the solver.
