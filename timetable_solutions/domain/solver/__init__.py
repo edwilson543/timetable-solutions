@@ -3,3 +3,4 @@ from .linear_programming.solver_variables import TimetableSolverVariables, var_k
 from .linear_programming.solver_constraints import TimetableSolverConstraints
 from .solver_input_data import TimetableSolverInputs, SolutionSpecification
 from .solver_output_data import TimetableSolverOutcome
+from .run_solver import produce_timetable_solutions
