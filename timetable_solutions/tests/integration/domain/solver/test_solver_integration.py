@@ -42,12 +42,13 @@ class TestSolverScenarioSolutions(test.TestCase):
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
-                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7.json"]
+                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_8.json"]
 
     # Note that test scenarios 7 and above do not use this solution spec
     solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
                                                allow_triple_periods_and_above=True)
-    
+
+    # TESTS WHERE A BASIC CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_1(self):
         """
         Test scenario targeted at the fulfillment constraint.
@@ -134,6 +135,7 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
 
+    # TESTS WHERE A DOUBLE PERIOD CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_5(self):
         """
         Test scenario targeted at the double period fulfillment and dependency constraints.
@@ -183,7 +185,10 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 1
 
-    def test_solver_solution_test_scenario_7(self):
+    # TODO TEST SCENARIO 10 CHECKING THAT FIXED CLASS COUNTS AS DOUBLE PERIOD
+
+    # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
+    def test_solver_solution_test_scenario_8(self):
         """
         Test scenario targeted at the no split classes constraints.
         There are 3 timeslots, 2 on Monday and 1 on Tuesday. There is 1 UnsolvedClass, requiring 2 periods and exatly 0
@@ -191,7 +196,7 @@ class TestSolverScenarioSolutions(test.TestCase):
         the remaining class has to be taught on Tuesday
         """
         # Set test parameters
-        school_access_key = 777777
+        school_access_key = 888888
         spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,  # True but irrelevant
                                           allow_split_classes_within_each_day=False)
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
@@ -211,5 +216,7 @@ class TestSolverScenarioSolutions(test.TestCase):
     # TODO TEST SCENARIO 8 USING THE NO TRIPLES CONSTRAINT
 
     # TODO TEST SCENARIO 9 USING BOTH NO SPLIT AND NO TRIPLES
+
+
 
     # TODO - ALSO CHECK OUT HOW FIXED CLASSES ARE PLAYING INTO DOUBLE PERIODS
