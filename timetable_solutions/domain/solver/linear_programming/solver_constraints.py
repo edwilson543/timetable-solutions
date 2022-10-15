@@ -18,6 +18,12 @@ from .solver_variables import var_key, doubles_var_key
 class TimetableSolverConstraints:
     """
     Class used to define the constraints for the given timetabling problem, and then add them a LpProblem instance
+
+    The methods are grouped as follows:
+        - Entry point method (add_constraints_to_problem)
+        - Basic constraints relating to fulfilling timetable criteria, and avoiding clashes
+        - Constraints relating to double periods
+        - Structural / optional constraints
     """
 
     def __init__(self,
@@ -201,6 +207,11 @@ class TimetableSolverConstraints:
             """
             States that the sum of the double period variables for a particular class must equal the number of double
             periods the user has specified.
+
+            Note: A solution involving a user defined FixedClass, followed by a solver-produced UnsolvedClass in
+            consecutive TimeSlots will count as a double. This is because there is not a decision variable for the
+            FixedClass, so the double period dependent variable relates to a single decision variable, so we have that
+            either both are 0 or both are 1.
             """
             variables_sum = lp.lpSum([
                 var for key, var in self._double_period_variables.items() if key.class_id == unsolved_class.class_id])
@@ -264,7 +275,7 @@ class TimetableSolverConstraints:
         all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
         return all_constraints
 
-    # CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
+    # STRUCTURAL CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
     def _get_all_no_split_classes_within_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining all constraints to disallow classes to be taught at split times across a single day.
