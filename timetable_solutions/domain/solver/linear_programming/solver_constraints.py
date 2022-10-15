@@ -302,9 +302,11 @@ class TimetableSolverConstraints:
             else:
                 fixed_periods_on_day = 0
 
-            # TODO need to include minus the number of fixed class double periods on the day here
+            existing_doubles_on_day = sum(
+                count for (class_id, day), count in self._inputs.fixed_class_double_period_counts.items() if
+                unsolved_class.class_id == class_id if day_of_week == day)
 
-            constraint = (fixed_periods_on_day + periods_on_day - double_periods_on_day <= 1,
+            constraint = (fixed_periods_on_day + periods_on_day - double_periods_on_day - existing_doubles_on_day <= 1,
                           f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
             return constraint
 
@@ -331,8 +333,14 @@ class TimetableSolverConstraints:
                 var for key, var in self._double_period_variables.items() if
                 (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
             ])
-            # TODO INCLUDE THE NUMBER OF FIXED CLASS DOUBLES AND INCLUDE + MAX(F C DOUBLES, 1) ON lhs of below eq.
-            dp_constraint = (double_periods_on_day <= 1, f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
+
+            existing_doubles_on_day = sum(
+                count for (class_id, day), count in self._inputs.fixed_class_double_period_counts.items() if
+                unsolved_class.class_id == class_id)
+            existing_doubles_on_day = min(existing_doubles_on_day, 1)  # To allow the <= 1 on the constraint below
+
+            dp_constraint = (double_periods_on_day + existing_doubles_on_day <= 1,
+                             f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
             return dp_constraint
 
         constraints = (__no_triple_periods_and_above_constraint(unsolved_class=usc, day_of_week=day) for
