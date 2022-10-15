@@ -235,7 +235,8 @@ class TimetableSolverConstraints:
         double period.
         Note that the core point is that the double period variable >= both decision variables corresponding to the
         same class / time-slot.
-        Note also that where a FixedClass occurs, a double period may be created by combining with this existing slot.
+        Note also that where a FixedClass occurs, a double period may be created by combining with this existing slot,
+        which is carried out under the second try in the nested try/except blocks below.
         """
         def __dependency_constraint(key: doubles_var_key, is_slot_1: bool) -> Tuple | None:
             """
@@ -244,24 +245,35 @@ class TimetableSolverConstraints:
             :param key - the key for the double period variables dictionary, which contains info on the class + 2 slots
             :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2
             """
+            double_period_var = self._double_period_variables[key]
 
             # Set a name for the new constraint
             if is_slot_1:
                 slot_id = key.slot_1_id
+                other_slot_id = key.slot_2_id
                 constraint_name = f"usc_{key.class_id}_double_could_start_at_{slot_id}"
             else:
                 slot_id = key.slot_2_id
+                other_slot_id = key.slot_1_id
                 constraint_name = f"usc_{key.class_id}_double_could_end_at_{slot_id}"
 
             # Retrieve corresponding decision variable
             try:
                 decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=slot_id)]
+                constraint = (decision_var >= double_period_var, constraint_name)
             except KeyError:
-                # A FixedClass already occurs at this time, so no need for a constraint
-                return None
-
-            double_p_var = self._double_period_variables[key]
-            constraint = (decision_var >= double_p_var, constraint_name)
+                # A FixedClass already occurs at slot_id
+                # We may need to create a constraint specifying that fixed class + unsolved class = double
+                try:
+                    other_decision_var = self._decision_variables[var_key(class_id=key.class_id, slot_id=other_slot_id)]
+                    constraint = (
+                        other_decision_var == double_period_var,
+                        f"usc_{key.class_id}_occurs_at_{other_slot_id}_if_and_only_if_a_"
+                        f"fixed_unsolved_double_period_is_created"
+                    )
+                except KeyError:
+                    # A FixedClass double period occurs at this time, so no need for a constraint
+                    constraint = None
             return constraint
 
         # Now create and chain two generators, for the first / second slot of each possible double
