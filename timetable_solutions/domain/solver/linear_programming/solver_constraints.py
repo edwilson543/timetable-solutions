@@ -203,7 +203,12 @@ class TimetableSolverConstraints:
             """
             variables_sum = lp.lpSum([
                 var for key, var in self._double_period_variables.items() if key.class_id == unsolved_class.class_id])
-            constraint = (variables_sum == unsolved_class.n_double_periods,
+
+            existing_doubles = sum(
+                count for (class_id, day), count in self._inputs.fixed_class_double_period_counts.items() if
+                unsolved_class.class_id == class_id)
+
+            constraint = (variables_sum + existing_doubles == unsolved_class.n_double_periods,
                           f"usc_{unsolved_class.class_id}_must_have_{unsolved_class.n_double_periods}_double_periods")
             return constraint
 
@@ -270,7 +275,7 @@ class TimetableSolverConstraints:
                                                      day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
             We limit: (total number of periods - number of double periods) to 1 in each day, noting that the double
-            periods count towards 2 in the total number of periods.
+            periods count towards 2 in the total number of periods, and we also count fixed period in the total number.
 
             :param unsolved_class: the class we are disallowing the splitting of
             :param day_of_week: the day of week we are disallowing the splitting on
@@ -296,6 +301,8 @@ class TimetableSolverConstraints:
                 fixed_periods_on_day = fixed_on_day_qs.count()
             else:
                 fixed_periods_on_day = 0
+
+            # TODO need to include minus the number of fixed class double periods on the day here
 
             constraint = (fixed_periods_on_day + periods_on_day - double_periods_on_day <= 1,
                           f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
@@ -324,6 +331,7 @@ class TimetableSolverConstraints:
                 var for key, var in self._double_period_variables.items() if
                 (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
             ])
+            # TODO INCLUDE THE NUMBER OF FIXED CLASS DOUBLES AND INCLUDE + MAX(F C DOUBLES, 1) ON lhs of below eq.
             dp_constraint = (double_periods_on_day <= 1, f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
             return dp_constraint
 
