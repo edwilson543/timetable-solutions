@@ -260,7 +260,8 @@ class TestSolverScenarioSolutions(test.TestCase):
             4 total slots;
             2 double period.
         By the no two doubles in a day constraint, we must have the following final structure:
-            Monday: Unsolved-Unsolved-empty-Fixed OR Unsolved-empty-Unsolved-Fixed
+            Monday: A - Unsolved-Unsolved-empty-Fixed; OR B - Unsolved-empty-Unsolved-Fixed - but we make the pupil /
+            classroom / teacher incompatible with option B, so we always get option A
             Tuesday: Unsolved-Unsolved
         """
         # Set test parameters
@@ -280,12 +281,11 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # See docstring for solution
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
+        # 4 Fixed so was stripped
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=5)].varValue == 1
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=6)].varValue == 1
-
-        occurs_at_2 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue
-        occurs_at_3 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue
-        assert sum([occurs_at_2, occurs_at_3]) == 1  # Must occur at exactly one of them
 
 
     # TODO TEST SCENARIO 10 USING BOTH NO SPLIT AND NO TRIPLES

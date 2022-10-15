@@ -118,6 +118,20 @@
       "school": 999999
     }
   },
+    {
+    "model": "data.fixedclass",
+    "pk": 902,
+    "fields": {
+      "class_id": "MATHS",
+      "subject_name": "MATHS",
+      "teacher": 901,
+      "pupils": [901],
+      "classroom": 901,
+      "time_slots": [903],
+      "user_defined": true,
+      "school": 999999
+    }
+  },
   {
     "model": "data.unsolvedclass",
     "pk": 901,
