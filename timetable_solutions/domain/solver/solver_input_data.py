@@ -15,8 +15,11 @@ class SolutionSpecification:
     """
     Data class for storing any parameters relating to how the solution should be generated. These parameters are all
     user-defined.
-    :param - whether or not to prevent having one class to be taught more than once in a day, with a gap in between
-    either session.
+
+    :param - allow_allow_split_classes_within_each_day whether or not to prevent having one class to be taught more
+    than once in a day, with a gap in between either session.
+    :param - allow_triple_periods_and_above - self evident, but the way it's implemented is to actually prevent a triple
+    period or above, since 3 periods in a row would get counted as 2 doubles.
     """
     allow_split_classes_within_each_day: bool
     allow_triple_periods_and_above: bool
