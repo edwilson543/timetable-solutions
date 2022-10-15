@@ -11,7 +11,7 @@ from data.models.school import School
 from data.models.classroom import Classroom
 from data.models.pupil import Pupil, PupilQuerySet
 from data.models.teacher import Teacher
-from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet
+from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
 
 
 class FixedClassQuerySet(models.QuerySet):
@@ -65,7 +65,7 @@ class FixedClass(models.Model):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
 
-    # FACTORY METHODS
+    # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
                    pupils: PupilQuerySet, time_slots: TimetableSlotQuerySet,
@@ -100,6 +100,27 @@ class FixedClass(models.Model):
     def add_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
         """Method adding adding a queryset of time slots to the FixedClass instance's many-to-many time_slot field"""
         self.time_slots.add(*time_slots)
+
+    # QUERIES
+    def get_double_period_count_on_day(self, day_of_week: WeekDay):
+        """Method to count the number of user-defined double periods for a given class on the given day"""
+        if not self.user_defined:
+            raise ValueError(f"get_double_period_count_on_day was called for a non-user defined class!")
+        else:
+            # Note that slots will be ordered in time, using the TimetableSlot Meta class
+            fixed_class_slots = self.time_slots.all().get_timeslots_on_given_day(
+                school_id=self.school.school_access_key, day_of_week=day_of_week)
+            all_timetable_slots = TimetableSlot.objects.get_timeslots_on_given_day(
+                school_id=self.school.school_access_key, day_of_week=day_of_week)
+
+            # Now we compare the full list of timetable slots on the given day, with the slots on the FixedClass
+            had_previous_slot = False
+            double_period_count = 0
+            for current_slot in all_timetable_slots:
+                if current_slot in fixed_class_slots:
+                    if had_previous_slot:  # FixedClass has the previous slot and next slot, so has a double
+                        double_period_count += 1
+                    had_previous_slot = True  # Current becomes previous
 
     # PROPERTIES
     @property
