@@ -1,102 +1,102 @@
 [
   {
     "model": "data.school",
-    "pk": 777777,
+    "pk": 888888,
     "fields": {
       "school_name": "Fake School"
     }
   },
   {
     "model": "data.timetableslot",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "day_of_week": 1,
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.timetableslot",
-    "pk": 702,
+    "pk": 802,
     "fields": {
       "day_of_week": 1,
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "10:00:00",
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.timetableslot",
-    "pk": 703,
+    "pk": 803,
     "fields": {
       "day_of_week": 2,
       "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "09:00:00",
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.pupil",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "firstname": "John",
       "surname": "Smith",
       "year_group": 1,
       "pupil_id": 1,
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.teacher",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "firstname": "Theresa",
       "surname": "May",
       "title": "Mrs",
       "teacher_id": 1,
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.classroom",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "building": "MB",
       "room_number": 47,
       "classroom_id": 1,
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.fixedclass",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "class_id": "ENGLISH",
       "subject_name": "ENGLISH",
-      "teacher": 701,
-      "pupils": [701],
-      "classroom": 701,
-      "time_slots": [701],
+      "teacher": 801,
+      "pupils": [801],
+      "classroom": 801,
+      "time_slots": [801],
       "user_defined": true,
-      "school": 777777
+      "school": 888888
     }
   },
   {
     "model": "data.unsolvedclass",
-    "pk": 701,
+    "pk": 801,
     "fields": {
       "class_id": "ENGLISH",
-      "school": 777777,
+      "school": 888888,
       "subject_name": "ENGLISH",
-      "teacher": 701,
-      "classroom": 701,
+      "teacher": 801,
+      "classroom": 801,
       "total_slots": 2,
       "n_double_periods": 0,
-      "pupils": [701]
+      "pupils": [801]
     }
   }
 ]
