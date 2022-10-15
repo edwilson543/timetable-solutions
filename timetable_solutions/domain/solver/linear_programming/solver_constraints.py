@@ -73,7 +73,7 @@ class TimetableSolverConstraints:
                 problem += constraint
 
         if not self._inputs.solution_specification.allow_triple_periods_and_above:
-            triple_period_constraints = self._get_all_no_triple_periods_and_above_constraints()
+            triple_period_constraints = self._get_all_no_two_doubles_in_a_day_constraints()
             for constraint in triple_period_constraints:
                 problem += constraint
 
@@ -343,15 +343,16 @@ class TimetableSolverConstraints:
                        usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints
 
-    def _get_all_no_triple_periods_and_above_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+    def _get_all_no_two_doubles_in_a_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
-        Method restricting the cumulative length of a class to a double, by restricting the number of double periods
-        that can be taught for a single class on a single day to 1.
+        Method restricting the number of double periods that can be taught for a single class on a single day to 1.
         :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
+
+        Note: this also has the effect of preventing triple periods and above
         """
 
-        def __no_triple_periods_and_above_constraint(unsolved_class: models.UnsolvedClass,
-                                                     day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
+        def __no_two_doubles_in_a_day_constraint(unsolved_class: models.UnsolvedClass,
+                                                 day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
             States that the given unsolved class can only have one double period on the given day
             :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
@@ -372,6 +373,6 @@ class TimetableSolverConstraints:
                              f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
             return dp_constraint
 
-        constraints = (__no_triple_periods_and_above_constraint(unsolved_class=usc, day_of_week=day) for
+        constraints = (__no_two_doubles_in_a_day_constraint(unsolved_class=usc, day_of_week=day) for
                        usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints

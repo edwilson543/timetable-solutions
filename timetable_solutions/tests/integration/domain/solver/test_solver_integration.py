@@ -42,7 +42,8 @@ class TestSolverScenarioSolutions(test.TestCase):
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
-                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7", "test_scenario_8.json"]
+                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7", "test_scenario_8.json",
+                "test_scenario_9.json"]
 
     # Note that test scenarios 7 and above do not use this solution spec
     solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
@@ -212,8 +213,9 @@ class TestSolverScenarioSolutions(test.TestCase):
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
         assert len(solver.variables.decision_variables) == 3  # 6 slots, 1 class, but three variable gets stripped
+        assert len(solver.variables.double_period_variables) == 4  # 4 possibles on the Monday, 0 on Tuesday
 
-        # The fixed class is at slot 4, slots (1 & 2) and (3 & 4) are the consecutive pairs
+        # See docstring for solution
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=4)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=6)].varValue == 1
@@ -244,10 +246,47 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 1
 
-    # TODO TEST SCENARIO 8 USING THE NO TRIPLES CONSTRAINT
+    def test_solver_solution_test_scenario_9(self):
+        """
+        Test scenario targeted at the no two doubles in a day constraint (which is effectively also a no triples+
+        constraint)
+        We have the following setup:
+        Timetable structure:
+            Monday: 4 slots;
+            Tuesday: 2 slots;
+        Fixed Class:
+            Occupies 4th slot on Monday only.
+        1 Unsolved Class, requiring:
+            4 total slots;
+            2 double period.
+        By the no two doubles in a day constraint, we must have the following final structure:
+            Monday: Unsolved-Unsolved-empty-Fixed OR Unsolved-empty-Unsolved-Fixed
+            Tuesday: Unsolved-Unsolved
+        """
+        # Set test parameters
+        school_access_key = 999999
+        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=False,
+                                          allow_split_classes_within_each_day=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
 
-    # TODO TEST SCENARIO 9 USING BOTH NO SPLIT AND NO TRIPLES
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 5  # 6 slots, 1 class, but one variable gets stripped
+        assert len(solver.variables.double_period_variables) == 4  # 3 on the Monday, 1 on the Tuesday
+
+        # See docstring for solution
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=5)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=6)].varValue == 1
+
+        occurs_at_2 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue
+        occurs_at_3 = solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue
+        assert sum([occurs_at_2, occurs_at_3]) == 1  # Must occur at exactly one of them
 
 
+    # TODO TEST SCENARIO 10 USING BOTH NO SPLIT AND NO TRIPLES
 
-    # TODO - ALSO CHECK OUT HOW FIXED CLASSES ARE PLAYING INTO DOUBLE PERIODS
