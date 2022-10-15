@@ -98,7 +98,7 @@ class TimetableSolverConstraints:
                 existing_commitments = 0
 
             constraint = (variables_sum == (n_periods := unsolved_class.total_slots - existing_commitments),
-                          f"usc_{unsolved_class.class_id}_taught_for_{n_periods}_periods")
+                          f"usc_{unsolved_class.class_id}_taught_for_{n_periods}_additional_periods")
             return constraint
 
         constraints = (__fulfillment_constraint(unsolved_class) for unsolved_class in self._inputs.unsolved_classes)
@@ -235,8 +235,8 @@ class TimetableSolverConstraints:
         double period.
         Note that the core point is that the double period variable >= both decision variables corresponding to the
         same class / time-slot.
-        Note also that where a FixedClass occurs, a double period may be created by combining with this existing slot,
-        which is carried out under the second try in the nested try/except blocks below.
+        Note also that a double period IS created by adding an UnsolvedClass next to a FixedClass, which is
+        implemented in the second try in the nested try/except blocks below.
         """
         def __dependency_constraint(key: doubles_var_key, is_slot_1: bool) -> Tuple | None:
             """
@@ -269,7 +269,7 @@ class TimetableSolverConstraints:
                     constraint = (
                         other_decision_var == double_period_var,
                         f"usc_{key.class_id}_occurs_at_{other_slot_id}_if_and_only_if_a_"
-                        f"fixed_unsolved_double_period_is_created"
+                        f"double_period_is_created_with_the_fixed_class_at_{slot_id}"
                     )
                 except KeyError:
                     # A FixedClass double period occurs at this time, so no need for a constraint

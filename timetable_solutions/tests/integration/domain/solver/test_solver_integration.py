@@ -42,7 +42,7 @@ class TestSolverScenarioSolutions(test.TestCase):
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
-                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_8.json"]
+                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7", "test_scenario_8.json"]
 
     # Note that test scenarios 7 and above do not use this solution spec
     solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
@@ -185,7 +185,38 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 1
 
-    # TODO TEST SCENARIO 10 CHECKING THAT FIXED CLASS COUNTS AS DOUBLE PERIOD
+    def test_solver_solution_test_scenario_7(self):
+        """
+        Test scenario targeted at the component of the double period dependency constraint which states that adding an
+        unsolved class next to a fixed class results in a double period.
+        We have the following setup:
+        Timetable structure:
+            Monday: 5 slots; Tuesday: 1 slot
+        1 Fixed Class:
+            Monday: | Fixed | Fixed | Available | Available | Fixed |;
+            Tuesday: | Available |
+        1 Unsolved Class, requiring:
+            4 total slots;
+            1 double period.
+        Since there is already a double on Monday, and adding a single in either of the available slots would create
+        another double, the class must go on the Tuesday.
+        """
+        # Set test parameters
+        school_access_key = 777777
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 3  # 6 slots, 1 class, but three variable gets stripped
+
+        # The fixed class is at slot 4, slots (1 & 2) and (3 & 4) are the consecutive pairs
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=4)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=6)].varValue == 1
 
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_8(self):
