@@ -32,9 +32,20 @@
     "model": "data.timetableslot",
     "pk": 803,
     "fields": {
-      "day_of_week": 2,
+      "day_of_week": 1,
       "period_duration": "01:00:00",
       "slot_id": 3,
+      "period_starts_at": "11:00:00",
+      "school": 888888
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 804,
+    "fields": {
+      "day_of_week": 2,
+      "period_duration": "01:00:00",
+      "slot_id": 4,
       "period_starts_at": "09:00:00",
       "school": 888888
     }
@@ -78,9 +89,13 @@
       "class_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 801,
-      "pupils": [801],
+      "pupils": [
+        801
+      ],
       "classroom": 801,
-      "time_slots": [801],
+      "time_slots": [
+        801
+      ],
       "user_defined": true,
       "school": 888888
     }
@@ -96,7 +111,9 @@
       "classroom": 801,
       "total_slots": 2,
       "n_double_periods": 0,
-      "pupils": [801]
+      "pupils": [
+        801
+      ]
     }
   }
 ]

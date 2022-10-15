@@ -38,12 +38,12 @@ class TestSolver(test.TestCase):
 
 class TestSolverScenarioSolutions(test.TestCase):
     """
-    Tests where we are after a specific solution
+    Tests where we are after a specific solution. See individual docstrings for scenario setups.
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
                 "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7", "test_scenario_8.json",
-                "test_scenario_9.json"]
+                "test_scenario_9.json", "test_scenario_10.json"]
 
     # Note that test scenarios 7 and above do not use this solution spec
     solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
@@ -140,7 +140,13 @@ class TestSolverScenarioSolutions(test.TestCase):
     def test_solver_solution_test_scenario_5(self):
         """
         Test scenario targeted at the double period fulfillment and dependency constraints.
-        There are 3 timeslots, and one UnsolvedClass that must have a total of 2 slots, which must be a double period.
+        We have the following setup:
+        FixedClass / Timetable structure:
+            Monday: empty-empty;
+            Tuesday: empty;
+        1 Unsolved Class, requiring:
+            2 total slots;
+            1 double period.
         Only 2 of the 3 timeslots are consecutive, so we must have the doubler period during these slots.
         """
         # Set test parameters
@@ -164,10 +170,15 @@ class TestSolverScenarioSolutions(test.TestCase):
         """
         Test scenario targeted at the double period fulfillment and dependency constraints, in the particular instance
         where a FixedClass comes into play.
-        There are 4 timeslots, as 2 pairs of consecutive slots.
-        There is one UnsolvedClass that must have a total of 2 slots, which must be a double period, and
-        a corresponding FixedClass with 1 defined slot. Therefore the solution is to attach a second slot to the
-        already defined slot, making the double.
+
+        We have the following setup:
+        FixedClass / Timetable structure:
+            Monday: empty-empty;
+            Tuesday: empty-Fixed;
+        1 Unsolved Class, requiring:
+            2 total slots;
+            1 double period.
+        Therefore the solution is to attach a second slot to the already defined slot, making the double.
         """
         # Set test parameters
         school_access_key = 666666
@@ -191,11 +202,10 @@ class TestSolverScenarioSolutions(test.TestCase):
         Test scenario targeted at the component of the double period dependency constraint which states that adding an
         unsolved class next to a fixed class results in a double period.
         We have the following setup:
-        Timetable structure:
-            Monday: 5 slots; Tuesday: 1 slot
-        1 Fixed Class:
-            Monday: | Fixed | Fixed | Available | Available | Fixed |;
-            Tuesday: | Available |
+        FixedClass / Timetable structure:
+            Monday: Fixed-Fixed-empty-empty-Fixed;
+            Tuesday: empty;
+            Tuesday: 1 slot
         1 Unsolved Class, requiring:
             4 total slots;
             1 double period.
@@ -224,9 +234,16 @@ class TestSolverScenarioSolutions(test.TestCase):
     def test_solver_solution_test_scenario_8(self):
         """
         Test scenario targeted at the no split classes constraints.
-        There are 3 timeslots, 2 on Monday and 1 on Tuesday. There is 1 UnsolvedClass, requiring 2 periods and exatly 0
-        double periods. One of the periods has already been fixed for the Monday, so by the no split classes constraint,
-        the remaining class has to be taught on Tuesday
+        We have the following setup:
+        FixedClass / Timetable structure:
+            Monday: Fixed-empty-empty;
+            Tuesday: empty;
+            Tuesday: 1 slot
+        1 Unsolved Class, requiring:
+            2 total slots;
+            0 double periods.
+        By the no split classes constraint, the remaining class has to be taught on Tuesday. In particular, it cannot be
+        taught at period 3 on Monday.
         """
         # Set test parameters
         school_access_key = 888888
@@ -240,22 +257,21 @@ class TestSolverScenarioSolutions(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # 3 slots, 1 class, but one variable gets stripped
+        assert len(solver.variables.decision_variables) == 3  # 3 slots, 1 class, but one variable gets stripped
 
         # Slot_id 3 represents the individual slot on the Tuesday where we want the class to happen
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 1
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=4)].varValue == 1
 
     def test_solver_solution_test_scenario_9(self):
         """
         Test scenario targeted at the no two doubles in a day constraint (which is effectively also a no triples+
         constraint)
         We have the following setup:
-        Timetable structure:
-            Monday: 4 slots;
-            Tuesday: 2 slots;
-        Fixed Class:
-            Occupies 4th slot on Monday only.
+        Fixed Class / Timetable structure:
+            Monday: empty-empty-empty-Fixed;
+            Tuesday: empty-empty;
         1 Unsolved Class, requiring:
             4 total slots;
             2 double period.
@@ -287,6 +303,55 @@ class TestSolverScenarioSolutions(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=5)].varValue == 1
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=6)].varValue == 1
 
+    def test_solver_solution_test_scenario_10(self):
+        """
+        Test scenario targeted at using the no two doubles in a day constraint in combination with the no split classes
+        constraint, as well as testing that the no split classes constraint isn't broken by a user-defined split
+        We have the following setup:
+        Fixed Class / Timetable structure:
+            Monday: empty-empty-empty-empty;
+            Tuesday: empty-empty-empty-empty;
+            Wednesday: empty
+        1 Unsolved Class, requiring:
+            6 total slots;
+            2 double period.
+        Therefore we expect a double at some point on Monday, a double at some point on Tuesday, and a single on
+        Wednesday.
+        """
+        # Set test parameters
+        school_access_key = 101010
+        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=False,
+                                          allow_split_classes_within_each_day=False)  # Note both False
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
 
-    # TODO TEST SCENARIO 10 USING BOTH NO SPLIT AND NO TRIPLES
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 9  # 9 slots, none get stripped
+        assert len(solver.variables.double_period_variables) == 6  # 3 on the Monday, 3 on the Tuesday
+
+        # See docstring for solution
+        # Wednesday must happen
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=9)].varValue == 1
+
+        # Must have exactly one double on Monday
+        monday_1_2 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=1, slot_2_id=2)].varValue
+        monday_2_3 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=2, slot_2_id=3)].varValue
+        monday_3_4 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=3, slot_2_id=4)].varValue
+        assert sum([monday_1_2, monday_2_3, monday_3_4]) == 1
+
+        # Must have exactly one double on Tuesday
+        tuesday_1_2 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=5, slot_2_id=6)].varValue
+        tuesday_2_3 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=6, slot_2_id=7)].varValue
+        tuesday_3_4 = solver.variables.double_period_variables[slvr.doubles_var_key(
+            class_id="ENGLISH", slot_1_id=7, slot_2_id=8)].varValue
+        assert sum([tuesday_1_2, tuesday_2_3, tuesday_3_4]) == 1
 

@@ -68,7 +68,7 @@ class TimetableSolverConstraints:
 
         # OPTIONAL CONSTRAINTS
         if not self._inputs.solution_specification.allow_split_classes_within_each_day:
-            no_split_constraints = self._get_all_no_split_classes_within_day_constraints()
+            no_split_constraints = self._get_all_no_split_classes_in_a_day_constraints()
             for constraint in no_split_constraints:
                 problem += constraint
 
@@ -288,7 +288,7 @@ class TimetableSolverConstraints:
         return all_constraints
 
     # STRUCTURAL CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
-    def _get_all_no_split_classes_within_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
+    def _get_all_no_split_classes_in_a_day_constraints(self) -> Generator[Tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining all constraints to disallow classes to be taught at split times across a single day.
         :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
@@ -296,8 +296,8 @@ class TimetableSolverConstraints:
         Note: These constraints still allow a stacked triple or quadruple period, hence the need for the constraints
         below restricting the solution to no two double periods in a day (if we do not want triple periods).
         """
-        def __no_split_classes_within_day_constraint(unsolved_class: models.UnsolvedClass,
-                                                     day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
+        def __no_split_classes_in_a_day_constraint(unsolved_class: models.UnsolvedClass,
+                                                   day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
             We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
             periods count towards 2 in the total number of periods, and we also count fixed period in the total number.
@@ -339,7 +339,7 @@ class TimetableSolverConstraints:
                           f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
             return constraint
 
-        constraints = (__no_split_classes_within_day_constraint(unsolved_class=usc, day_of_week=day) for
+        constraints = (__no_split_classes_in_a_day_constraint(unsolved_class=usc, day_of_week=day) for
                        usc in self._inputs.unsolved_classes for day in self._inputs.available_days)
         return constraints
 

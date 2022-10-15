@@ -164,7 +164,7 @@ class TestSolverConstraints(test.TestCase):
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        constraints = constraint_maker._get_all_no_split_classes_within_day_constraints()
+        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
 
         # Check the outcome
         constraint_count = 0
