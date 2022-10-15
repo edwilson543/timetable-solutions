@@ -34,7 +34,7 @@ class TimetableSolverConstraints:
         :return None - since the passed problem will be modified in-place
         """
 
-        # COMPULSORY CONSTRAINTS
+        # BASIC CONSTRAINTS
         fulfillment_constraints = self._get_all_fulfillment_constraints()
         for constraint in fulfillment_constraints:
             problem += constraint
@@ -51,6 +51,7 @@ class TimetableSolverConstraints:
         for constraint in classroom_constraints:
             problem += constraint
 
+        # DOUBLE PERIOD CONSTRAINTS
         double_period_fulfillment_constraints = self._get_all_double_period_fulfillment_constraints()
         for constraint in double_period_fulfillment_constraints:
             problem += constraint
@@ -252,6 +253,7 @@ class TimetableSolverConstraints:
             constraint = (decision_var >= double_p_var, constraint_name)
             return constraint
 
+        # Now create and chain two generators, for the first / second slot of each possible double
         slot_1_constraints = (
             constraint for key in self._double_period_variables.keys() if
             (constraint := __dependency_constraint(key=key, is_slot_1=True)) is not None)
@@ -274,7 +276,7 @@ class TimetableSolverConstraints:
         def __no_split_classes_within_day_constraint(unsolved_class: models.UnsolvedClass,
                                                      day_of_week: models.WeekDay) -> Tuple[lp.LpConstraint, str]:
             """
-            We limit: (total number of periods - number of double periods) to 1 in each day, noting that the double
+            We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
             periods count towards 2 in the total number of periods, and we also count fixed period in the total number.
 
             :param unsolved_class: the class we are disallowing the splitting of
@@ -284,6 +286,7 @@ class TimetableSolverConstraints:
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
                 school_id=self._inputs.school_id, day_of_week=day_of_week)
 
+            # Variables contribution
             periods_on_day = lp.lpSum([var for key, var in self._decision_variables.items() if
                                        (key.slot_id in slot_ids_on_day) and (key.class_id == unsolved_class.class_id)])
 
@@ -292,6 +295,7 @@ class TimetableSolverConstraints:
                 (key.class_id == unsolved_class.class_id) and (key.slot_1_id in slot_ids_on_day)
             ])
 
+            # Fixed contribution
             corresponding_fixed_class = self._inputs.get_fixed_class_corresponding_to_unsolved_class(
                 unsolved_class_id=unsolved_class.class_id)
             if corresponding_fixed_class is not None:
@@ -305,8 +309,10 @@ class TimetableSolverConstraints:
             existing_doubles_on_day = sum(
                 count for (class_id, day), count in self._inputs.fixed_class_double_period_counts.items() if
                 unsolved_class.class_id == class_id if day_of_week == day)
+            # Since user may have broken the rules, we limit the fixed contribution to 1
+            fixed_contribution = min(fixed_periods_on_day - existing_doubles_on_day, 1)
 
-            constraint = (fixed_periods_on_day + periods_on_day - double_periods_on_day - existing_doubles_on_day <= 1,
+            constraint = (periods_on_day - double_periods_on_day + fixed_contribution <= 1,
                           f"no_split_{unsolved_class.class_id}_classes_on_day_{day_of_week}")
             return constraint
 
@@ -337,7 +343,7 @@ class TimetableSolverConstraints:
             existing_doubles_on_day = sum(
                 count for (class_id, day), count in self._inputs.fixed_class_double_period_counts.items() if
                 unsolved_class.class_id == class_id)
-            existing_doubles_on_day = min(existing_doubles_on_day, 1)  # To allow the <= 1 on the constraint below
+            existing_doubles_on_day = min(existing_doubles_on_day, 1)  # Since user may have broken the rules
 
             dp_constraint = (double_periods_on_day + existing_doubles_on_day <= 1,
                              f"max_one_{unsolved_class.class_id}_double_day_{day_of_week}")
