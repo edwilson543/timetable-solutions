@@ -2,6 +2,9 @@
 Unit tests for the FixedClassQuerySet (custom manager of the FixedClass model), as well as FixedClass itself.
 """
 
+# Third party imports
+import pytest
+
 # Django imports
 from django import test
 
@@ -14,6 +17,7 @@ class TestFixedClass(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
 
+    # FACTORIES
     def test_delete_all_non_user_defined_fixed_classes(self):
         """
         Test that the behaviour when deleting the queryset of FixedClass instances is as expected, i.e. that nothing is
@@ -38,3 +42,48 @@ class TestFixedClass(test.TestCase):
         assert models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456).count() == 35
         assert models.Teacher.objects.get_all_instances_for_school(school_id=123456).count() == 11
         assert models.Classroom.objects.get_all_instances_for_school(school_id=123456).count() == 12
+
+    # QUERIES
+    def test_get_double_period_count_on_day_raises(self):
+        """Unit test to check that we are disallowed from counting the double periods on a non-user defined FC."""
+        # Set test parameters
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(
+            school_id=123456, class_id="YEAR_ONE_MATHS_A")
+
+        # Execute test unit
+        with pytest.raises(ValueError):
+            fixed_class.get_double_period_count_on_day(day_of_week=models.WeekDay.MONDAY.value)
+
+    def test_get_double_period_count_on_day_one_double_expected(self):
+        """
+        Unit test that the method for counting the number of double periods a given FixedClass correctly identifies that
+        there is one FixedClass double period on Monday, for the YEAR_ONE_MATHS_A group.
+        """
+        # Set test parameters
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(
+            school_id=123456, class_id="YEAR_ONE_MATHS_A")
+        fixed_class.user_defined = True  # To avoid creating another fixture, we just mutate here
+        day_of_week = models.WeekDay.MONDAY.value
+
+        # Execute test unit
+        double_period_count = fixed_class.get_double_period_count_on_day(day_of_week=day_of_week)
+
+        # Check outcome
+        assert double_period_count == 1
+
+    def test_get_double_period_count_on_day_no_doubles_expected(self):
+        """
+        Unit test that the method for counting the number of double periods a given FixedClass correctly identifies that
+        there are NOT ANY FixedClass double period on Tuesday, for the YEAR_ONE_MATHS_A group.
+        """
+        # Set test parameters
+        fixed_class = models.FixedClass.objects.get_individual_fixed_class(
+            school_id=123456, class_id="YEAR_ONE_MATHS_A")
+        fixed_class.user_defined = True  # To avoid creating another fixture, we just mutate here
+        day_of_week = models.WeekDay.TUESDAY.value
+
+        # Execute test unit
+        double_period_count = fixed_class.get_double_period_count_on_day(day_of_week=day_of_week)
+
+        # Check outcome
+        assert double_period_count == 0
