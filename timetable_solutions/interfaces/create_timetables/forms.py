@@ -8,9 +8,8 @@ from django import forms
 
 class SolutionSpecification(forms.Form):
     """Form that the user must fill in each time they generate some solutions."""
-    placeholder_1 = forms.BooleanField(label="Minimise year groups per teacher per day (ph)", label_suffix="",
-                                       widget=forms.CheckboxInput)
-    placeholder_2 = forms.BooleanField(label="Maximise free period spacing (ph)", label_suffix="",
-                                       widget=forms.CheckboxInput)
-    placeholder_3 = forms.BooleanField(label="Do not allow XYZ (ph)", label_suffix="",
-                                       widget=forms.CheckboxInput)
+    allow_split_classes_within_each_day = forms.BooleanField(
+        label="Allow each class to be taught more than once in a day", label_suffix="", widget=forms.CheckboxInput,
+        required=False)
+    allow_triple_periods_and_above = forms.BooleanField(
+        label="Allow triple periods or longer", label_suffix="", widget=forms.CheckboxInput, required=False)
