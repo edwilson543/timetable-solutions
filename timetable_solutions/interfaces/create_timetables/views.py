@@ -26,10 +26,10 @@ class CreateTimetable(FormView):
 
     def form_valid(self, form):
         """
-        Method
+        Method to take the user's requirements as per the form, and then use them to run the solver.
+        This will either redirect the user to the viewing dashboard, or it will flash the error messages.
         """
-        # error_messages = self._run_solver_from_view(form=form)
-        error_messages = ["vdwfvwvqfv"]
+        error_messages = self._run_solver_from_view(form=form)
         if len(error_messages) == 0:
             return super().form_valid(form)  # Method inherited from ModelFormMixin
         else:
