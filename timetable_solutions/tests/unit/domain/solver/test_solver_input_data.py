@@ -82,3 +82,20 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Check outcome
         assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
+
+    def test_fixed_class_double_period_counts_property(self):
+        """
+        Test that the correct dictionary & structure is returned when trying to count the number of double periods
+        within the user defined data.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        for fc in data.fixed_classes:
+            fc.user_defined = True  # To avoid creating another fixture, we just mutate here
+
+        # Execute test unit
+        double_period_counts = data.fixed_class_double_period_counts
+
+        # Check outcome
+        assert double_period_counts == {("YEAR_ONE_MATHS_A", 1): 1}
