@@ -4,6 +4,7 @@ import pulp as lp
 # Local application imports
 from domain.solver.solver_input_data import TimetableSolverInputs
 from domain.solver.linear_programming.solver_constraints import TimetableSolverConstraints
+from domain.solver.linear_programming.solver_objective import TimetableSolverObjective
 from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
 
 
@@ -25,11 +26,20 @@ class TimetableSolver:
         # Formulate the linear programming problem
         self.input_data = input_data
         self.variables = TimetableSolverVariables(inputs=input_data)
+
         constraint_maker = TimetableSolverConstraints(inputs=input_data, variables=self.variables)
         constraint_maker.add_constraints_to_problem(problem=self.problem)
 
+        if self.input_data.solution_specification.add_objective_function:
+            objective_maker = TimetableSolverObjective(inputs=input_data, variables=self.variables)
+            objective_maker.add_objective_to_problem(problem=self.problem)
+
     def solve(self, *args, **kwargs) -> None:
+        """
+        Method calling the default PuLP solver (COIN API), and recording the error message if unsuccessful.
+        """
         try:
             self.problem.solve(*args, **kwargs)
         except lp.PulpSolverError as e:
+            # TODO - improve this so that we create some human readable error messages.
             self.error_messages += [e]
