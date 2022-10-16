@@ -14,6 +14,7 @@ class TestCreateTimetableFormView(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
+    # GET request tests
     def test_get_method_returns_empty_solution_specification_form(self):
         """
         Test that by submitting GET request to the create timetable url, the empty SolutionSpecification form is
@@ -30,6 +31,21 @@ class TestCreateTimetableFormView(test.TestCase):
         assert response.status_code == 200
         assert isinstance(response.context["form"], forms.SolutionSpecification)
 
+    def test_get_method_redirects_to_login_for_logged_out_user(self):
+        """
+        Test that submitting a GET request to the create timetable page when not logged in just redirects the user.
+        """
+        # Set test parameters
+        url = urls.reverse("create_timetables")
+        expected_redirect_url = urls.reverse("login") + "?next=/create/"
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        self.assertRedirects(response=response, expected_url=expected_redirect_url)
+
+    # POST request tests
     def test_post_method_runs_solver_with_solution_spec_form_using_simplest_run_options(self):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that uses

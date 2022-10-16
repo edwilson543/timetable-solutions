@@ -3,25 +3,31 @@
 from typing import List
 
 # Django imports
-from django.views.generic.edit import FormView
 from django import urls
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic.edit import FormView
 
 # Local application imports
 from domain import solver
 from interfaces.create_timetables import forms
 
 
-class CreateTimetable(FormView):
+class CreateTimetable(LoginRequiredMixin, FormView):
     """
     View relating to the 'dashboard' / homepage of the 'create' component on the wider application, which allows
     users to initiate the creation of timetable solutions.
 
     We use a FormView since this is simply an exercise in taking the user's form data and using it to initiate some
     processing.
+    Note also that we use reverse_lazy since a URL reversal is needed BEFORE the URLConf is loaded, to avoid circular
+    imports.
     """
+    # LoginRequiredMixin attributes
+    login_url = urls.reverse_lazy("login")
+
+    # FormView attributes
     form_class = forms.SolutionSpecification
     template_name = "create_timetables.html"
-    # Note we use reverse_lazy since a URL reversal is needed BEFORE the URLConf is loaded, to avoid circular imports
     success_url = urls.reverse_lazy("selection_dashboard")
 
     def form_valid(self, form):
