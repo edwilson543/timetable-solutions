@@ -57,7 +57,7 @@ class TestCreateTimetableFormView(test.TestCase):
         form_data = {
             "allow_split_classes_within_each_day": True,
             "allow_triple_periods_and_above": True,
-            "optimal_free_period_time_of_day": "NONE",
+            "optimal_free_period_time_of_day": forms.SolutionSpecification._SERIALIZED_NONE,
         }
         expected_url_redirect = urls.reverse("selection_dashboard")
 
@@ -86,7 +86,7 @@ class TestCreateTimetableFormView(test.TestCase):
         form_data = {
             "allow_split_classes_within_each_day": False,
             "allow_triple_periods_and_above": False,
-            "optimal_free_period_time_of_day": "NONE",
+            "optimal_free_period_time_of_day": forms.SolutionSpecification._SERIALIZED_NONE,
         }
         expected_url_redirect = urls.reverse("selection_dashboard")
 

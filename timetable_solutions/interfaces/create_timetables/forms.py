@@ -12,6 +12,8 @@ from domain.solver import SolutionSpecification as _SolutionSpecification
 class SolutionSpecification(forms.Form):
     """Form that the user must fill in each time they generate some solutions."""
 
+    _SERIALIZED_NONE = "NONE"  # String we use to represent the python None object in the form
+
     allow_split_classes_within_each_day = forms.BooleanField(
         label="Allow each class to be taught more than once in a day", label_suffix="", widget=forms.CheckboxInput,
         required=False)
@@ -30,7 +32,7 @@ class SolutionSpecification(forms.Form):
         super().__init__(*args, **kwargs)
 
         time_choices = [(slot, slot.strftime("%H:%M")) for slot in available_time_slots]
-        all_choices = [("NONE", "No preference")] + time_choices
+        all_choices = [(self._SERIALIZED_NONE, "No preference")] + time_choices
         self.fields["optimal_free_period_time_of_day"].choices = all_choices
 
     def get_solution_specification_from_form_data(self) -> _SolutionSpecification:
@@ -38,7 +40,7 @@ class SolutionSpecification(forms.Form):
         Method to create a SolutionSpecification instance from the cleaned form data.
         """
         optimal_free_period = self.cleaned_data["optimal_free_period_time_of_day"]
-        if optimal_free_period == "NONE":
+        if optimal_free_period == self._SERIALIZED_NONE:
             optimal_free_period = None
 
         spec = _SolutionSpecification(
