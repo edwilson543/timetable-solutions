@@ -11,8 +11,7 @@ import pulp as lp
 # Local application imports
 from data import models
 from domain.solver.solver_input_data import TimetableSolverInputs
-from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
-from .solver_variables import var_key, doubles_var_key
+from domain.solver.linear_programming.solver_variables import TimetableSolverVariables, var_key, doubles_var_key
 
 
 class TimetableSolverConstraints:
