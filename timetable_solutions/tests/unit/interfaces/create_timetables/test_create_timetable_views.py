@@ -43,7 +43,7 @@ class TestCreateTimetableFormView(test.TestCase):
         response = self.client.get(url)
 
         # Check outcome
-        self.assertRedirects(response=response, expected_url=expected_redirect_url)
+        self.assertIn(expected_redirect_url, response.url)
 
     # POST request tests
     def test_post_method_runs_solver_with_solution_spec_form_using_simplest_run_options(self):
@@ -101,5 +101,3 @@ class TestCreateTimetableFormView(test.TestCase):
         for fc in fixed_classes:
             if not fc.user_defined:  # i.e. this fc was produced by the solver
                 assert fc.time_slots.count() == 8  # per UnsolvedClass requirements
-
-    # TODO - combine the class with django.contrib.auth.mixins LoginRequiredMixin and test
