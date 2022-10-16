@@ -17,10 +17,10 @@ class TimetableSolver:
                  input_data: TimetableSolverInputs):
         """
         :param - input_data - passing this to __init__ triggers the formulation of the timetable solution problem as
-        a linear programming problem 
+        a linear programming problem
         """
-        # Create a new problem instance
-        self.problem = lp.LpProblem(f"TTS_problem_for_{input_data.school_id}")  # Currently no 'sense'
+        # Create a new problem instance - maximise since objective components are formulated such that bigger is better
+        self.problem = lp.LpProblem(f"TTS_problem_for_{input_data.school_id}", sense=lp.LpMaximize)
         self.error_messages = []
 
         # Formulate the linear programming problem
