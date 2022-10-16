@@ -114,3 +114,17 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Check outcome
         assert double_period_counts == {}
+
+    def test_mean_slot_duration_property(self):
+        """
+        Test that the correct mean slot duration is calculated by the mean_slot_duration property
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Execute test unit
+        mean_slot_duration = data.mean_slot_duration
+
+        # Check outcome
+        assert mean_slot_duration == 1.0

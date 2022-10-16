@@ -103,6 +103,18 @@ class TimetableSolverInputs:
         non_zero_doubles = {key: value for key, value in doubles.items() if value != 0}
         return non_zero_doubles
 
+    @property
+    def mean_slot_duration(self) -> float:
+        """
+        Method to find the mean time that the timetable slots last for.
+        This is used by the objective function - see TimetableSolverObjective._get_free_period_timing_objective
+        :return - the mean duration of all periods in the input data, as a float, in HOURS.
+        """
+        total_duration_seconds = sum(slot.period_duration.seconds for slot in self.timetable_slots)
+        total_duration_hours = total_duration_seconds / 3600
+        mean_duration_hours = total_duration_hours / self.timetable_slots.count()
+        return mean_duration_hours
+
     # QUERIES
     def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: int) -> Union[models.FixedClass, None]:
         """
@@ -117,3 +129,10 @@ class TimetableSolverInputs:
             return corresponding_fixed_class.first()
         else:
             return None
+
+    def get_time_slot_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
+        """
+        Method to find the time of day that a period starts at.
+        :param slot_id: The id of the timetable slot we are searching
+        :return: period_starts_at - the time of day when the relevant period starts.
+        """
