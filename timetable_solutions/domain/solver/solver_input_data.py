@@ -11,7 +11,7 @@ from typing import List, Tuple, Union, Dict
 from data import models
 
 
-@dataclass(frozen=True)
+@dataclass
 class SolutionSpecification:
     """
     Data class for storing any parameters relating to how the solution should be generated. These parameters are all
@@ -21,10 +21,19 @@ class SolutionSpecification:
     than once in a day, with a gap in between either session.
     :param - allow_triple_periods_and_above - self evident, but the way it's implemented is to actually prevent a triple
     period or above, since 3 periods in a row would get counted as 2 doubles.
+    :param - optimal_optimal_free_period_time_of_day - the time of day which the user has described as the best time to
+    have free periods.
     """
     allow_split_classes_within_each_day: bool
     allow_triple_periods_and_above: bool
     optimal_free_period_time_of_day: Union[None, dt.time] = None
+
+    def __post_init__(self):
+        """
+        Method to carry out any processing immediately after initialising a SolutionSpecification.
+        """
+        # Decide whether we need an objective function - this will eventually get more complex than the below...
+        self.add_objective_function = self.optimal_free_period_time_of_day is not None
 
 
 class TimetableSolverInputs:
