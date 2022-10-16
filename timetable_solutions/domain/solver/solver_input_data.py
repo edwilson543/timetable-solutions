@@ -3,6 +3,7 @@ Module defining the data used by the solver, and how this data is accessed from 
 """
 # Standard library imports
 from dataclasses import dataclass
+import datetime as dt
 from functools import cached_property
 from typing import List, Tuple, Union, Dict
 
@@ -23,6 +24,7 @@ class SolutionSpecification:
     """
     allow_split_classes_within_each_day: bool
     allow_triple_periods_and_above: bool
+    optimal_free_period_time_of_day: Union[None, dt.time] = None
 
 
 class TimetableSolverInputs:

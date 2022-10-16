@@ -9,6 +9,7 @@ from django.views.generic.edit import FormView
 
 # Local application imports
 from domain import solver
+from domain import utils as domain_utils
 from interfaces.create_timetables import forms
 
 
@@ -43,13 +44,22 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             context_data["error_messages"] = error_messages
             return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
 
+    def get_form_kwargs(self):
+        """Method used to add kwargs during the form's initialisation"""
+        kwargs = super().get_form_kwargs()
+        school_access_key = self.request.user.profile.school.school_access_key
+
+        timeslots = domain_utils.get_user_timetable_slots(school_access_key=school_access_key)
+        kwargs["available_time_slots"] = timeslots
+        return kwargs
+
     def _run_solver_from_view(self, form) -> List[str]:
         """
         Method to run the solver at the point when the user submits their form.
         :return - error_messages - the list of error messages encountered by the solver (hopefully will have length 0).
         """
         school_access_key = self.request.user.profile.school.school_access_key
-        solution_spec = solver.SolutionSpecification(**form.cleaned_data)
+        solution_spec = form.get_solution_specification_from_form_data()
         error_messages = solver.produce_timetable_solutions(
             school_access_key=school_access_key, solution_specification=solution_spec)
         return error_messages
