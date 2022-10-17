@@ -47,6 +47,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         for pupil in data.pupils:
             assert isinstance(pupil, models.Pupil)
 
+    # PROPERTIES TESTS
     def test_consecutive_slots_property(self):
         """
         Test that the correct list of consecutive slots is returned by the consecutive_slots property method
@@ -114,6 +115,49 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Check outcome
         assert double_period_counts == {}
+
+    def test_timetable_start_finish_span_as_ints(self):
+        """
+        Unit test that the timetable start and finish span is correctly calculated.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Execute test unit
+        timetable_start_finish = data.timetable_start_finish_span_as_ints
+
+        # Check outcome
+        assert timetable_start_finish == (9, 16)  # 9:00 - 16:00
+
+    # QUERIES TESTS
+    def test_get_fixed_class_corresponding_to_unsolved_class_existent_id_returns_fixed_class(self):
+        """
+        Test that a Fixed Class is returned from an UnsolvedClass with a corresponding fixed class.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Execute test unit
+        fixed_class = data.get_fixed_class_corresponding_to_unsolved_class(unsolved_class_id="YEAR_ONE_MATHS_A")
+
+        # Check outcome
+        assert isinstance(fixed_class, models.FixedClass)
+
+    def test_get_fixed_class_corresponding_to_unsolved_class_non_existent_id_returns_none(self):
+        """
+        Test that a None is returned from an UnsolvedClass without a corresponding fixed class.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Execute test unit
+        fixed_class = data.get_fixed_class_corresponding_to_unsolved_class(unsolved_class_id="NON-EXISTENT")
+
+        # Check outcome
+        assert fixed_class is None
 
     def test_get_time_period_starts_at_from_slot_id(self):
         """

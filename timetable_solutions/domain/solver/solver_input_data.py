@@ -27,6 +27,7 @@ class SolutionSpecification:
     allow_split_classes_within_each_day: bool
     allow_triple_periods_and_above: bool
     optimal_free_period_time_of_day: Union[None, dt.time] = None
+    ideal_proportion_of_free_periods_at_this_time: Union[None, float] = None
 
     def __post_init__(self):
         """
@@ -103,8 +104,26 @@ class TimetableSolverInputs:
         non_zero_doubles = {key: value for key, value in doubles.items() if value != 0}
         return non_zero_doubles
 
+    @cached_property
+    def timetable_start_finish_span_as_ints(self) -> Tuple[int, int]:
+        """
+        Property finding the times of day that the timetable spans, and returning this as a pair of integers
+        representing the hours.
+        :return: e.g. if the timetable starts at 9AM and finishes at 5PM, (9, 5) will be returned.
+
+        Note: This is used to understand the suitable range of random deviations to generate in the
+        objective function components.
+        """
+        start = min(slot.period_starts_at.hour for slot in self.timetable_slots)
+        finish = max(slot.period_starts_at.hour + (slot.period_duration.total_seconds() / 3600) for
+                     slot in self.timetable_slots)
+
+        start_int = int(round(start, 0))
+        finish_int = int(round(finish, 0))
+        return start_int, finish_int
+
     # QUERIES
-    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: int) -> Union[models.FixedClass, None]:
+    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: str) -> Union[models.FixedClass, None]:
         """
         Method to retrieve the FixedClass instance corresponding to an UnsolvedClass id
         :return either the FixedClass instance, or None if there is not a corresponding instance.
