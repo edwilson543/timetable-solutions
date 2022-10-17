@@ -57,3 +57,4 @@ class TestTimetableSolverObjective(test.TestCase):
         assert isinstance(objective_component, lp.LpAffineExpression)
         # The slot which occurs at the free period slot has 0 zero coefficients so isn't included, hence:
         assert len(objective_component) == (7 - 1) * 5 * 12  # =  (slots per day - 1) * days of week * unsolved classes
+        assert objective_component.constant == 0.0

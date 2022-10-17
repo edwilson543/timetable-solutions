@@ -10,7 +10,7 @@ import pulp as lp
 
 # Local application imports
 from domain.solver.solver_input_data import TimetableSolverInputs
-from domain.solver.linear_programming.solver_variables import TimetableSolverVariables, var_key
+from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
 
 
 class TimetableSolverObjective:
@@ -34,11 +34,12 @@ class TimetableSolverObjective:
         :param problem - an instance of pulp.LpProblem, which collects constraints/objective and solves
         :return None - since the passed problem will be modified in-place
         """
-        pass
+        objective = self._find_and_sum_all_objective_components()
+        problem += (objective, "total_timetabling_objective")
 
     def _find_and_sum_all_objective_components(self) -> lp.LpAffineExpression:
         """
-        Method to gather each component of the objective function, and sum the together.
+        Method to gather each component of the objective function, and sum them together.
         :return - total_objective - the objective function of the given school timetabling problem.
         """
         objective = lp.LpAffineExpression()
@@ -59,7 +60,7 @@ class TimetableSolverObjective:
         :return - objective_component - the total duration of time between the optimal free time slot and each
         decision variable.
         """
-        objective_component = lp.LpAffineExpression("free_period_time_of_day_objective")
+        objective_component = lp.LpAffineExpression()
 
         repulsive_time = self._inputs.solution_specification.optimal_free_period_time_of_day
         repulsive_time_as_delta = dt.timedelta(hours=repulsive_time.hour)
