@@ -2,6 +2,10 @@
 Forms related to allowing users to specify their requirements for how the timetable solutions are found
 """
 
+# Standard library imports
+import datetime as dt
+from typing import Dict
+
 # Django imports
 from django import forms
 
@@ -35,17 +39,34 @@ class SolutionSpecification(forms.Form):
         all_choices = [(self._SERIALIZED_NONE, "No preference")] + time_choices
         self.fields["optimal_free_period_time_of_day"].choices = all_choices
 
+    def clean(self) -> Dict:
+        """
+        Method adding some additional cleaning to the submitted form. This is needed since we have mixed types in our
+        free period choice field, and so in particular need to produce a dt.time instance from the time strings.
+        :return: the dictionary of cleaned form data, with the field names as keys
+        """
+        cleaned_data = super().clean()
+        optimal_free_period = self.cleaned_data["optimal_free_period_time_of_day"]
+        try:
+            optimal_free_period = dt.datetime.strptime(optimal_free_period, "%H:%M:%S").time()
+
+        except ValueError:
+            optimal_free_period = None
+
+        self.cleaned_data["optimal_free_period_time_of_day"] = optimal_free_period
+        return self.cleaned_data
+
     def get_solution_specification_from_form_data(self) -> _SolutionSpecification:
         """
         Method to create a SolutionSpecification instance from the cleaned form data.
         """
-        optimal_free_period = self.cleaned_data["optimal_free_period_time_of_day"]
-        if optimal_free_period == self._SERIALIZED_NONE:
-            optimal_free_period = None
-
         spec = _SolutionSpecification(
             allow_split_classes_within_each_day=self.cleaned_data["allow_split_classes_within_each_day"],
             allow_triple_periods_and_above=self.cleaned_data["allow_triple_periods_and_above"],
-            optimal_free_period_time_of_day=optimal_free_period
+            optimal_free_period_time_of_day=self.cleaned_data["optimal_free_period_time_of_day"]
         )
         return spec
+
+
+
+
