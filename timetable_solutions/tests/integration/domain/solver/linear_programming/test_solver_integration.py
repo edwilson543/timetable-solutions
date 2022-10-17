@@ -1,4 +1,13 @@
-"""Integration tests for the TimetableSolver class"""
+"""
+Integration tests for the TimetableSolver class.
+
+The following three test classes are present in this module:
+    1) TestSolver - simply checks the solver can find a solution using the default fixtures
+    2) TestSolverScenarioSolutionsNoObjective - checks for specific solutions in some manufactured scenarios, all of
+      which DO NOT include an objective function
+    3) TestSolverScenarioSolutionsWithObjective - checks for specific solutions in some manufactured scenarios, all of
+      which include an objective function
+"""
 
 # Standard library imports
 import datetime as dt
@@ -59,9 +68,10 @@ class TestSolver(test.TestCase):
         assert lp.LpStatus[solver.problem.status] == "Optimal"
 
 
-class TestSolverScenarioSolutions(test.TestCase):
+class TestSolverScenarioSolutionsNoObjective(test.TestCase):
     """
     Tests where we are after a specific solution. See individual docstrings for scenario setups.
+    All scenarios 1-10 do NOT include an objective function - see test class below for this.
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
@@ -378,3 +388,47 @@ class TestSolverScenarioSolutions(test.TestCase):
             class_id="ENGLISH", slot_1_id=7, slot_2_id=8)].varValue
         assert sum([tuesday_1_2, tuesday_2_3, tuesday_3_4]) == 1
 
+
+class TestSolverScenarioSolutionsWithObjective(test.TestCase):
+    """
+    Tests where we are after a specific solution. See individual docstrings for scenario setups.
+    All scenarios include an objective function.
+    """
+
+    fixtures = ["test_scenario_with_obj_1.json"]
+
+    def test_solver_solution_test_scenario_with_obj_1(self):
+        """
+        Test scenario targeted at using the optimal free period objective component.
+        We have the following setup:
+        Fixed Class / Timetable structure:
+            Monday: empty-empty-empty-empty;
+        1 Unsolved Class, requiring:
+            1 slot;
+        Optimal free period time:
+            Slot 1;
+        Since the optimal free period slot pushes slots away from it as much as possible, we expect the 1 slot to take
+        place at slot 4.
+        """
+        # Set test parameters
+        school_access_key = 111111
+        optimal_free_period = dt.time(hour=9)
+        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
+                                          allow_split_classes_within_each_day=True,
+                                          optimal_free_period_time_of_day=optimal_free_period)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 4
+        assert len(solver.variables.double_period_variables) == 0
+
+        # See docstring for solution
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=4)].varValue == 1
