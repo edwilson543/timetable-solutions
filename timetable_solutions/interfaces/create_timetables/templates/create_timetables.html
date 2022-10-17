@@ -22,16 +22,26 @@
     grid-column: 1 / 3;
 }
 #submit_button {
-    border-radius: 5px;
-    border: 1px solid #33003d;
+    /* Display */
     width: 100%;
-    font-size: 20px;
     padding: 5px;
     margin-top: 20px;
+
+    /* Typography */
+    font-size: 20px;
     color: white;
     text-align: center;
+
+    /* Border and background */
+    border-radius: 5px;
+    border: 1px solid #33003d;
     background-color: #004000;
 }
+#submit_button:hover {
+    background-color: #1f1530;
+    cursor: pointer;
+}
+
 tr, th, td {
     margin: 15px;
     padding: 5px;
