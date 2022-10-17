@@ -7,6 +7,7 @@ import datetime as dt
 
 # Third party imports
 import pulp as lp
+import numpy as np
 
 # Local application imports
 from domain.solver.solver_input_data import TimetableSolverInputs
@@ -62,15 +63,27 @@ class TimetableSolverObjective:
         """
         objective_component = lp.LpAffineExpression()
 
-        repulsive_time = self._inputs.solution_specification.optimal_free_period_time_of_day
-        repulsive_time_as_delta = dt.timedelta(hours=repulsive_time.hour)
+        # Parameters relating to optimal free period
+        repulsive_hour = self._inputs.solution_specification.optimal_free_period_time_of_day.hour
+        # repulsive_time_as_delta = dt.timedelta(hours=repulsive_time.hour)
+
+        # Parameters relating to random deviations from the optimal free period
+        timetable_start, timetable_finish = self._inputs.timetable_start_finish_span_as_ints
+        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
 
         for key, var in self._decision_variables.items():
             slot_time = self._inputs.get_time_period_starts_at_from_slot_id(slot_id=key.slot_id)
             slot_time_as_delta = dt.timedelta(hours=slot_time.hour)
-            difference_hours = abs((slot_time_as_delta - repulsive_time_as_delta).total_seconds() / 3600)
+            difference_hours = abs(repulsive_hour - slot_time.hour)
 
-            # TODO - could add a random number of hours (from say -2, -1, 0, 1, 2) to the timedelta to make less precise
+            # To avoid all free periods taking place at the same time
+            if ideal_proportion is not None:
+                random_filter = np.random.random() > ideal_proportion
+                # This way (1 - ideal_proportion) of slots will be randomly deviated
+                if random_filter:
+                    random_timetable_time = np.random.randint(timetable_start, timetable_finish)
+                    random_deviation = abs(slot_time.hour - random_timetable_time)
+                    difference_hours += random_deviation
 
             # If the associated class takes place at this time (i.e. var = 1), we will get a non-zero contribution below
             contribution = difference_hours * var
