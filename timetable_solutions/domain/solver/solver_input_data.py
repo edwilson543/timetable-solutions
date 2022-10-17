@@ -104,7 +104,7 @@ class TimetableSolverInputs:
         non_zero_doubles = {key: value for key, value in doubles.items() if value != 0}
         return non_zero_doubles
 
-    @cached_property
+    @property
     def timetable_start_finish_span_as_ints(self) -> Tuple[int, int]:
         """
         Property finding the times of day that the timetable spans, and returning this as a pair of integers
@@ -112,7 +112,7 @@ class TimetableSolverInputs:
         :return: e.g. if the timetable starts at 9AM and finishes at 5PM, (9, 5) will be returned.
 
         Note: This is used to understand the suitable range of random deviations to generate in the
-        objective function components.
+        objective function components. Only accessed once hence not cached.
         """
         start = min(slot.period_starts_at.hour for slot in self.timetable_slots)
         finish = max(slot.period_starts_at.hour + (slot.period_duration.total_seconds() / 3600) for
