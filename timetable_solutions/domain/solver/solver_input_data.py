@@ -58,6 +58,9 @@ class TimetableSolverInputs:
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
 
+        # TODO - pre-processing - if they have an unsolved class where n distinct periods > n days, add an error
+        # todo message but fail silently
+
     # PROPERTIES
     @property
     def consecutive_slots(self) -> List[Tuple[models.TimetableSlot, models.TimetableSlot]]:
