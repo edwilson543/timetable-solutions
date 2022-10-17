@@ -25,7 +25,7 @@ class Command(base.BaseCommand):
         to load in by default
         :arg: --runserver - whether or not to immediately run the django server after loading in the fixtures
         """
-        parser.add_argument("--inc_fixed_classes", action="store_true",  # store_true stores the arg as a boolean
+        parser.add_argument("--include_fixed_classes", action="store_true",  # store_true stores the arg as a boolean
                             help="Include this argument if you also want to pre-populate a timetable solution.")
 
     def handle(self, *args, **kwargs):
@@ -41,7 +41,7 @@ class Command(base.BaseCommand):
         call_command("loaddata", "unsolved_classes.json")
         call_command("loaddata", "fixed_classes_lunch.json")  # These are not solver-produced so always include
 
-        if kwargs["inc_fixed_classes"]:
+        if kwargs["include_fixed_classes"]:  # store_true ensures this is always present
             call_command("loaddata", "fixed_classes.json")
 
         self.stdout.write(self.style.SUCCESS(f"Successfully loaded in all fixtures!"))
