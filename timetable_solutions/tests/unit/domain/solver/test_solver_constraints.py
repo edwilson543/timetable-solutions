@@ -22,8 +22,9 @@ class TestSolverConstraints(test.TestCase):
     @lru_cache(maxsize=1)
     def get_constraint_maker() -> slvr.TimetableSolverConstraints:
         """
-        Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixture, but this does not work
-        since the test class subclasses the Django TestCase
+        Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixtures, but this does not work
+        since the test class subclasses the Django TestCase.
+        Note that we include a default solution specification also within this method.
         """
         school_access_key = 123456
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
