@@ -1,5 +1,8 @@
 """Integration tests for the TimetableSolver class"""
 
+# Standard library imports
+import datetime as dt
+
 # Django imports
 from django import test
 
@@ -18,14 +21,34 @@ class TestSolver(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    def test_solver_finds_a_solution_for_default_fixtures(self):
+    def test_solver_finds_a_solution_for_default_fixtures_no_objective(self):
         """
-        Test that the full set of constraints necessary to specify the timetabling problem is added to the problem
+        Test that the solver can find a problem for the full LP problem, EXCLUDING an objective, for the default
+        fixture set.
         """
         # Set test parameters
         school_access_key = 123456
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
                                           allow_triple_periods_and_above=False)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome - i.e. that a solution has been found
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+
+    def test_solver_finds_a_solution_for_default_fixtures_with_objective(self):
+        """
+        Test that the solver can find a problem for the full LP problem, INCLUDING an objective, for the default
+        fixture set.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
+                                          allow_triple_periods_and_above=False,
+                                          optimal_free_period_time_of_day=dt.time(hour=14))
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
