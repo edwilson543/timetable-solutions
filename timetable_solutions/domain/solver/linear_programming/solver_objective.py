@@ -43,12 +43,12 @@ class TimetableSolverObjective:
         """
         objective = lp.LpAffineExpression()
         if self._inputs.solution_specification.optimal_free_period_time_of_day is not None:
-            objective += self._get_free_period_timing_objective()
+            objective += self._get_free_period_time_of_day_objective()
 
         return objective
 
     # OBJECTIVE COMPONENTS
-    def _get_free_period_timing_objective(self) -> lp.LpAffineExpression:
+    def _get_free_period_time_of_day_objective(self) -> lp.LpAffineExpression:
         """
         Objective component relating to the total distance in time between each class that takes place and the time the
         user has specified as optimal for free periods to happen.
@@ -59,7 +59,7 @@ class TimetableSolverObjective:
         :return - objective_component - the total duration of time between the optimal free time slot and each
         decision variable.
         """
-        objective_component = lp.LpAffineExpression()
+        objective_component = lp.LpAffineExpression("free_period_time_of_day_objective")
 
         repulsive_time = self._inputs.solution_specification.optimal_free_period_time_of_day
         repulsive_time_as_delta = dt.timedelta(hours=repulsive_time.hour)
@@ -67,7 +67,9 @@ class TimetableSolverObjective:
         for key, var in self._decision_variables.items():
             slot_time = self._inputs.get_time_period_starts_at_from_slot_id(slot_id=key.slot_id)
             slot_time_as_delta = dt.timedelta(hours=slot_time.hour)
-            difference_hours = abs((slot_time_as_delta - repulsive_time_as_delta).seconds / 3600)
+            difference_hours = abs((slot_time_as_delta - repulsive_time_as_delta).total_seconds() / 3600)
+
+            # TODO - could add a random number of hours (from say -2, -1, 0, 1, 2) to the timedelta to make less precise
 
             # If the associated class takes place at this time (i.e. var = 1), we will get a non-zero contribution below
             contribution = difference_hours * var
