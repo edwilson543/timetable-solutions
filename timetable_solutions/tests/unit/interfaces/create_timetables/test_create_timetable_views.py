@@ -8,6 +8,7 @@ from django import urls
 
 # Local application imports
 from data import models
+from domain.solver import SolutionSpecification
 from interfaces.create_timetables import forms
 
 
@@ -82,7 +83,7 @@ class TestCreateTimetableFormView(test.TestCase):
         form_data = {
             "allow_split_classes_within_each_day": True,
             "allow_triple_periods_and_above": True,
-            "optimal_free_period_time_of_day": forms.SolutionSpecification._SERIALIZED_NONE,
+            "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
@@ -94,7 +95,7 @@ class TestCreateTimetableFormView(test.TestCase):
         form_data = {
             "allow_split_classes_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
-            "optimal_free_period_time_of_day": forms.SolutionSpecification._SERIALIZED_NONE,
+            "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 

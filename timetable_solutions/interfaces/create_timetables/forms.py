@@ -16,7 +16,9 @@ from domain.solver import SolutionSpecification as _SolutionSpecification
 class SolutionSpecification(forms.Form):
     """Form that the user must fill in each time they generate some solutions."""
 
-    _SERIALIZED_NONE = "NONE"  # String we use to represent the python None object in the form
+    OptimalFreePeriodChoices = [(_SolutionSpecification.OptimalFreePeriodOptions.NONE, "No preference"),
+                                (_SolutionSpecification.OptimalFreePeriodOptions.MORNING, "Morning"),
+                                (_SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON, "Afternoon")]
 
     allow_split_classes_within_each_day = forms.BooleanField(
         label="Allow each class to be taught more than once in a day", label_suffix="", widget=forms.CheckboxInput,
@@ -24,7 +26,7 @@ class SolutionSpecification(forms.Form):
     allow_triple_periods_and_above = forms.BooleanField(
         label="Allow triple periods or longer", label_suffix="", widget=forms.CheckboxInput, required=False)
     optimal_free_period_time_of_day = forms.ChoiceField(
-        label="Best time of day for free periods", label_suffix="", choices=(), required=True)
+        label="Best time of day for free periods", label_suffix="", choices=OptimalFreePeriodChoices, required=True)
 
     def __init__(self, *args, **kwargs):
         """
@@ -36,8 +38,8 @@ class SolutionSpecification(forms.Form):
         super().__init__(*args, **kwargs)
 
         time_choices = [(slot, slot.strftime("%H:%M")) for slot in available_time_slots]
-        all_choices = [(self._SERIALIZED_NONE, "No preference")] + time_choices
-        self.fields["optimal_free_period_time_of_day"].choices = all_choices
+        # TODO add morning / afternoon as options, and implement random mid morn / mid afternoon
+        self.fields["optimal_free_period_time_of_day"].choices += time_choices
 
     def clean(self) -> Dict:
         """
@@ -49,9 +51,9 @@ class SolutionSpecification(forms.Form):
         optimal_free_period = self.cleaned_data["optimal_free_period_time_of_day"]
         try:
             optimal_free_period = dt.datetime.strptime(optimal_free_period, "%H:%M:%S").time()
-
         except ValueError:
-            optimal_free_period = None
+            # The optimal_free_period is one of the string options from _SolutionSpecification
+            pass
 
         self.cleaned_data["optimal_free_period_time_of_day"] = optimal_free_period
         return self.cleaned_data

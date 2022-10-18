@@ -24,11 +24,6 @@ class SolutionSpecification:
     :param - optimal_optimal_free_period_time_of_day - the time of day which the user has described as the best time to
     have free periods.
     """
-    # Instance attributes
-    allow_split_classes_within_each_day: bool
-    allow_triple_periods_and_above: bool
-    optimal_free_period_time_of_day: Union[str, dt.time] = None
-    ideal_proportion_of_free_periods_at_this_time: float = 1.0
 
     class OptimalFreePeriodOptions:
         """
@@ -38,6 +33,12 @@ class SolutionSpecification:
         NONE = "NONE"
         MORNING = "MORNING"
         AFTERNOON = "AFTERNOON"
+
+    # Instance attributes
+    allow_split_classes_within_each_day: bool
+    allow_triple_periods_and_above: bool
+    optimal_free_period_time_of_day: Union[str, dt.time] = OptimalFreePeriodOptions.NONE
+    ideal_proportion_of_free_periods_at_this_time: float = 1.0
 
 
 class TimetableSolverInputs:

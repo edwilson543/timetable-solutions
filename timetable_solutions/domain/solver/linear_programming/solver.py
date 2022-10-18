@@ -30,9 +30,8 @@ class TimetableSolver:
         constraint_maker = TimetableSolverConstraints(inputs=input_data, variables=self.variables)
         constraint_maker.add_constraints_to_problem(problem=self.problem)
 
-        if self.input_data.solution_specification.add_objective_function:
-            objective_maker = TimetableSolverObjective(inputs=input_data, variables=self.variables)
-            objective_maker.add_objective_to_problem(problem=self.problem)
+        objective_maker = TimetableSolverObjective(inputs=input_data, variables=self.variables)
+        objective_maker.add_objective_to_problem(problem=self.problem)
 
     def solve(self, *args, **kwargs) -> None:
         """
