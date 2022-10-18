@@ -116,7 +116,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         # Check outcome
         assert double_period_counts == {}
 
-    def test_timetable_start_finish_span_as_ints(self):
+    def test_timetable_start_property(self):
         """
         Unit test that the timetable start and finish span is correctly calculated.
         """
@@ -125,10 +125,24 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
 
         # Execute test unit
-        timetable_start_finish = data.timetable_start_finish_span_as_ints
+        timetable_start = data.timetable_start
 
         # Check outcome
-        assert timetable_start_finish == (9, 16)  # 9:00 - 16:00
+        assert timetable_start == 9  # Corresponds to 9:00
+
+    def test_timetable_finish_property(self):
+        """
+        Unit test that the timetable start and finish span is correctly calculated.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Execute test unit
+        timetable_start = data.timetable_finish
+
+        # Check outcome
+        assert timetable_start == 16  # Correspond to 16:00
 
     # QUERIES TESTS
     def test_get_fixed_class_corresponding_to_unsolved_class_existent_id_returns_fixed_class(self):
