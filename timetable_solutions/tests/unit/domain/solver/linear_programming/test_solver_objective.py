@@ -6,6 +6,7 @@ which sum all components and add them to an LpProblem in a separate integration 
 
 # Standard library imports
 import datetime as dt
+from unittest import mock
 
 # Third party imports
 import pulp as lp
@@ -38,9 +39,9 @@ class TestTimetableSolverObjective(test.TestCase):
         return objective_maker
 
     # TESTS FOR THE HIGH-LEVEL ENTRY POINT METHOD
-    def test_get_free_period_time_of_day_objective_optimal_free_period_is_no_pereference(self):
+    def test_get_free_period_time_of_day_objective_optimal_free_period_is_no_preference(self):
         """
-        Unit test for the objective when the user has requested a specific time
+        Unit test for the objective when the no specific time is optimal for the free periods
         """
         # Set test parameters
         opt_free_period = slvr.SolutionSpecification.OptimalFreePeriodOptions.NONE
@@ -59,7 +60,7 @@ class TestTimetableSolverObjective(test.TestCase):
 
     def test_get_free_period_time_of_day_objective_optimal_free_period_is_always_same_time(self):
         """
-        Unit test for the objective when the user has requested a specific time
+        Unit test for the objective when a specific time is optimal for free periods
         """
         # Set test parameters
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
@@ -79,7 +80,7 @@ class TestTimetableSolverObjective(test.TestCase):
 
     def test_get_free_period_time_of_day_objective_optimal_free_period_is_fifty_percent_same_time(self):
         """
-        Unit test for the objective when the user has requested a specific time
+        Unit test for the objective when 50% of the free periods would ideally be at a specific time period
         """
         # Set test parameters
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
@@ -98,7 +99,7 @@ class TestTimetableSolverObjective(test.TestCase):
 
     def test_get_free_period_time_of_day_objective_optimal_free_period_is_morning(self):
         """
-        Unit test for the objective when the user has requested a specific time
+        Unit test for the objective when the morning is optimal for the free periods
         """
         # Set test parameters
         morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
@@ -118,7 +119,7 @@ class TestTimetableSolverObjective(test.TestCase):
 
     def test_get_free_period_time_of_day_objective_optimal_free_period_is_afternoon(self):
         """
-        Unit test for the objective when the user has requested a specific time
+        Unit test for the objective when the afternoon is optimal for the free periods
         """
         # Set test parameters
         afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
@@ -137,3 +138,128 @@ class TestTimetableSolverObjective(test.TestCase):
         assert objective_component.constant == 0.0
 
     # TESTS FOR THE INDIVIDUAL METHODS PROVIDING EACH PIECE OF LOGIC
+    def test_get_optimal_free_period_time_no_specified_time(self):
+        """
+        Unit test for getting a random time of day between the timetable start and finish
+        """
+        # Set test parameters
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day="NOT-USED-IN-TEST")
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        opt_time = objective_maker._get_optimal_free_period_time_no_specified_time()
+
+        # Check outcome
+        assert 9 <= opt_time <= 17
+
+    def test_get_optimal_free_period_time_specified_time_guaranteed_no_random_return(self):
+        """
+        Unit test for returning the user-specified optimal free period - setting the ideal proportion to 1.0 ensures
+        that we do not get a random return.
+        """
+        # Set test parameters
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=dt.time(hour=9), ideal_proportion_of_free_periods_at_this_time=1.0)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert opt_time == 9  # See test parameters
+
+    def test_get_optimal_free_period_time_specified_time_guaranteed_random_return_using_patch(self):
+        """
+        Unit test for returning the user-specified optimal free period - setting the ideal proportion to 1.0 ensures
+        that we do not get a random return.
+        """
+        # Set test parameters
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=dt.time(hour=9), ideal_proportion_of_free_periods_at_this_time=0.75)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        with mock.patch("numpy.random.random", return_value=0.8):  # Ensure return value > ideal_proportion
+            opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert opt_time != 9  # Should be randomly generated (probability of hitting from uniform d is nearly zero)
+        assert 9 < opt_time <= 17
+
+    def test_get_optimal_free_period_time_morning_specified_guaranteed_random_morning_return(self):
+        """
+        Unit test for returning a random optimal free period in the morning - setting the ideal proportion to
+        1.0 ensures that we do not get the opposite return (afternoon).
+        """
+        # Set test parameters
+        morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=morning, ideal_proportion_of_free_periods_at_this_time=1.0)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert 9 <= opt_time <= 12  # Morning hours
+
+    def test_get_optimal_free_period_time_morning_specified_guaranteed_random_afternoon_return_using_patch(self):
+        """
+        Unit test for returning a random optimal free period in the afternoon, but when the morning is specified as
+        optimal (coming about via the random generation and comparison with the ideal_proportion)
+        """
+        # Set test parameters
+        morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=morning, ideal_proportion_of_free_periods_at_this_time=0.5)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        with mock.patch("numpy.random.random", return_value=0.6):  # Ensure return value > ideal_proportion
+            opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert 12 <= opt_time <= 17  # Afternoon hours
+
+    def test_get_optimal_free_period_time_afternoon_specified_guaranteed_random_afternoon_return(self):
+        """
+        Unit test for returning a random optimal free period in the afternoon - setting the ideal proportion to
+        1.0 ensures that we do not get the opposite return (morning).
+        """
+        # Set test parameters
+        afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=afternoon, ideal_proportion_of_free_periods_at_this_time=1.0)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert 12 <= opt_time <= 17  # Afternoon hours
+
+    def test_get_optimal_free_period_time_morning_specified_guaranteed_random_morning_return_using_patch(self):
+        """
+        Unit test for returning a random optimal free period in the morning, but when the afternoon is specified as
+        optimal (coming about via the random generation and comparison with the ideal_proportion)
+        """
+        # Set test parameters
+        afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True,
+            optimal_free_period_time_of_day=afternoon, ideal_proportion_of_free_periods_at_this_time=0.5)
+        objective_maker = self.get_objective_maker(solution_spec=spec)
+
+        # Execute test unit
+        with mock.patch("numpy.random.random", return_value=0.6):  # Ensure return value > ideal_proportion
+            opt_time = objective_maker._get_optimal_free_period_time()
+
+        # Check outcome
+        assert 9 <= opt_time <= 12  # Morning hours
