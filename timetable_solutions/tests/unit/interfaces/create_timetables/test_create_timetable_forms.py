@@ -1,3 +1,7 @@
+"""
+Module containing unit tests for the SolutionSpecification form in the create_timetables app.
+"""
+
 # Standard library imports
 import datetime as dt
 
@@ -6,6 +10,9 @@ from interfaces.create_timetables import forms
 
 
 def test_solution_specification_form_instantiation():
+    """
+    Test that passing available slots to the SolutionSpecification's __init__ adds to the choices on the relevant field
+    """
     # Set test parameters
     available_time_slots = [dt.time(hour=9), dt.time(hour=10)]
     slots_as_choices = [(dt.time(hour=9), "09:00"), (dt.time(hour=10), "10:00")]
