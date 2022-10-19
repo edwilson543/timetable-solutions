@@ -44,8 +44,33 @@
 
 tr, th, td {
     margin: 15px;
-    padding: 5px;
+    padding: 15px;
     border-bottom: 1px dotted black;
+    text-align: center;
+    vertical-align: middle;
+    border-radius: 10px;
+}
+th:hover {
+    cursor: pointer;
+    background-color: #3d112f;
+    color: white;
+    font-weight: bold;
+    border-radius: 20px;
+}
+label {font-size: 16px;}
+label:hover {cursor: pointer;}
+input[type=checkbox] {
+    width: 20px;
+    height: 20px;
+    margin-left: 40%;
+    margin-right: 40%;
+    border-radius: 10px;
+}
+select {
+    width: 100%;
+    text-align: left;
+    border-radius: 8px;
+    font-size: 15px;
 }
 
 {% endblock %}
@@ -59,11 +84,14 @@ tr, th, td {
 <div id="content_container">
     <div id="grid_container">
         <div id="dashboard_title">
-            Generate new timetable solutions
+            <h4>Generate new timetable solutions</h4>
         </div>
         <div id="info_container" class="info_frame">
-            Use the form to specify your requirements for the timetable solutions.<br>
-            Note that doing this will reset any existing timetables you have!
+            <p style="font-size:16px;"><i>
+            Please specify your preferences for the timetable structure.<br>
+            You can create new solutions by returning to this page at any point.
+            Note that doing this will reset any existing timetables!
+            </i></p>
             {% if error_messages %}
                 {% for message in error_messages %}
                 <div class="error_message">{{message}}</div>
