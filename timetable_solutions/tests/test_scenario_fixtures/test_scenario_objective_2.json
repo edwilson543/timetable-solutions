@@ -1,0 +1,79 @@
+[
+  {
+    "model": "data.school",
+    "pk": 222222,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 201,
+    "fields": {
+      "day_of_week": 1,
+      "period_duration": "01:00:00",
+      "slot_id": 1,
+      "period_starts_at": "09:00:00",
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 202,
+    "fields": {
+      "day_of_week": 1,
+      "period_duration": "01:00:00",
+      "slot_id": 2,
+      "period_starts_at": "14:00:00",
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 201,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 1,
+      "pupil_id": 1,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 201,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 1,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 201,
+    "fields": {
+      "building": "MB",
+      "room_number": 47,
+      "classroom_id": 1,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.unsolvedclass",
+    "pk": 201,
+    "fields": {
+      "class_id": "ENGLISH",
+      "school": 222222,
+      "subject_name": "ENGLISH",
+      "teacher": 201,
+      "classroom": 201,
+      "total_slots": 1,
+      "n_double_periods": 0,
+      "pupils": [
+        201
+      ]
+    }
+  }
+]

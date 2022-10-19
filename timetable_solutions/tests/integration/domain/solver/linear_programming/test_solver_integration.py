@@ -400,11 +400,11 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
     function.
     """
 
-    fixtures = ["test_scenario_objective_1.json"]
+    fixtures = ["test_scenario_objective_1.json", "test_scenario_objective_2.json"]
 
-    def test_solver_solution_test_scenario_with_obj_1(self):
+    def test_solver_solution_test_scenario_with_objective_1(self):
         """
-        Test scenario targeted at using the optimal free period objective component.
+        Test scenario targeted at using the optimal free period objective component, with a specific time of day.
         We have the following setup:
         Fixed Class / Timetable structure:
             Monday: empty-empty-empty-empty;
@@ -437,3 +437,69 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=3)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=4)].varValue == 1
+
+    def test_solver_solution_test_scenario_with_objective_2_ideal_morning(self):
+        """
+        Test scenario targeted at using the optimal free period objective component, with the morning specified.
+        We have the following setup:
+        Fixed Class / Timetable structure:
+            Monday: MORNING: empty; AFTERNOON: empty;
+        1 Unsolved Class, requiring:
+            1 slot;
+        Optimal free period time:
+            MORNING;
+        Therefore we want the outcome to be that that the unsolved class' one slot takes place in the AFTERNOON.
+        """
+        # Set test parameters
+        school_access_key = 222222
+        morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
+        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
+                                          allow_split_classes_within_each_day=True,
+                                          optimal_free_period_time_of_day=morning)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 2
+        assert len(solver.variables.double_period_variables) == 0
+
+        # See docstring for solution
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 0  # Morn
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 1  # Aft
+
+    def test_solver_solution_test_scenario_with_objective_2_ideal_afternoon(self):
+        """
+        Test scenario targeted at using the optimal free period objective component, with the afternoon specified.
+        We have the following setup:
+        Fixed Class / Timetable structure:
+            Monday: MORNING: empty; AFTERNOON: empty;
+        1 Unsolved Class, requiring:
+            1 slot;
+        Optimal free period time:
+            AFTERNOON;
+        Therefore we want the outcome to be that that the unsolved class' one slot takes place in the MORNING.
+        """
+        # Set test parameters
+        school_access_key = 222222
+        afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
+        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
+                                          allow_split_classes_within_each_day=True,
+                                          optimal_free_period_time_of_day=afternoon)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert len(solver.variables.decision_variables) == 2
+        assert len(solver.variables.double_period_variables) == 0
+
+        # See docstring for solution
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=1)].varValue == 1  # Morn
+        assert solver.variables.decision_variables[slvr.var_key(class_id="ENGLISH", slot_id=2)].varValue == 0  # Aft
