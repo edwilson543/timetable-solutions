@@ -102,7 +102,7 @@ class TimetableSolverObjective:
         Method randomly generating a time between timetable_start-timetable_finish to avoid putting classes at,
         to encourage free periods at this time.
         This is used when a time has not been specified as optimal (i.e. the user has no preference).
-        :return - optimal_free_period_time - float representing the hour on the 24 hour
+        :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
 
         Note that the ideal proportion parameter is not relevant in this case, since all hours are generated randomly.
         Note also that a different random value is generated for each variable
@@ -113,21 +113,45 @@ class TimetableSolverObjective:
     def _get_optimal_free_period_time_specified_time(self):
         """
         Method that ideal_proportion % of the time will just return the user-specified optimal free period time (the
-        repulsive hour), and the 1 - this % of times, return a random float  between timetable_start / timetable_finish
-        :return - optimal_free_period_time - float representing the hour on the 24 hour
+        repulsive hour), and the 1 - this % of times, return a random float between timetable_start / timetable_finish
+        :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
         """
         # With probability (1 - ideal_proportion) we randomly generate a repulsive hour (otherwise return user spec.)
         ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
-        generate_random_repulsive_hour = np.random.random() > ideal_proportion
+        generate_random_optimal_free_period_time = np.random.random() > ideal_proportion
 
-        if generate_random_repulsive_hour:
+        if generate_random_optimal_free_period_time:
             optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
         else:
             optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day.hour
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_morning_specified(self) -> float:
-        pass
+        """
+        Method that the ideal_proportion % of the time will return a random time in the morning, and (1 - ideal_prop) %
+        of the time returns a random time in the afternoon.
+        :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
+        """
+        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        randomly_go_for_afternoon = np.random.random() > ideal_proportion
+
+        if randomly_go_for_afternoon:
+            optimal_free_period_time = np.random.uniform(low=12, high=self._timetable_finish)
+        else:
+            optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=12)
+        return optimal_free_period_time
 
     def _get_optimal_free_period_time_afternoon_specified(self) -> float:
-        pass
+        """
+        Method that the ideal_proportion % of the time will return a random time in the afternoon, and
+        (1 - ideal_prop) % of the time returns a random time in the morning.
+        :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
+        """
+        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        randomly_go_for_morning = np.random.random() > ideal_proportion
+
+        if randomly_go_for_morning:
+            optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=12)
+        else:
+            optimal_free_period_time = np.random.uniform(low=12, high=self._timetable_finish)
+        return optimal_free_period_time
