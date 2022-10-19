@@ -21,6 +21,8 @@ class TestSolverConstraints(test.TestCase):
     def test_add_objective_to_problem(self):
         """
         Test that the total objective function of the timetabling problem is added to the LpProblem instance.
+        No need to test how every possible SolutionSpecification configuration leads to a different objective here,
+        since this is done in the unit tests.
         """
         # Set test parameters
         school_access_key = 123456

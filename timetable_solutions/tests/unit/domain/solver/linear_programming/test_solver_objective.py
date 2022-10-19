@@ -1,7 +1,8 @@
 """
 Unit tests for the methods on the TimetableSolverObjective class.
-In particular, we only test the method relating to individual objective components, and then separately test the methods
-which sum all components and add them to an LpProblem in a separate integration test module
+In particular, we test:
+- The methods calculating the entire objective function, in different solution specification scenarios
+- The methods calculating individual random optimal free periods, each using different logic
 """
 
 # Standard library imports
@@ -38,7 +39,7 @@ class TestTimetableSolverObjective(test.TestCase):
         objective_maker = slvr.TimetableSolverObjective(inputs=data, variables=variables)
         return objective_maker
 
-    # TESTS FOR THE HIGH-LEVEL ENTRY POINT METHOD
+    # TESTS FOR THE HIGH-LEVEL METHOD CALCULATING THE TOTAL OBJECTIVE
     def test_get_free_period_time_of_day_objective_optimal_free_period_is_no_preference(self):
         """
         Unit test for the objective when the no specific time is optimal for the free periods
