@@ -1,3 +1,7 @@
+"""
+Integration tests for the views in the create_timetable app
+"""
+
 # Standard library imports
 import datetime as dt
 from typing import Dict
@@ -14,7 +18,8 @@ from interfaces.create_timetables import forms
 
 class TestCreateTimetableFormView(test.TestCase):
     """
-    Class for unit tests of the view allowing users to create timetable solutions.
+    Class for integration tests of the CreateTimetable FormView allowing users to create timetable solutions.
+    'Integration' since all tests involve fully running the solver.
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
