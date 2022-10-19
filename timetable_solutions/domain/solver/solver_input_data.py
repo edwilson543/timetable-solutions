@@ -62,8 +62,11 @@ class TimetableSolverInputs:
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
 
+        # Check that the specification and data is compatible (invalid data has already been checked
+        self.error_messages = []
         # TODO - pre-processing - if they have an unsolved class where n distinct periods > n days, add an error
         # todo message but don't raise
+        # TODO - downstream picking up of this
 
     # PROPERTIES
     @property
@@ -155,3 +158,11 @@ class TimetableSolverInputs:
         slot = self.timetable_slots.get(slot_id=slot_id)
         period_starts_at = slot.period_starts_at
         return period_starts_at
+
+    # CHECKS
+    def check_specification_aligns_with_unsolved_class_data(self):
+        # TODO - checking timetable can be fulfilled, and produce error message if not
+        # Create a new instance attribute
+        # TODO to test, can just create a new unsolved class instance that's not valid (e.g.11 classes,
+        #  disallow same day)
+        pass
