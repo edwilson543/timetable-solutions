@@ -30,10 +30,11 @@ class TestSolver(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    def test_solver_finds_a_solution_for_default_fixtures_no_objective(self):
+    def test_solver_finds_a_solution_for_default_fixtures_random_objective(self):
         """
         Test that the solver can find a problem for the full LP problem, EXCLUDING an objective, for the default
         fixture set.
+        The objective is 'random' since we do not specify an 'optimal_free_period_time_of_day'
         """
         # Set test parameters
         school_access_key = 123456
@@ -48,16 +49,18 @@ class TestSolver(test.TestCase):
         # Check outcome - i.e. that a solution has been found
         assert lp.LpStatus[solver.problem.status] == "Optimal"
 
-    def test_solver_finds_a_solution_for_default_fixtures_with_objective(self):
+    def test_solver_finds_a_solution_for_default_fixtures_with_non_random_objective(self):
         """
         Test that the solver can find a problem for the full LP problem, INCLUDING an objective, for the default
         fixture set.
+        The objective is 'non-random' since we specify 'optimal_free_period_time_of_day' at a specific time
         """
         # Set test parameters
         school_access_key = 123456
         spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
                                           allow_triple_periods_and_above=False,
-                                          optimal_free_period_time_of_day=dt.time(hour=14))
+                                          optimal_free_period_time_of_day=dt.time(hour=14),
+                                          ideal_proportion_of_free_periods_at_this_time=0.75)
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
 
@@ -68,10 +71,11 @@ class TestSolver(test.TestCase):
         assert lp.LpStatus[solver.problem.status] == "Optimal"
 
 
-class TestSolverScenarioSolutionsNoObjective(test.TestCase):
+class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
     Tests where we are after a specific solution. See individual docstrings for scenario setups.
-    All scenarios 1-10 do NOT include an objective function - see test class below for this.
+    'ConstraintDriven': The constraints are what determines the solution
+    'RandomObjective': The objective is randomly generated, and as such should not drive the solution
     """
 
     fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
@@ -389,13 +393,14 @@ class TestSolverScenarioSolutionsNoObjective(test.TestCase):
         assert sum([tuesday_1_2, tuesday_2_3, tuesday_3_4]) == 1
 
 
-class TestSolverScenarioSolutionsWithObjective(test.TestCase):
+class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
     """
     Tests where we are after a specific solution. See individual docstrings for scenario setups.
-    All scenarios include an objective function.
+    'ObjectiveDrive' - the scenario is setup such that the optimal solution is entirely dictated by the objective
+    function.
     """
 
-    fixtures = ["test_scenario_with_obj_1.json"]
+    fixtures = ["test_scenario_objective_1.json"]
 
     def test_solver_solution_test_scenario_with_obj_1(self):
         """
