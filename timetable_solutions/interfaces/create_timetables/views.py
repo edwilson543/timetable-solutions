@@ -1,3 +1,6 @@
+"""
+Module containing the view class for the timetable creation page.
+"""
 
 # Standard library imports
 from typing import List
