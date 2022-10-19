@@ -120,4 +120,4 @@ LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "dashboard"
 
 # Testing
-FIXTURE_DIRS = [BASE_DIR / "tests" / "fixtures"]
+FIXTURE_DIRS = [BASE_DIR / "tests" / "test_scenario_fixtures"]
