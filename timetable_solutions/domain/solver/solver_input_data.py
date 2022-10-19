@@ -118,8 +118,6 @@ class TimetableSolverInputs:
         :return: e.g. if the timetable starts at 9 AM, 9.0 will be returned. Similarly 2:30 PM -> 14.5
         """
         start = min(slot.period_starts_at.hour for slot in self.timetable_slots)
-        finish = max(slot.period_starts_at.hour + (slot.period_duration.total_seconds() / 3600) for
-                     slot in self.timetable_slots)
         return start
 
     @property
