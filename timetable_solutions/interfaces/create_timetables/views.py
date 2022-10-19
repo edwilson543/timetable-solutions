@@ -47,15 +47,6 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             context_data["error_messages"] = error_messages
             return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
 
-    def get_form_kwargs(self):
-        """Method used to add kwargs during the form's initialisation"""
-        kwargs = super().get_form_kwargs()
-        school_access_key = self.request.user.profile.school.school_access_key
-
-        timeslots = domain_utils.get_user_timetable_slots(school_access_key=school_access_key)
-        kwargs["available_time_slots"] = timeslots
-        return kwargs
-
     def _run_solver_from_view(self, form) -> List[str]:
         """
         Method to run the solver at the point when the user submits their form.
@@ -66,3 +57,15 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         error_messages = solver.produce_timetable_solutions(
             school_access_key=school_access_key, solution_specification=solution_spec)
         return error_messages
+
+    def get_form_kwargs(self):
+        """
+        Method used to add kwargs during the form's initialisation.
+        Specifically we add available_time_slots, which get added to the choices for one of the form fields in __init__
+        """
+        kwargs = super().get_form_kwargs()
+        school_access_key = self.request.user.profile.school.school_access_key
+
+        timeslots = domain_utils.get_user_timetable_slots(school_access_key=school_access_key)
+        kwargs["available_time_slots"] = timeslots
+        return kwargs
