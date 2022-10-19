@@ -84,6 +84,7 @@ class TestCreateTimetableFormView(test.TestCase):
             "allow_split_classes_within_each_day": True,
             "allow_triple_periods_and_above": True,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
+            "ideal_proportion_of_free_periods_at_this_time": 1.0,
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
@@ -96,18 +97,45 @@ class TestCreateTimetableFormView(test.TestCase):
             "allow_split_classes_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
+            "ideal_proportion_of_free_periods_at_this_time": 0.70,
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
-    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time(self):
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_exact(self):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
-        includes an optimum free period runs the solver as expected
+        includes an specific optimal free period time and ideal proportion, the solver runs as expected
         """
         form_data = {
             "allow_split_classes_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": dt.time(hour=9),
+            "ideal_proportion_of_free_periods_at_this_time": 0.5,
         }
-        # TODO - check the below once implemented
+        self._post_form_data_to_url_and_test_outcome(form_data=form_data)
+
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_morning(self):
+        """
+        Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
+        includes an optimum free period specified as the MORNING, and an ideal proportion, the solver runs as expected
+        """
+        form_data = {
+            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_triple_periods_and_above": False,
+            "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.MORNING,
+            "ideal_proportion_of_free_periods_at_this_time": 0.5,
+        }
+        self._post_form_data_to_url_and_test_outcome(form_data=form_data)
+
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_afternoon(self):
+        """
+        Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
+        includes an optimum free period specified as the AFTERNOON, and an ideal proportion, the solver runs as expected
+        """
+        form_data = {
+            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_triple_periods_and_above": False,
+            "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON,
+            "ideal_proportion_of_free_periods_at_this_time": 0.5,
+        }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
