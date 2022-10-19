@@ -1,5 +1,9 @@
 """Unit tests for the instantiation of solver variables"""
 
+# Standard library imports
+from functools import lru_cache
+from unittest import mock
+
 # Third party imports
 import pulp as lp
 
@@ -15,16 +19,27 @@ class TestTimetableSolverVariables(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes_lunch.json", "unsolved_classes.json"]
 
-    solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                               allow_triple_periods_and_above=True)
+    @staticmethod
+    @lru_cache(maxsize=1)
+    def get_variables_maker() -> slvr.TimetableSolverVariables:
+        """
+        Utility method used to return an instance of the class holding the timetable variables.
+        Note that we patch the methods called at instantiation, to avoid silently testing that they work
+        """
+        solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
+                                                   allow_triple_periods_and_above=True)
+        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=solution_spec)
+        with mock.patch.object(slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None),\
+                mock.patch.object(slvr.TimetableSolverVariables, "_get_double_period_variables", return_value=None):
+            variables_maker = slvr.TimetableSolverVariables(inputs=input_data)
+        return variables_maker
 
     def test_get_decision_variables(self):
         """
         Test for the decision variable instantiation.
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
-        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables_maker = self.get_variables_maker()
 
         # Execute test unit
         variables = variables_maker._get_decision_variables()
@@ -43,9 +58,8 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the method removing irrelevant variables from the variables dict.
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
-        variable_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
-        variables = variable_maker._get_decision_variables(strip=False)
+        variables_maker = self.get_variables_maker()
+        variables = variables_maker._get_decision_variables(strip=False)
 
         # We add an additional variable to the variables dictionary, to be stripped out
         variable_key = slvr.var_key(class_id="LUNCH_1", slot_id=21)
@@ -53,7 +67,7 @@ class TestTimetableSolverVariables(test.TestCase):
         variables = variables | additional_variable
 
         # Execute the test unit  - note that LUNCH_1 is a know fixed class so we don't need a variable for it
-        variable_maker._strip_decision_variables(variables=variables)
+        variables_maker._strip_decision_variables(variables=variables)
 
         # Test the outcome
         assert variable_key not in variables.keys()
@@ -63,8 +77,7 @@ class TestTimetableSolverVariables(test.TestCase):
         Test of the dependent, double period variables instantiation.
         """
         # Set parameters
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
-        variables_maker = slvr.TimetableSolverVariables(inputs=input_data, set_variables=False)
+        variables_maker = self.get_variables_maker()
 
         # Execute test unit
         variables = variables_maker._get_double_period_variables()
