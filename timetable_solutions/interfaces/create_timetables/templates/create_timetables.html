@@ -64,6 +64,11 @@ tr, th, td {
         <div id="info_container" class="info_frame">
             Use the form to specify your requirements for the timetable solutions.<br>
             Note that doing this will reset any existing timetables you have!
+            {% if error_messages %}
+                {% for message in error_messages %}
+                <div class="error_message">{{message}}</div>
+                {% endfor %}
+            {% endif %}
         </div>
         <div id="form_container" class="info_frame">
             <form enctype="multipart/form-data" action="{% url 'create_timetables' %}" method="post">
