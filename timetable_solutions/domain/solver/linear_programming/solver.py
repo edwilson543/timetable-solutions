@@ -25,6 +25,9 @@ class TimetableSolver:
 
         # Formulate the linear programming problem
         self.input_data = input_data
+        if len(self.input_data.error_messages) > 0:
+            raise ValueError("TimetableSolver was passed input data containing errors!\n"
+                             f"{self.input_data.error_messages}")
         self.variables = TimetableSolverVariables(inputs=input_data)
 
         constraint_maker = TimetableSolverConstraints(inputs=input_data, variables=self.variables)

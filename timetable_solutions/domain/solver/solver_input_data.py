@@ -62,11 +62,9 @@ class TimetableSolverInputs:
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
 
-        # Check that the specification and data is compatible (invalid data has already been checked
+        # Check that solution spec and data are compatible (data that's individually invalid has already been checked)
         self.error_messages = []
-        # TODO - pre-processing - if they have an unsolved class where n distinct periods > n days, add an error
-        # todo message but don't raise
-        # TODO - downstream picking up of this
+        self._check_specification_aligns_with_unsolved_class_data()
 
     # PROPERTIES
     @property
@@ -160,9 +158,16 @@ class TimetableSolverInputs:
         return period_starts_at
 
     # CHECKS
-    def check_specification_aligns_with_unsolved_class_data(self):
-        # TODO - checking timetable can be fulfilled, and produce error message if not
-        # Create a new instance attribute
-        # TODO to test, can just create a new unsolved class instance that's not valid (e.g.11 classes,
-        #  disallow same day)
-        pass
+    def _check_specification_aligns_with_unsolved_class_data(self) -> None:
+        """
+        Method to check whether it's possible to find a solution which disallows split classes within each day, before
+        formulating the lp problem, since we know it would be infeasible.
+        Side-effects: Store a user-targeted error message, specifying the options for resolution. Clearly we could just
+        resolve directly within this method, but given the different options, the choice is left to the user.
+        """
+        if not self.solution_specification.allow_split_classes_within_each_day:
+            max_required_distinct_days = max(usc.total_slots - usc.n_double_periods for usc in self.unsolved_classes)
+            available_distinct_days = len(self.available_days)
+            if max_required_distinct_days > available_distinct_days:
+                self.error_messages.append("Classes require too many distinct slots to all be on separate days. "
+                                           "Please allow this in your solution, or ammend your data!")
