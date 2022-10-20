@@ -68,7 +68,8 @@ class UnsolvedClass(models.Model):
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
         unsolved_cls.save()
-        unsolved_cls.pupils.add(*pupils)
+        if len(pupils) > 0:
+            unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 
     def clean(self) -> None:

@@ -79,8 +79,10 @@ class FixedClass(models.Model):
             classroom_id=classroom_id, user_defined=user_defined)
         fixed_cls.save()
 
-        fixed_cls.add_pupils(pupils=pupils)
-        fixed_cls.add_time_slots(time_slots=time_slots)
+        if len(pupils) > 0:
+            fixed_cls.add_pupils(pupils=pupils)
+        if len(time_slots) > 0:
+            fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
 
