@@ -1,6 +1,7 @@
 """Test for the TimetableSolverInputs class """
 
 # Standard library imports
+from copy import deepcopy
 import datetime as dt
 
 # Django imports
@@ -187,3 +188,34 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Check outcome
         assert period_starts_at == dt.time(hour=9)
+
+    # CHECKS TESTS
+    def test_check_specification_aligns_with_unsolved_class_data_no_issues(self):
+        """
+        Test that we retain an empty list of error messages after performing the checks, when there are no issues
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+
+        # Check outcome - note the checks get performed at instantiation
+        assert data.error_messages == []
+
+    def test_check_specification_aligns_with_unsolved_class_data_forced_issue(self):
+        """
+        Test that we get the expected error message when the solution spec and input data are not compatible.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        spec = deepcopy(self.solution_spec)
+        # Create a source of incompatibility - a spec disallowing split classes, but requiring too many (100...)
+        spec.allow_split_classes_within_each_day = False
+        pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        usc = models.UnsolvedClass.create_new(
+            school_id=school_access_key, class_id="TEST", subject_name="MATHS", teacher_id=1, classroom_id=1,
+            total_slots=100, n_double_periods=1, pupils=pupils)
+
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+
+        # Check outcome - note the checks get performed at instantiation
+        assert len(data.error_messages) == 1
