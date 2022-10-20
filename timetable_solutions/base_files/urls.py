@@ -20,9 +20,10 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('api/', include('interfaces.api_to_solver.urls')),
+    path('api/', include('interfaces.rest_api.urls')),
     path('view/', include('interfaces.view_timetables.urls')),
-    path('requirements/', include('interfaces.data_upload.urls')),
+    path('data/', include('interfaces.data_upload.urls')),
+    path('create/', include('interfaces.create_timetables.urls')),
     path('users/', include('interfaces.users.urls')),
     path('admin/', admin.site.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

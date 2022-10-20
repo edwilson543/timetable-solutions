@@ -8,7 +8,7 @@ from data import models
 from domain import solver as slvr
 
 
-class TestTimetableSolverInputsLoading(test.TestCase):
+class TestTimetableSolverOutcome(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "unsolved_classes.json"]

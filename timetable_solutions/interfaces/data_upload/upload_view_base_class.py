@@ -10,10 +10,12 @@ from typing import Dict, Type, Union, Optional
 
 # Django imports
 from django.contrib.auth.decorators import login_required
-from django.forms import Form
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django import forms
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
-from django.views import View
+from django import views
+from django import urls
 
 # Local application imports
 from data.utils import ModelSubclass
@@ -29,7 +31,7 @@ class RequiredUpload:
     """
     form_name: str
     upload_status: Union[str, bool]
-    empty_form: Form
+    empty_form: forms.Form
     url_name: str
 
     def __post_init__(self):
@@ -84,7 +86,9 @@ def upload_page_view(request, error_message: Optional[str] = None):
     return HttpResponse(template.render(context, request))
 
 
-class DataUploadView(View):
+class DataUploadView(LoginRequiredMixin, views.View):
+    login_url = urls.reverse_lazy("login")
+
     def __init__(self,
                  file_structure: data_upload_processing.FileStructure,
                  model: Type[ModelSubclass],

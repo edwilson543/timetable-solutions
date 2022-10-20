@@ -1,0 +1,173 @@
+/* ====================
+Head strap styling
+==================== */
+#head_strap {
+    /* Positioning */
+    position: absolute;
+    top: 0;
+
+    /* Display */
+    width: 100%;
+    height: 60px;
+
+    /*  Typography */
+    line-height: 60px;
+    vertical-align: middle;
+
+    /* Background */
+    background-color: #11014A;
+}
+
+#head_strap_text {
+    /* Display */
+    float: left;
+    margin-left: 20px;
+
+    /* Typography */
+    font-size: 30px;
+    color: white;
+    vertical-align: middle;
+}
+
+@media screen and (max-width: 900px) {
+  #login_info {display: none;}
+}
+#login_info {
+    /* Display */
+    float: right;
+    margin-right: 20px;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+/* ====================
+Navbar styling
+==================== */
+#navbar {
+    /* Positioning - top corresponds to bottom of head strap (60px) */
+    position: absolute;
+    top: 60px;
+    z-index: 100;
+
+    /* Display */
+    height: 40px;
+    width: 100%;
+
+    /* Typography */
+    line-height: 40px;
+    vertical-align: middle;
+
+    /* Background */
+    background-color: rgba(0, 0, 0, 0.3);
+}
+#navbar:hover {background-color: rgba(0, 0, 0, 1.0);}
+
+#navbar_text {
+    /* Display */
+    margin-left: 20px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    vertical-align: middle;
+
+    /* Background */
+    opacity: 1.0;
+}
+
+/* ====================
+Parent content container styling
+==================== */
+#parent_container {
+    /* Positioning - at the top of the head strap */
+    position: absolute;
+    top: 100px;
+
+    /* Display and box model */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 80%;
+}
+
+/* ====================
+Footer styling
+==================== */
+#footer_info {
+    position: absolute;
+    bottom: 0px;
+
+    /* Display */
+    width: 100%;
+    height: 20px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-top: 20px;
+
+    /* Typography */
+    font-size: 12px;
+    text-align: center;
+    vertical-align: middle;
+
+    /* Border */
+    border-top: 1px solid black;
+    border-top-style: double;
+}
+
+/* ====================
+Error message banners
+==================== */
+.error_message {
+    /* Display */
+    padding: 3px;
+    width: 300 px;
+    margin: 5px;
+
+    /* Typography */
+    font-size: 12px;
+    color: #690007;
+
+    /* Background and border */
+    background-color: #ffb0b5;
+    border: 1px solid #690007;
+    border-radius: 4px;
+}
+
+/* ====================
+Miscellaneous
+==================== */
+* {
+    margin:0;
+    padding:0;
+    font-family: Arial;
+}
+body, html {
+    /* Display */
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    /* Background */
+    background-color: #d6d4d4;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+a:link,
+a:visited {text-decoration: none;}
+
+label,
+input {display: block;}
+
+span.helptext {
+    display: none;
+}

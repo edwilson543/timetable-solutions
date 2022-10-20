@@ -20,9 +20,10 @@ class TestTimetableSolverOutcome(test.TestCase):
         instance should initiate and complete all processing, so we check that this is indeed the case.
         """
         # Set test parameters
-        # Set test parameters
         school_access_key = 111111
-        data = slvr.TimetableSolverInputs(school_id=school_access_key)
+        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
+                                          allow_triple_periods_and_above=True)
+        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
         solver = slvr.TimetableSolver(input_data=data)
         solver.solve()
 

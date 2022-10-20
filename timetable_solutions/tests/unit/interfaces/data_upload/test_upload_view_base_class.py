@@ -46,10 +46,22 @@ class TestUploadPageReviewNoUploads(TestCase):
             self.assertEqual(required_upload.upload_status, "Incomplete")
             self.assertIsInstance(required_upload.empty_form, FormSubclass)
 
+    # Logged out user tests
     def test_upload_page_view_no_login_redirects_to_login_page(self):
-        """Test that trying to access the data upload page redirects logged out users to the login page."""
+        """
+        Test that trying to access the data upload page redirects logged out users to the login page.
+        """
         url = reverse("file_upload_page")
         response = self.client.get(url)
+        self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
+
+    def test_post_request_no_login_to_a_file_upload_url_redirects_to_login_page(self):
+        """
+        Test that trying to post data (e.g. to the pupil url, equivalently for all other files) redirects logged out
+        users to the login page.
+        """
+        url = reverse("pupil_list")
+        response = self.client.post(url, data={"junk": "not-a-file"})
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
 

@@ -5,78 +5,14 @@
 {% load static %}
 
 <head>
+
 {% block head_content %}
 <title> View timetables </title>
+<link rel="stylesheet" href="{% static 'stylesheets/app_dashboard_base.css' %}">
 {% endblock %}
+
 <style>
 {% block style_block %}
-body {
-    background-image: url("{% static 'img/patterns_background.png' %}");
-    background-position: center;
-    background-repeat: repeat;
-    background-size: contain;
-}
-a {text-decoration: none;}
-#parent_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 90%;
-}
-#content_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    background-color: white;
-    width: 800px;
-    height: 70%;
-    padding: 20px;
-    border: 3px solid rgba(51, 0, 61, 0.5);
-    border-radius: 10px;
-    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
-}
-#grid_container {
-    width: 90%;
-    height: 100%;
-    display: grid;
-    grid-auto-flow: column;
-    grid-template-columns: auto auto;
-    grid-template-rows: 40px auto auto;
-    column-gap: 5px;
-    row-gap: 5px;
-    margin: 5px;
-    background-color: rgba(255, 255, 255, 0.6);
-    padding: 5px;
-}
-
-#dashboard_title {
-    grid-row: 1;
-    grid-column: 1 / 3;
-    line-height: 20px;
-    background-color: #11014A;
-    color: white;
-    vertical-align: middle;
-    border: 1px solid black;
-    border-radius: 5px;
-    text-align: center;
-    padding: 10px;
-    font-size: 20px;
-}
-
-.info_frame {
-    background-color: #e0e0e0;
-    color: black;
-    border: 2px solid black;
-    border-radius: 5px;
-    font-size: 15px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-}
 #summary_info {
     grid-row: 2 / 4;
     grid-column: 1;
@@ -116,50 +52,47 @@ li {
 
 <body>
 {% block content %}
+<div id="content_container">
+    <div id="grid_container">
 
-<div id="parent_container">
-    <div id="content_container">
-        <div id="grid_container">
-
-            <div id="dashboard_title">
-                {% if not True %}
-                <h4>No timetable solutions were found</h4>
-                {% else %}
-                <h4>Timetable solutions have been found!</h4>
-            </div>
-            <div id="summary_info" class="info_frame">
-                <ul>
-                    <li>Timetable solutions for a total of {{total_classes}} classes have been found</li>
-                    <li>{{total_lessons}} lessons will be taught each week</li>
-                    <li>The busiest timeslot of the week is {{busiest_slot.period_starts_at}} on {{busiest_slot.day_of_week | title}}</li>
-                </ul>
-            </div>
-
-            <div id ="pupil_info" class="pup_teach_info info_frame">
-                <ul>
-                    <li>Timetables have been generated for all {{total_pupils}} pupils</li>
-                </ul>
-                <hr style="color:black;width:80%;margin-bottom:15px;">
-                <a href="{% url 'pupils_navigator' %}" class="link_button">
-                    View pupil timetables
-                </a>
-            </div>
-
-            <div id="teacher_info" class="pup_teach_info info_frame">
-                <ul>
-                    <li>Timetables have been generated for all {{total_teachers}} teachers</li>
-                </ul>
-                <hr style="color:black;width:80%;margin-bottom:15px;">
-                <a href="{% url 'teachers_navigator' %}" class="link_button">
-                    View teacher timetables
-                </a>
-            </div>
+        <div id="dashboard_title">
+            {% if not True %}
+            <h4>No timetable solutions were found</h4>
+            {% else %}
+            <h4>Timetable solutions have been found!</h4>
+        </div>
+        <div id="summary_info" class="info_frame">
+            <ul>
+                <li>Timetable solutions for a total of {{total_classes}} classes have been found</li>
+                <li>{{total_lessons}} lessons will be taught each week</li>
+                <li>The busiest timeslot of the week is {{busiest_slot.period_starts_at}} on {{busiest_slot.day_of_week | title}}</li>
+            </ul>
         </div>
 
-        {% endif %}
-    </div>
-</div>
+        <div id ="pupil_info" class="pup_teach_info info_frame">
+            <ul>
+                <li>Timetables have been generated for all {{total_pupils}} pupils</li>
+            </ul>
+            <hr style="color:black;width:80%;margin-bottom:15px;">
+            <a href="{% url 'pupils_navigator' %}" class="link_button">
+                View pupil timetables
+            </a>
+        </div>
 
+        <div id="teacher_info" class="pup_teach_info info_frame">
+            <ul>
+                <li>Timetables have been generated for all {{total_teachers}} teachers</li>
+            </ul>
+            <hr style="color:black;width:80%;margin-bottom:15px;">
+            <a href="{% url 'teachers_navigator' %}" class="link_button">
+                View teacher timetables
+            </a>
+        </div>
+    </div>
+
+    {% endif %}
+</div>
 {% endblock %}
+
 </body>
 </html>

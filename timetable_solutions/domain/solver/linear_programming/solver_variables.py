@@ -23,17 +23,14 @@ class TimetableSolverVariables:
     """
 
     def __init__(self,
-                 inputs: TimetableSolverInputs,
-                 set_variables: bool = True):
+                 inputs: TimetableSolverInputs):
         """
         :param inputs: data used to create the data - one decision variable is created per unique (class, slot)
-        :param set_variables: - whether or not to instantiate all variables at the point of class instantiation
         """
         self._inputs = inputs
 
-        if set_variables:
-            self.decision_variables = self._get_decision_variables()
-            self.double_period_variables = self._get_double_period_variables()
+        self.decision_variables = self._get_decision_variables()
+        self.double_period_variables = self._get_double_period_variables()
 
     def _get_decision_variables(self, strip: bool = True) -> Dict[var_key, lp.LpVariable]:
         """
@@ -64,6 +61,7 @@ class TimetableSolverVariables:
                     # No need to access the timetable_slot's slot_id, since this is how it's stored on the FixedClass
                     variables.pop(variable_key)
 
+    # DEPENDENT VARIABLES
     def _get_double_period_variables(self) -> Dict[doubles_var_key, lp.LpVariable]:
         """
         Method to get the pulp dependent variables used to decide when double-periods should go.
@@ -76,9 +74,9 @@ class TimetableSolverVariables:
             if unsolved_class.n_double_periods == 0:
                 continue
             for double_p in self._inputs.consecutive_slots:
-                var_key = doubles_var_key(class_id=unsolved_class.class_id,
-                                          slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
+                key = doubles_var_key(
+                    class_id=unsolved_class.class_id, slot_1_id=double_p[0].slot_id, slot_2_id=double_p[1].slot_id)
                 var_name = f"{unsolved_class.class_id}_double_period_at_{double_p[0].slot_id}_{double_p[1].slot_id}"
                 variable = lp.LpVariable(var_name, cat="Binary")
-                variables[var_key] = variable
+                variables[key] = variable
         return variables

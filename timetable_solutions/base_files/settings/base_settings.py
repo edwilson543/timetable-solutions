@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'interfaces.users',
     'interfaces.view_timetables',
     'interfaces.data_upload',
-    'interfaces.api_to_solver',
+    'interfaces.create_timetables',
+    'interfaces.rest_api',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,7 +52,7 @@ ROOT_URLCONF = 'base_files.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "base_files" / "templates"],
+        'DIRS': [BASE_DIR / "interfaces" / "base_templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -104,7 +105,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 STATICFILES_DIRS = [
-   BASE_DIR / 'base_files' / 'static',
+   BASE_DIR / 'interfaces' / 'base_static',
 ]
 
 # Default primary key field type
@@ -119,4 +120,4 @@ LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "dashboard"
 
 # Testing
-FIXTURE_DIRS = [BASE_DIR / "tests" / "fixtures"]
+FIXTURE_DIRS = [BASE_DIR / "tests" / "test_scenario_fixtures"]

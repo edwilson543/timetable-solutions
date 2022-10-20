@@ -31,8 +31,8 @@ class UnsolvedClass(models.Model):
     finds the timetable structure that works across the board. Twin to "FixedClass" in view_timetables app.
 
     total_slots - total number of lessons per week, including any FixedClasses and double periods (which count as 2)
-    n_double_periods - the number of ADDITIONAL double periods the unsolved class should be taught for, on top of any
-    specified as a FixedClass. Still subtracted from total slots.
+    n_double_periods - the number of double periods the unsolved class should be taught for, INCLUDING any FixedClass
+    double periods. All count towards total_slots.
     """
     class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -68,7 +68,8 @@ class UnsolvedClass(models.Model):
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
         unsolved_cls.save()
-        unsolved_cls.pupils.add(*pupils)
+        if len(pupils) > 0:
+            unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 
     def clean(self) -> None:
