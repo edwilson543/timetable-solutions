@@ -11,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import FormView
 
 # Local application imports
+from constants.url_names import UrlName
 from domain import solver
 from domain import utils as domain_utils
 from interfaces.create_timetables import forms
@@ -27,12 +28,12 @@ class CreateTimetable(LoginRequiredMixin, FormView):
     imports.
     """
     # LoginRequiredMixin attributes
-    login_url = urls.reverse_lazy("login")
+    login_url = urls.reverse_lazy(UrlName.LOGIN.value)
 
     # FormView attributes
     form_class = forms.SolutionSpecification
     template_name = "create_timetables.html"
-    success_url = urls.reverse_lazy("selection_dashboard")
+    success_url = urls.reverse_lazy(UrlName.VIEW_TIMETABLES_DASH.value)
 
     def form_valid(self, form):
         """
