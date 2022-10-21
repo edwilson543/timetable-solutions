@@ -26,39 +26,41 @@ body {
 </head>
 
 <body>
-<!--Add a 'head strap'-->
-<div id="head_strap">
-    <i id="head_strap_text">Timetable Solutions</i>
+<div id="full_page_wrapper">
+    <!--Add the 'head strap'-->
+    <div id="head_strap">
+        <i id="head_strap_text">Timetable Solutions</i>
+        {% if user.is_authenticated %}
+            <span id="login_info">
+                {{user.profile.school.school_name}} | {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
+            </span>
+        {% endif %}
+    </div>
+
+    <!--Add the navigation bar-->
     {% if user.is_authenticated %}
-        <span id="login_info">
-            {{user.profile.school.school_name}} | {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
-        </span>
-    {% endif %}
-</div>
-
-<!--Add a navigation bar-->
-{% if user.is_authenticated %}
-<div id="navbar">
-    <p id="navbar_text">
-        <a href="{% url 'dashboard' %}">Home</a> |
-        <a href="{% url 'file_upload_page' %}">Data</a> |
-        <a href="{% url 'create_timetables' %}">Create</a> |
-        <a href="{% url 'selection_dashboard' %}">View</a>
-    </p>
-</div>
-{% endif %}
-
-<div id="parent_container">
-    {% block content %}
-    {% endblock %}
-    <div id="footer_info">
-        <p>
-            Copyright Timetable Solutions Ltd 2022 |
-            edward.e.j.wilson@gmail.com |
-            +447810804531 |
-            London | New York | Singapore
+    <div id="navbar">
+        <p id="navbar_text">
+            <a href="{% url 'dashboard' %}">Home</a> |
+            <a href="{% url 'file_upload_page' %}">Data</a> |
+            <a href="{% url 'create_timetables' %}">Create</a> |
+            <a href="{% url 'selection_dashboard' %}">View</a>
         </p>
     </div>
+    {% endif %}
+    <div id="parent_container">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+
+<div id="footer_info">
+    <p>
+        Copyright Timetable Solutions Ltd 2022 |
+        edward.e.j.wilson@gmail.com |
+        +447810804531 |
+        London | New York | Singapore
+    </p>
 </div>
 
 </body>
