@@ -1,11 +1,16 @@
+"""
+Unit tests for the views in the users app, which navigate login and registration.
+"""
+
 # Django imports
 from django.contrib.auth.models import User
 from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from interfaces.users import forms
+from constants.url_names import UrlName
 from data import models
+from interfaces.users import forms
 
 
 class TestRegistration(TestCase):
@@ -14,55 +19,82 @@ class TestRegistration(TestCase):
 
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
-        """We test that successful registration redirects to the correct url at the next stage of registration"""
-        url = reverse('register')
+        """
+        Test that successful registration redirects to the correct url at the next stage of registration
+        """
+        # Set test parameters
+        url = reverse(UrlName.REGISTER.value)
         form_data = {"username": "dummy_teacher2", "email": "dummy_teacher@dt.co.uk",
                      "password1": "dt123dt123", "password2": "dt123dt123",
                      "first_name": "dummy", "last_name": "teacher"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
+
+        # Check outcome
         self.assertIsNotNone(User.objects.get(username="dummy_teacher2"))
         self.assertEqual(User.objects.get(username="dummy_teacher2").first_name, "dummy")
         self.assertEqual(User.objects.get(username="dummy_teacher2").last_name, "teacher")
-        self.assertRedirects(response, reverse("registration_pivot"))
+        self.assertRedirects(response, reverse(UrlName.REGISTER_PIVOT.value))
 
     def test_register_new_user_invalid_credentials_passwords_different(self):
-        """Test that entering invalid credentials simply leads back to the registration form plus error messages"""
-        url = reverse('register')
+        """
+        Test that entering invalid credentials simply leads back to the registration form plus error messages
+        """
+        # Set test parameters
+        url = reverse(UrlName.REGISTER.value)
         form_data = {"username": "dummy_teacher2", "email": "dummy_teacher@dt.co.uk",
                      "password1": "DIFFERENT_TO_PW_2", "password2": "dt123dt123"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
         response_form = response.context["form"]
+
+        # Check outcome
         self.assertEqual(response_form, forms.CustomUserCreation)
         response_error_message = response.context["error_messages"]["password_mismatch"]
         self.assertIn("password", response_error_message)
 
-    def login_dummy_user(self):
-        """Method to login a user, so that they can reach the later stages of registration."""
+    # PIVOT TESTS
+    def login_dummy_user(self) -> None:
+        """
+        Helper method to login a user, so that they can reach the later stages of registration.
+        Side-effects - the test client's user becomes authenticated.
+        """
         user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
         self.client.login(username="dummy_teacher2", password="dt123dt123")
 
-    # PIVOT TESTS
     def test_register_school_pivot_towards_profile_registration(self):
         """
         If the user is part of an existing school_id, they should be redirected to enter profile details (i.e. associate
         themselves with the relevant school_id)
         """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('registration_pivot')
+        url = reverse(UrlName.REGISTER_PIVOT.value)
         form_data = {"existing_school": "EXISTING"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
-        self.assertRedirects(response, reverse("profile_registration"))
+
+        # Check outcome
+        self.assertRedirects(response, reverse(UrlName.PROFILE_REGISTRATION.value))
 
     def test_register_school_pivot_towards_school_registration(self):
         """
         Test that stating they are not part of an existing school_id redirects user to register their school_id for
         the first time
         """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse("registration_pivot")
+        url = reverse(UrlName.REGISTER_PIVOT.value)
         form_data = {"existing_school": "NEW"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
-        self.assertRedirects(response, reverse("school_registration"))
+
+        # Check outcome
+        self.assertRedirects(response, reverse(UrlName.SCHOOL_REGISTRATION.value))
 
     # SCHOOL REGISTRATION TESTS
     def test_register_new_school(self):
@@ -70,11 +102,16 @@ class TestRegistration(TestCase):
         Test that a school_id can be registered via the relevant form, and the user then gets redirected to their
         dashboard.
         """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('school_registration')
+        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
         form_data = {"school_access_key": 654321, "school_name": "Fake School"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
-        self.assertRedirects(response, reverse("dashboard"))
+
+        # Check outcome
+        self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
 
         new_school = models.School.objects.get_individual_school(school_id=654321)
         self.assertIsInstance(new_school, models.School)
@@ -84,51 +121,86 @@ class TestRegistration(TestCase):
         self.assertEqual(user_school_id, 654321)
 
     def test_register_new_school_access_key_not_6_digits(self):
-        """Should return the same form with an error message that tells users access key is not 6 digits."""
+        """
+        Should return the same form with an error message that tells users access key is not 6 digits.
+        """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('school_registration')
+        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
         form_data = {"school_access_key": 12345, "school_name": "Fake School"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
+
+        # Check outcome
         self.assertEqual(response.context["error_message"], "Access key is not 6 digits")
         self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     def test_register_new_school_access_key_already_taken(self):
-        """Should return the same form with an error message that tells user access key is already taken."""
+        """
+        Specifying an existing access key should return the same form with an error message that tells user access key
+        is already taken.
+        """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('school_registration')
+        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
         form_data = {"school_access_key": 123456, "school_name": "Fake School"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
+
+        # Check outcome
         self.assertEqual(response.context["error_message"], "School with this School access key already exists.")
         self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     def test_register_new_school_access_key_entered_as_string(self):
-        """Should return the same form with an error message that tells user access key is already taken."""
+        """
+        Specifying an access key that is not a 6 digit integer should return the same form with an error message that
+        tells the user the access key is not valid, and why.
+        """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('school_registration')
+        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
         form_data = {"school_access_key": "abcabc", "school_name": "Fake School"}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
+
+        # Check outcome
         self.assertEqual(response.context["error_message"], "Enter a whole number.")
         self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
-        """Test that a user can register themselves to an existing school_id"""
+        """
+        Test that a user can register themselves to an existing school_id
+        """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse("profile_registration")
-
+        url = reverse(UrlName.PROFILE_REGISTRATION.value)
         form_data = {"school_access_key": 123456}
-        response = self.client.post(url, data=form_data)
-        self.assertRedirects(response, reverse("dashboard"))
 
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
         existing_school = models.School.objects.get(school_access_key=123456)  # From fixture
         new_user_school = User.objects.get(username="dummy_teacher2").profile.school
         self.assertEqual(existing_school, new_user_school)
 
     def test_register_profile_with_existing_school_access_key_not_found(self):
-        """Should return empty form with an error message that tells user access key was not found."""
+        """
+        Should return empty form with an error message that tells user access key was not found.
+        """
+        # Set test parameters
         self.login_dummy_user()
-        url = reverse('profile_registration')
+        url = reverse(UrlName.PROFILE_REGISTRATION.value)
         form_data = {"school_access_key": 765432}
+
+        # Execute test unit
         response = self.client.post(url, data=form_data)
+
+        # Check outcome
         self.assertEqual(response.context["error_message"], "Access key not found, please try again")
         self.assertEqual(response.context["form"], forms.ProfileRegistration)
