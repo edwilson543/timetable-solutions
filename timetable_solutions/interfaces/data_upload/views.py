@@ -7,7 +7,7 @@ from interfaces.data_upload import forms
 from .upload_view_base_class import DataUploadView
 
 
-class TeacherListUploadView(DataUploadView):
+class TeacherListUpload(DataUploadView):
     """View class to control the uploading of the list of teachers by the user"""
     def __init__(self):
         super().__init__(
@@ -16,7 +16,7 @@ class TeacherListUploadView(DataUploadView):
             form=forms.TeacherListUpload)
 
 
-class PupilListUploadView(DataUploadView):
+class PupilListUpload(DataUploadView):
     """View class to control the uploading of the list of pupils by the user"""
     def __init__(self):
         super().__init__(
@@ -25,7 +25,7 @@ class PupilListUploadView(DataUploadView):
             form=forms.PupilListUpload)
 
 
-class ClassroomListUploadView(DataUploadView):
+class ClassroomListUpload(DataUploadView):
     """View class to control the uploading of the list of classrooms by the user"""
     def __init__(self):
         super().__init__(
@@ -34,7 +34,7 @@ class ClassroomListUploadView(DataUploadView):
             form=forms.ClassroomListUpload)
 
 
-class TimetableStructureUploadView(DataUploadView):
+class TimetableStructureUpload(DataUploadView):
     """View class to control the uploading of the list of teachers by the user"""
     def __init__(self):
         super().__init__(
@@ -43,7 +43,7 @@ class TimetableStructureUploadView(DataUploadView):
             form=forms.TimetableStructureUpload)
 
 
-class UnsolvedClassUploadView(DataUploadView):
+class UnsolvedClassUpload(DataUploadView):
     """View class to control the uploading of the requirements for classes that must take place by the user"""
     def __init__(self):
         super().__init__(
@@ -53,7 +53,7 @@ class UnsolvedClassUploadView(DataUploadView):
             is_unsolved_class_upload_view=True)
 
 
-class FixedClassUploadView(DataUploadView):
+class FixedClassUpload(DataUploadView):
     """View class to control the uploading of the list of classes that must occur at a certain time by the user"""
     def __init__(self):
         super().__init__(
