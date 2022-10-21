@@ -48,7 +48,7 @@ class TestCreateTimetableFormView(test.TestCase):
         """
         # Set test parameters
         url = urls.reverse(UrlName.CREATE_TIMETABLES.value)
-        expected_redirect_url = urls.reverse("login") + "?next=/create/"
+        expected_redirect_url = urls.reverse(UrlName.LOGIN.value) + "?next=/create/"
 
         # Execute test unit
         response = self.client.get(url)
@@ -65,7 +65,7 @@ class TestCreateTimetableFormView(test.TestCase):
         # Set test parameters
         self.client.login(username="dummy_teacher", password="dt123dt123")
         url = urls.reverse(UrlName.CREATE_TIMETABLES.value)
-        expected_url_redirect = urls.reverse("selection_dashboard")
+        expected_url_redirect = urls.reverse(UrlName.VIEW_TIMETABLES_DASH.value)
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
