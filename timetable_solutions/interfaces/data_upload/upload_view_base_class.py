@@ -18,6 +18,7 @@ from django import views
 from django import urls
 
 # Local application imports
+from constants.url_names import UrlName
 from data.utils import ModelSubclass
 from domain import data_upload_processing
 from interfaces.data_upload import forms
@@ -32,7 +33,7 @@ class RequiredUpload:
     form_name: str
     upload_status: Union[str, bool]
     empty_form: forms.Form
-    url_name: str
+    url_name: UrlName
 
     def __post_init__(self):
         """Reset upload status to a string which is more easily rendered in the template, without unnecessary tags."""
@@ -55,20 +56,23 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
     context = {"required_forms":
                {
                    "teachers": RequiredUpload(form_name="Teacher list", upload_status=upload_status.TEACHERS,
-                                              empty_form=forms.TeacherListUpload(), url_name="teacher_list"),
+                                              empty_form=forms.TeacherListUpload(),
+                                              url_name=UrlName.TEACHER_LIST_UPLOAD.value),
                    "pupils": RequiredUpload(form_name="Pupil List", upload_status=upload_status.PUPILS,
-                                            empty_form=forms.PupilListUpload(), url_name="pupil_list"),
+                                            empty_form=forms.PupilListUpload(),
+                                            url_name=UrlName.PUPIL_LIST_UPLOAD.value),
                    "classrooms": RequiredUpload(form_name="Classroom List", upload_status=upload_status.CLASSROOMS,
-                                                empty_form=forms.ClassroomListUpload(), url_name="classroom_list"),
+                                                empty_form=forms.ClassroomListUpload(),
+                                                url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
                    "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=upload_status.TIMETABLE,
                                                empty_form=forms.TimetableStructureUpload(),
-                                               url_name="timetable_structure"),
+                                               url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
                    "unsolved_classes": RequiredUpload(
                        form_name="Class requirements", upload_status=upload_status.UNSOLVED_CLASSES,
-                       empty_form=forms.UnsolvedClassUpload(), url_name="unsolved_classes"),
+                       empty_form=forms.UnsolvedClassUpload(), url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
                    "fixed_classes": RequiredUpload(
                        form_name="Fixed classes", upload_status=upload_status.FIXED_CLASSES,
-                       empty_form=forms.FixedClassUpload(), url_name="fixed_classes")
+                       empty_form=forms.FixedClassUpload(), url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
                }
                }
     return context
@@ -116,11 +120,16 @@ class DataUploadView(LoginRequiredMixin, views.View):
 
     @staticmethod
     def get(request, *arg, **kwarg):
-        """If the user accesses the class' url directly, we simply return the upload page view"""
+        """
+        If the user accesses the class' url directly, we use the upload page view to render the upload data form.
+        """
         return upload_page_view(request)
 
     def post(self, request, *args, **kwargs):
-        """All instances of this view class upload one file - as such the post method handles this."""
+        """
+        All instances of the subclasses of this View upload a single file, which this post method handles.
+        If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
+        """
         form = self._form(request.POST, request.FILES)
         school_access_key = request.user.profile.school.school_access_key
         if form.is_valid():

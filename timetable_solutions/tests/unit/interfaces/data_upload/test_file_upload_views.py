@@ -9,15 +9,17 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
 from tests.input_settings import TEST_DATA_DIR
 
 
+# TODO - fire some GET requests from logged out users
 class TestCaseWithUpload(TestCase):
     """Subclass of the TestCase class, capable of uploading test csv files (subclasses twice below)."""
     fixtures = ["user_school_profile.json"]
 
-    def upload_test_file(self, filename: str, url_data_name: str) -> None:
+    def upload_test_file(self, filename: str, url_data_name: UrlName) -> None:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
@@ -36,8 +38,11 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
     """
 
     def test_teacher_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of teachers successfully populates the central database."""
-        self.upload_test_file(filename="teachers.csv", url_data_name="teacher_list")  # TeacherListUploadView
+        """
+        Unit test for the TeacherListUpload View, that simulating a csv file upload of teachers successfully populates
+        the database.
+        """
+        self.upload_test_file(filename="teachers.csv", url_data_name=UrlName.TEACHER_LIST_UPLOAD.value)
 
         # Test that the database is as expected
         all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
@@ -48,18 +53,21 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
     def test_teacher_list_upload_view_file_unsuccessful_with_invalid_file(self):
         """
-        We try uploading the demo pupils file, to check that this does not work, and also that the database
-        is unaffected.
+        Unit test for the TeacherListUpload View. We try uploading the demo pupils file, to check that this does not
+        work, and also that the database is unaffected.
         """
         # Try uploading the wrong file (pupils.csv)
-        self.upload_test_file(filename="pupils.csv", url_data_name="teacher_list")
+        self.upload_test_file(filename="pupils.csv", url_data_name=UrlName.TEACHER_LIST_UPLOAD.value)
 
         # Assert that nothing has happened
         self.assertEqual(len(models.Teacher.objects.get_all_instances_for_school(school_id=123456)), 0)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of pupils successfully populates the central database."""
-        self.upload_test_file(filename="pupils.csv", url_data_name="pupil_list")
+        """
+        Unit test for PupilListUpload View, that simulating a csv file upload of pupils successfully populates the
+        database.
+        """
+        self.upload_test_file(filename="pupils.csv", url_data_name=UrlName.PUPIL_LIST_UPLOAD.value)
 
         # Test that the database is as expected
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -70,18 +78,21 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
     def test_pupil_list_upload_view_file_unsuccessful_with_invalid_file(self):
         """
-        We try uploading the demo teachers file, to check that this does not work, and also that the database
-        is unaffected.
+        Unit test for PupilListUpload. We try uploading the demo teachers file, to check that this does not work,
+        and also that the database is unaffected.
         """
         # Try uploading the wrong file (teachers.csv)
-        self.upload_test_file(filename="teachers.csv", url_data_name="pupil_list")
+        self.upload_test_file(filename="teachers.csv", url_data_name=UrlName.PUPIL_LIST_UPLOAD.value)
 
         # Assert that nothing has happened
         self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of classrooms successfully populates the central database."""
-        self.upload_test_file(filename="classrooms.csv", url_data_name="classroom_list")
+        """
+        Unit test for the ClassrromListView, that simulating a csv file upload of classrooms successfully populates the
+        database.
+        """
+        self.upload_test_file(filename="classrooms.csv", url_data_name=UrlName.CLASSROOM_LIST_UPLOAD.value)
 
         # Test that the database is as expected
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
@@ -90,8 +101,11 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of tt slots successfully populates the central database."""
-        self.upload_test_file(filename="timetable.csv", url_data_name="timetable_structure")
+        """
+        Unit test for the TimetableStructureUpload view, that simulating a csv file upload of tt slots successfully
+        populates the database.
+        """
+        self.upload_test_file(filename="timetable.csv", url_data_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value)
 
         # Test that the database is as expected
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
@@ -108,8 +122,11 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
 
     def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of unsolved classes successfully populates the database."""
-        self.upload_test_file(filename="class_requirements.csv", url_data_name="unsolved_classes")
+        """
+        Unit test for the UnsolvedClassUpload View, that simulating a csv file upload of unsolved classes successfully
+        populates the database.
+        """
+        self.upload_test_file(filename="class_requirements.csv", url_data_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value)
 
         # Test the database is as expected
         all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
@@ -120,8 +137,11 @@ class TestDependentFileUploadViews(TestCaseWithUpload):
         self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
 
     def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
-        """Unit test that simulating a csv file upload of fixed classes successfully populates the database."""
-        self.upload_test_file(filename="fixed_classes.csv", url_data_name="fixed_classes")
+        """
+        Unit test for the FixedClassUploadView, that simulating a csv file upload of fixed classes successfully
+        populates the database.
+        """
+        self.upload_test_file(filename="fixed_classes.csv", url_data_name=UrlName.FIXED_CLASSES_UPLOAD.value)
 
         # Test the database is as expected
         all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
