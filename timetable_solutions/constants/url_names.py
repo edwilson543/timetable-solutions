@@ -29,3 +29,7 @@ class UrlName(Enum):
 
     # View timetables app
     VIEW_TIMETABLES_DASH = "selection_dashboard"
+    TEACHERS_NAVIGATOR = "teachers_navigator"
+    TEACHER_TIMETABLE = "teacher_timetable_view"  # Note reverse also requires a teacher id
+    PUPILS_NAVIGATOR = "pupils_navigator"
+    PUPIL_TIMETABLE = "pupil_timetable_view"  # Note reverse also requires a pupil id
