@@ -19,6 +19,7 @@ from django.views import View
 from django.urls import reverse
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
 from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
 
@@ -39,7 +40,7 @@ class Register(View):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect(reverse("registration_pivot"))
+            return redirect(reverse(UrlName.REGISTER_PIVOT.value))
         else:
             context = {
                 "error_messages": form.error_messages,
@@ -62,11 +63,11 @@ class SchoolRegisterPivot(View):
         form = SchoolRegistrationPivot(request.POST)
         if form.is_valid():
             if form.cleaned_data.get("existing_school") == "EXISTING":
-                return redirect(reverse("profile_registration"))
+                return redirect(reverse(UrlName.PROFILE_REGISTRATION.value))
             else:
-                return redirect(reverse("school_registration"))
+                return redirect(reverse(UrlName.SCHOOL_REGISTRATION.value))
         else:
-            return redirect(reverse("register"))
+            return redirect(reverse(UrlName.REGISTER.value))
 
 
 class SchoolRegistration(View):
@@ -85,7 +86,7 @@ class SchoolRegistration(View):
 
             # We have created the school instance but not yet associated this school with the user, so we do this now
             models.Profile.create_and_save_new(user=request.user, school_id=form.cleaned_data.get("school_access_key"))
-            return redirect(reverse("dashboard"))
+            return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
                 "form": SchoolRegistrationForm,
@@ -108,7 +109,7 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key)
-            return redirect(reverse("dashboard"))
+            return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
                 "form": ProfileRegistrationForm,
@@ -123,15 +124,15 @@ def custom_logout(request):
     application unless the user is logged in.
     """
     logout(request)
-    return redirect(reverse("login"))
+    return redirect(reverse(UrlName.LOGIN.value))
 
 
-def dashboard_view(request):
+def dashboard(request):
     """
     Method to add some context to the dashboard view, for rendering in the template.
     This is to restrict the list of options available to users.
     """
     if not request.user.is_authenticated:
-        return redirect(reverse("login"))
+        return redirect(reverse(UrlName.LOGIN.value))
 
     return render(request, "users/dashboard.html")

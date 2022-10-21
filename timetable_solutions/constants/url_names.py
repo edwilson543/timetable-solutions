@@ -14,24 +14,29 @@ class UrlName(Enum):
     would need updating.
     """
     # Users app
+    DASHBOARD = "dashboard"
     LOGIN = "login"
     LOGOUT = "logout"
+    PROFILE_REGISTRATION = "profile_registration"
+    REGISTER = "register"
+    REGISTER_PIVOT = "registration_pivot"
+    SCHOOL_REGISTRATION = "school_registration"
 
     # Data upload app
-    FILE_UPLOAD_PAGE = "file_upload_page"
-    TEACHER_LIST_UPLOAD = "teacher_list"
-    PUPIL_LIST_UPLOAD = "pupil_list"
     CLASSROOM_LIST_UPLOAD = "classroom_list"
+    FILE_UPLOAD_PAGE = "file_upload_page"
+    FIXED_CLASSES_UPLOAD = "fixed_classes"
+    PUPIL_LIST_UPLOAD = "pupil_list"
+    TEACHER_LIST_UPLOAD = "teacher_list"
     TIMETABLE_STRUCTURE_UPLOAD = "timetable_structure"
     UNSOLVED_CLASSES_UPLOAD = "unsolved_classes"
-    FIXED_CLASSES_UPLOAD = "fixed_classes"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 
     # View timetables app
-    VIEW_TIMETABLES_DASH = "selection_dashboard"
-    TEACHERS_NAVIGATOR = "teachers_navigator"
-    TEACHER_TIMETABLE = "teacher_timetable"  # Note reverse also requires a teacher id
     PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # Note reverse also requires a pupil id
+    TEACHERS_NAVIGATOR = "teachers_navigator"
+    TEACHER_TIMETABLE = "teacher_timetable"  # Note reverse also requires a teacher id
+    VIEW_TIMETABLES_DASH = "selection_dashboard"
