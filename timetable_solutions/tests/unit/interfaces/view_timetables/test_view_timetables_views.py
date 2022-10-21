@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
 
 
@@ -22,8 +23,11 @@ class TestViews(TestCase):
         Test that the correct full list of pupils indexed by year group is returned by a get request to the
         pupil_navigator view. We test the data structures at successive depths of the nested context dictionary.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('pupils_navigator')
+        url = reverse(UrlName.PUPILS_NAVIGATOR.value)
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test the keys of the dict are the year groups
@@ -43,8 +47,11 @@ class TestViews(TestCase):
 
     def test_teacher_navigator_response(self):
         """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('teachers_navigator')
+        url = reverse(UrlName.TEACHERS_NAVIGATOR.value)
+
+        # Execute test unit
         response = self.client.get(url)
         teachers = response.context["all_teachers"]
 
@@ -65,8 +72,11 @@ class TestViews(TestCase):
         Note there are three elements within the context of the HTTP response - each of which is tested in turn, one of
         which is the pupil's timetable.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('pupil_timetable_view', kwargs={"id": 1})
+        url = reverse(UrlName.PUPIL_TIMETABLE.value, kwargs={"id": 1})
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test pupil context
@@ -98,8 +108,11 @@ class TestViews(TestCase):
         Unit test that the context returned by a GET request to the teacher_timetable_view function, containing the
         relevant timetable etc.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
+        url = reverse(UrlName.TEACHER_TIMETABLE.value, kwargs={"id": 6})  # Timetable for Greg Thebaker
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test teacher context

@@ -29,7 +29,7 @@
           <tr>
               <td>{{pupil.firstname}}</td>
               <td>{{pupil.surname}}</td>
-              <td><a href="{% url 'pupil_timetable_view' pupil.pupil_id %}" style="color:black;">View</a></td>
+              <td><a href="{% url 'pupil_timetable' pupil.pupil_id %}" style="color:black;">View</a></td>
           </tr>
           {% endfor %}
       </table>

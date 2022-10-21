@@ -49,7 +49,7 @@ def teacher_navigator(request) -> HttpResponse:
 
 
 @login_required
-def pupil_timetable_view(request, id: int) -> HttpResponse:
+def pupil_timetable(request, id: int) -> HttpResponse:
     """View for rendering the timetable of the individual pupil with the passed id, with context from domain layer."""
     school_id = request.user.profile.school.school_access_key
     pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(pupil_id=id, school_id=school_id)
@@ -64,7 +64,7 @@ def pupil_timetable_view(request, id: int) -> HttpResponse:
 
 
 @login_required
-def teacher_timetable_view(request, id: int) -> HttpResponse:
+def teacher_timetable(request, id: int) -> HttpResponse:
     """View for the timetable of the individual teacher with the passed id."""
     school_id = request.user.profile.school.school_access_key
     teacher, timetable, year_group_colours = view_timetables.get_teacher_timetable_context(
