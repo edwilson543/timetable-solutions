@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django import urls
 
 # Local application imports
+from constants.url_names import UrlName
 from interfaces.create_timetables import views
 
 
@@ -24,7 +25,7 @@ class TestCreateTimetableFormView(test.TestCase):
         """Unit test for the method over-riding FormView's get_form_kwargs method"""
         # Set test parameters
         factory = test.RequestFactory()
-        request = factory.get(urls.reverse("create_timetables"))
+        request = factory.get(urls.reverse(UrlName.CREATE_TIMETABLES.value))
         request.user = User.objects.get(pk=1)
         view = views.CreateTimetable(request=request)
 

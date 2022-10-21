@@ -11,6 +11,7 @@ from django import test
 from django import urls
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
 from domain.solver import SolutionSpecification
 from interfaces.create_timetables import forms
@@ -32,7 +33,7 @@ class TestCreateTimetableFormView(test.TestCase):
         """
         # Set test parameters
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = urls.reverse("create_timetables")
+        url = urls.reverse(UrlName.CREATE_TIMETABLES.value)
 
         # Execute test unit
         response = self.client.get(url)
@@ -46,7 +47,7 @@ class TestCreateTimetableFormView(test.TestCase):
         Test that submitting a GET request to the create timetable page when not logged in just redirects the user.
         """
         # Set test parameters
-        url = urls.reverse("create_timetables")
+        url = urls.reverse(UrlName.CREATE_TIMETABLES.value)
         expected_redirect_url = urls.reverse("login") + "?next=/create/"
 
         # Execute test unit
@@ -63,7 +64,7 @@ class TestCreateTimetableFormView(test.TestCase):
         """
         # Set test parameters
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = urls.reverse("create_timetables")
+        url = urls.reverse(UrlName.CREATE_TIMETABLES.value)
         expected_url_redirect = urls.reverse("selection_dashboard")
 
         # Execute test unit
