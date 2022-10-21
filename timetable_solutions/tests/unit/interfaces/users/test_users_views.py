@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from interfaces.users.forms import CustomUserCreationForm, ProfileRegistrationForm, SchoolRegistrationForm
+from interfaces.users import forms
 from data import models
 
 
@@ -32,7 +32,7 @@ class TestRegistration(TestCase):
                      "password1": "DIFFERENT_TO_PW_2", "password2": "dt123dt123"}
         response = self.client.post(url, data=form_data)
         response_form = response.context["form"]
-        self.assertEqual(response_form, CustomUserCreationForm)
+        self.assertEqual(response_form, forms.CustomUserCreation)
         response_error_message = response.context["error_messages"]["password_mismatch"]
         self.assertIn("password", response_error_message)
 
@@ -55,8 +55,8 @@ class TestRegistration(TestCase):
 
     def test_register_school_pivot_towards_school_registration(self):
         """
-        Test that stating they are not part of an existing school_id redirects user to register their school_id for first
-        time
+        Test that stating they are not part of an existing school_id redirects user to register their school_id for
+        the first time
         """
         self.login_dummy_user()
         url = reverse("registration_pivot")
@@ -90,7 +90,7 @@ class TestRegistration(TestCase):
         form_data = {"school_access_key": 12345, "school_name": "Fake School"}
         response = self.client.post(url, data=form_data)
         self.assertEqual(response.context["error_message"], "Access key is not 6 digits")
-        self.assertEqual(response.context["form"], SchoolRegistrationForm)
+        self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     def test_register_new_school_access_key_already_taken(self):
         """Should return the same form with an error message that tells user access key is already taken."""
@@ -99,7 +99,7 @@ class TestRegistration(TestCase):
         form_data = {"school_access_key": 123456, "school_name": "Fake School"}
         response = self.client.post(url, data=form_data)
         self.assertEqual(response.context["error_message"], "School with this School access key already exists.")
-        self.assertEqual(response.context["form"], SchoolRegistrationForm)
+        self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     def test_register_new_school_access_key_entered_as_string(self):
         """Should return the same form with an error message that tells user access key is already taken."""
@@ -108,7 +108,7 @@ class TestRegistration(TestCase):
         form_data = {"school_access_key": "abcabc", "school_name": "Fake School"}
         response = self.client.post(url, data=form_data)
         self.assertEqual(response.context["error_message"], "Enter a whole number.")
-        self.assertEqual(response.context["form"], SchoolRegistrationForm)
+        self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
@@ -131,4 +131,4 @@ class TestRegistration(TestCase):
         form_data = {"school_access_key": 765432}
         response = self.client.post(url, data=form_data)
         self.assertEqual(response.context["error_message"], "Access key not found, please try again")
-        self.assertEqual(response.context["form"], ProfileRegistrationForm)
+        self.assertEqual(response.context["form"], forms.ProfileRegistration)

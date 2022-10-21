@@ -21,7 +21,7 @@ from django.urls import reverse
 # Local application imports
 from constants.url_names import UrlName
 from data import models
-from .forms import CustomUserCreationForm, SchoolRegistrationPivot, SchoolRegistrationForm, ProfileRegistrationForm
+from . import forms
 
 
 # Create your views here.
@@ -30,13 +30,13 @@ class Register(View):
     @staticmethod
     def get(request, context: Optional[Dict] = None):
         if context is None:
-            context = {"form": CustomUserCreationForm}
+            context = {"form": forms.CustomUserCreation}
         if request.user.is_authenticated:
             logout(request)
         return render(request, "users/register.html", context)
 
     def post(self, request):
-        form = CustomUserCreationForm(request.POST)
+        form = forms.CustomUserCreation(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
@@ -44,7 +44,7 @@ class Register(View):
         else:
             context = {
                 "error_messages": form.error_messages,
-                "form": CustomUserCreationForm
+                "form": forms.CustomUserCreation
             }
             return self.get(request, context=context)
 
@@ -55,12 +55,12 @@ class SchoolRegisterPivot(View):
     @staticmethod
     def get(request, context: Optional[Dict] = None):
         if context is None:
-            context = {"form": SchoolRegistrationPivot}
+            context = {"form": forms.SchoolRegistrationPivot}
         return render(request, "users/register_school_pivot.html", context)
 
     @staticmethod
     def post(request):
-        form = SchoolRegistrationPivot(request.POST)
+        form = forms.SchoolRegistrationPivot(request.POST)
         if form.is_valid():
             if form.cleaned_data.get("existing_school") == "EXISTING":
                 return redirect(reverse(UrlName.PROFILE_REGISTRATION.value))
@@ -76,11 +76,11 @@ class SchoolRegistration(View):
     @staticmethod
     def get(request, context: Optional[Dict] = None):
         if context is None:
-            context = {"form": SchoolRegistrationForm}
+            context = {"form": forms.SchoolRegistration}
         return render(request, "users/register_school.html", context)
 
     def post(self, request):
-        form = SchoolRegistrationForm(request.POST)
+        form = forms.SchoolRegistration(request.POST)
         if form.is_valid():
             form.save()  # Note this is a model form, so save the School instance to the database automatically
 
@@ -89,7 +89,7 @@ class SchoolRegistration(View):
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
-                "form": SchoolRegistrationForm,
+                "form": forms.SchoolRegistration,
                 "error_message": form.error_message,
             }
             return self.get(request, context)
@@ -101,18 +101,18 @@ class ProfileRegistration(View):
     @staticmethod
     def get(request, context: Optional[Dict] = None):
         if context is None:
-            context = {"form": ProfileRegistrationForm}
+            context = {"form": forms.ProfileRegistration}
         return render(request, "users/register_profile_existing_school.html", context)
 
     def post(self, request):
-        form = ProfileRegistrationForm(request.POST)
+        form = forms.ProfileRegistration(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
-                "form": ProfileRegistrationForm,
+                "form": forms.ProfileRegistration,
                 "error_message": form.error_message,
             }
             return self.get(request, context=context)
