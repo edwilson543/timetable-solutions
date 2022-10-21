@@ -9,7 +9,9 @@ from enum import Enum
 class UrlName(Enum):
     """
     Enumeration of ALL url shortcut names in the entire project.
-    This is the single place where url names are written in python - elsewhere, they are accessed via this Enum.
+
+    This is the single place where url names are written in python - elsewhere, they are accessed via this Enum, for
+    example whenever urls.reverse is called, the argument is accessed from this Enum. Also in all apps' url dispatchers.
     Note however that some django html templates access the string versions via the {% url <url_name> %} tag, so these
     would need updating.
     """
