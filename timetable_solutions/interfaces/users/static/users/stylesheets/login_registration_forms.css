@@ -4,8 +4,10 @@
     justify-content: center;
     flex-direction: column;
     background-color: white;
-    width: 350px;
+    min-width: 350px;
     height: auto;
+    margin: 10px;
+    margin-bottom: 50px;
     padding: 20px;
     border: 3px solid rgba(51, 0, 61, 0.5);
     border-radius: 10px;
