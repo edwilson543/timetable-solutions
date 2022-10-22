@@ -7,7 +7,7 @@ Container for all form content
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-width: 350px;
+    width: 350px;
     height: auto;
     margin: 10px;
     margin-bottom: 50px;
@@ -26,7 +26,8 @@ Generic styling for a red, near-form-width button (e.g. 'back')
 .wide_red_button {
     /* Display */
     width: 330px;
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
     text-align: center;
 
     /* Typography */
@@ -57,7 +58,6 @@ input {
     border: 1px solid #33003d;
 }
 input[type="submit"] {
-    width: 330px;
     background-color: #1f1530;
     color: white;
 }
