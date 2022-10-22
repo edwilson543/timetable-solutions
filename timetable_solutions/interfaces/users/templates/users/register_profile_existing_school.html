@@ -10,9 +10,7 @@
 <style>
 {% block style_block %}
 
-input[type="submit"] {
-    background-color: #004000;
-}
+input[type="submit"] {background-color: #004000;}
 
 {% endblock %}
 </style>
@@ -34,7 +32,7 @@ input[type="submit"] {
         {{form}}
         <input type="submit" value="Complete registration">
     </form>
-    <hr style="color:black;width:90%;margin-bottom:15px;">
+    <hr>
     <a href="{% url 'registration_pivot' %}" class="wide_red_button">Back</a>
 </div>
 
