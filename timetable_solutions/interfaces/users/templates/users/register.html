@@ -13,17 +13,6 @@
 
 input[type="submit"] {background-color: #004000;}
 
-#back_to_login_button {
-    border-radius: 5px;
-    border: 1px solid #33003d;
-    width: 330px;
-    font-size: 20px;
-    padding: 5px;
-    color: white;
-    text-align: center;
-    background-color: #c4353f;
-}
-
 {% endblock %}
 </style>
 </head>
@@ -40,6 +29,6 @@ input[type="submit"] {background-color: #004000;}
         <input type="submit" value="Register">
     </form>
     <hr style="color:black;width:90%;margin-bottom:15px;">
-    <a href="{% url 'login' %}" id="back_to_login_button">Back to login</a>
+    <a href="{% url 'login' %}" class="wide_red_button">Back to login</a>
 </div>
 {% endblock %}

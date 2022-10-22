@@ -1,34 +1,75 @@
+/* ====================
+Container for all form content
+==================== */
 #form_container {
+    /* Display and box model */
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
-    background-color: white;
     min-width: 350px;
     height: auto;
     margin: 10px;
     margin-bottom: 50px;
     padding: 20px;
+
+    /* Background and border */
+    background-color: white;
     border: 3px solid rgba(51, 0, 61, 0.5);
     border-radius: 10px;
     box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
 }
 
-input {
+/* ====================
+Generic styling for a red, near-form-width button (e.g. 'back')
+==================== */
+.wide_red_button {
+    /* Display */
+    width: 330px;
+    padding: 5px;
+    text-align: center;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+
+    /* Background and border */
+    background-color: #c4353f;
     border-radius: 5px;
     border: 1px solid #33003d;
+}
+
+/* ====================
+Set generic styling for form elements
+==================== */
+input {
+    /* Display */
     width: 330px;
-    font-size: 20px;
-    padding: 5px;
     margin-bottom: 5%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+
+    /* Typography */
+    font-size: 20px;
+
+    /* Border */
+    border-radius: 5px;
+    border: 1px solid #33003d;
 }
 input[type="submit"] {
+    width: 330px;
     background-color: #1f1530;
     color: white;
-    width: 100%;
 }
 input[type="submit"]:hover {cursor: pointer;}
+
 label {
     font-weight: bold;
     font-size: 20px;
+}
+
+hr {
+    color:black;
+    width:90%;
+    margin-bottom:15px;
 }
