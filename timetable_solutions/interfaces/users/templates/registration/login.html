@@ -9,32 +9,32 @@
 <style>
 {% block style_block %}
 #register_button {
-    border-radius: 5px;
-    border: 1px solid #33003d;
+    /* Display */
     width: 330px;
-    font-size: 20px;
     padding-top: 5px;
     padding-bottom: 5px;
+
+    /* Typography */
+    font-size: 20px;
     color: white;
     text-align: center;
+
+    /* Background and border */
     background-color: #004000;
+    border-radius: 5px;
+    border: 1px solid #33003d;
 }
 {% endblock %}
 </style>
 
-
 {% block content %}
 <div id="form_container">
-
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Login">
     </form>
-
-    <hr style="color:black;width:90%;margin-bottom:15px;">
+    <hr>
     <a href="{% url 'register' %}" id="register_button">Register</a>
-
 </div>
-<hr>
 {% endblock %}
