@@ -51,9 +51,49 @@ td {
 }
 
 /* ====================
-Timetable title styling
+Timetable header and back button styling
 ==================== */
-.heading {text-align: center;}
+#heading_back_wrapper {
+    /* Display and box model */
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
+}
+
+#heading {
+    /* Display */
+    width: 80%;
+    margin: 5px;
+    padding: 10px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #11014A;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#back_button {
+    /* Display */
+    width: 15%;
+    margin: 5px;
+    padding: 10px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #c4353f;
+    border-radius: 5px;
+    border: 1px solid #33003d;
+}
 
 /* ====================
 Download button
@@ -61,4 +101,11 @@ Download button
 .download_button {
   border: 1px solid black;
   margin-top: 10px;
+}
+
+/* ====================
+Main table
+==================== */
+#timetable {
+    width: 100%;
 }
