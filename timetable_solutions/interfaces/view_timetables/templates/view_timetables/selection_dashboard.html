@@ -13,6 +13,17 @@
 
 <style>
 {% block style_block %}
+#no_solutions_error {
+    font-size: 20px;
+}
+.no_solutions_link {
+    font-size: 20px;
+    color: #690007;
+}
+.no_solutions_link:link {
+    text-decoration: underline;
+}
+
 #summary_info {
     grid-row: 2 / 4;
     grid-column: 1;
@@ -53,12 +64,18 @@ li {
 <body>
 {% block content %}
 <div id="content_container">
+    {% if not has_solutions %}
+        <div id="no_solutions_error" class="error_message">
+            No timetables are available yet. First
+            <a href="{% url 'file_upload_page' %}" class="no_solutions_link"><b>upload your data</b></a>
+            in the correct structure,
+            and then visit the
+            <a href="{% url 'create_timetables' %}" class="no_solutions_link"><b>create page</b></a>
+            to specify your requirements.
+        </div>
+    {% else %}
     <div id="grid_container">
-
         <div id="dashboard_title">
-            {% if not True %}
-            <h4>No timetable solutions were found</h4>
-            {% else %}
             <h4>Timetable solutions have been found!</h4>
         </div>
         <div id="summary_info" class="info_frame">
@@ -98,10 +115,9 @@ li {
             <a href="{% url 'teachers_navigator' %}" class="link_button">
                 View teacher timetables
             </a>
+            {% endif %}
         </div>
     </div>
-
-    {% endif %}
 </div>
 {% endblock %}
 
