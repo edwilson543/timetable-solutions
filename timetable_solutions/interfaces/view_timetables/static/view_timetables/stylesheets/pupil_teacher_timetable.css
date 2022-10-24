@@ -30,11 +30,6 @@ Formatting of the timetable (a html table) itself
 ==================== */
 table {width:100%;}
 
-.perimeter {
-  color: white;
-  background-color: #4d4141;
-  border-radius: 3px;
-}
 td:hover {
   background-color: #0a2fa8;
   color: white;
@@ -57,6 +52,12 @@ td {
     color: white;
     background-color: #876969;
     text-align: center;
+    border-radius: 3px;
+}
+
+.perimeter {
+    color: white;
+    background-color: #4d4141;
     border-radius: 3px;
 }
 
