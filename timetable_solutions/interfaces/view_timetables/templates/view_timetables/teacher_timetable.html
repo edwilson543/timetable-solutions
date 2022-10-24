@@ -22,7 +22,18 @@
 <body>
 {% block content %}
 <div id="content_container">
-    <h1 class="heading"><i>Timetable for: {{teacher.firstname}} {{teacher.surname}}</i></h1>
+    <div id="heading_back_wrapper">
+        <div id="heading">
+            <b><i>
+                Timetable for {{teacher.firstname}} {{teacher.surname}}
+            </i></b>
+        </div>
+        <div id="back_button">
+            <a href="{% url 'teachers_navigator' %}"><b>
+                Back
+            </b></a>
+        </div>
+    </div>
 
     <table id="{{teacher.firstname}}_{{teacher.surname}}_timetable">
 
