@@ -41,13 +41,23 @@ td:hover {
 }
 th, td {
   padding: 5px;
-  background-color: #c9c9c9; /* default colour if subject is not found */
   text-align: center;
+  background-color: #c9c9c9; /* default colour if subject is not found */
+  border: 1px solid black;
 }
 td {
   border: 1px solid black;
   border-collapse: collapse;
   border-radius: 3px;
+}
+
+/* Styling for specific cells in the timetable html table */
+#start_time {
+    width: 10%;
+    color: white;
+    background-color: #876969;
+    text-align: center;
+    border-radius: 3px;
 }
 
 /* ====================
