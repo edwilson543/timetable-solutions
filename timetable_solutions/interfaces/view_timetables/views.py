@@ -13,7 +13,8 @@ from domain import view_timetables
 def selection_dashboard(request) -> HttpResponse:
     """View providing the context for the information displayed on the selection dashboard"""
     school_access_key = request.user.profile.school.school_access_key
-    context = view_timetables.get_summary_stats_for_dashboard(school_access_key=school_access_key)
+    context = view_timetables.timetable_summary_stats.get_summary_stats_for_dashboard(
+        school_access_key=school_access_key)
     template = loader.get_template("view_timetables/selection_dashboard.html")
     return HttpResponse(template.render(context, request))
 

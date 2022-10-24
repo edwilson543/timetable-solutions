@@ -14,32 +14,7 @@ from django.db.models import QuerySet
 from data import models
 
 
-def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
-    """
-    Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
-    the selection_dashboard
-    """
-    # Get the query sets used to create summary statistics
-    all_classes = models.FixedClass.objects.get_non_user_defined_fixed_classes(school_id=school_access_key)
-
-    all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_access_key)
-    all_slot_classes = {slot: slot.classes for slot in all_slots}
-    slot_class_count = {key: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
-                        key, klasses in all_slot_classes.items()}
-
-    pupils = models.Pupil.objects.get_all_instances_for_school(school_id=school_access_key)
-    teachers = models.Teacher.objects.get_all_instances_for_school(school_id=school_access_key)
-
-    stats = {
-        "total_classes": len(all_classes),
-        "total_lessons": sum(slot_class_count.values()),
-        "busiest_slot": max(slot_class_count, key=slot_class_count.get),
-        "total_pupils": len(pupils),
-        "total_teachers": len(teachers),
-    }
-    return stats
-
-
+# PUPIL / TEACHER NAVIGATOR PREPROCESSING
 def get_year_indexed_pupils(school_id: int) -> Dict[str, Union[QuerySet, List[models.Pupil]]]:
     """
     Function returning a dictionary of the pupils at a specific school, where the keys are the year groups, and the
@@ -63,6 +38,7 @@ def get_letter_indexed_teachers(school_id: int) -> Dict[str, Union[QuerySet, Lis
     return all_teachers
 
 
+# PUPIL / TEACHER TIMETABLE PREPROCESSING
 def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.Pupil, Dict, Dict]:
     """
     Function bundling together the data for populating the context dictionary in the pupil_timetable_view

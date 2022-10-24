@@ -1,4 +1,6 @@
-"""Module containing unit tests for data_pre_processing in the view_timetables subdirectory of the domain layer."""
+"""
+Module containing unit tests for data_pre_processing in the view_timetables subdirectory of the domain layer.
+"""
 
 # Standard library imports
 from datetime import time
@@ -8,6 +10,7 @@ from django.db.models import QuerySet
 from django.test import TestCase
 
 # Local application imports
+import domain.view_timetables.timetable_summary_stats
 from data import models
 from domain import view_timetables
 
@@ -19,7 +22,7 @@ class TestDataPreProcessing(TestCase):
 
     def test_get_summary_stats_for_dashboard_correct(self):
         """Test that the correct summary stats are produced for the test fixtures."""
-        stats = view_timetables.get_summary_stats_for_dashboard(school_access_key=123456)
+        stats = domain.view_timetables.timetable_summary_stats.get_summary_stats_for_dashboard(school_access_key=123456)
         # All assertion values are evident from the tests fixtures
         self.assertEqual(stats["total_classes"], 12)
         self.assertEqual(stats["total_lessons"], 100)
