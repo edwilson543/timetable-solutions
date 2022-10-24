@@ -27,13 +27,11 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
                         slot, klasses in all_slot_classes.items()}
     total_classes = len(all_classes)
     total_lessons = sum(slot_class_count.values())
-    print("\nTOTAL LESSONS: ", total_lessons, "\n\n")
     # Check whether there are in fact any summary stats to calculate
     if total_lessons == 0:
         stats = {
             "has_solutions": False
         }
-        print("EXECUTED")
         return stats
 
     # Stats relating to days of the week
