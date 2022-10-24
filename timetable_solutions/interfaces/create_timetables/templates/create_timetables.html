@@ -72,6 +72,10 @@ select {
     border-radius: 8px;
     font-size: 15px;
 }
+#data_upload_link {
+    color: #690007;
+    text-decoration: underline;
+}
 
 {% endblock %}
 </style>
@@ -86,6 +90,18 @@ select {
         <div id="dashboard_title">
             <h4>Generate new timetable solutions</h4>
         </div>
+        {% if not ready_to_create %}
+        <!--suppress XmlDuplicatedId -->
+        <div id="info_container" class="info_frame">
+            <div class="error_message" style="font-size:16px;">
+                You have uploaded insufficient data to start creating timetables.
+                Please return to the
+                <a href="{% url 'file_upload_page' %}" id="data_upload_link"><b>data upload page</b></a>
+                and finish uploading your data!
+            </div>
+        </div>
+        {% else %}
+        <!--suppress XmlDuplicatedId -->
         <div id="info_container" class="info_frame">
             <p style="font-size:16px;"><i>
             Please specify your preferences for the timetable structure.<br>
@@ -107,6 +123,7 @@ select {
                 <button id="submit_button" type="submit">Get solutions</button>
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 
