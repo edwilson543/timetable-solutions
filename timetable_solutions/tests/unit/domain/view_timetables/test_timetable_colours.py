@@ -3,7 +3,6 @@ Module containing unit tests for timetable_colours.py module in view_timetables 
 """
 
 # Django imports
-from django.db.models import QuerySet
 from django.test import TestCase
 
 # Local application imports
@@ -18,7 +17,7 @@ class Test(TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "fixed_classes_lunch.json"]
 
-    def test_get_colours_for_pupil_timetable_returns_expected_dictionary(self):
+    def test_get_colours_for_pupil_timetable_returns_expected_colour_dictionary(self):
         """
         Unit test for the get_colours_for_pupil_timetable method on the TimetableColour Enum
         """
@@ -36,12 +35,30 @@ class Test(TestCase):
         # Check outcome
         assert colours_dict == expected_colour_dict
 
+    def test_get_colours_for_teacher_timetable_returns_expected_colour_dictionary(self):
+        """
+        Unit test for the get_colours_for_pupil_timetable method on the TimetableColour Enum
+        """
+        # Set test parameters
+        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
+        classes = teacher.classes.all()
+        expected_colour_dict = {
+            "LUNCH": "#b3b3b3", "BREAK": "#bfbfbf", "FREE": "#feffba",  # Unranked colours
+            1: "#c8d4e3", 2: "#b3f2b3",  # Ranked colours
+        }
+
+        # Execute test unit
+        colours_dict = TimetableColour.get_colours_for_teacher_timetable(classes=classes)
+
+        # Check outcome
+        assert colours_dict == expected_colour_dict
+
     def test_get_unranked_colours(self):
         """
         Unit test for the method returning the unranked colours stored on the TimetableColour Enum
         """
         # Execute test unit
-        unranked_colours = TimetableColour.get_unranked_colours()
+        unranked_colours = TimetableColour._get_unranked_colours()
 
         # Check outcome
         assert unranked_colours == {"LUNCH": "#b3b3b3", "BREAK": "#bfbfbf", "FREE": "#feffba"}
