@@ -11,6 +11,7 @@ from django.urls import reverse
 # Local application imports
 from constants.url_names import UrlName
 from data import models
+from domain.view_timetables.timetable_colours import TimetableColour
 
 
 class TestViews(TestCase):
@@ -89,19 +90,18 @@ class TestViews(TestCase):
         timetable = response.context["timetable"]
         monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
-        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.MATHS.name)
+        self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
         free_period = timetable[time(hour=12)][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a FixedClass instance
-        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
+        self.assertEqual(free_period, "FREE")
 
         # Test colours context
         colours = response.context["class_colours"]
         self.assertIsInstance(colours, dict)
         self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name],
-                         models.FixedClass.SubjectColour.MATHS.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name],
-                         models.FixedClass.SubjectColour.FREE.label)
+                         TimetableColour.COLOUR_RANKING.value[1])  # [1] since maths' rank is 1 on pupil's timetable
+        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], TimetableColour.FREE.value)
 
     def test_teacher_timetable_view_correct_response(self):
         """
@@ -124,14 +124,13 @@ class TestViews(TestCase):
         timetable = response.context["timetable"]
         monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
-        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.FRENCH.name)
+        self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable[time(hour=10)][models.WeekDay.MONDAY.label]
-        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
+        self.assertEqual(free_period, "FREE")
 
         # Test the colours context
         colours = response.context["year_group_colours"]
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], models.Pupil.YearGroup.ONE.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.LUNCH.name],
-                         models.FixedClass.SubjectColour.LUNCH.label)
+        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], TimetableColour.COLOUR_RANKING.value[1])
+        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], TimetableColour.FREE.value)
+        self.assertEqual(colours[models.FixedClass.SubjectColour.LUNCH.name], TimetableColour.LUNCH.value)
