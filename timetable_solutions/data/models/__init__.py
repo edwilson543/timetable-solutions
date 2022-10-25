@@ -1,9 +1,13 @@
-"""Convenience imports of all models"""
+"""
+Convenience imports of all models.
+Note that we also import the custom model managers to use as type hints when a function returns a queryset specifically
+from that model.
+"""
 from .user_profile import Profile
 from .school import School
-from .pupil import Pupil
-from .teacher import Teacher
+from .pupil import Pupil, PupilQuerySet
+from .teacher import Teacher, TeacherQuerySet
 from .classroom import Classroom
 from .timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
-from .fixed_class import FixedClass
+from .fixed_class import FixedClass, FixedClassQuerySet
 from .unsolved_class import UnsolvedClass
