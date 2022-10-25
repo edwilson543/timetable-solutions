@@ -21,6 +21,7 @@ class TestTimetableConstruction(TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "fixed_classes_lunch.json"]
 
+    # PUPIL / TEACHER NAVIGATOR PREPROCESSING TESTS
     def test_get_year_indexed_pupils(self):
         """Test that the correct full list of pupils indexed by year group is returned"""
         # Execute the unit of the domain layer
@@ -61,6 +62,7 @@ class TestTimetableConstruction(TestCase):
         fifty = all_teachers_dict["C"].get(teacher_id=11)
         self.assertEqual(fifty["surname"], "Cent")
 
+    # PUPIL / TEACHER TIMETABLE PREPROCESSING TESTS
     def test_get_timetable_slot_indexed_timetable_for_a_pupil(self):
         """Test that the correct timetable is returned for a given pupil, in the correct structure."""
         # Data setup

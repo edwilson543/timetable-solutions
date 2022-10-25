@@ -42,7 +42,7 @@ def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.P
     Function bundling together the data for populating the context dictionary in the pupil_timetable_view
     :return - pupil - an instance of the Pupil model
     :return - timetable - see get_timetable_slot_indexed_timetable
-    :return - class_colours - see get_colours_for_pupil_timetable
+    :return - class_colours - see get_colours_for_pupil_timetable on the TimetableColour Enum
     """
     pupil = models.Pupil.objects.get_individual_pupil(school_id=school_id, pupil_id=pupil_id)
     classes = pupil.classes.all()
@@ -57,7 +57,7 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
     Function bundling together the data for populating the context dictionary in the teacher_timetable_view
     :return - pupil - an instance of the Teacher model
     :return - timetable - see get_timetable_slot_indexed_timetable
-    :return - class_colours - see get_colours_for_teacher_timetable
+    :return - class_colours - see get_colours_for_teacher_timetable on the TimetableColour Enum
     """
     teacher = models.Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
     classes = teacher.classes.all()
