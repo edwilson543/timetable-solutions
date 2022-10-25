@@ -5,17 +5,15 @@ format for a view to render in the template.
 
 # Standard library imports
 from string import ascii_uppercase
-from typing import Dict, List, Tuple, Union
-
-# Django imports
-from django.db.models import QuerySet
+from typing import Dict, Tuple
 
 # Local application imports
 from data import models
+from domain.view_timetables.timetable_colours import TimetableColour
 
 
 # PUPIL / TEACHER NAVIGATOR PREPROCESSING
-def get_year_indexed_pupils(school_id: int) -> Dict[str, Union[QuerySet, List[models.Pupil]]]:
+def get_year_indexed_pupils(school_id: int) -> Dict[str, models.PupilQuerySet]:
     """
     Function returning a dictionary of the pupils at a specific school, where the keys are the year groups, and the
     values the queryset of pupils in that year group.
@@ -26,7 +24,7 @@ def get_year_indexed_pupils(school_id: int) -> Dict[str, Union[QuerySet, List[mo
     return year_indexed_pupils
 
 
-def get_letter_indexed_teachers(school_id: int) -> Dict[str, Union[QuerySet, List[models.Teacher]]]:
+def get_letter_indexed_teachers(school_id: int) -> Dict[str, models.TeacherQuerySet]:
     """
     Function returning a dictionary of the teachers at a specific school, where the keys are letters of the alphabet,
     and the values the queryset of teachers who's surname starts with that letter.
@@ -50,7 +48,7 @@ def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.P
     classes = pupil.classes.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
     timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
-    timetable_colours = get_colours_for_pupil_timetable(classes=classes)
+    timetable_colours = TimetableColour.get_colours_for_pupil_timetable(classes=classes)
     return pupil, timetable, timetable_colours
 
 
@@ -65,13 +63,13 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
     classes = teacher.classes.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
     timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
-    timetable_colours = get_colours_for_teacher_timetable(classes=classes)
+    timetable_colours = TimetableColour.get_colours_for_teacher_timetable(classes=classes)
     return teacher, timetable, timetable_colours
 
 
 # Functions called by get pupil / teacher timetable context
-def get_timetable_slot_indexed_timetable(classes: Union[QuerySet, List[models.FixedClass]],
-                                         timetable_slots: Union[QuerySet, List[models.TimetableSlot]]) -> Dict:
+def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
+                                         timetable_slots: models.TimetableSlotQuerySet) -> Dict:
     """
     Function to return a timetable data structure that can easily be iterated over in a django template.
 
@@ -100,31 +98,3 @@ def get_timetable_slot_indexed_timetable(classes: Union[QuerySet, List[models.Fi
                 time_timetable[day_label] = models.FixedClass.SubjectColour.FREE.name
         timetable[time] = time_timetable
     return timetable
-
-
-def get_colours_for_pupil_timetable(classes: Union[QuerySet, List[models.FixedClass]]) -> Dict:
-    """
-    Pupil timetables are colour coded using the FixedClass (one colour per FixedClass instance)
-    :return A dictionary whose keys are subject names, and values are corresponding hexadecimal colour codes
-    """
-    class_colours = {klass.subject_name: models.FixedClass.SubjectColour.get_colour_from_subject(
-        subject_name=klass.subject_name) for klass in classes}
-    class_colours[models.FixedClass.SubjectColour.FREE.name] = models.FixedClass.SubjectColour.FREE.label
-    return class_colours
-
-
-def get_colours_for_teacher_timetable(classes: Union[QuerySet, List[models.FixedClass]]) -> Dict:
-    """
-    Pupil timetables are colour coded using the pupils' year group (one colour per pupil year group)
-    :return A dictionary whose keys are year groups, and values are corresponding hexadecimal colour codes
-    """
-    year_group_colours = {}  # Not using dict comp here since info extraction requires some explanation
-    for klass in classes:
-        all_pupils = klass.pupils.all()
-        if all_pupils.exists():  # Take first pupil from queryset since all have same year group
-            first_pupil = klass.pupils.all()[0]
-            year_group: int = first_pupil.year_group
-            year_group_colours[year_group] = models.Pupil.YearGroup.get_colour_from_year_group(year_group=year_group)
-    year_group_colours[models.FixedClass.SubjectColour.FREE.name] = models.FixedClass.SubjectColour.FREE.label
-    year_group_colours[models.FixedClass.SubjectColour.LUNCH.name] = models.FixedClass.SubjectColour.LUNCH.label
-    return year_group_colours

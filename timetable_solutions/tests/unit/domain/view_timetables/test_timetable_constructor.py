@@ -14,10 +14,12 @@ from data import models
 from domain import view_timetables
 
 
-class TestDataPreProcessing(TestCase):
-    """Test class for the all functions in the data_pre_processing module of the view_timetables in the domain."""
+class TestTimetableConstruction(TestCase):
+    """
+    Test class for the all functions in the timetable_constructor module of the view_timetables in the domain.
+    """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "fixed_classes.json", "fixed_classes_lunch.json"]
 
     def test_get_year_indexed_pupils(self):
         """Test that the correct full list of pupils indexed by year group is returned"""
@@ -67,7 +69,7 @@ class TestDataPreProcessing(TestCase):
         timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
 
         # Run the relevant domain unit
-        timetable = view_timetables.data_pre_processing.get_timetable_slot_indexed_timetable(
+        timetable = view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
             classes=classes, timetable_slots=timetable_slots)
 
         # Test assertions
@@ -87,7 +89,7 @@ class TestDataPreProcessing(TestCase):
         timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
 
         # Run the relevant domain unit
-        timetable = view_timetables.data_pre_processing.get_timetable_slot_indexed_timetable(
+        timetable = view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
             classes=classes, timetable_slots=timetable_slots)
 
         # Test assertions
@@ -96,42 +98,3 @@ class TestDataPreProcessing(TestCase):
         self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.FRENCH.name)
         free_period = timetable[time(hour=10)][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
-
-    def test_get_colours_for_pupil_timetable(self):
-        """
-        Test that the correct colours to use for rendering a pupil's timetable are returned for a given pupil,
-        in the correct structure.
-        """
-        # Data setup
-        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
-        classes = pupil.classes.all()
-
-        # Run the relevant domain unit
-        class_colours = view_timetables.data_pre_processing.get_colours_for_pupil_timetable(classes=classes)
-
-        # Test colours context
-        self.assertIsInstance(class_colours, dict)
-        self.assertEqual(class_colours[models.FixedClass.SubjectColour.MATHS.name],
-                         models.FixedClass.SubjectColour.MATHS.label)
-        self.assertEqual(class_colours[models.FixedClass.SubjectColour.FREE.name],
-                         models.FixedClass.SubjectColour.FREE.label)
-
-    def test_get_colours_for_teacher_timetable(self):
-        """
-        Test that the correct colours to use for rendering a teacher's timetable are returned for a given teacher,
-        in the correct structure.
-        """
-        # Data setup
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
-        classes = teacher.classes.all()
-
-        # Run the relevant domain unit
-        class_colours = view_timetables.data_pre_processing.get_colours_for_teacher_timetable(classes=classes)
-
-        # Test colours context
-        self.assertIsInstance(class_colours, dict)
-        self.assertEqual(class_colours[models.Pupil.YearGroup.ONE.value], models.Pupil.YearGroup.ONE.label)
-        self.assertEqual(class_colours[models.FixedClass.SubjectColour.FREE.name],
-                         models.FixedClass.SubjectColour.FREE.label)
-        self.assertEqual(class_colours[models.FixedClass.SubjectColour.LUNCH.name],
-                         models.FixedClass.SubjectColour.LUNCH.label)
