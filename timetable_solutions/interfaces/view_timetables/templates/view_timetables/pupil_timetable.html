@@ -67,7 +67,7 @@
     </tr>
     {% endfor %}
     </table>
-    <button type="button" class="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
+    <button type="button" id="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
         Download
     </button>
     <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>

@@ -126,7 +126,23 @@ Timetable header and back button styling
 /* ====================
 Download button
 ==================== */
-.download_button {
-  border: 1px solid black;
-  margin-top: 10px;
+#download_button {
+    /* Display */
+    width: 150px;
+    margin-top: 5px;
+    padding: 3px;
+
+    /* Typography */
+    font-size: 15px;
+    color: white;
+    text-align: center;
+
+    /* Border and background */
+    background-color: #004000;
+    border: 1px solid #33003d;
+    border-radius: 5px;
+}
+#download_button:hover {
+    background-color: #1f1530;
+    cursor: pointer;
 }
