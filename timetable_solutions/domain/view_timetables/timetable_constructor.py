@@ -95,6 +95,6 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
                 if queryset.exists():
                     time_timetable[day_label] = klass
             if day_label not in time_timetable:
-                time_timetable[day_label] = models.FixedClass.SubjectColour.FREE.name
+                time_timetable[day_label] = TimetableColour.FREE.name
         timetable[time] = time_timetable
     return timetable

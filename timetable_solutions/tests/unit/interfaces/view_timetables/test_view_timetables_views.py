@@ -99,9 +99,9 @@ class TestViews(TestCase):
         # Test colours context
         colours = response.context["class_colours"]
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name],
+        self.assertEqual(colours["MATHS"],
                          TimetableColour.COLOUR_RANKING.value[1])  # [1] since maths' rank is 1 on pupil's timetable
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], TimetableColour.FREE.value)
+        self.assertEqual(colours[TimetableColour.FREE.name], TimetableColour.FREE.value)
 
     def test_teacher_timetable_view_correct_response(self):
         """
@@ -132,5 +132,5 @@ class TestViews(TestCase):
         colours = response.context["year_group_colours"]
         self.assertIsInstance(colours, dict)
         self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], TimetableColour.COLOUR_RANKING.value[1])
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], TimetableColour.FREE.value)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.LUNCH.name], TimetableColour.LUNCH.value)
+        self.assertEqual(colours[TimetableColour.FREE.name], TimetableColour.FREE.value)
+        self.assertEqual(colours[TimetableColour.LUNCH.name], TimetableColour.LUNCH.value)

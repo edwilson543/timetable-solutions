@@ -16,9 +16,11 @@ from data import models
 class TimetableColour(Enum):
     """
     Enumeration of the hexadecimal colours to use for the timetables in the UI. For certain subject types
-    (lunch / free), a specific colour is given, otherwise, we assign colours based on the most periods.
+    (lunch / free), a specific colour is given, otherwise, we assign colours based on the most periods. The Enum also
+    therefore specifies all subjects that we may want to reference in the code (e.g. lunch / break etc.)
 
-    We also use this enum to define the logic to assign the colours to use when rendering a pupil / teacher's timetable.
+    This enum also has methods defining the logic to assign the colours to use when rendering a pupil / teacher's
+    timetable.
     """
     # Unranked subject colours
     LUNCH = "#b3b3b3"  # Light grey
