@@ -26,38 +26,53 @@ Container for the timetable (html table that goes in the center of the page)
 }
 
 /* ====================
-Formatting of the timetable (a html table) itself
+Formatting of the timetable (a html table) itself, and its components
 ==================== */
 table {width:100%;}
 
-td:hover {
-  background-color: #0a2fa8;
-  color: white;
-}
-th, td {
-  padding: 5px;
-  text-align: center;
-  background-color: #c9c9c9; /* default colour if subject is not found */
-  border: 1px solid black;
-}
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  border-radius: 3px;
-}
+.timetable_slot {
+    /* Display */
+    height: 50px;
+    padding: 3px;
 
-/* Styling for specific cells in the timetable html table */
-#start_time {
-    width: 10%;
-    color: white;
-    background-color: #876969;
+    /* Typography */
+    font-size: 15px;
     text-align: center;
+
+    /* Background and border */
+    background-color: #c9c9c9; /* default colour if subject is not found */
+    border: 1px solid black;
+    border-collapse: collapse;
     border-radius: 3px;
+}
+.timetable_slot:hover {
+  color: white;
+  background-color: #0a2fa8;
 }
 
 .perimeter {
+    /* Display */
+    height: 30px;
+
+    /* Typography */
     color: white;
+    text-align: center;
+
+    /* Background and border */
     background-color: #4d4141;
+    border-radius: 3px;
+}
+
+#period_time {
+    /* Display */
+    width: 10%;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #876969;
     border-radius: 3px;
 }
 

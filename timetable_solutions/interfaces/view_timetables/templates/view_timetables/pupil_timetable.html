@@ -25,9 +25,9 @@
 <div id="content_container">
     <div id="heading_back_wrapper">
         <div id="heading">
-            <b><i>
+            <b>
                 Timetable for {{pupil.firstname}} {{pupil.surname}}
-            </i></b>
+            </b>
         </div>
         <div id="back_button">
             <a href="{% url 'pupils_navigator' %}"><b>
@@ -42,26 +42,26 @@
 
     <tr>
         {% if forloop.first %}
-            <th id="start_time"><i>Start time</i></th>
+            <th id="period_time"><i>Period time</i></th>
         {% for day in day_dict %}
             <th class="perimeter" style="width:18%;">{{ day|title }}</th>
         {% endfor %}
         {% endif %}
     </tr>
     <tr>
-        <td class="perimeter">{{time}}</td>
+        <td class="perimeter"><i>{{ time }}</i></td>
         {% for day, klass in day_dict.items %}
-        {% if klass == "FREE" %}
-          <td class="colour_{{klass}}"><b>{{ klass|title }}</b></td>
-        {% elif klass.subject_name == "LUNCH" %}
-          <td class="colour_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
-        {% else %}
-          <td class="colour_{{klass.subject_name}}">
-              <b>{{ klass.subject_name|title}}</b><br>
-              <i>{{ klass.teacher.title }} {{ klass.teacher.surname }}</i><br>
-              <i>{{ klass.classroom.building}} {{klass.classroom.room_number}}</i>
-          </td>
-        {% endif %}
+            {% if klass == "FREE" %}
+              <td class="colour_{{klass}} timetable_slot"><b>{{ klass|title }}</b></td>
+            {% elif klass.subject_name == "LUNCH" %}
+              <td class="colour_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
+            {% else %}
+              <td class="colour_{{klass.subject_name}} timetable_slot">
+                  <b>{{ klass.subject_name|title}}</b><br>
+                  <i>{{ klass.teacher.title }} {{ klass.teacher.surname }}</i><br>
+                  <i>{{ klass.classroom.building}} {{klass.classroom.room_number}}</i>
+              </td>
+            {% endif %}
 
         {% endfor %}
     </tr>
