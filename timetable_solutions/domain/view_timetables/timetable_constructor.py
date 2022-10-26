@@ -71,7 +71,8 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
 def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
                                          timetable_slots: models.TimetableSlotQuerySet) -> Dict:
     """
-    Function to return a timetable data structure that can easily be iterated over in a django template.
+    Function defining a data structure for pupil / teacher timetables that can easily be iterated over in a django
+    template to create a html table.
 
     Parameters:
         classes - this is a filtered QuerySet from the FixedClass model, for exactly 1 teacher/pupil
@@ -80,21 +81,24 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
     innermost key is the day of the week, and the values are the subject objects at each relevant timeslot, with the
     exception that a free period is just a string 'FREE'.
     e.g. {9AM: {MONDAY: MATHS, TUESDAY: FRENCH,...}, 10AM: {...}, ...}
-    This structure is chosen such that it can be efficiently iterated over in the template to create a html table.
     """
-    class_indexed_timetable = {klass: klass.time_slots.all().values() for klass in classes}
+    class_indexed_timetable = {klass: klass.time_slots.all() for klass in classes}
     period_start_times = {time_slot.period_starts_at for time_slot in timetable_slots}  # Use set to get unique times
     sorted_period_start_times = sorted(list(period_start_times))
+
     timetable = {}
     for time in sorted_period_start_times:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
+
         for day in models.WeekDay.values:
             day_label = models.WeekDay(day).label
             for klass, time_slots in class_indexed_timetable.items():
                 queryset = time_slots.filter(day_of_week=day, period_starts_at=time)
-                if queryset.exists():
+                if queryset.exists():  # Pupil / teacher has a class at this time
                     time_timetable[day_label] = klass
             if day_label not in time_timetable:
                 time_timetable[day_label] = TimetableColour.FREE.name
-        timetable[time] = time_timetable
+
+        time_string = time.strftime("%H:%M")
+        timetable[time_string] = time_timetable
     return timetable

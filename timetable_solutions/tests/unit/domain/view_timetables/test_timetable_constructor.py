@@ -2,9 +2,6 @@
 Module containing unit tests for data_pre_processing in the view_timetables subdirectory of the domain layer.
 """
 
-# Standard library imports
-from datetime import time
-
 # Django imports
 from django.db.models import QuerySet
 from django.test import TestCase
@@ -75,11 +72,11 @@ class TestTimetableConstruction(TestCase):
             classes=classes, timetable_slots=timetable_slots)
 
         # Test assertions
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
         self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
-        free_period = timetable[time(hour=12)][models.WeekDay.THURSDAY.label]
+        free_period = timetable["12:00"][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a FixedClass instance
         self.assertEqual(free_period, view_timetables.TimetableColour.FREE.name)
 
@@ -95,8 +92,8 @@ class TestTimetableConstruction(TestCase):
             classes=classes, timetable_slots=timetable_slots)
 
         # Test assertions
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
-        free_period = timetable[time(hour=10)][models.WeekDay.MONDAY.label]
+        free_period = timetable["10:00"][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, view_timetables.TimetableColour.FREE.name)
