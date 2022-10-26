@@ -100,5 +100,7 @@ class TimetableColour(Enum):
         Method to get the dictionary of colours as subject_name: hexadecimal_colour_code, which are 'unranked', i.e.
         all colours that are not in the COLOUR_RANKING dictionary
         """
+        # TODO - if this method received classes as an argument, it could then uses regexes to match the subject names
+        #  to the enum names, and thereby the colours
         unranked_colours = {colour.name: colour.value for colour in cls if colour is not cls.COLOUR_RANKING}
         return unranked_colours
