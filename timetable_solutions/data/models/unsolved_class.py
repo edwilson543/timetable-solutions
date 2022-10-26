@@ -7,7 +7,6 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.classroom import Classroom
-from data.models.fixed_class import FixedClass
 from data.models.pupil import Pupil, PupilQuerySet
 from data.models.teacher import Teacher
 
@@ -36,7 +35,7 @@ class UnsolvedClass(models.Model):
     """
     class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    subject_name = models.CharField(max_length=20, choices=FixedClass.SubjectColour.choices)
+    subject_name = models.CharField(max_length=20)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,
                                 related_name="unsolved_classes", blank=True, null=True)
     pupils = models.ManyToManyField(Pupil, related_name="unsolved_classes")
@@ -64,6 +63,7 @@ class UnsolvedClass(models.Model):
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
         Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
+        subject_name = subject_name.upper()
         unsolved_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
@@ -72,6 +72,7 @@ class UnsolvedClass(models.Model):
             unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 
+    # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
         Additional validation on UnsolvedClass instances. In particular we cannot imply a number of double periods that

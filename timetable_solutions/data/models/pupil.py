@@ -34,20 +34,21 @@ class PupilQuerySet(models.QuerySet):
 
 
 class Pupil(models.Model):
-    """Model for storing pupils at all registered schools."""
+    """
+    Model for storing pupils at all registered schools.
+    """
 
     class YearGroup(models.IntegerChoices):
-        ONE = 1, "#b3f2b3"
-        TWO = 2, "#ffbfd6"
-        THREE = 3, "#c8d4e3"
-        FOUR = 4, "#fcc4a2"
-        FIVE = 5, "#babac2"
-
-        @staticmethod
-        def get_colour_from_year_group(year_group: int) -> str:
-            """Method taking a year group name e.g. int: 1 and returning a hexadecimal colour e.g. #b3f2b3"""
-            member = Pupil.YearGroup(year_group)
-            return member.label
+        ONE = 1, "One"
+        TWO = 2, "Two"
+        THREE = 3, "Three"
+        FOUR = 4, "Four"
+        FIVE = 5, "Five"
+        SIX = 6, "Six"
+        SEVEN = 7, "Seven"
+        EIGHT = 8, "Eight"
+        NINE = 9, "Nine"
+        TEN = 10, "Ten"
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     pupil_id = models.IntegerField()
