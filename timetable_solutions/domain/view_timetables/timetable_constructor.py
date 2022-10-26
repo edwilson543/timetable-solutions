@@ -4,6 +4,7 @@ format for a view to render in the template.
 """
 
 # Standard library imports
+import datetime as dt
 from string import ascii_uppercase
 from typing import Dict, Tuple
 
@@ -83,22 +84,23 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
     e.g. {9AM: {MONDAY: MATHS, TUESDAY: FRENCH,...}, 10AM: {...}, ...}
     """
     class_indexed_timetable = {klass: klass.time_slots.all() for klass in classes}
-    period_start_times = {time_slot.period_starts_at for time_slot in timetable_slots}  # Use set to get unique times
+    period_start_times = {(time_slot.period_starts_at, time_slot.period_duration) for time_slot in timetable_slots}
     sorted_period_start_times = sorted(list(period_start_times))
 
     timetable = {}
-    for time in sorted_period_start_times:
+    for start_time, duration in sorted_period_start_times:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
 
         for day in models.WeekDay.values:
             day_label = models.WeekDay(day).label
             for klass, time_slots in class_indexed_timetable.items():
-                queryset = time_slots.filter(day_of_week=day, period_starts_at=time)
+                queryset = time_slots.filter(day_of_week=day, period_starts_at=start_time)
                 if queryset.exists():  # Pupil / teacher has a class at this time
                     time_timetable[day_label] = klass
             if day_label not in time_timetable:
                 time_timetable[day_label] = TimetableColour.FREE.name
 
-        time_string = time.strftime("%H:%M")
+        end_time = dt.datetime.combine(date=dt.datetime.min, time=start_time) + duration
+        time_string = start_time.strftime("%H:%M") + "-" + end_time.strftime("%H:%M")
         timetable[time_string] = time_timetable
     return timetable

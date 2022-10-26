@@ -1,7 +1,6 @@
-"""Module containing unit tests for the views in view_timetables app."""
-
-# Local application imports
-from datetime import time
+"""
+Module containing unit tests for the views in view_timetables app.
+"""
 
 # Django imports
 from django.db.models import QuerySet
@@ -15,7 +14,9 @@ from domain.view_timetables.timetable_colours import TimetableColour
 
 
 class TestViews(TestCase):
-    """Test class for the view_timetables views"""
+    """
+    Test class for the view_timetables app.
+    """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "fixed_classes_lunch.json"]
 
@@ -88,11 +89,11 @@ class TestViews(TestCase):
 
         # Test timetable context
         timetable = response.context["timetable"]
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
         self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
-        free_period = timetable[time(hour=12)][models.WeekDay.THURSDAY.label]
+        free_period = timetable["12:00-13:00"][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a FixedClass instance
         self.assertEqual(free_period, "FREE")
 
@@ -122,10 +123,10 @@ class TestViews(TestCase):
 
         # Test timetable content
         timetable = response.context["timetable"]
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
-        free_period = timetable[time(hour=10)][models.WeekDay.MONDAY.label]
+        free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, "FREE")
 
         # Test the colours context
