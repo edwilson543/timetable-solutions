@@ -24,9 +24,9 @@
 <div id="content_container">
     <div id="heading_back_wrapper">
         <div id="heading">
-            <b><i>
+            <b>
                 Timetable for {{teacher.firstname}} {{teacher.surname}}
-            </i></b>
+            </b>
         </div>
         <div id="back_button">
             <a href="{% url 'teachers_navigator' %}"><b>
@@ -41,7 +41,7 @@
 
     <tr>
         {% if forloop.first %}
-        <th id="start_time"><i>Start time</i></th>
+        <th id="period_time"><i>Period time</i></th>
         {% for day in day_dict %}
         <th class="perimeter" style="width:18%;">{{ day|title }}</th>
         {% endfor %}
@@ -51,11 +51,11 @@
         <td class="perimeter">{{time}}</td>
         {% for day, klass in day_dict.items %}
           {% if klass == "FREE" %}
-            <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
+            <td class="color_{{klass}} timetable_slot"><b>{{ klass|title }}</b></td>
           {% elif klass.subject_name == "LUNCH" %}
-            <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
+            <td class="color_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
           {% else %}
-            <td class="color_{{klass.pupils.all.0.year_group}}">
+            <td class="color_{{klass.pupils.all.0.year_group}} timetable_slot">
                 <b>{{ klass.subject_name|title}}</b><br>
               <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
               <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
