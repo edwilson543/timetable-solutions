@@ -14,7 +14,7 @@ Container for the timetable (html table that goes in the center of the page)
     /* Display */
     width: 80%;
     height: 80%;
-    padding: 20px;
+    padding: 10px;
     margin-top: 10px;
     margin-bottom: 40px;
 
@@ -28,7 +28,9 @@ Container for the timetable (html table that goes in the center of the page)
 /* ====================
 Formatting of the timetable (a html table) itself, and its components
 ==================== */
-table {width:100%;}
+#timetable {
+    width: 100%;
+}
 
 .timetable_slot {
     /* Display */
@@ -127,11 +129,4 @@ Download button
 .download_button {
   border: 1px solid black;
   margin-top: 10px;
-}
-
-/* ====================
-Main table
-==================== */
-#timetable {
-    width: 100%;
 }
