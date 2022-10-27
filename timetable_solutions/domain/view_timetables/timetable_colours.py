@@ -130,7 +130,7 @@ class TimetableColour(Enum):
         """
         generic_period_colours = {
             klass.subject_name: matched_colour_code for klass in classes if
-            (matched_colour_code := cls._check_class_for_colour_in_regex(class_name=klass.subject_name)) is not None
+            (matched_colour_code := cls.check_class_for_colour_in_regex(class_name=klass.subject_name)) is not None
         }
         # Free periods are normally undefined (i.e. will NOT be in the classes arg), and are used to fill missing slots
         # So this must be added manually
@@ -138,10 +138,13 @@ class TimetableColour(Enum):
         return generic_period_colours
 
     @classmethod
-    def _check_class_for_colour_in_regex(cls, class_name: str) -> Union[str, None]:
+    def check_class_for_colour_in_regex(cls, class_name: str) -> Union[str, None]:
         """
         Method to check the class_name parameter to see if it matches any of the regexes in regex dict.
         :return the colour code from the matched regex, if there is one, otherwise None.
+
+        Note - we actually use the method to help count the subjects that aren't of generic type in the
+        timetable_summary_stats.py. Note really what it was intended for but it does a job...
         """
         regex_dict = cls._get_regex_dict()
         for regex, colour_code in regex_dict.items():

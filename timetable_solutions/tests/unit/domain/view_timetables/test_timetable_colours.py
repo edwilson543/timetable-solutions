@@ -87,7 +87,7 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for meal_time_string in meal_time_strings:
-            colour_code = TimetableColour._check_class_for_colour_in_regex(class_name=meal_time_string)
+            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=meal_time_string)
             assert colour_code == TimetableColour.MEAL.value
 
     def test_check_class_for_colour_in_regex_successful_break_match_expected(self):
@@ -101,7 +101,7 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for break_time_strings in break_time_strings:
-            colour_code = TimetableColour._check_class_for_colour_in_regex(class_name=break_time_strings)
+            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=break_time_strings)
             assert colour_code == TimetableColour.BREAK.value
 
     def test_check_class_for_colour_in_regex_successful_free_period_match_expected(self):
@@ -115,7 +115,7 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for free_time_strings in free_period_strings:
-            colour_code = TimetableColour._check_class_for_colour_in_regex(class_name=free_time_strings)
+            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=free_time_strings)
             assert colour_code == TimetableColour.FREE.value
 
     def test_check_class_for_colour_in_regex_unsuccessful_match_against_all_options(self):
@@ -130,5 +130,5 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for no_match_string in no_match_strings:
-            colour_code = TimetableColour._check_class_for_colour_in_regex(class_name=no_match_string)
+            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=no_match_string)
             assert colour_code is None
