@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
+from constants.url_names import UrlName
 from interfaces.data_upload.upload_view_base_class import RequiredUpload
 from interfaces.data_upload.forms import FormSubclass
 
@@ -20,7 +21,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         A get request should return all the forms and their upload status.
         """
         login = self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = reverse("file_upload_page")
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.get(url)
 
         # Test the context
@@ -36,7 +37,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         A post request should return all the forms and their upload status, just as for the get request.
         """
         login = self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = reverse("file_upload_page")
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.post(url)
 
         # Test the context
@@ -51,7 +52,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         """
         Test that trying to access the data upload page redirects logged out users to the login page.
         """
-        url = reverse("file_upload_page")
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.get(url)
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
@@ -60,7 +61,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         Test that trying to post data (e.g. to the pupil url, equivalently for all other files) redirects logged out
         users to the login page.
         """
-        url = reverse("pupil_list")
+        url = reverse(UrlName.PUPIL_LIST_UPLOAD.value)
         response = self.client.post(url, data={"junk": "not-a-file"})
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
@@ -73,7 +74,7 @@ class TestUploadPageReviewExistingUploads(TestCase):
     def test_upload_page_view_uploads_get_request_completion_statuses_correct(self):
         """Unit test that the pre-uploaded files are shown as complete"""
         login = self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = reverse("file_upload_page")
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.get(url)
 
         # Test the context

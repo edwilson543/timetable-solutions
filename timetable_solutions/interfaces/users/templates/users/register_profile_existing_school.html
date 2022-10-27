@@ -10,26 +10,7 @@
 <style>
 {% block style_block %}
 
-#parent_container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 90%;
-}
-#back_button {
-    border-radius: 5px;
-    border: 1px solid #33003d;
-    width: 330px;
-    font-size: 20px;
-    padding: 5px;
-    color: white;
-    text-align: center;
-    background-color: #c4353f;
-}
-input[type="submit"] {
-    background-color: #004000;
-}
+input[type="submit"] {background-color: #004000;}
 
 {% endblock %}
 </style>
@@ -37,24 +18,23 @@ input[type="submit"] {
 
 {% block content %}
 
-<div id="parent_container">
-    <div id="form_container">
-        <h4 style="margin-bottom:20px;">
-            Please enter your school's access key below
-        </h4>
-        {% if error_message is not None %}
-        <p class="error_message">
-            {{error_message}}
-        </p>
-        {% endif %}
-        <form method="post">
-            {% csrf_token %}
-            {{form}}
-            <input type="submit" value="Complete registration">
-        </form>
-        <hr style="color:black;width:90%;margin-bottom:15px;">
-        <a href="{% url 'registration_pivot' %}" id="back_button">Back</a>
-    </div>
+<div id="form_container">
+    <h4 style="margin-bottom:20px;">
+        Please enter your school's access key below
+    </h4>
+    {% if error_message is not None %}
+    <p class="error_message">
+        {{error_message}}
+    </p>
+    {% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" value="Complete registration">
+    </form>
+    <hr>
+    <a href="{% url 'registration_pivot' %}" class="wide_red_button">Back</a>
 </div>
+
 
 {% endblock %}

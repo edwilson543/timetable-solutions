@@ -7,7 +7,7 @@ from django import forms
 from data import models
 
 
-class CustomUserCreationForm(UserCreationForm):
+class CustomUserCreation(UserCreationForm):
     """Placeholder customisation of the default django user creation form"""
     class Meta(UserCreationForm.Meta):
         fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name")
@@ -23,7 +23,7 @@ class SchoolRegistrationPivot(forms.Form):
     existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect, label="")
 
 
-class SchoolRegistrationForm(forms.ModelForm):
+class SchoolRegistration(forms.ModelForm):
     """Form to fill in at registration, if the user also needs to register their school_id."""
 
     error_message = None
@@ -46,7 +46,7 @@ class SchoolRegistrationForm(forms.ModelForm):
             return True  # Access key available and is 6 digits
 
 
-class ProfileRegistrationForm(forms.Form):
+class ProfileRegistration(forms.Form):
     """Form to fill in at registration, if the user's schools is already registered."""
     school_access_key = forms.IntegerField()
     error_message = None

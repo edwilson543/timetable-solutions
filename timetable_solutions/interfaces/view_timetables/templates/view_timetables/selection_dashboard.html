@@ -13,6 +13,19 @@
 
 <style>
 {% block style_block %}
+/* No timetable solutions styling */
+#no_solutions_error {
+    font-size: 20px;
+}
+.no_solutions_link {
+    font-size: 20px;
+    color: #690007;
+}
+.no_solutions_link:link {
+    text-decoration: underline;
+}
+
+/* Information panel styling */
 #summary_info {
     grid-row: 2 / 4;
     grid-column: 1;
@@ -28,22 +41,55 @@
 .pup_teach_info {
     height: auto;
 }
-.link_button {
+
+/* Button styling */
+.view_link_button {
+    /* Display */
+    width: 90%;
+    padding: 5px;
+
+    /* Typography */
+    font-size: 20px;
+    text-align: center;
+    color: white;
+
+    /* Background and border */
+    background-color: #004000;
     border-radius: 5px;
     border: 1px solid #33003d;
-    width: 90%;
-    font-size: 20px;
-    padding: 5px;
-    color: white;
-    text-align: center;
-    background-color: #004000;
 }
-.link_button:hover {background-color: #1f1530;}
+.view_link_button:hover {background-color: #1f1530;}
+
+.email_link_button {
+    /* Display */
+    width: 90%;
+    padding: 5px;
+
+    /* Typography */
+    font-size: 20px;
+    text-align: center;
+    color: white;
+
+    /* Background and border */
+    background-color: #c4353f;
+    border-radius: 5px;
+    border: 1px solid #33003d;
+}
+.email_link_button:hover {background-color: #1f1530;}
+
+/* Text content of information panels styling */
 ul {padding: 10px;}
 li {
     font-size: 20px;
     padding: 10px;
     margin-left: 5px;
+}
+
+/* Horizontal breaks within information panels */
+.horizontal_break {
+    width:80%;
+    color: black;
+    margin-bottom: 15px;
 }
 
 {% endblock %}
@@ -53,19 +99,36 @@ li {
 <body>
 {% block content %}
 <div id="content_container">
+    {% if not has_solutions %}
+        <div id="no_solutions_error" class="error_message">
+            No timetables are available yet. First
+            <a href="{% url 'file_upload_page' %}" class="no_solutions_link"><b>upload your data</b></a>
+            in the correct structure,
+            and then visit the
+            <a href="{% url 'create_timetables' %}" class="no_solutions_link"><b>create page</b></a>
+            to specify your requirements.
+        </div>
+    {% else %}
     <div id="grid_container">
-
         <div id="dashboard_title">
-            {% if not True %}
-            <h4>No timetable solutions were found</h4>
-            {% else %}
             <h4>Timetable solutions have been found!</h4>
         </div>
         <div id="summary_info" class="info_frame">
             <ul>
-                <li>Timetable solutions for a total of {{total_classes}} classes have been found</li>
-                <li>{{total_lessons}} lessons will be taught each week</li>
-                <li>The busiest timeslot of the week is {{busiest_slot.period_starts_at}} on {{busiest_slot.day_of_week | title}}</li>
+                <li>Timetable solutions for a total of {{total_classes}} classes have been found -
+                {{total_lessons}} lessons will be taught each week</li>
+
+                {% if busiest_day == quietest_day %}
+                    <li>Every day of the week has {{ busiest_day_pct }} % of lessons in it</li>
+                {% else %}
+                    <li>The busiest day of the week is {{busiest_day}},
+                        which has {{busiest_day_pct}}% of lessons</li>
+                    <li>The quietest day of the week is {{quietest_day}},
+                        with only {{quietest_day_pct}}% of lessons</li>
+                {% endif %}
+
+                <li>The busiest time on average is {{busiest_time}},
+                    which has {{busiest_time_pct}}% of lessons</li>
             </ul>
         </div>
 
@@ -73,9 +136,13 @@ li {
             <ul>
                 <li>Timetables have been generated for all {{total_pupils}} pupils</li>
             </ul>
-            <hr style="color:black;width:80%;margin-bottom:15px;">
-            <a href="{% url 'pupils_navigator' %}" class="link_button">
+            <hr class="horizontal_break">
+            <a href="{% url 'pupils_navigator' %}" class="view_link_button">
                 View pupil timetables
+            </a>
+            <hr class="horizontal_break">
+            <a href="" class="email_link_button">
+                Email timetables to pupils
             </a>
         </div>
 
@@ -83,14 +150,17 @@ li {
             <ul>
                 <li>Timetables have been generated for all {{total_teachers}} teachers</li>
             </ul>
-            <hr style="color:black;width:80%;margin-bottom:15px;">
-            <a href="{% url 'teachers_navigator' %}" class="link_button">
+            <hr class="horizontal_break">
+            <a href="{% url 'teachers_navigator' %}" class="view_link_button">
                 View teacher timetables
             </a>
+            <hr class="horizontal_break">
+            <a href="" class="email_link_button">
+                Email timetables to teachers
+            </a>
+            {% endif %}
         </div>
     </div>
-
-    {% endif %}
 </div>
 {% endblock %}
 

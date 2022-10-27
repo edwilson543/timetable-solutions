@@ -1,10 +1,21 @@
 /* ====================
+Introduce a wrapper containing everything except the footer, which fills the negative bottom margin
+==================== */
+#full_page_wrapper{
+    /* Positioning */
+    position: relative;
+
+    /* Display */
+    min-height: 100%;
+    margin-bottom: -38px;
+}
+
+/* ====================
 Head strap styling
 ==================== */
 #head_strap {
     /* Positioning */
-    position: absolute;
-    top: 0;
+    position: relative;
 
     /* Display */
     width: 100%;
@@ -19,6 +30,9 @@ Head strap styling
 }
 
 #head_strap_text {
+    /* Positioning */
+    position: relative;
+
     /* Display */
     float: left;
     margin-left: 20px;
@@ -30,9 +44,12 @@ Head strap styling
 }
 
 @media screen and (max-width: 900px) {
-  #login_info {display: none;}
+    #login_info {display: none;}
 }
 #login_info {
+    /* Positioning */
+    position: relative;
+
     /* Display */
     float: right;
     margin-right: 20px;
@@ -48,9 +65,8 @@ Head strap styling
 Navbar styling
 ==================== */
 #navbar {
-    /* Positioning - top corresponds to bottom of head strap (60px) */
-    position: absolute;
-    top: 60px;
+    /* Positioning */
+    position: relative;
     z-index: 100;
 
     /* Display */
@@ -67,6 +83,9 @@ Navbar styling
 #navbar:hover {background-color: rgba(0, 0, 0, 1.0);}
 
 #navbar_text {
+    /* Positioning */
+    position: relative;
+
     /* Display */
     margin-left: 20px;
 
@@ -83,41 +102,46 @@ Navbar styling
 Parent content container styling
 ==================== */
 #parent_container {
-    /* Positioning - at the top of the head strap */
-    position: absolute;
-    top: 100px;
-
     /* Display and box model */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 80%;
+    min-height: 80vh;
 }
 
 /* ====================
 Footer styling
 ==================== */
 #footer_info {
-    position: absolute;
-    bottom: 0px;
+    /* Positioning */
+    position: relative;
+    z-index: 1;
 
     /* Display */
     width: 100%;
     height: 20px;
+    margin-top: 10px;
     padding-top: 3px;
     padding-bottom: 3px;
-    margin-top: 20px;
 
     /* Typography */
     font-size: 12px;
+    line-height: 20px;
+    color: white;
     text-align: center;
     vertical-align: middle;
 
-    /* Border */
+    /* Background and border */
+    background-color: rgba(0, 0, 0, 0.3);
     border-top: 1px solid black;
     border-top-style: double;
+}
+#footer_info:hover {background-color: #1f1530;}
+
+@media screen and (max-width: 700px) {
+    #footer_contact_info {display: none;}
 }
 
 /* ====================
@@ -148,6 +172,9 @@ Miscellaneous
     font-family: Arial;
 }
 body, html {
+    /* Positioning */
+    z-index: -100;
+
     /* Display */
     height: 100%;
     width: 100%;

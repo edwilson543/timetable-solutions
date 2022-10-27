@@ -1,5 +1,11 @@
+/* ====================
+Container for the timetable (html table that goes in the center of the page)
+==================== */
 #content_container {
-    /* Positioning and box model */
+    /* Positioning */
+    position: relative;
+
+    /* Display and box model */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -8,7 +14,7 @@
     /* Display */
     width: 80%;
     height: 80%;
-    padding: 20px;
+    padding: 10px;
     margin-top: 10px;
     margin-bottom: 40px;
 
@@ -19,34 +25,124 @@
     box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
 }
 
-/* Download button */
-.download_button {
-  border: 1px solid black;
-  margin-top: 10px;
+/* ====================
+Formatting of the timetable (a html table) itself, and its components
+==================== */
+#timetable {
+    width: 100%;
 }
 
-/* Title settings */
-.heading {text-align: center;}
+.timetable_slot {
+    /* Display */
+    height: 50px;
+    padding: 3px;
 
-/* Table formatting */
-table {width:100%;}
+    /* Typography */
+    font-size: 15px;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #c9c9c9; /* default colour if subject is not found */
+    border: 1px solid black;
+    border-collapse: collapse;
+    border-radius: 3px;
+}
+.timetable_slot:hover {
+  color: white;
+  background-color: #0a2fa8;
+}
 
 .perimeter {
-  background-color: #4d4141;
-  color: white;
-  border-radius: 3px;
+    /* Display */
+    height: 30px;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #4d4141;
+    border-radius: 3px;
 }
-td:hover {
-  background-color: #0a2fa8;
-  color: white;
+
+#period_time {
+    /* Display */
+    width: 10%;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #876969;
+    border-radius: 3px;
 }
-th, td {
-  padding: 5px;
-  background-color: #c9c9c9; /* default colour if subject is not found */
-  text-align: center;
+
+/* ====================
+Timetable header and back button styling
+==================== */
+#heading_back_wrapper {
+    /* Display and box model */
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 5px;
 }
-td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  border-radius: 3px;
+
+#heading {
+    /* Display */
+    width: 80%;
+    margin: 5px;
+    padding: 10px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #11014A;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+#back_button {
+    /* Display */
+    width: 15%;
+    margin: 5px;
+    padding: 10px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: #c4353f;
+    border-radius: 5px;
+    border: 1px solid #33003d;
+}
+
+/* ====================
+Download button
+==================== */
+#download_button {
+    /* Display */
+    width: 150px;
+    margin-top: 5px;
+    padding: 3px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Border and background */
+    background-color: #004000;
+    border: 1px solid #33003d;
+    border-radius: 5px;
+}
+#download_button:hover {
+    background-color: #1f1530;
+    cursor: pointer;
 }

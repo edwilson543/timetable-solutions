@@ -1,47 +1,66 @@
 {% extends 'base.html' %}
 
+<head>
+{% block head_content %}
+<title>Dashboard</title>
+{% endblock %}
+
+<style>
 {% block style_block %}
 @media screen and (max-width: 800px) {
     #background_image {display: none;}
 }
 #background_image {
-    position: absolute;
+    /* Positioning */
+    position: relative;
     top: -40px;
-    height: 70%;
+
+    /* Display */
+    height: 60vh;
     width: 100%;
     padding: 0px;
+
+    /* Background */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
 }
 .grid-container {
-    position: absolute;
-    bottom: 40px;
+    /* Positioning */
     z-index: 1;
-    width: 70%;
+
+    /* Display */
     display: grid;
+    width: 70%;
     grid-auto-flow: column;
     grid-template-columns: 3;
     grid-template-rows: 1;
     column-gap: 5%;
     padding: 25px;
+    margin: 1%;
+
+    /* Background and border */
+    background-color: rgba(255, 255, 255, 0.6);
     border: 1px solid black;
     border-radius: 100px;
-    margin: 1%;
-    background-color: rgba(255, 255, 255, 0.6);
 }
 .grid-item {
-    background-color: #003b45;
-    color: white;
-    border: 2px solid black;
-    border-radius: 5px;
+    /* Display */
+    display: flex;
     height: 50px;
     width: 80%;
-    font-size: 25px;
-    display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
+
+    /* Typography */
+    font-size: 25px;
+    color: white;
+
+    /* Background and border */
+    background-color: #003b45;
+    border: 2px solid black;
+    border-radius: 5px;
 }
 .grid-item:hover {
     background-color: #1f1530;
@@ -53,7 +72,8 @@
   text-decoration: none;
 }
 {% endblock %}
-
+</style>
+</head>
 
 {% block content %}
 

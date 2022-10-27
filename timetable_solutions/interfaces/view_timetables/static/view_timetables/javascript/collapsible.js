@@ -1,3 +1,4 @@
+// Script providing collapsible bars for lists of pupils / teachers
 var coll = document.getElementsByClassName("collapsible");
 var i;
 

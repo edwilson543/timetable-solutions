@@ -1,7 +1,6 @@
-"""Module containing unit tests for the views in view_timetables app."""
-
-# Local application imports
-from datetime import time
+"""
+Module containing unit tests for the views in view_timetables app.
+"""
 
 # Django imports
 from django.db.models import QuerySet
@@ -9,11 +8,15 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
+from domain.view_timetables.timetable_colours import TimetableColour
 
 
 class TestViews(TestCase):
-    """Test class for the view_timetables views"""
+    """
+    Test class for the view_timetables app.
+    """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json", "fixed_classes_lunch.json"]
 
@@ -22,8 +25,11 @@ class TestViews(TestCase):
         Test that the correct full list of pupils indexed by year group is returned by a get request to the
         pupil_navigator view. We test the data structures at successive depths of the nested context dictionary.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('pupils_navigator')
+        url = reverse(UrlName.PUPILS_NAVIGATOR.value)
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test the keys of the dict are the year groups
@@ -43,8 +49,11 @@ class TestViews(TestCase):
 
     def test_teacher_navigator_response(self):
         """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('teachers_navigator')
+        url = reverse(UrlName.TEACHERS_NAVIGATOR.value)
+
+        # Execute test unit
         response = self.client.get(url)
         teachers = response.context["all_teachers"]
 
@@ -65,8 +74,11 @@ class TestViews(TestCase):
         Note there are three elements within the context of the HTTP response - each of which is tested in turn, one of
         which is the pupil's timetable.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('pupil_timetable_view', kwargs={"id": 1})
+        url = reverse(UrlName.PUPIL_TIMETABLE.value, kwargs={"id": 1})
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test pupil context
@@ -77,29 +89,31 @@ class TestViews(TestCase):
 
         # Test timetable context
         timetable = response.context["timetable"]
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
-        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.MATHS.name)
+        self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
-        free_period = timetable[time(hour=12)][models.WeekDay.THURSDAY.label]
+        free_period = timetable["12:00-13:00"][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a FixedClass instance
-        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
+        self.assertEqual(free_period, "FREE")
 
         # Test colours context
         colours = response.context["class_colours"]
+        default_colour_ranking = TimetableColour._get_colour_ranking()
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.MATHS.name],
-                         models.FixedClass.SubjectColour.MATHS.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name],
-                         models.FixedClass.SubjectColour.FREE.label)
+        self.assertEqual(colours["MATHS"], default_colour_ranking[1])  # [1] since maths' rank is 1 on pupil's timetable
+        self.assertEqual(colours[TimetableColour.FREE.name], TimetableColour.FREE.value)
 
     def test_teacher_timetable_view_correct_response(self):
         """
         Unit test that the context returned by a GET request to the teacher_timetable_view function, containing the
         relevant timetable etc.
         """
+        # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse('teacher_timetable_view', kwargs={"id": 6})  # Timetable for Greg Thebaker
+        url = reverse(UrlName.TEACHER_TIMETABLE.value, kwargs={"id": 6})  # Timetable for Greg Thebaker
+
+        # Execute test unit
         response = self.client.get(url)
 
         # Test teacher context
@@ -109,16 +123,16 @@ class TestViews(TestCase):
 
         # Test timetable content
         timetable = response.context["timetable"]
-        monday_period_one = timetable[time(hour=9)][models.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.FixedClass)
-        self.assertEqual(monday_period_one.subject_name, models.FixedClass.SubjectColour.FRENCH.name)
-        free_period = timetable[time(hour=10)][models.WeekDay.MONDAY.label]
-        self.assertEqual(free_period, models.FixedClass.SubjectColour.FREE.name)
+        self.assertEqual(monday_period_one.subject_name, "FRENCH")
+        free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
+        self.assertEqual(free_period, "FREE")
 
         # Test the colours context
         colours = response.context["year_group_colours"]
+        default_colour_ranking = TimetableColour._get_colour_ranking()
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], models.Pupil.YearGroup.ONE.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.FREE.name], models.FixedClass.SubjectColour.FREE.label)
-        self.assertEqual(colours[models.FixedClass.SubjectColour.LUNCH.name],
-                         models.FixedClass.SubjectColour.LUNCH.label)
+        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1])
+        self.assertEqual(colours[TimetableColour.FREE.name], TimetableColour.FREE.value)
+        self.assertEqual(colours["LUNCH"], TimetableColour.MEAL.value)

@@ -36,22 +36,10 @@ class FixedClass(models.Model):
     that attend the class.
     Note that teacher is nullable so that a FixedClass can be made for breaks e.g. lunch time.
     """
-    class SubjectColour(models.TextChoices):
-        """Enum to list the options and colour that each colour of the timetable should be."""
-        MATHS = "MATHS", "#b3f2b3"
-        ENGLISH = "ENGLISH", "#ffbfd6"
-        FRENCH = "FRENCH", "#c8d4e3"
-        LUNCH = "LUNCH", "#b3b3b3"
-        FREE = "FREE", "#feffba"
-
-        @staticmethod
-        def get_colour_from_subject(subject_name: str) -> str:
-            """Method taking a subject name e.g. 'MATHS' and returning a hexadecimal colour e.g. #b3f2b3"""
-            return getattr(FixedClass.SubjectColour, subject_name).label
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     class_id = models.CharField(max_length=20)
-    subject_name = models.CharField(max_length=20, choices=SubjectColour.choices)
+    subject_name = models.CharField(max_length=20)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT, related_name="classes", blank=True, null=True)
     pupils = models.ManyToManyField(Pupil, related_name="classes")
@@ -68,20 +56,21 @@ class FixedClass(models.Model):
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   pupils: PupilQuerySet, time_slots: TimetableSlotQuerySet,
+                   pupils: Optional[PupilQuerySet] = None, time_slots: Optional[TimetableSlotQuerySet] = None,
                    teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
         since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
         """
+        subject_name = subject_name.upper()
         fixed_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, user_defined=user_defined)
         fixed_cls.save()
 
-        if len(pupils) > 0:
+        if (pupils is not None) and (pupils.count() > 0):
             fixed_cls.add_pupils(pupils=pupils)
-        if len(time_slots) > 0:
+        if (time_slots is not None) and (time_slots.count()) > 0:
             fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
@@ -149,4 +138,4 @@ class FixedClass(models.Model):
 
     def number_slots_per_week(self) -> int:
         """Method to get the number of TimetableSlot instances associated with a given FixedClass"""
-        return self.time_slots.count()
+        return self.time_slots.all().count()

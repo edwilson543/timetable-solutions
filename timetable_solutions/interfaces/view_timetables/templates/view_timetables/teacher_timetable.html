@@ -22,15 +22,26 @@
 <body>
 {% block content %}
 <div id="content_container">
-    <h1 class="heading"><i>Timetable for: {{teacher.firstname}} {{teacher.surname}}</i></h1>
+    <div id="heading_back_wrapper">
+        <div id="heading">
+            <b>
+                Timetable for {{teacher.firstname}} {{teacher.surname}}
+            </b>
+        </div>
+        <div id="back_button">
+            <a href="{% url 'teachers_navigator' %}"><b>
+                Back
+            </b></a>
+        </div>
+    </div>
 
-    <table id="{{teacher.firstname}}_{{teacher.surname}}_timetable">
+    <table id="timetable">
 
     {% for time, day_dict in timetable.items %}
 
     <tr>
         {% if forloop.first %}
-        <th style="background-color:#876969;color:white;width:10%">Start time</th>
+        <th id="period_time"><i>Period time</i></th>
         {% for day in day_dict %}
         <th class="perimeter" style="width:18%;">{{ day|title }}</th>
         {% endfor %}
@@ -40,11 +51,11 @@
         <td class="perimeter">{{time}}</td>
         {% for day, klass in day_dict.items %}
           {% if klass == "FREE" %}
-            <td class="color_{{klass}}"><b>{{ klass|title }}</b></td>
+            <td class="color_{{klass}} timetable_slot"><b>{{ klass|title }}</b></td>
           {% elif klass.subject_name == "LUNCH" %}
-            <td class="color_{{klass.subject_name}}"><b>{{ klass.subject_name|title}}</b></td>
+            <td class="color_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
           {% else %}
-            <td class="color_{{klass.pupils.all.0.year_group}}">
+            <td class="color_{{klass.pupils.all.0.year_group}} timetable_slot">
                 <b>{{ klass.subject_name|title}}</b><br>
               <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
               <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
@@ -55,8 +66,8 @@
     {% endfor %}
     </table>
 
-    <button type="button" class="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
-        Download as CSV
+    <button type="button" id="download_button" onclick="download_table_as_csv('timetable')">
+        Download
     </button>
     <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>
 </div>
