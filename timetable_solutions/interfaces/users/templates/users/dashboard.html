@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
+<head>
+{% block head_content %}
+<title>Dashboard</title>
+{% endblock %}
+
+<style>
 {% block style_block %}
 @media screen and (max-width: 800px) {
     #background_image {display: none;}
@@ -39,17 +45,22 @@
     border-radius: 100px;
 }
 .grid-item {
-    background-color: #003b45;
-    color: white;
-    border: 2px solid black;
-    border-radius: 5px;
+    /* Display */
+    display: flex;
     height: 50px;
     width: 80%;
-    font-size: 25px;
-    display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
+
+    /* Typography */
+    font-size: 25px;
+    color: white;
+
+    /* Background and border */
+    background-color: #003b45;
+    border: 2px solid black;
+    border-radius: 5px;
 }
 .grid-item:hover {
     background-color: #1f1530;
@@ -61,7 +72,8 @@
   text-decoration: none;
 }
 {% endblock %}
-
+</style>
+</head>
 
 {% block content %}
 
