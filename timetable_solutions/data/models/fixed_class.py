@@ -56,7 +56,7 @@ class FixedClass(models.Model):
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   pupils: PupilQuerySet, time_slots: TimetableSlotQuerySet,
+                   pupils: Optional[PupilQuerySet] = None, time_slots: Optional[TimetableSlotQuerySet] = None,
                    teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
@@ -68,9 +68,9 @@ class FixedClass(models.Model):
             classroom_id=classroom_id, user_defined=user_defined)
         fixed_cls.save()
 
-        if len(pupils) > 0:
+        if (pupils is not None) and (pupils.count() > 0):
             fixed_cls.add_pupils(pupils=pupils)
-        if len(time_slots) > 0:
+        if (time_slots is not None) and (time_slots.count()) > 0:
             fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
