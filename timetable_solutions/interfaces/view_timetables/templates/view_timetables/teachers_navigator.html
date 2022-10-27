@@ -13,23 +13,30 @@
 <body>
 {% block content %}
 <div id="content_container">
-    <h2>Teacher timetables</h2>
+    <h2>
+        Teacher timetables
+    </h2>
+    <p id="help_text">
+        Expand the sections below to locate the relevant teacher
+    </p>
 
-    <p style="margin-bottom:20px;">Expand the sections below to locate the relevant teacher</p>
+<!--    Create a collapsible for each letter in the alphabet (which has teachers)-->
     {% for letter, teachers in all_teachers.items %}
     <button class="collapsible">{{letter | upper}}- Surnames</button>
-    <div class="content">
-      <table>
+    <div class="expandable_content">
+      <table class="list_table">
           <tr>
               <th>Firstname</th>
               <th>Surname</th>
-              <th>View timetable</th>
+              <th>Timetable</th>
           </tr>
           {% for teacher in teachers %}
-          <tr>
+          <tr class="table_row">
               <td>{{teacher.firstname}}</td>
               <td>{{teacher.surname}}</td>
-              <td><a href="{% url 'teacher_timetable' teacher.teacher_id %}" style="color:black">View</a></td>
+              <td><a href="{% url 'teacher_timetable' teacher.teacher_id %}" class="view_timetable_link">
+                  View
+              </a></td>
           </tr>
           {% endfor %}
       </table>

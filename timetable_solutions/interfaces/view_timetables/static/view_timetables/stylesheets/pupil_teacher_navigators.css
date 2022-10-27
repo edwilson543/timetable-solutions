@@ -66,9 +66,9 @@ Collapsible / expander for pupil / teacher list styling
 }
 
 /* ====================
-Table of pupil / teachers styling (akin to a list view)
+Table of pupil / teachers styling
 ==================== */
-.content {
+.expandable_content {
     /* Positioning */
     position: relative;
 
@@ -84,7 +84,14 @@ Table of pupil / teachers styling (akin to a list view)
     /* Animation */
     transition: max-height 0.2s ease-out;
 }
-table, th, td {
+
+.list_table {
+    width: 100%;
+}
+
+table,
+th,
+td {
     /* Display */
     padding: 10px;
 
@@ -95,13 +102,31 @@ table, th, td {
     border: 1px solid white;
     border-collapse: collapse;
 }
-table {width: 100%;}
 tr:nth-child(even) {background-color: rgba(150, 212, 212, 0.4);}
-tr:hover {
+
+.table_row:hover {
     /* Typography */
     color: white;
-    font-weight: bold;
 
     /* Background */
     background-color: #3d112f;
+}
+
+.view_timetable_link:link,
+.view_timetable_link:visited {
+    color: #0000EE;
+    text-decoration: underline;
+}
+.view_timetable_link:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+/* ====================
+Other misc components
+==================== */
+#help_text {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-size: 16px;
 }

@@ -13,23 +13,30 @@
 <body>
 {% block content %}
 <div id="content_container">
-    <h2>Pupil timetables</h2>
+    <h2>
+        Pupil timetables
+    </h2>
+    <p id="help_text">
+        Expand the year groups below to locate the relevant pupil
+    </p>
 
-    <p style="margin-bottom:20px;">Expand the year groups below to locate the relevant pupil</p>
+<!--    Create a collapsible for each year group-->
     {% for year_group, pupils_in_year in all_pupils.items %}
     <button class="collapsible">Year {{year_group}} pupils</button>
-    <div class="content">
-      <table>
+    <div class="expandable_content">
+      <table class="list_table">
           <tr>
               <th>Firstname</th>
               <th>Surname</th>
-              <th>View timetable</th>
+              <th>Timetable</th>
           </tr>
           {% for pupil in pupils_in_year %}
-          <tr>
+          <tr class="table_row">
               <td>{{pupil.firstname}}</td>
               <td>{{pupil.surname}}</td>
-              <td><a href="{% url 'pupil_timetable' pupil.pupil_id %}" style="color:black;">View</a></td>
+              <td><a href="{% url 'pupil_timetable' pupil.pupil_id %}" class="view_timetable_link">
+                  View
+              </a></td>
           </tr>
           {% endfor %}
       </table>
