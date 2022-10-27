@@ -7,6 +7,7 @@ from typing import Dict
 
 # Local application imports
 from data import models
+from domain.view_timetables.timetable_colours import TimetableColour
 
 
 def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
@@ -23,8 +24,10 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
 
     # High-level dict / stats used to calculate all other stats
     all_slot_classes = {slot: slot.classes for slot in all_slots}
-    slot_class_count = {slot: len([klass for klass in klasses.all() if "LUNCH" not in klass.subject_name]) for
-                        slot, klasses in all_slot_classes.items()}
+    slot_class_count = {
+        slot: len([klass for klass in klasses.all() if  # Abuse of colour matcher, to avoid counting e.g. lunch
+                   TimetableColour.check_class_for_colour_in_regex(class_name=klass.subject_name) is None])
+        for slot, klasses in all_slot_classes.items()}
     total_classes = len(all_classes)
     total_lessons = sum(slot_class_count.values())
     # Check whether there are in fact any summary stats to calculate
@@ -45,8 +48,8 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
     # Stats relating to times of day
     distinct_times = {slot.period_starts_at for slot in slot_class_count}
     time_of_day_counts = {time_of_day.strftime("%H:%M"):
-                          sum(total_classes for slot, total_classes in slot_class_count.items() if
-                          slot.period_starts_at == time_of_day) for time_of_day in distinct_times}
+                              sum(total_classes for slot, total_classes in slot_class_count.items() if
+                                  slot.period_starts_at == time_of_day) for time_of_day in distinct_times}
     busiest_time = max(time_of_day_counts, key=time_of_day_counts.get)
     busiest_time_pct = round(time_of_day_counts.get(busiest_time) / total_lessons, 2) * 100
 
