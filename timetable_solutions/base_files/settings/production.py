@@ -1,4 +1,6 @@
-"""Settings specific to the aws production environment"""
+"""
+Settings specific to the production environment
+"""
 
 # Standard library imports
 import os
@@ -13,6 +15,6 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # Per Django security warning, debug is turned off for production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["timetable-solutions.eu-west-2.elasticbeanstalk.com"]
+ALLOWED_HOSTS = []  # TODO
 
 DATABASES = {}  # TODO
