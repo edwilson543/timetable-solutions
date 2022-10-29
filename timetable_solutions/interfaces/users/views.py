@@ -10,7 +10,7 @@ Step 3b - the user must provide a school access key to associate themselves with
 """
 
 # Standard library imports
-from typing import Dict, Optional
+from typing import Dict
 
 # Django imports
 from django.contrib.auth import login, logout
@@ -28,7 +28,7 @@ from . import forms
 class Register(View):
     """View for step 1 of registering - entering basic details."""
     @staticmethod
-    def get(request, context: Optional[Dict] = None):
+    def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": forms.CustomUserCreation}
         if request.user.is_authenticated:
@@ -53,7 +53,7 @@ class SchoolRegisterPivot(View):
     """View for step 2 of registering - whether the user's school also needs registering"""
 
     @staticmethod
-    def get(request, context: Optional[Dict] = None):
+    def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": forms.SchoolRegistrationPivot}
         return render(request, "users/register_school_pivot.html", context)
@@ -74,7 +74,7 @@ class SchoolRegistration(View):
     """View for step 3a of registering - when the school is not registered"""
 
     @staticmethod
-    def get(request, context: Optional[Dict] = None):
+    def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": forms.SchoolRegistration}
         return render(request, "users/register_school.html", context)
@@ -99,7 +99,7 @@ class ProfileRegistration(View):
     """View for step 3b of registering - when the school is already registered, just need the access key"""
 
     @staticmethod
-    def get(request, context: Optional[Dict] = None):
+    def get(request, context: Dict | None = None):
         if context is None:
             context = {"form": forms.ProfileRegistration}
         return render(request, "users/register_profile_existing_school.html", context)

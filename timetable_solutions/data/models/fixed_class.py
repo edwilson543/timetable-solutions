@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Optional, Union, Tuple
+from typing import Tuple
 
 # Django imports
 from django.db import models
@@ -56,8 +56,8 @@ class FixedClass(models.Model):
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   pupils: Optional[PupilQuerySet] = None, time_slots: Optional[TimetableSlotQuerySet] = None,
-                   teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
+                   pupils: PupilQuerySet | None = None, time_slots: TimetableSlotQuerySet | None = None,
+                   teacher_id: int | None = None, classroom_id: int | None = None):
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
         since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
@@ -76,7 +76,7 @@ class FixedClass(models.Model):
         return fixed_cls
 
     @classmethod
-    def delete_all_non_user_defined_fixed_classes(cls, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
+    def delete_all_non_user_defined_fixed_classes(cls, school_id: int, return_info: bool = False) -> Tuple | None:
         """Method deleting the queryset of FixedClass instances previously produced by the solver"""
         fcs = cls.objects.get_non_user_defined_fixed_classes(school_id=school_id)
         info = fcs.delete()

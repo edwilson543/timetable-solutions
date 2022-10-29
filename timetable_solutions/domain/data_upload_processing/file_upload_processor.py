@@ -3,7 +3,7 @@
 # Standard library imports
 import ast
 from io import StringIO
-from typing import List, Type, Optional, Union
+from typing import List, Type
 
 # Third party imports
 import pandas as pd
@@ -30,7 +30,7 @@ class FileUploadProcessor:
                  csv_file: UploadedFile,
                  csv_headers: List[str],
                  school_access_key: int,  # Unique identifier for the school_id which the data corresponds to
-                 id_column_name: Optional[str],
+                 id_column_name: str,
                  model: Type[ModelSubclass],
                  is_unsolved_class_upload: bool = False,
                  is_fixed_class_upload: bool = False):
@@ -100,7 +100,7 @@ class FileUploadProcessor:
             upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(upload_df[Header.PERIOD_STARTS_AT])
         return upload_df
 
-    def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> Union[List, None]:
+    def _get_valid_model_instances(self, upload_df: pd.DataFrame) -> List | None:
         """
         Method to iterate through the rows of the dataframe, and create a model instance for each row.
         :return A list of valid model instances, unless at least one error is found, in which case None is returned
@@ -132,7 +132,7 @@ class FileUploadProcessor:
 
         return valid_model_instances
 
-    def _create_model_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
+    def _create_model_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
         """
         Method to take an individual row from the csv file, validate that it corresponds to a valid model instance,
         and then create that model instance.
@@ -148,7 +148,7 @@ class FileUploadProcessor:
                                         f"row: {row.to_dict()}"
             return None
 
-    def _create_unsolved_class_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
+    def _create_unsolved_class_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
         """
         Method to process each row of the unsolved class csv file upload and try to return a UnsolvedClass
         instance
@@ -171,7 +171,7 @@ class FileUploadProcessor:
             self.upload_error_message = f"Could not create valid UnsolvedClass instance from row: {row.to_dict()}"
             return None
 
-    def _create_fixed_class_instance_from_row(self, row: pd.Series) -> Union[Type[ModelSubclass], None]:
+    def _create_fixed_class_instance_from_row(self, row: pd.Series) -> Type[ModelSubclass] | None:
         """Method to process each row of the fixed class csv file upload and try to return a FixedClass instance"""
         model_dict = {  # Note we don't include the pupil_ids or slot_ids here
             Header.CLASS_ID: row[Header.CLASS_ID], Header.SUBJECT_NAME: row[Header.SUBJECT_NAME],

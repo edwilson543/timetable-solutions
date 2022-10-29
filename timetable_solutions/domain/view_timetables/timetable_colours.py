@@ -5,7 +5,7 @@ Module defining the constant values (hexadecimal colour codes) assigned to subje
 # Standard library imports
 from enum import Enum
 import re
-from typing import Dict, Union, Pattern
+from typing import Dict, Pattern
 
 # Third party imports
 import pandas as pd
@@ -97,7 +97,7 @@ class TimetableColour(Enum):
         return class_colours
 
     @classmethod
-    def get_colours_for_teacher_timetable(cls, classes: models.FixedClassQuerySet) -> Dict[Union[str, int], str]:
+    def get_colours_for_teacher_timetable(cls, classes: models.FixedClassQuerySet) -> Dict[str | int, str]:
         """
         Method to produce a dictionary mapping a single teacher's year groups, and year-group-less classes (lunch /
         break) name strings to hexadecimal colours.
@@ -138,7 +138,7 @@ class TimetableColour(Enum):
         return generic_period_colours
 
     @classmethod
-    def check_class_for_colour_in_regex(cls, class_name: str) -> Union[str, None]:
+    def check_class_for_colour_in_regex(cls, class_name: str) -> str | None:
         """
         Method to check the class_name parameter to see if it matches any of the regexes in regex dict.
         :return the colour code from the matched regex, if there is one, otherwise None.
