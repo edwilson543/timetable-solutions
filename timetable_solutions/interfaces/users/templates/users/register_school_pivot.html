@@ -12,8 +12,7 @@
 
 input[type="submit"] {
     background-color: #004000;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin: 10px;
 }
 input[type="radio"] {
     margin-bottom: 1px;
@@ -35,7 +34,7 @@ label {
 
     /* Background and border */
     border: 1px solid black;
-    border-radius: 4px;
+    border-radius: 10px;
 }
 label:hover {
   background-color: #1f1530;
@@ -55,7 +54,7 @@ label:hover {
     </h4>
     <form method="post">
         {% csrf_token %}
-        {{form}}
+        {{ form.as_p }}
         <input type="submit" value="Continue">
     </form>
 </div>

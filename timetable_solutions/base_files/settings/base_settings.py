@@ -119,5 +119,8 @@ LOGIN_URL = "/users/accounts/login/"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "dashboard"
 
+# Forms - use default div renderer
+FORM_RENDERER = "django.forms.renderers.DjangoDivFormRenderer"
+
 # Testing
 FIXTURE_DIRS = [BASE_DIR / "tests" / "test_scenario_fixtures"]
