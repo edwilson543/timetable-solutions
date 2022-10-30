@@ -4,6 +4,8 @@ services:
     build: .
     volumes:
       - .:/timetable_scheduling
+      # TODO - get static file serving working properly.
+      - ./timetable_scheduling/timetable_solutions/static:/timetable_scheduling/timetable_solutions/static
     ports:
       - 8000:8000
     image: tts_app:django_timetable_scheduling

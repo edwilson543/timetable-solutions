@@ -1,5 +1,6 @@
 """
-Settings specific to the production environment
+Settings specific to the production environment.
+python-decouple's config is used extensively to retrieve environment variables.
 """
 
 # Third party imports
@@ -13,13 +14,15 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["0.0.0.0"]  # For running production environment locally with docker
 
+SECRET_KEY = config("SECRET_KEY")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": config("POSTGRES_NAME"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": "postgres_database",  # Name of the docker service running postgres
+        "HOST": "172.20.0.2",  # Default postgres localhost port
         "PORT": 5432,  # Default postgres port
     }
 }
