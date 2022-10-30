@@ -7,7 +7,7 @@ from django.test import TestCase
 
 # Local application imports
 from data import models
-from domain.view_timetables.timetable_colours import TimetableColour
+from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
 
 class Test(TestCase):
@@ -19,7 +19,7 @@ class Test(TestCase):
 
     def test_get_colours_for_pupil_timetable_returns_expected_colour_dictionary(self):
         """
-        Unit test for the get_colours_for_pupil_timetable method on the TimetableColour Enum
+        Unit test for the get_colours_for_pupil_timetable method on the TimetableColourAssigner Enum
         """
         # Set test parameters
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
@@ -30,14 +30,14 @@ class Test(TestCase):
         }
 
         # Execute test unit
-        colours_dict = TimetableColour.get_colours_for_pupil_timetable(classes=classes)
+        colours_dict = TimetableColourAssigner.get_colours_for_pupil_timetable(classes=classes)
 
         # Check outcome
         assert colours_dict == expected_colour_dict
 
     def test_get_colours_for_teacher_timetable_returns_expected_colour_dictionary(self):
         """
-        Unit test for the get_colours_for_pupil_timetable method on the TimetableColour Enum
+        Unit test for the get_colours_for_pupil_timetable method on the TimetableColourAssigner Enum
         """
         # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
@@ -48,7 +48,7 @@ class Test(TestCase):
         }
 
         # Execute test unit
-        colours_dict = TimetableColour.get_colours_for_teacher_timetable(classes=classes)
+        colours_dict = TimetableColourAssigner.get_colours_for_teacher_timetable(classes=classes)
 
         # Check outcome
         assert colours_dict == expected_colour_dict
@@ -66,11 +66,11 @@ class Test(TestCase):
         all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
 
         # Execute test unit
-        generic_period_colours = TimetableColour._get_generic_period_colours(classes=all_classes)
+        generic_period_colours = TimetableColourAssigner._get_generic_period_colours(classes=all_classes)
 
         # Check outcome
         assert generic_period_colours == {"LUNCH": "#b3b3b3", "MORNING BREAK": "#bfbfbf",  # Morning break gets caps
-                                          TimetableColour.FREE.name: "#feffba"}
+                                          TimetableColourAssigner.Colour.FREE.name: "#feffba"}
 
     def test_check_class_for_colour_in_regex_successful_meal_time_match_expected(self):
         """
@@ -87,8 +87,8 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for meal_time_string in meal_time_strings:
-            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=meal_time_string)
-            assert colour_code == TimetableColour.MEAL.value
+            colour_code = TimetableColourAssigner.check_class_for_colour_in_regex(class_name=meal_time_string)
+            assert colour_code == TimetableColourAssigner.Colour.MEAL.value
 
     def test_check_class_for_colour_in_regex_successful_break_match_expected(self):
         """
@@ -101,8 +101,8 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for break_time_strings in break_time_strings:
-            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=break_time_strings)
-            assert colour_code == TimetableColour.BREAK.value
+            colour_code = TimetableColourAssigner.check_class_for_colour_in_regex(class_name=break_time_strings)
+            assert colour_code == TimetableColourAssigner.Colour.BREAK.value
 
     def test_check_class_for_colour_in_regex_successful_free_period_match_expected(self):
         """
@@ -115,8 +115,8 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for free_time_strings in free_period_strings:
-            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=free_time_strings)
-            assert colour_code == TimetableColour.FREE.value
+            colour_code = TimetableColourAssigner.check_class_for_colour_in_regex(class_name=free_time_strings)
+            assert colour_code == TimetableColourAssigner.Colour.FREE.value
 
     def test_check_class_for_colour_in_regex_unsuccessful_match_against_all_options(self):
         """
@@ -130,5 +130,5 @@ class Test(TestCase):
 
         # Execute test unit and check outcome
         for no_match_string in no_match_strings:
-            colour_code = TimetableColour.check_class_for_colour_in_regex(class_name=no_match_string)
+            colour_code = TimetableColourAssigner.check_class_for_colour_in_regex(class_name=no_match_string)
             assert colour_code is None
