@@ -15,7 +15,7 @@ class School(models.Model):
     """
     Model representing a school_id, with every other model associated with one school_id instance via a foreign key
     """
-    school_access_key = models.SmallIntegerField(primary_key=True)
+    school_access_key = models.IntegerField(primary_key=True)
     school_name = models.CharField(max_length=50)
 
     # Introduce a custom manager
