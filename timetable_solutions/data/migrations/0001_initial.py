@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='School',
             fields=[
-                ('school_access_key', models.IntegerField(primary_key=True, serialize=False)),
+                ('school_access_key', models.PositiveIntegerField(primary_key=True, serialize=False)),
                 ('school_name', models.CharField(max_length=50)),
             ],
         ),
