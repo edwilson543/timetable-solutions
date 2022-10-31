@@ -28,7 +28,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         required_forms = response.context["required_forms"]
         for required_upload in required_forms.values():
             self.assertIsInstance(required_upload, RequiredUpload)
-            self.assertEqual(required_upload.upload_status, "Incomplete")
+            self.assertEqual(required_upload.upload_status_string, "Incomplete")
             self.assertIsInstance(required_upload.empty_form, FormSubclass)
 
     def test_upload_page_view_no_upload_post_request_correct_context(self):
@@ -44,7 +44,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         required_forms = response.context["required_forms"]
         for required_upload in required_forms.values():
             self.assertIsInstance(required_upload, RequiredUpload)
-            self.assertEqual(required_upload.upload_status, "Incomplete")
+            self.assertEqual(required_upload.upload_status_string, "Incomplete")
             self.assertIsInstance(required_upload.empty_form, FormSubclass)
 
     # Logged out user tests
@@ -81,6 +81,6 @@ class TestUploadPageReviewExistingUploads(TestCase):
         required_forms = response.context["required_forms"]
         for required_upload in required_forms.values():
             self.assertIsInstance(required_upload, RequiredUpload)
-        self.assertEqual(required_forms["pupils"].upload_status, "Complete")
-        self.assertEqual(required_forms["teachers"].upload_status, "Complete")
-        self.assertEqual(required_forms["fixed_classes"].upload_status, "Incomplete")
+        self.assertEqual(required_forms["pupils"].upload_status_string, "Complete")
+        self.assertEqual(required_forms["teachers"].upload_status_string, "Complete")
+        self.assertEqual(required_forms["fixed_classes"].upload_status_string, "Incomplete")

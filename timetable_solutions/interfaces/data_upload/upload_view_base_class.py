@@ -24,23 +24,24 @@ from domain import data_upload_processing
 from interfaces.data_upload import forms
 
 
-@dataclass
+@dataclass(frozen=True)
 class RequiredUpload:
     """
     Dataclass to store information relating to each form, used to decide whether to render an empty instance of that
     form in the template, or instead to render some message indicating that the data has already been uploaded.
     """
     form_name: str
-    upload_status: str | bool
+    upload_status: bool  # True if upload is complete
     empty_form: forms.Form
     url_name: UrlName
 
-    def __post_init__(self):
-        """Reset upload status to a string which is more easily rendered in the template, without unnecessary tags."""
+    @property
+    def upload_status_string(self) -> str:
+        """Method offering the upload status as a string, for rendering to users."""
         if self.upload_status:
-            self.upload_status = "Complete"
+            return "Complete"
         else:
-            self.upload_status = "Incomplete"
+            return "Incomplete"
 
 
 def _get_all_form_context(request: HttpRequest) -> Dict:
