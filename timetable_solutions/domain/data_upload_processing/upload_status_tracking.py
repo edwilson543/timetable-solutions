@@ -89,3 +89,20 @@ class UploadStatusTracker:
             fixed_classes=fixed_class_upload_status)
 
         return upload_status
+
+    @property
+    def all_uploads_complete(self) -> bool:
+        """
+        Property that indicates whether a school has uploaded all of the necessary files.
+        This is used, for example, in the create timetables page, when deciding whether to render the full
+        create_timetables page to users.
+        """
+        all_complete = (
+                self.pupils == UploadStatus.COMPLETE.value and
+                self.teachers == UploadStatus.COMPLETE.value and
+                self.classrooms == UploadStatus.COMPLETE.value and
+                self.timetable == UploadStatus.COMPLETE.value and
+                self.unsolved_classes == UploadStatus.COMPLETE.value and
+                self.fixed_classes == UploadStatus.COMPLETE.value
+        )
+        return all_complete
