@@ -27,21 +27,14 @@ from interfaces.data_upload import forms
 @dataclass(frozen=True)
 class RequiredUpload:
     """
-    Dataclass to store information relating to each form, used to decide whether to render an empty instance of that
-    form in the template, or instead to render some message indicating that the data has already been uploaded.
+    Dataclass to store information relating to each form (i.e. each required upload file).
+    This is used to control how the corresponding row of the table containing file uploads is rendered - e.g. whether
+    to mark a form as complete an offer a reset button, or to offer an upload button.
     """
     form_name: str
-    upload_status: bool  # True if upload is complete
+    upload_status: data_upload_processing.UploadStatus  # User interpretable status string
     empty_form: forms.Form
     url_name: UrlName
-
-    @property
-    def upload_status_string(self) -> str:
-        """Method offering the upload status as a string, for rendering to users."""
-        if self.upload_status:
-            return "Complete"
-        else:
-            return "Incomplete"
 
 
 def _get_all_form_context(request: HttpRequest) -> Dict:
@@ -52,27 +45,27 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
     # We retrieve the upload status of each of the necessary datasets for the given school
     # noinspection PyUnresolvedReferences
     school = request.user.profile.school
-    upload_status = data_upload_processing.get_upload_status(school=school)
+    upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
 
     context = {"required_forms":
                {
-                   "teachers": RequiredUpload(form_name="Teacher list", upload_status=upload_status.TEACHERS,
-                                              empty_form=forms.TeacherListUpload(),
-                                              url_name=UrlName.TEACHER_LIST_UPLOAD.value),
-                   "pupils": RequiredUpload(form_name="Pupil List", upload_status=upload_status.PUPILS,
+                   "pupils": RequiredUpload(form_name="Pupil List", upload_status=upload_status.pupils,
                                             empty_form=forms.PupilListUpload(),
                                             url_name=UrlName.PUPIL_LIST_UPLOAD.value),
-                   "classrooms": RequiredUpload(form_name="Classroom List", upload_status=upload_status.CLASSROOMS,
+                   "teachers": RequiredUpload(form_name="Teacher list", upload_status=upload_status.teachers,
+                                              empty_form=forms.TeacherListUpload(),
+                                              url_name=UrlName.TEACHER_LIST_UPLOAD.value),
+                   "classrooms": RequiredUpload(form_name="Classroom List", upload_status=upload_status.classrooms,
                                                 empty_form=forms.ClassroomListUpload(),
                                                 url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
-                   "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=upload_status.TIMETABLE,
+                   "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=upload_status.timetable,
                                                empty_form=forms.TimetableStructureUpload(),
                                                url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
                    "unsolved_classes": RequiredUpload(
-                       form_name="Class requirements", upload_status=upload_status.UNSOLVED_CLASSES,
+                       form_name="Class requirements", upload_status=upload_status.unsolved_classes,
                        empty_form=forms.UnsolvedClassUpload(), url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
                    "fixed_classes": RequiredUpload(
-                       form_name="Fixed classes", upload_status=upload_status.FIXED_CLASSES,
+                       form_name="Fixed classes", upload_status=upload_status.fixed_classes,
                        empty_form=forms.FixedClassUpload(), url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
                }
                }
