@@ -29,28 +29,67 @@ Core panels / containers
     /* Display - self */
     grid-row: 3;
     grid-column: 1 / 3;
+
+    /* Border */
+    background-color: #e0e0e0;
+    border: 2px solid black;
+    border-radius: 5px;
 }
 
 /* ====================
 Upload table content
 ==================== */
-#upload_file_table td {
-      text-align: center;
-      vertical-align: middle;
-      width: 20%;
-}
 #upload_file_table {
+    /* Display */
     width: 100%;
     height: 100%;
+
+    /* Border */
+    border-collapse: collapse;
+}
+#upload_file_table tr {
+    /* Display */
+    height: 60px;
+    padding: 5px;
+
+    /* Border */
+    border: 5px solid #e0e0e0;
 }
 
-.upload_cell {
-  background-color: white;
-  border: 1px solid black;
-  border-collapse: collapse;
-  border-radius: 3px;
-  text-align: center;
-  padding: 15px;
+#upload_file_table td {
+    width: 20%;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.complete_row {
+    font-size: 15px;
+    background-color: #8fcca0;
+}
+.complete_row:hover {
+    background-color: #9dbec9;
+}
+
+.incomplete_row {
+    font-size: 15px;
+    background-color: #e3ae8a;
+}
+.incomplete_row:hover {
+    background-color: #9dbec9;
+}
+
+.disallowed_row {
+    font-size: 12px;
+    font-color: #9c988f;
+    font-style: italic;
+    background-color: #bababa;
+}
+.disallowed_row:hover {
+    background-color: #8e9191;
+}
+
+.table_cell {
+    padding: 10px;
 }
 
 /* ====================
@@ -96,9 +135,9 @@ Buttons
         </div>
         <div id="info_container" class="info_frame">
             <p style="font-size:16px;"><i>
-            The table below lists the different data you will need to upload in order to start creating timetables.
-            The structure assumes you have already grouped pupils into sets and assigned teachers and classrooms to
-            these sets.<br>
+            The table below lists the different files you will need to upload to start creating timetables.
+            The structure assumes you have already grouped pupils into classes and assigned teachers and classrooms to
+            these classes.<br>
             You can download an example file for each required upload, and reset your uploads at any point.
 <!--        TODO - link up button for: You can also view and edit your data at any point.-->
             </i></p>
@@ -111,29 +150,35 @@ Buttons
         <div id="form_container">
         <table id="upload_file_table">
             {% for required_form in required_forms.values %}
-            <tr>
-                <td class="upload_cell">{{required_form.form_name}}</td>
-                <td class="upload_cell">Placeholder</td>
-                <td class="upload_cell">{{ required_form.upload_status_string }}</td>
-                {% if not required_form.upload_status %}
-                <td class="upload_cell">
+            <tr class="{{ required_form.upload_status | lower }}_row">
+                <td class="table_cell">{{required_form.form_name}}</td>
+                <td class="table_cell">Placeholder</td>
+                <td class="table_cell">{{ required_form.upload_status | title }}</td>
+                {% if required_form.upload_status == "incomplete" %}
+                <td class="table_cell">
                     <form enctype="multipart/form-data" action="{% url required_form.url_name %}" method="post">
                         {% csrf_token %}
                         <table>
-                            {{ required_form.empty_form.as_table }}
+                            {{ required_form.empty_form.as_div }}
                         </table>
                         <button class="upload_button" type="submit">
                             Upload
                         </button>
                     </form>
                 </td>
-                {% else %}
-                <td class="upload_cell">
+                {% elif required_form.upload_status == "complete" %}
+                <td class="table_cell">
                     <form action=#>
                         <button class="partial_reset_button" type="submit">
                             Reset
                         </button>
                     </form>
+                </td>
+                {% elif required_form.upload_status == "disallowed" %}
+                <td class="table_cell">
+                   <p>
+                       First complete all the other required uploads.
+                   </p>
                 </td>
                 {% endif %}
             </tr>
