@@ -13,7 +13,7 @@ from django.views.generic.edit import FormView
 
 # Local application imports
 from constants.url_names import UrlName
-from domain.data_upload_processing import get_upload_status
+from domain.data_upload_processing import UploadStatusTracker
 from domain import solver
 from domain import utils as domain_utils
 from interfaces.create_timetables import forms
@@ -69,11 +69,8 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         timetables, and False if they need to complete the data upload step.
         """
         context_data = super().get_context_data()  # Method inherited from views.generic.edit.FormMixin
-        upload_status = get_upload_status(school=self.request.user.profile.school)
-        ready_to_create: bool = (
-                upload_status.PUPILS * upload_status.TEACHERS * upload_status.TIMETABLE *
-                upload_status.CLASSROOMS * upload_status.UNSOLVED_CLASSES * upload_status.FIXED_CLASSES)
-        context_data["ready_to_create"] = ready_to_create
+        upload_status = UploadStatusTracker.get_upload_status(school=self.request.user.profile.school)
+        context_data["ready_to_create"] = upload_status.all_uploads_complete
         return context_data
 
     def get_form_kwargs(self) -> Dict:
