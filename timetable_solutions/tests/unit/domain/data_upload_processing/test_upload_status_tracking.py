@@ -10,11 +10,34 @@ from data import models
 from domain.data_upload_processing.upload_status_tracking import UploadStatusTracker, UploadStatus
 
 
-class TestUploadStatusTracker:
+class TestUploadStatusTracker(test.TestCase):
     """
     Unit test for instantiating the UploadStatusTracker dataclass in different ways.
     """
+    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
+                "fixed_classes_lunch.json"]
 
+    def test_get_upload_status_matches_the_loaded_fixtures(self):
+        """
+        Unit test for he get_upload_status method, which instantiates an UploadStatusTracker by querying the database.
+        We expect the fixtures loaded by the test class to be 'complete', and unsolved_classes
+        (not specified as a fixture) as 'incomplete'
+        """
+        # Set test parameters
+        school = models.School.objects.get_individual_school(school_id=123456)
+
+        # Execute test unit
+        upload_status = UploadStatusTracker.get_upload_status(school=school)
+
+        # Check outcome
+        assert upload_status.pupils == UploadStatus.COMPLETE.value
+        assert upload_status.teachers == UploadStatus.COMPLETE.value
+        assert upload_status.classrooms == UploadStatus.COMPLETE.value
+        assert upload_status.timetable == UploadStatus.COMPLETE.value
+        assert upload_status.unsolved_classes == UploadStatus.INCOMPLETE.value
+        assert upload_status.fixed_classes == UploadStatus.COMPLETE.value
+
+    # Tests for UploadStatusTracker instantiation
     def test_instantiation_with_all_uploads_as_true_all_converted_to_complete(self):
         """
         Unit test that instantiating an UploadStatusTracker with all init parameters as True converts all upload
