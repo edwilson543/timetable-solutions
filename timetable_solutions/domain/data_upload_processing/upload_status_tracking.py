@@ -58,7 +58,12 @@ class UploadStatusTracker:
         required tables that these tables reference, then we disallow these uploads until they have done.
         :return the uploads status of fixed / unsolved classes, given an initial screening
         """
-        able_to_add_class_data = (self.pupils and self.teachers and self.classrooms and self.timetable)
+        able_to_add_class_data = (
+                self.pupils == UploadStatus.COMPLETE.value and
+                self.teachers == UploadStatus.COMPLETE.value and
+                self.classrooms == UploadStatus.COMPLETE.value and
+                self.timetable == UploadStatus.COMPLETE.value
+        )
         if not able_to_add_class_data:
             return UploadStatus.DISALLOWED.value
         else:
