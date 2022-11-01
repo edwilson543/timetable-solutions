@@ -45,7 +45,12 @@
             {% for required_form in required_forms.values %}
             <tr class="{{ required_form.upload_status | lower }}_row">
                 <td class="table_cell">
-                    {{required_form.form_name}}
+                    <b>
+                        {{required_form.form_name}}<br>
+                    </b>
+                    <i>
+                        ({{ required_form.upload_status | title }})
+                    </i>
                 </td>
                 <td class="table_cell">
                     <form action=#>
@@ -53,9 +58,6 @@
                             See example
                         </button>
                     </form>
-                </td>
-                <td class="table_cell">
-                    {{ required_form.upload_status | title }}
                 </td>
                 {% if required_form.upload_status == "incomplete" %}
                 <td class="table_cell">
@@ -88,8 +90,13 @@
             {% endfor %}
         </table>
         <div id="action_button_container">
+                <form action=#>
+                <button class="management_button" type="submit">
+                    View and edit data
+                </button>
+            </form>
             <form action=#>
-                <button id="reset_all_button" type="submit">
+                <button class="management_button" type="submit">
                     Reset all
                 </button>
             </form>
