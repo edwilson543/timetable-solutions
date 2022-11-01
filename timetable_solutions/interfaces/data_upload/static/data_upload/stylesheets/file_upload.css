@@ -109,6 +109,10 @@ File upload table, rows & cells
     /* Typography */
     text-align: center;
 }
+.center_align_box {
+    display: flex;
+    justify-content: center;
+}
 
 /* ====================
 Buttons inside table cells
@@ -156,8 +160,46 @@ Buttons inside table cells
 }
 
 .upload_button {
-    float: left;
-    margin-left: 10%;
+    /* Display */
+    width: 200px;
+    height: 25px;
+    margin: 1px;
+    padding: 3px;
+
+    /* Typography */
+    font-side: 15px;
+    color: white;
+
+    /* Background and border */
+    background-color: var(--dark_grey_button);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.upload_button:hover {
+    background-color: var(--purple_button);
+    cursor: pointer;
+}
+
+/* Select file buttons */
+input[type="file"] {
+    /* Display */
+    width: 200px;
+    height: 25px;
+    margin: 1px;
+    padding: 3px;
+
+    /* Typography */
+    font-side: 15px;
+    color: white;
+
+    /* Background and border */
+    background-color: var(--dark_grey_button);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+input[type="file"]:hover {
+    background-color: var(--purple_button);
+    cursor: pointer;
 }
 
 /* ====================

@@ -63,9 +63,9 @@
                 <td class="table_cell">
                     <form enctype="multipart/form-data" action="{% url required_form.url_name %}" method="post">
                         {% csrf_token %}
-                        <table>
-                            {{ required_form.empty_form.as_div }}
-                        </table>
+                        <div class="center_align_box">
+                        {{ required_form.empty_form.as_div }}
+                        </div>
                         <button class="upload_button" type="submit">
                             Upload
                         </button>
