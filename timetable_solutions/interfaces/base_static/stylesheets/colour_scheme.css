@@ -1,0 +1,20 @@
+/* ====================
+This file lists the colours repeatedly use in css file in the project, and is imported into every stylesheet.
+Other css files add to the basic ones listed below, as needed.
+==================== */
+:root {
+    /* Colours present on every page */
+    --lilac_background: #d6d4d4;
+    --dark_blue_banners: #11014A;
+
+    /* Common panel colours */
+    --light_grey_background: #e0e0e0;
+    --error_banner_red: #ffb0b5;
+    --error_banner_red_border: #690007;
+
+    /* Button colours */
+    --red_button: #c4353f;
+    --red_button_border: #33003d;
+    --purple_button: #1f1530;
+    --green_button: #004000;
+}
