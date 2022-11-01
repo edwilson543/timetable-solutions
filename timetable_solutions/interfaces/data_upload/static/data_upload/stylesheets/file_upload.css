@@ -109,11 +109,11 @@ File upload table, rows & cells
 }
 
 /* ====================
-Buttons
+Buttons inside table cells
 ==================== */
 .specific_reset_button {
     /* Display */
-    width: 75px;
+    width: 100px;
     height: 30px;
     padding: 2px;
 
@@ -132,6 +132,35 @@ Buttons
     cursor: pointer;
 }
 
+.get_example_button {
+    /* Display */
+    width: 100px;
+    height: 30px;
+    padding: 2px;
+
+    /* Typography */
+    font-size: 15px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: var(--green_button);
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.get_example_button:hover{
+    background-color: var(--purple_button);
+    cursor: pointer;
+}
+
+.upload_button {
+    float: left;
+    margin-left: 10%;
+}
+
+/* ====================
+Management buttons below the main table
+==================== */
 #reset_all_button {
     /* Display */
     width: 100px;
@@ -148,9 +177,4 @@ Buttons
     background-color: grey;
     border: 1px solid black;
     border-radius: 5px;
-}
-
-.upload_button {
-    float: left;
-    margin-left: 10%;
 }
