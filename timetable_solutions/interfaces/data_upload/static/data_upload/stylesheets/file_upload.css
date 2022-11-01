@@ -58,11 +58,15 @@ File upload table, rows & cells
 
     /* Border */
     border-collapse: collapse;
+    border: 1px solid black;
 }
 #upload_file_table tr {
     /* Display */
     height: 60px;
     padding: 5px;
+
+    /* Typography */
+    font-size: 15px;
 
     /* Border */
     border: 5px solid var(--light_grey_background);
@@ -88,7 +92,6 @@ File upload table, rows & cells
     /* Typography */
     font-size: 12px;
     font-color: var(--disallowed_row_font);
-    font-style: italic;
 
     /* Background */
     background-color: var(--disallowed_row_passive);
@@ -104,7 +107,6 @@ File upload table, rows & cells
     padding: 10px;
 
     /* Typography */
-    font-weight: bold;
     text-align: center;
 }
 
@@ -161,20 +163,26 @@ Buttons inside table cells
 /* ====================
 Management buttons below the main table
 ==================== */
-#reset_all_button {
+.management_button {
     /* Display */
-    width: 100px;
+    width: 250px;
     height: 30px;
     padding: 5px;
     margin: 5px;
+    margin-bottom: 10px;
 
     /* Typography */
     font-size: 15px;
-    color: black;
+    font-weight: bold;
+    color: white;
     text-align: center;
 
     /* Background and border */
-    background-color: grey;
-    border: 1px solid black;
+    background-color: var(--blue_button);
+    border: 1px solid var(--blue_button_border);
     border-radius: 5px;
+}
+.management_button:hover {
+    background-color: var(--purple_button);
+    cursor: pointer;
 }
