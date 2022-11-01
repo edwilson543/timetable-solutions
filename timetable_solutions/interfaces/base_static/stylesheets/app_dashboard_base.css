@@ -13,6 +13,8 @@ Container for the main content in the center of the page
     width: 800px;
     height: 70%;
     padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 40px;
 
     /* Background and border */
     background-color: white;

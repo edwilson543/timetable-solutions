@@ -39,6 +39,15 @@ Core panels / containers
     border-radius: 5px;
 }
 
+#action_button_container {
+    /* Display */
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
 /* ====================
 File upload table, rows & cells
 ==================== */
@@ -125,7 +134,10 @@ Buttons
 
 #reset_all_button {
     /* Display */
-    padding: 2px;
+    width: 100px;
+    height: 30px;
+    padding: 5px;
+    margin: 5px;
 
     /* Typography */
     font-size: 15px;
@@ -135,7 +147,7 @@ Buttons
     /* Background and border */
     background-color: grey;
     border: 1px solid black;
-    border-radius: 1px;
+    border-radius: 5px;
 }
 
 .upload_button {
