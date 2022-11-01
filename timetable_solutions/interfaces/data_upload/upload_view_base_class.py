@@ -31,7 +31,7 @@ class RequiredUpload:
     This is used to control how the corresponding row of the table containing file uploads is rendered - e.g. whether
     to mark a form as complete an offer a reset button, or to offer an upload button.
     """
-    form_name: str
+    form_name: str  # Name of the form that will be shown to the user
     upload_status: data_upload_processing.UploadStatus  # User interpretable status string
     empty_form: forms.Form
     url_name: UrlName
@@ -49,16 +49,16 @@ def _get_all_form_context(request: HttpRequest) -> Dict:
 
     context = {"required_forms":
                {
-                   "pupils": RequiredUpload(form_name="Pupil List", upload_status=upload_status.pupils,
+                   "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
                                             empty_form=forms.PupilListUpload(),
                                             url_name=UrlName.PUPIL_LIST_UPLOAD.value),
-                   "teachers": RequiredUpload(form_name="Teacher list", upload_status=upload_status.teachers,
+                   "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                               empty_form=forms.TeacherListUpload(),
                                               url_name=UrlName.TEACHER_LIST_UPLOAD.value),
-                   "classrooms": RequiredUpload(form_name="Classroom List", upload_status=upload_status.classrooms,
+                   "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                 empty_form=forms.ClassroomListUpload(),
                                                 url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
-                   "timetable": RequiredUpload(form_name="Timetable Structure", upload_status=upload_status.timetable,
+                   "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                empty_form=forms.TimetableStructureUpload(),
                                                url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
                    "unsolved_classes": RequiredUpload(
