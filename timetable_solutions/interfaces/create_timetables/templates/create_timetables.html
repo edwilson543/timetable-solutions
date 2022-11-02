@@ -102,7 +102,7 @@ select {
         {% if not ready_to_create %}
         <!--suppress XmlDuplicatedId -->
         <div id="info_container" class="info_frame">
-            <div id="no_data_error_message" class="error_message">
+            <div id="no_data_error_message" class="static_error_message">
                 You have uploaded insufficient data to start creating timetables.
                 Please return to the
                 <a href="{% url 'file_upload_page' %}" id="data_upload_link"><b>data upload page</b></a>
@@ -119,7 +119,7 @@ select {
             </i></p>
             {% if error_messages %}
                 {% for message in error_messages %}
-                <div class="error_message">{{message}}</div>
+                <div class="static_error_message">{{message}}</div>
                 {% endfor %}
             {% endif %}
         </div>

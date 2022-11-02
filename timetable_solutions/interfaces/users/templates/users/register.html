@@ -23,7 +23,7 @@ input[type="submit"] {background-color: #004000;}
 {% block content %}
 <div id="form_container">
     {% for error_message in error_messages.values %}
-    <p class="error_message">{{error_message}}</p>
+    <p class="static_error_message">{{error_message}}</p>
     {% endfor %}
     <form method="post">
         {% csrf_token %}
