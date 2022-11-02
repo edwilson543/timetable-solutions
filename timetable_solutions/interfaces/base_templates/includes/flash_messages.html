@@ -1,0 +1,15 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'stylesheets/flash_messages.css' %}">
+
+{% if messages %}
+<div class="flash_message_container">
+    {% for message in messages %}
+    <div class="flash_message_base {{ message.tags }}_message">
+        {{ message }}
+    </div>
+    <div class="flash_message_base error_message">
+        Other message
+    </div>
+    {% endfor %}
+</div>
+{% endif %}

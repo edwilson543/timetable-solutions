@@ -11,6 +11,7 @@ from typing import Dict, Type
 # Django imports
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django import forms
 from django.http import HttpRequest, HttpResponse
 from django.template import loader
@@ -135,5 +136,6 @@ class DataUploadView(LoginRequiredMixin, views.View):
                 is_unsolved_class_upload=self._is_unsolved_class_upload_view
             )
             self.error_message = upload_processor.upload_error_message  # Will just be None if no errors
+            messages.add_message(request, level=messages.ERROR, message=self.error_message)
 
         return upload_page_view(request, self.error_message)
