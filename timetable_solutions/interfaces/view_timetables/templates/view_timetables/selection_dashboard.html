@@ -99,17 +99,23 @@ li {
 <body>
 {% block content %}
 <div id="content_container">
-    {% if not has_solutions %}
-        <div id="no_solutions_error" class="error_message">
-            No timetables are available yet. First
-            <a href="{% url 'file_upload_page' %}" class="no_solutions_link"><b>upload your data</b></a>
-            in the correct structure,
-            and then visit the
-            <a href="{% url 'create_timetables' %}" class="no_solutions_link"><b>create page</b></a>
-            to specify your requirements.
-        </div>
-    {% else %}
     <div id="grid_container">
+        {% if not has_solutions %}
+        <div id="dashboard_title">
+            <h4>No timetables are available yet</h4>
+        </div>
+        <div id="summary_info" class="info_frame">
+
+            <div id="no_solutions_error" class="error_message">
+                First
+                <a href="{% url 'file_upload_page' %}" class="no_solutions_link"><b>upload your data</b></a>
+                in the correct structure,
+                and then visit the
+                <a href="{% url 'create_timetables' %}" class="no_solutions_link"><b>create page</b></a>
+                to specify your requirements.
+            </div>
+        </div>
+        {% else %}
         <div id="dashboard_title">
             <h4>Timetable solutions have been found!</h4>
         </div>
@@ -158,8 +164,8 @@ li {
             <a href="" class="email_link_button">
                 Email timetables to teachers
             </a>
-            {% endif %}
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

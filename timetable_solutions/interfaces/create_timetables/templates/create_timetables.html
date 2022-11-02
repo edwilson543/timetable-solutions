@@ -76,7 +76,11 @@ select {
     font-size: 15px;
 }
 
-/* Styling of the link used (when the user cannot create timetables */
+/* Cannot access page due to insufficient data page */
+#no_data_error_message {
+    font-size: 20px;
+}
+
 #data_upload_link {
     color: #690007;
     text-decoration: underline;
@@ -98,7 +102,7 @@ select {
         {% if not ready_to_create %}
         <!--suppress XmlDuplicatedId -->
         <div id="info_container" class="info_frame">
-            <div class="error_message" style="font-size:16px;">
+            <div id="no_data_error_message" class="error_message">
                 You have uploaded insufficient data to start creating timetables.
                 Please return to the
                 <a href="{% url 'file_upload_page' %}" id="data_upload_link"><b>data upload page</b></a>
