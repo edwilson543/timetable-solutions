@@ -1,6 +1,7 @@
 /* ====================
-This file lists the colours repeatedly use in css file in the project, and is imported into every stylesheet.
-Other css files add to the basic ones listed below, as needed.
+This file lists the colours repeatedly used in css files in the project, and is imported into every stylesheet.
+Other css files add to the basic ones listed below, as needed - to avoid clutter, if a colour is only used in one css
+file, then it is not listed here.
 ==================== */
 :root {
     /* Colours present on every page */
