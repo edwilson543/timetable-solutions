@@ -8,15 +8,18 @@ CSS file to pair with django's flash messages framework
     /* Display */
     --start_height: 0;
     --end_height: 50vh;
-    --banner_width: 30vw;
-    --banner_left_indent: 35vw;
+
+    --banner_width: 40vw;
+    --banner_left_indent: 30vw;
+
+    --close_button_total_width: 30px;
 
     /* Background and border */
     --banner_opacity: 0.95;
-    --banner_opacity_hover: 1.0;
+    --banner_opacity_hover: 1;
 
     /* Animations */
-    --message_duration: 6s;
+    --message_duration: 20s;
 
     /* Colours */
     --error_background: #ffb0b5;
@@ -85,7 +88,7 @@ Components of the flash messages
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 30px;
+    min-height: 30px;
     margin: 2px;
     padding: 5px;
 
@@ -99,6 +102,11 @@ Components of the flash messages
     border-radius: 10px;
     border-weight: 1px;
     border-style: solid;
+}
+
+.error_message_text {
+    /* Avoid overlap with the close button */
+    margin-right: var(--close_button_total_width);
 }
 
 .close_error_button {

@@ -5,16 +5,22 @@
 <div class="flash_message_container">
     {% for message in messages %}
     <div class="flash_message_base {{ message.tags }}_message">
-        {{ message }}
+        <span class="error_message_text">
+            {{ message }}
+        </span>
         <div class="close_error_button">
             &times
         </div>
     </div>
+<!--    TODO DELETE-->
     <div class="flash_message_base error_message">
-        Other message
-        <span class="close_error_button">
-            &times
+        <span class="error_message_text">
+            Really really really really really long message
+            Really really really really really long message
         </span>
+        <div class="close_error_button">
+            &times
+        </div>
     </div>
     {% endfor %}
 </div>
