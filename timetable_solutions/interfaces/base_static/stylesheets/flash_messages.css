@@ -1,16 +1,27 @@
 /* ====================
 CSS file to pair with django's flash messages framework
 ==================== */
-
 :root {
+    /* Positioning */
+    --banner_z_index: 1000;
+
     /* Display */
     --start_height: 0;
     --end_height: 50vh;
     --banner_width: 30vw;
     --banner_left_indent: 35vw;
 
+    /* Background and border */
+    --banner_opacity: 0.95;
+    --banner_opacity_hover: 1.0;
+
     /* Animations */
     --message_duration: 6s;
+
+    /* Colours */
+    --error_background: #ffb0b5;
+    --error_background_hover: #db9195;
+    --error_border: #690007;
 }
 
 /* ====================
@@ -21,7 +32,7 @@ Animations
         position: fixed;
         top: var(--start_height);
         left: var(--banner_left_indent);
-        z-index: 1000;
+        z-index: var(--banner_z_index);
         opacity: 0;
     }
 
@@ -29,27 +40,30 @@ Animations
         position: absolute;
         top: var(--end_height);
         left: var(--banner_left_indent);
-        z-index: 1000;
-        opacity: 1;
+        z-index: var(--banner_z_index);
+        opacity: var(--banner_opacity);
     }
 
     90% {
         position: fixed;
         top: var(--end_height);
         left: var(--banner_left_indent);
-        z-index: 1000;
-        opacity: 1;
+        z-index: var(--banner_z_index);
+        opacity: var(--banner_opacity);
     }
 
     100% {
         position: fixed;
         top: var(--end_height);
         left: var(--banner_left_indent);
-        z-index: 1000;
-        opacity: 0;
+        z-index: var(--banner_z_index);
+        opacity: var(--banner_opacity);
     }
 }
 
+/* ====================
+Components of the flash messages
+==================== */
 .flash_message_container {
     /* Display */
     display: flex;
@@ -83,11 +97,42 @@ Animations
 
     /* Border */
     border-radius: 10px;
-    border-weight: .5px;
+    border-weight: 1px;
     border-style: solid;
 }
 
+.close_error_button {
+    /* Positioning */
+    position: absolute;
+    right: 0;
+
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    padding: 2px;
+
+    /* Typography */
+    text-align: center;
+
+    /* Background, border and misc */
+    background-color: #d1cfcf;
+    opacity: 0.7;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.close_error_button:hover {
+    opacity: 0.95;
+}
+
 .error_message {
-    background-color: var(--error_banner_red);
-    border-color: var(--error_banner_red_border);
+    background-color: var(--error_background);
+    border-color: var(--error_border);
+}
+.error_message:hover {
+    background-color: var(--error_background_hover);
+    opacity: var(--banner_opacity_hover);
 }

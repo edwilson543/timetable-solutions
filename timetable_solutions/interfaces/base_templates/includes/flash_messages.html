@@ -6,10 +6,28 @@
     {% for message in messages %}
     <div class="flash_message_base {{ message.tags }}_message">
         {{ message }}
+        <div class="close_error_button">
+            &times
+        </div>
     </div>
     <div class="flash_message_base error_message">
         Other message
+        <span class="close_error_button">
+            &times
+        </span>
     </div>
     {% endfor %}
 </div>
 {% endif %}
+
+<!--JavaScript to allow users to close the flash messages-->
+<script>
+var closebtns = document.getElementsByClassName("close_error_button");
+var i;
+
+for (i = 0; i < closebtns.length; i++) {
+  closebtns[i].addEventListener("click", function() {
+    this.parentElement.style.display = 'none';
+  });
+}
+</script>
