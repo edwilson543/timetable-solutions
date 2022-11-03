@@ -6,16 +6,13 @@ This module defines that generic view class, and its ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Dict, Type
+from typing import Type
 
 # Django imports
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django import forms
-from django.http import HttpRequest, HttpResponse
-from django.template import loader
-from django import views
+from django.views.generic import TemplateView
 from django import urls
 
 # Local application imports
@@ -28,9 +25,9 @@ from interfaces.data_upload import forms
 @dataclass(frozen=True)
 class RequiredUpload:
     """
-    Dataclass to store information relating to each form (i.e. each required upload file).
+    Dataclass to store information relating to an individual required upload (form).
     This is used to control how the corresponding row of the table containing file uploads is rendered - e.g. whether
-    to mark a form as complete an offer a reset button, or to offer an upload button.
+    to mark a form as complete and offer a reset button, or as incomplete and to offer an upload button.
     """
     form_name: str  # Name of the form that will be shown to the user
     upload_status: data_upload_processing.UploadStatus  # User interpretable status string
@@ -38,55 +35,58 @@ class RequiredUpload:
     url_name: UrlName
 
 
-def _get_all_form_context(request: HttpRequest) -> Dict:
+class UploadPage(LoginRequiredMixin, TemplateView):
     """
-    Function to get a dictionary of 'RequiredUpload' instances - these are used to then control the rendering of either
-    the empty form, or a completion message.
+    Template view with the following main purposes:
+        - Handling HTTP to the base data upload page (whose url this class is attached to)
+        - Defining the logic for gathering all the required upload forms into one set of context data
+        - Being subclassed, to provide its rendering of the data upload page (with the full context) to other views.
     """
-    # We retrieve the upload status of each of the necessary datasets for the given school
-    # noinspection PyUnresolvedReferences
-    school = request.user.profile.school
-    upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
 
-    context = {"required_forms":
-               {
-                   "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
-                                            empty_form=forms.PupilListUpload(),
-                                            url_name=UrlName.PUPIL_LIST_UPLOAD.value),
-                   "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
-                                              empty_form=forms.TeacherListUpload(),
-                                              url_name=UrlName.TEACHER_LIST_UPLOAD.value),
-                   "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
-                                                empty_form=forms.ClassroomListUpload(),
-                                                url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
-                   "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
-                                               empty_form=forms.TimetableStructureUpload(),
-                                               url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
-                   "unsolved_classes": RequiredUpload(
-                       form_name="Class requirements", upload_status=upload_status.unsolved_classes,
-                       empty_form=forms.UnsolvedClassUpload(), url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
-                   "fixed_classes": RequiredUpload(
-                       form_name="Fixed classes", upload_status=upload_status.fixed_classes,
-                       empty_form=forms.FixedClassUpload(), url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
-               }
-               }
-    return context
-
-
-@login_required
-def upload_page_view(request, error_message: str | None = None):
-    """
-    View called by the individual views for each of the form upload views.
-    This is then used in the POST method of the generic view class.
-    """
-    template = loader.get_template("file_upload.html")
-    context = _get_all_form_context(request=request)
-    context["error_message"] = error_message
-    return HttpResponse(template.render(context, request))
-
-
-class DataUploadView(LoginRequiredMixin, views.View):
     login_url = urls.reverse_lazy("login")
+    template_name = "file_upload.html"
+
+    def get_context_data(self, *args, **kwargs):
+        """
+        Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
+        an empty form, or a completion message.
+        We retrieve the upload status of each of the necessary datasets for the given school
+        """
+        school = self.request.user.profile.school
+        upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
+
+        context = {
+            "required_forms": {
+                    "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
+                                             empty_form=forms.PupilListUpload(),
+                                             url_name=UrlName.PUPIL_LIST_UPLOAD.value),
+                    "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
+                                               empty_form=forms.TeacherListUpload(),
+                                               url_name=UrlName.TEACHER_LIST_UPLOAD.value),
+                    "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
+                                                 empty_form=forms.ClassroomListUpload(),
+                                                 url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
+                    "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
+                                                empty_form=forms.TimetableStructureUpload(),
+                                                url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
+                    "unsolved_classes": RequiredUpload(
+                        form_name="Class requirements", upload_status=upload_status.unsolved_classes,
+                        empty_form=forms.UnsolvedClassUpload(), url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
+                    "fixed_classes": RequiredUpload(
+                        form_name="Fixed classes", upload_status=upload_status.fixed_classes,
+                        empty_form=forms.FixedClassUpload(), url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
+                    }
+            }
+        return context
+
+    def post(self, request, *args, **kwargs):
+        """
+        POST requests to the data upload page's base URL should just be handled the same as GET requests.
+        """
+        return self.get(request=request, *args, **kwargs)
+
+
+class DataUploadView(UploadPage):
 
     def __init__(self,
                  file_structure: data_upload_processing.FileStructure,
@@ -95,9 +95,12 @@ class DataUploadView(LoginRequiredMixin, views.View):
                  is_fixed_class_upload_view: bool = False,
                  is_unsolved_class_upload_view: bool = False):
         """
-        Base view class for the upload of a single file to the database. One subclass is create per file that gets
-        uploaded. The class is subclasses, rather than creating instances, since View.as_view(), used in the url
-        dispatcher, is only available on classes and not on instances.
+        Base view class for views handling the upload of a single file type to the database (via the post method).
+        One subclass is declared per file type that the user needs to upload.
+        Note - subclasses are used, rather than creating instances, since View.as_view(), used in the url
+        dispatcher, is only available on classes and not on instances. (and from views.py its clear that each subclass
+        requires virtually no code anyway).
+        This class itself subclasses UploadPage, for the get method and login authorisation.
 
         :param file_structure - the column headers and id column of the uploaded file
         :param model - the model the uploaded file is seeking to create instances of
@@ -112,13 +115,6 @@ class DataUploadView(LoginRequiredMixin, views.View):
         self._is_fixed_class_upload_view = is_fixed_class_upload_view
         self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
         self.error_message = None
-
-    @staticmethod
-    def get(request, *arg, **kwarg):
-        """
-        If the user accesses the class' url directly, we use the upload page view to render the upload data form.
-        """
-        return upload_page_view(request)
 
     def post(self, request, *args, **kwargs):
         """
@@ -138,4 +134,4 @@ class DataUploadView(LoginRequiredMixin, views.View):
             self.error_message = upload_processor.upload_error_message  # Will just be None if no errors
             messages.add_message(request, level=messages.ERROR, message=self.error_message)
 
-        return upload_page_view(request, self.error_message)
+        return self.get(request=self.request, *args, **kwargs)

@@ -5,11 +5,11 @@ from django.urls import path
 
 # Local application imports
 from constants.url_names import UrlName
-import interfaces.data_upload.upload_view_base_class
+from interfaces.data_upload.upload_view_base_class import UploadPage
 from . import views
 
 urlpatterns = [
-    path('', interfaces.data_upload.upload_view_base_class.upload_page_view, name=UrlName.FILE_UPLOAD_PAGE.value),
+    path('', UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
     path('teacher_list/', views.TeacherListUpload.as_view(), name=UrlName.TEACHER_LIST_UPLOAD.value),
     path('pupil_list/', views.PupilListUpload.as_view(), name=UrlName.PUPIL_LIST_UPLOAD.value),
     path('classroom_list/', views.ClassroomListUpload.as_view(), name=UrlName.CLASSROOM_LIST_UPLOAD.value),

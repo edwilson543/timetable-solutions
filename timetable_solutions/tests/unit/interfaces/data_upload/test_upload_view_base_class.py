@@ -1,24 +1,59 @@
 """Unit tests for generic data upload view of the data_upload app"""
 
 # Django imports
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django import test
 from django.urls import reverse
 
 # Local application imports
 from constants.url_names import UrlName
 from domain.data_upload_processing import UploadStatus
-from interfaces.data_upload.upload_view_base_class import RequiredUpload
-from interfaces.data_upload.forms import FormSubclass
+from interfaces.data_upload.upload_view_base_class import RequiredUpload, UploadPage
+from interfaces.data_upload import forms
 
 
-class TestUploadPageReviewNoUploads(TestCase):
-    """Unit tests for the upload_page_view when no files have been uploaded."""
+class TestUploadPageView(test.TestCase):
+    """
+    Unit tests for the UploadPage TemplateView - the class-based view handling HTTP requests to the data upload page,
+    when no files are uploaded.
+    """
 
     fixtures = ["user_school_profile.json"]
 
-    def test_upload_page_view_no_upload_get_request_correct_context(self):
+    def test_get_context_data(self):
         """
-        Upload page view is called by all file upload view, which gathers all forms and their completion status.
+        Test that the context data provided by the UploadPage view is as expected.
+        Note we haven't loaded any fixtures beyond the basic user, and so all forms should be incomplete.
+        """
+        factory = test.RequestFactory()
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)  # This should be irrelevant to this test anyway
+        request = factory.get(url)
+        user = User.objects.get_by_natural_key(username="dummy_teacher")
+        request.user = user
+        upload_page = UploadPage(request=request)
+
+        # Execute test unit
+        context = upload_page.get_context_data()
+
+        # Check outcome (a selection of it, at least)
+        required_forms = context["required_forms"]
+        for required_form in required_forms.values():
+            assert isinstance(required_form, RequiredUpload)
+
+        classrooms = required_forms["classrooms"]
+        assert classrooms.form_name == "Classrooms"
+        assert classrooms.upload_status == UploadStatus.INCOMPLETE.value
+        assert isinstance(classrooms.empty_form, forms.ClassroomListUpload)
+        assert classrooms.url_name == UrlName.CLASSROOM_LIST_UPLOAD.value
+
+        unsolved_classes = required_forms["unsolved_classes"]
+        assert unsolved_classes.form_name == "Class requirements"
+        assert unsolved_classes.upload_status == UploadStatus.DISALLOWED.value
+        assert isinstance(unsolved_classes.empty_form, forms.UnsolvedClassUpload)
+        assert unsolved_classes.url_name == UrlName.UNSOLVED_CLASSES_UPLOAD.value
+
+    def test_get_request_returns_correct_context(self):
+        """
         A get request should return all the forms and their upload status.
         """
         # Set test parameters
@@ -33,17 +68,16 @@ class TestUploadPageReviewNoUploads(TestCase):
         disallowed_forms = ["unsolved_classes", "fixed_classes"]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
-            self.assertIsInstance(required_upload.empty_form, FormSubclass)
+            self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
 
             if form_name in disallowed_forms:
                 self.assertEqual(required_upload.upload_status, UploadStatus.DISALLOWED.value)
             else:
                 self.assertEqual(required_upload.upload_status, UploadStatus.INCOMPLETE.value)
 
-    def test_upload_page_view_no_upload_post_request_correct_context(self):
+    def test_post_request_returns_correct_context(self):
         """
-        Upload page view is called by all file upload view, which gathers all forms and their completion status
-        A post request should return all the forms and their upload status, just as for the get request.
+        UploadPage handles POST requests in the same way as GET requests, therefore we expect and identical outcome.
         """
         # Set test parameters
         login = self.client.login(username="dummy_teacher", password="dt123dt123")
@@ -57,7 +91,7 @@ class TestUploadPageReviewNoUploads(TestCase):
         disallowed_forms = ["unsolved_classes", "fixed_classes"]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
-            self.assertIsInstance(required_upload.empty_form, FormSubclass)
+            self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
 
             if form_name in disallowed_forms:
                 self.assertEqual(required_upload.upload_status, UploadStatus.DISALLOWED.value)
@@ -65,25 +99,24 @@ class TestUploadPageReviewNoUploads(TestCase):
                 self.assertEqual(required_upload.upload_status, UploadStatus.INCOMPLETE.value)
 
     # Logged out user tests
-    def test_upload_page_view_no_login_redirects_to_login_page(self):
+    def test_get_request_with_no_login_redirects_to_login_page(self):
         """
-        Test that trying to access the data upload page redirects logged out users to the login page.
+        Test that trying to access the data upload page via a GET request redirects logged out users to the login page.
         """
         url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.get(url)
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
-    def test_post_request_no_login_to_a_file_upload_url_redirects_to_login_page(self):
+    def test_post_request_with_no_login_redirects_to_login_page(self):
         """
-        Test that trying to post data (e.g. to the pupil url, equivalently for all other files) redirects logged out
-        users to the login page.
+        Test that trying to POST to the data upload page just redirects logged out users to the login page.
         """
         url = reverse(UrlName.PUPIL_LIST_UPLOAD.value)
         response = self.client.post(url, data={"junk": "not-a-file"})
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
 
-class TestUploadPageReviewExistingUploads(TestCase):
+class TestUploadPageReviewExistingUploads(test.TestCase):
     """Unit tests for the upload_page_view when some files have been uploaded."""
 
     fixtures = ["user_school_profile.json", "pupils.json", "teachers.json"]
