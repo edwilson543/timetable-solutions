@@ -21,7 +21,23 @@ CSS file to pair with django's flash messages framework
     /* Animations */
     --message_duration: 20s;
 
-    /* Colours */
+    /* COLOURS - one set per django flash message level */
+    /* INFO = Blue */
+    --info_background: #c4dcf2;
+    --info_background_hover: #b6cce0;
+    --info_border: #4e657a;
+
+    /* SUCCESS = Green */
+    --success_background: #a6dea2;
+    --success_background_hover: #82b57f;
+    --success_border: #527550;
+
+    /* WARNING = Yellow */
+    --warning_background: #f1f299;
+    --warning_background_hover: #d3d483;
+    --warning_border: #7f804d;
+
+    /* ERROR = Red */
     --error_background: #ffb0b5;
     --error_background_hover: #db9195;
     --error_border: #690007;
@@ -134,6 +150,36 @@ Components of the flash messages
 }
 .close_error_button:hover {
     opacity: 0.95;
+}
+
+/* ====================
+Additional styling for the individual flash message levels
+==================== */
+.info_message {
+    background-color: var(--info_background);
+    border-color: var(--info_border);
+}
+.info_message:hover {
+    background-color: var(--info_background_hover);
+    opacity: var(--banner_opacity_hover);
+}
+
+.success_message {
+    background-color: var(--success_background);
+    border-color: var(--success_border);
+}
+.success_message:hover {
+    background-color: var(--success_background_hover);
+    opacity: var(--banner_opacity_hover);
+}
+
+.warning_message {
+    background-color: var(--warning_background);
+    border-color: var(--warning_border);
+}
+.warning_message:hover {
+    background-color: var(--warning_background_hover);
+    opacity: var(--banner_opacity_hover);
 }
 
 .error_message {
