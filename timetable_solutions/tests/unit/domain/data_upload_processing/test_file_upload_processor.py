@@ -30,6 +30,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 11)
 
         # Test the database is as expected
         all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
@@ -51,6 +52,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 6)
 
         # Test that the database is as expected
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -71,6 +73,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 12)
 
         # Test that the database is as expected
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
@@ -90,6 +93,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 35)
 
         # Test that the database is as expected
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
@@ -120,6 +124,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 12)
 
         # Test the database is as expected
         all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
@@ -141,6 +146,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 12)
 
         # Test the database is as expected
         all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)

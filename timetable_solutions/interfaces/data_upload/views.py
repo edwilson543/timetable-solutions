@@ -1,4 +1,6 @@
-"""Views relating to the upload of user data"""
+"""
+Views relating to the upload of user data - each subclass of DataUploadView handles the upload of one specific csv file.
+"""
 
 # Local application imports
 from data import models
@@ -13,7 +15,9 @@ class TeacherListUpload(DataUploadView):
         super().__init__(
             file_structure=data_upload_processing.constants.UploadFileStructure.TEACHERS,
             model=models.Teacher,
-            form=forms.TeacherListUpload)
+            target_model_name="teachers",
+            form=forms.TeacherListUpload
+        )
 
 
 class PupilListUpload(DataUploadView):
@@ -22,7 +26,9 @@ class PupilListUpload(DataUploadView):
         super().__init__(
             file_structure=data_upload_processing.constants.UploadFileStructure.PUPILS,
             model=models.Pupil,
-            form=forms.PupilListUpload)
+            target_model_name="pupils",
+            form=forms.PupilListUpload
+        )
 
 
 class ClassroomListUpload(DataUploadView):
@@ -31,7 +37,9 @@ class ClassroomListUpload(DataUploadView):
         super().__init__(
             file_structure=data_upload_processing.constants.UploadFileStructure.CLASSROOMS,
             model=models.Classroom,
-            form=forms.ClassroomListUpload)
+            target_model_name="classrooms",
+            form=forms.ClassroomListUpload
+        )
 
 
 class TimetableStructureUpload(DataUploadView):
@@ -40,7 +48,9 @@ class TimetableStructureUpload(DataUploadView):
         super().__init__(
             file_structure=data_upload_processing.constants.UploadFileStructure.TIMETABLE,
             model=models.TimetableSlot,
-            form=forms.TimetableStructureUpload)
+            target_model_name="timetable slots",
+            form=forms.TimetableStructureUpload
+        )
 
 
 class UnsolvedClassUpload(DataUploadView):
@@ -50,7 +60,9 @@ class UnsolvedClassUpload(DataUploadView):
             file_structure=data_upload_processing.constants.UploadFileStructure.UNSOLVED_CLASSES,
             model=models.UnsolvedClass,
             form=forms.UnsolvedClassUpload,
-            is_unsolved_class_upload_view=True)
+            target_model_name="required classes",
+            is_unsolved_class_upload_view=True
+        )
 
 
 class FixedClassUpload(DataUploadView):
@@ -59,5 +71,7 @@ class FixedClassUpload(DataUploadView):
         super().__init__(
             file_structure=data_upload_processing.constants.UploadFileStructure.FIXED_CLASSES,
             model=models.FixedClass,
+            target_model_name="fixed classes",
             form=forms.FixedClassUpload,
-            is_fixed_class_upload_view=True)
+            is_fixed_class_upload_view=True
+        )

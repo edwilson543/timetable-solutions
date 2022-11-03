@@ -44,6 +44,7 @@ class FileUploadProcessor:
         process since the models the data are being uploaded to contain many-to-many relationships, and thus require
         their own methods (see _create_model_instance_from_row variations below)
         """
+        # Instance attributes used internally
         self._csv_headers = csv_headers
         self._school_access_key = school_access_key
         self._id_column_name = id_column_name
@@ -51,9 +52,11 @@ class FileUploadProcessor:
         self._is_unsolved_class_upload = is_unsolved_class_upload
         self._is_fixed_class_upload = is_fixed_class_upload
 
-        # Try uploading the file to the database
-        self.upload_successful = False  # This only gets switched to True if a successful upload is made.
+        # Instance attributes that get set during upload, providing info on the level of success
+        self.n_model_instances_created = 0
         self.upload_error_message = None  # Provides details on why the upload has failed
+
+        # Try uploading the file to the database
         self._upload_file_content(file=csv_file)
 
     def _upload_file_content(self, file: UploadedFile) -> None:
@@ -76,12 +79,16 @@ class FileUploadProcessor:
             return
         for model in valid_model_instances:
             model.save()
-        self.upload_successful = True
+        self.n_model_instances_created = len(valid_model_instances)
 
     def _check_headers_valid_and_ids_unique(self, upload_df: pd.DataFrame) -> bool:
+        """
+        Method to do an initial screening as to whether the user has uploaded a file with the correct headers.
+        """
         headers_valid = all(upload_df.columns == self._csv_headers)
         if not headers_valid:
-            self.upload_error_message = "Input file headers did not match required format."
+            self.upload_error_message = "Input file headers did not match required format - " \
+                                        "please check against the example file."
             return False
         if self._id_column_name is not None:
             # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant below
@@ -112,6 +119,7 @@ class FileUploadProcessor:
                 model_instance = self._create_unsolved_class_instance_from_row(row=data_ser)
                 if model_instance is None:  # An error has occurred so delete any pre-saved instances
                     for md_inst in valid_model_instances:  # Since we must save in _create_unsolved_class_instance
+                        # TODO -> get rid of this once using atomic transactions
                         md_inst.delete()
                     return None
                 valid_model_instances.append(model_instance)  # Cant yet upload to database, if later row invalid
@@ -120,6 +128,7 @@ class FileUploadProcessor:
                 model_instance = self._create_fixed_class_instance_from_row(row=data_ser)
                 if model_instance is None:  # An error has occurred so delete any pre-saved instances
                     for md_inst in valid_model_instances:
+                        # TODO -> get rid of this once using atomic transactions
                         md_inst.delete()
                     return None
                 valid_model_instances.append(model_instance)
@@ -195,3 +204,12 @@ class FileUploadProcessor:
         except ValidationError:
             self.upload_error_message = f"Could not create valid FixedClass instance from row: {row.to_dict()}"
             return None
+
+    # PROPERTIES
+    @property
+    def upload_successful(self) -> bool:
+        """
+        Property providing a boolean indicating whether a file upload has been entirely successful.
+        Note that n_model_instances_created is only set as the very last step of a successful upload.
+        """
+        return self.n_model_instances_created > 0
