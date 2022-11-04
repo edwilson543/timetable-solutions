@@ -1,12 +1,14 @@
 Domain:
+    - Database transactions (and for solver to avoid duplication of classes at times!)
     - Reset buttons + functionality
         - Can potentially use the upload status tracker / extension of??
-    - Database transactions (and for solver to avoid duplication!)
-    - In all create_new methods, add a check that for the school, pupil_id is unique.
-        - Add Self typehint
-        - Raise in data, catch in domain if it isn't
-        - Create a test for resbumitting the form, and check that it produces the correct error message
-    - Improve error message handling - better way of adding lists??
+    - In all create_new methods:
+        - e.g. add a check that the (school, pupil_id) is unique -> use unique_together property on the model's,
+          Meta class, and then ensure create_new is compatible with this. (and add tests 4 all create_news)
+        - Add Self typehint to all create_news
+        - Raise in data, catch in domain if anything isn't unique
+        - Create a test for resubmitting the form, and check that it produces the correct error message
+    - Improve error message handling - better way of adding lists to uploads??
         - On the user interface, it will go to DEBUG if a DF of the wrong shape is tried!
         - fillna(), rather than using "[]" - and test this!!
     - Example file download buttons
