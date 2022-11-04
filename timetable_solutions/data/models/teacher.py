@@ -41,9 +41,20 @@ class Teacher(models.Model):
     # Introduce a custom manager
     objects = TeacherQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the Teacher model (that aren't an option in Meta)
+        """
+        human_string_singular = "teacher"
+        human_string_plural = "teachers"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.title} {self.surname}, {self.firstname}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"Teacher {self.school}: {self.teacher_id}"
 
     # FACTORY METHODS
     @classmethod

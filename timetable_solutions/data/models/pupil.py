@@ -59,9 +59,20 @@ class Pupil(models.Model):
     # Introduce a custom manager
     objects = PupilQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the Pupil model (that aren't an option in Meta)
+        """
+        human_string_singular = "pupil"
+        human_string_plural = "pupils"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.surname}, {self.firstname}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"Pupil {self.school}: {self.pupil_id}"
 
     # FACTORY METHODS
     @classmethod

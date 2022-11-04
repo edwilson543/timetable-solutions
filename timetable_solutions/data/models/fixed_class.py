@@ -49,9 +49,20 @@ class FixedClass(models.Model):
     # Introduce a custom manager
     objects = FixedClassQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the FixedClass model (that aren't an option in Meta)
+        """
+        human_string_singular = "fixed class"
+        human_string_plural = "fixed classes"
+
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"FixedClass: {self.school}: {self.class_id}"
 
     # FACTORIES
     @classmethod

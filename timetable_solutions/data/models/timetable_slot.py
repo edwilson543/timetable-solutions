@@ -60,9 +60,16 @@ class TimetableSlot(models.Model):
     # Introduce a custom manager
     objects = TimetableSlotQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the TimetableSlot model (that aren't an option in Meta)
+        """
+        human_string_singular = "timetable slot"
+        human_string_plural = "timetable slots"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.day_of_week}, {self.period_starts_at}"
+        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
 
     # FACTORIES
     @classmethod

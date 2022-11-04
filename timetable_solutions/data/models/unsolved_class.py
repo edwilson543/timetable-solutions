@@ -47,6 +47,13 @@ class UnsolvedClass(models.Model):
     # Introduce a custom manager
     objects = UnsolvedClassQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the Teacher model (that aren't an option in Meta)
+        """
+        human_string_singular = "required class"
+        human_string_plural = "required classes"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"USC: {self.school}, {self.class_id}"

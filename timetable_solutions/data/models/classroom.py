@@ -34,9 +34,20 @@ class Classroom(models.Model):
     # Introduce a custom manager
     objects = ClassroomQuerySet.as_manager()
 
+    class Constant:
+        """
+        Additional constants to store about the Classroom model (that aren't an option in Meta)
+        """
+        human_string_singular = "classroom"
+        human_string_plural = "classrooms"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.building},  {self.room_number}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"Classroom: {self.school}: {self.classroom_id}"
 
     # FACTORY METHODS
     @classmethod
