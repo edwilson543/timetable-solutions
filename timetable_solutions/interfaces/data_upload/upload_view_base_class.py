@@ -91,7 +91,6 @@ class DataUploadView(UploadPage):
     def __init__(self,
                  file_structure: data_upload_processing.FileStructure,
                  model: Type[ModelSubclass],
-                 target_model_name: str,
                  form: Type[forms.FormSubclass],
                  is_fixed_class_upload_view: bool = False,
                  is_unsolved_class_upload_view: bool = False):
@@ -105,7 +104,6 @@ class DataUploadView(UploadPage):
 
         :param file_structure - the column headers and id column of the uploaded file
         :param model - the model the uploaded file is seeking to create instances of
-        :param target_model_name - string used to describe what has been created to the user, in the success message.
         :param form - the form that the view receives input from
         :param is_unsolved_class_upload_view & is_fixed_class_upload_view - boolean values handling special cases
         requiring different processing of the user uploaded file
@@ -113,7 +111,6 @@ class DataUploadView(UploadPage):
         super().__init__()
         self._file_structure = file_structure
         self._model = model
-        self._target_model_name = target_model_name
         self._form = form
         self._is_fixed_class_upload_view = is_fixed_class_upload_view
         self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
@@ -139,7 +136,7 @@ class DataUploadView(UploadPage):
                 messages.add_message(request, level=messages.ERROR, message=upload_processor.upload_error_message)
             elif upload_processor.upload_successful:
                 message = f"Successfully saved your data for {upload_processor.n_model_instances_created} " \
-                          f"{self._target_model_name}!"
+                          f"{self._model.Constant.human_string_plural}!"
                 messages.add_message(request, level=messages.SUCCESS, message=message)
             else:
                 # Added insurance, in case the file upload processor hasn't uploaded, or made an error message
