@@ -7,6 +7,7 @@ from typing import List, Dict
 
 # Django imports
 from django import urls
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
@@ -46,8 +47,9 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         if len(error_messages) == 0:
             return super().form_valid(form)  # Method inherited from ModelFormMixin
         else:
+            for message in error_messages:
+                messages.add_message(self.request, level=messages.ERROR, message=message)
             context_data = self.get_context_data()
-            context_data["error_messages"] = error_messages
             return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
 
     def _run_solver_from_view(self, form) -> List[str]:

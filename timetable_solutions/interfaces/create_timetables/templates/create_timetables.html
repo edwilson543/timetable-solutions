@@ -117,11 +117,6 @@ select {
             You can create new solutions by returning to this page at any point.
             Note that doing this will reset any existing timetables!
             </i></p>
-            {% if error_messages %}
-                {% for message in error_messages %}
-                <div class="static_error_message">{{message}}</div>
-                {% endfor %}
-            {% endif %}
         </div>
         <div id="form_container" class="info_frame">
             <form enctype="multipart/form-data" action="{% url 'create_timetables' %}" method="post">
