@@ -7,7 +7,7 @@ Introduce a wrapper containing everything except the footer, which fills the neg
 
     /* Display */
     min-height: 100%;
-    margin-bottom: -38px;
+    margin-bottom: -37px;
 }
 
 /* ====================
