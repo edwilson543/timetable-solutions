@@ -57,6 +57,7 @@ input {
     border-radius: 5px;
     border: 1px solid #33003d;
 }
+input[type="text"] {text-align: center;}
 input[type="submit"] {
     background-color: #1f1530;
     color: white;
