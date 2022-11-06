@@ -17,3 +17,8 @@ db.sqlite3
 db.sqlite3-journal
 .data
 data/
+
+# Unnecessary project components
+.github/
+assets/
+scripts/
