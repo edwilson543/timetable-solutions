@@ -1,5 +1,8 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
+# Standard library imports
+from typing import Self
+
 # Django imports
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -49,10 +52,13 @@ class UnsolvedClass(models.Model):
 
     class Constant:
         """
-        Additional constants to store about the Teacher model (that aren't an option in Meta)
+        Additional constants to store about the UnsolvedClass model (that aren't an option in Meta)
         """
         human_string_singular = "required class"
         human_string_plural = "required classes"
+
+        # Field names
+        pupils = "pupils"
 
     def __str__(self):
         """String representation of the model for the django admin site"""
@@ -64,8 +70,8 @@ class UnsolvedClass(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int,
-                   classroom_id: int, total_slots: int, n_double_periods: int, pupils: PupilQuerySet):
+    def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int, classroom_id: int,
+                   total_slots: int, n_double_periods: int, pupils: PupilQuerySet | None = None) -> Self:
         """
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
         Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
@@ -76,7 +82,7 @@ class UnsolvedClass(models.Model):
             classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
         unsolved_cls.full_clean()
         unsolved_cls.save()
-        if len(pupils) > 0:
+        if (pupils is not None) and (pupils.count() > 0):
             unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
 

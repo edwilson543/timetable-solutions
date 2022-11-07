@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Tuple
+from typing import Self, Tuple
 
 # Django imports
 from django.db import models
@@ -56,6 +56,10 @@ class FixedClass(models.Model):
         human_string_singular = "fixed class"
         human_string_plural = "fixed classes"
 
+        # Field names
+        pupils = "pupils"
+        time_slots = "time-slots"
+
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
@@ -68,7 +72,7 @@ class FixedClass(models.Model):
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
                    pupils: PupilQuerySet | None = None, time_slots: TimetableSlotQuerySet | None = None,
-                   teacher_id: int | None = None, classroom_id: int | None = None):
+                   teacher_id: int | None = None, classroom_id: int | None = None) -> Self:
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
         since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
