@@ -29,4 +29,5 @@ class Profile(models.Model):
     def create_and_save_new(cls, user: User, school_id: int) -> None:
         """Method to create a new Profile instance, and then save it into the database"""
         profile = cls.objects.create(user=user, school_id=school_id)
+        profile.full_clean()
         profile.save()

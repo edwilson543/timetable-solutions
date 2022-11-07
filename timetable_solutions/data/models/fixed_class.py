@@ -77,6 +77,7 @@ class FixedClass(models.Model):
         fixed_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, user_defined=user_defined)
+        fixed_cls.full_clean()
         fixed_cls.save()
 
         if (pupils is not None) and (pupils.count() > 0):

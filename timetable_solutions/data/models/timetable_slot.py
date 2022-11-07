@@ -83,6 +83,7 @@ class TimetableSlot(models.Model):
                              f"{type(day_of_week)}")
         slot = cls.objects.create(school_id=school_id, slot_id=slot_id, day_of_week=day_of_week,
                                   period_starts_at=period_starts_at, period_duration=period_duration)
+        slot.full_clean()
         return slot
 
     # QUERIES

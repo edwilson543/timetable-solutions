@@ -62,6 +62,7 @@ class Teacher(models.Model):
         """Method to create a new Teacher instance."""
         teacher = cls.objects.create(school_id=school_id, teacher_id=teacher_id, firstname=firstname, surname=surname,
                                      title=title)
+        teacher.full_clean()
         return teacher
 
     # FILTER METHODS

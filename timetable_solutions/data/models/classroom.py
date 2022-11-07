@@ -55,6 +55,7 @@ class Classroom(models.Model):
         """Method to create a new Classroom instance."""
         classroom = cls.objects.create(
             school_id=school_id, classroom_id=classroom_id, building=building, room_number=room_number)
+        classroom.full_clean()
         return classroom
 
     # FILTER METHODS

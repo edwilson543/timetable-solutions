@@ -80,6 +80,7 @@ class Pupil(models.Model):
         """Method to create a new Pupil instance."""
         pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
                                    year_group=year_group)
+        pupil.full_clean()
         return pupil
 
     # FILTER METHODS

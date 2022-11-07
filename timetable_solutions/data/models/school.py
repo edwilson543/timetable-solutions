@@ -30,6 +30,7 @@ class School(models.Model):
     def create_new(cls, school_access_key: int, school_name: str):
         """Method to create a new School instance."""
         school = cls.objects.create(school_access_key=school_access_key, school_name=school_name)
+        school.full_clean()
         return school
 
     # PROPERTIES

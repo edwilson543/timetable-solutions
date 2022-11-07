@@ -74,6 +74,7 @@ class UnsolvedClass(models.Model):
         unsolved_cls = cls.objects.create(
             school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
             classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
+        unsolved_cls.full_clean()
         unsolved_cls.save()
         if len(pupils) > 0:
             unsolved_cls.pupils.add(*pupils)
