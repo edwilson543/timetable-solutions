@@ -2,6 +2,9 @@
 Module containing unit tests for the FileUploadProcessor
 """
 
+# Third party imports
+import pandas as pd
+
 # Django imports
 from django import test
 
@@ -10,9 +13,9 @@ from data import models
 from domain.data_upload_processing import FileUploadProcessor
 
 
-class TestFileUploadProcessorFileAgnostic(test.TestCase):
+class TestFileUploadProcessor(test.TestCase):
     """
-    Unit test class for the methods on the file upload processor that are file agnostic.
+    Unit test class for the methods on FileUploadProcessor.
     """
     fixtures = ["user_school_profile.json", "pupils.json", "timetable.json"]
 
@@ -27,9 +30,6 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
             school_access_key=123456, attempt_upload=False,
         )
         return processor
-
-    # TESTS FOR GETTING PUPILS / TIMETABLE SLOTS FROM ROW
-    # TODO
 
     # TESTS FOR METHODS GETTING PUPILS / TIMETABLE SLOTS FORM STRING
     def test_get_pupils_from_raw_pupil_ids_string_valid(self):
@@ -138,3 +138,68 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
 
             # Check outcome
             assert integer_set is None, f"{invalid_string} caused test failure!"
+
+    # TESTS FOR CHECKING UPLOAD FILE STRUCTURE AND CONTENT
+    def test_check_upload_df_structure_and_content_no_data(self):
+        """
+        Unit test that an empty dataframe is not allowed but doesnt raise
+        """
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+        df = pd.DataFrame({"test": []})
+
+        # Execute test unit
+        check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)
+
+        # Check outcome
+        assert not check_outcome
+        assert "No data" in processor.upload_error_message
+
+    def test_check_upload_df_structure_and_content_headers_different_length(self):
+        """
+        Unit test that a dataframe with the wrong number of columns isn't allowed but doesn't raise
+        """
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+        processor._csv_headers = ["a", "b", "c"]
+        df = pd.DataFrame({"test": [1, 2, 3]})  # Note that the shape is wrong
+
+        # Execute test unit
+        check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)
+
+        # Check outcome
+        assert not check_outcome
+        assert "Input file headers" in processor.upload_error_message
+
+    def test_check_upload_df_structure_and_content_headers_dont_match(self):
+        """
+        Unit test that a dataframe with the wrong column headers (but correct shape) isn't allowed but doesn't raise
+        """
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+        processor._csv_headers = ["a", "b"]
+        df = pd.DataFrame({"c": [1, 2, 3], "d": [4, 5, 6]})  # Note that shape is right but column names wrong
+
+        # Execute test unit
+        check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)
+
+        # Check outcome
+        assert not check_outcome
+        assert "Input file headers" in processor.upload_error_message
+
+    def test_check_upload_df_structure_and_content_with_non_unique_id_column(self):
+        """
+        Unit test that a dataframe with the wrong column headers (but correct shape) isn't allowed but doesn't raise
+        """
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+        processor._csv_headers = ["a", "b"]
+        processor._id_column_name = "a"
+        df = pd.DataFrame({"a": [1, 1, 2], "b": [4, 5, 6]})  # Note that column 'a' is the id column, but is not unique
+
+        # Execute test unit
+        check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)
+
+        # Check outcome
+        assert not check_outcome
+        assert "repeated ids" in processor.upload_error_message
