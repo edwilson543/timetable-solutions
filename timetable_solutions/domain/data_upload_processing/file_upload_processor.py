@@ -3,7 +3,8 @@
 # Standard library imports
 import ast
 from io import StringIO
-from typing import Dict, List, Type
+import re
+from typing import Dict, List, Set, Type
 
 # Third party imports
 import pandas as pd
@@ -13,7 +14,6 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 
-import data.models
 # Local application imports
 from data import models
 from data.utils import ModelSubclass
@@ -151,9 +151,10 @@ class FileUploadProcessor:
         initial_create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=row)
         create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
 
-        raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
-        create_new_dict[models.UnsolvedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
-            pupil_ids_raw=raw_pupil_ids, row_number=row_number)
+        if Header.PUPIL_IDS in create_new_dict.keys():
+            raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
+            create_new_dict[models.UnsolvedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
+                pupil_ids_raw=raw_pupil_ids, row_number=row_number)
 
         return create_new_dict
 
@@ -170,69 +171,86 @@ class FileUploadProcessor:
         create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
         create_new_dict[models.FixedClass.Constant.user_defined] = True  # Not present in file, so manually add
 
-        raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
-        create_new_dict[models.FixedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
-            pupil_ids_raw=raw_pupil_ids, row_number=row_number)
+        if Header.PUPIL_IDS in create_new_dict.keys():
+            raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
+            create_new_dict[models.FixedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
+                pupil_ids_raw=raw_pupil_ids, row_number=row_number)
 
-        raw_slot_ids = create_new_dict.pop(Header.SLOT_IDS)
-        create_new_dict[models.FixedClass.Constant.time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
-            slot_ids_raw=raw_slot_ids, row_number=row_number)
+        if Header.SLOT_IDS in create_new_dict.keys():
+            raw_slot_ids = create_new_dict.pop(Header.SLOT_IDS)
+            create_new_dict[models.FixedClass.Constant.time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
+                slot_ids_raw=raw_slot_ids, row_number=row_number)
 
         return create_new_dict
 
     def _get_pupils_from_raw_pupil_ids_string(self, pupil_ids_raw: str,
-                                              row_number: int) -> data.models.PupilQuerySet | None:
+                                              row_number: int) -> models.PupilQuerySet | None:
         """
-        Method to parse the user string for pupil ids. These should be of the form '[1, 2, 3]' (which is a
-        somewhat suboptimal scale of specificity on the user's part).
+        Method to retrieve a queryset of Pupils from a raw user-upload string.
         :return either a queryset of Pupils if pupil_ids_raw is in the correct format; otherwise None
+        Note that nans / self.__nan_handler will NOT be passed to this method.
         """
-        pupil_queryset = None  # Unless processing is successful, this will be the return
-
-        try:
-            pupil_ids = ast.literal_eval(pupil_ids_raw)
-            int_pupil_ids = {int(val) for val in pupil_ids}
+        pupil_ids = self._get_integer_set_from_string(raw_string_of_ids=pupil_ids_raw, row_number=row_number)
+        if pupil_ids is not None:
             pupils = models.Pupil.objects.get_specific_pupils(
-                school_id=self._school_access_key, pupil_ids=int_pupil_ids)
-            if pupils.count() > 0:
-                pupil_queryset = pupils
-        except SyntaxError:
-            error = f"Invalid syntax for pupil_id: {pupil_ids_raw} in row {row_number}! Please use the " \
-                    f"format: '[1, 2, 3]', where 1, 2, and 3 are the pupil ids in the class."
-            self.upload_error_message = error
-        except ValueError:
-            error = f"Could not interpret the pupil_ids in row: {row_number} as integers! Please use the " \
-                    f"format: '[1, 2, 3]', where 1, 2, and 3 are the pupil ids in the class."
-            self.upload_error_message = error
-
-        return pupil_queryset
+                school_id=self._school_access_key, pupil_ids=pupil_ids)
+            if pupils.count() < len(pupil_ids):
+                missing_slots = set(pupil_ids) - {pupil.pupil_id for pupil in pupils}
+                self.upload_error_message = f"No pupils with ids: {missing_slots} were found!"
+                return None
+            else:
+                return pupils
 
     def _get_timetable_slots_from_raw_slot_ids_string(self, slot_ids_raw: str,
-                                                      row_number: int) -> data.models.TimetableSlotQuerySet | None:
+                                                      row_number: int) -> models.TimetableSlotQuerySet | None:
         """
-        Method to parse the user string for timetable slot ids. These should be of the form '[1, 2, 3]' (which is a
-        somewhat suboptimal scale of specificity on the user's part).
+        Method to retrieve a queryset of TimetableSlots from a raw user-upload string.
         :return either a queryset of TimetableSlot if slot_ids_raw is in the correct format; otherwise None
+        Note that nans / self.__nan_handler will NOT be passed to this method.
         """
-        timetable_slot_queryset = None  # Unless processing is successful, this will be the return
-
-        try:
-            slot_ids = ast.literal_eval(slot_ids_raw)
-            int_slot_ids = {int(val) for val in slot_ids}
+        slot_ids = self._get_integer_set_from_string(raw_string_of_ids=slot_ids_raw, row_number=row_number)
+        if slot_ids is not None:
             slots = models.TimetableSlot.objects.get_specific_timeslots(
-                school_id=self._school_access_key, slot_ids=int_slot_ids)
-            if slots.count() > 0:
-                timetable_slot_queryset = slots
+                school_id=self._school_access_key, slot_ids=slot_ids)
+            if slots.count() < len(slot_ids):
+                missing_slots = set(slot_ids) - {slot.slot_id for slot in slots}
+                self.upload_error_message = f"No pupils with ids: {missing_slots} were found!"
+                return None
+            else:
+                return slots
+
+    def _get_integer_set_from_string(self, raw_string_of_ids: str, row_number: int) -> Set[int] | None:
+        """
+        Method to do some basic checks on a raw string that need to be evaluated as a python list, and try to evaluate
+        it literally. The raw strings originate from user upload files.
+
+        :return - a set of integers, or None in the case where there is an error.
+        :side effects - to set the upload_error_message instance attribute, if an error is encountered.
+        """
+        valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+        # Clean up the string and make it into a list
+        raw_string_of_ids = "".join([character for character in raw_string_of_ids if character in valid_chars])
+        raw_string_of_ids = re.sub(",+", ",", raw_string_of_ids)
+
+        if raw_string_of_ids[0] == ",":
+            raw_string_of_ids = raw_string_of_ids[1:]
+        raw_string_of_ids = "[" + raw_string_of_ids
+        raw_string_of_ids = raw_string_of_ids + "]"
+
+        # Try to convert the string into a set of integers
+        try:
+            id_list = ast.literal_eval(raw_string_of_ids)
+            unique_id_list = {int(value) for value in id_list}
+            return unique_id_list
+
         except SyntaxError:
-            error = f"Invalid syntax for slot_ids: {slot_ids_raw} in row {row_number}! Please use the " \
-                    f"format: '[1, 2, 3]', where 1, 2, and 3 are the timetable slot ids for the class."
-            self.upload_error_message = error
-        except ValueError:
-            error = f"Could not interpret the slot_ids in row: {row_number} as integers! Please use the " \
-                    f"format: '[1, 2, 3]', where 1, 2, and 3 are the timetable slot ids for the class."
+            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '[1, 2, 3]'"
             self.upload_error_message = error
 
-        return timetable_slot_queryset
+        except ValueError:
+            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '[1, 2, 3]'"
+            self.upload_error_message = error
 
     # CHECKS ON UPLOAD FILE STRUCTURE
     def _check_upload_df_structure_and_content(self, upload_df: pd.DataFrame) -> bool:
