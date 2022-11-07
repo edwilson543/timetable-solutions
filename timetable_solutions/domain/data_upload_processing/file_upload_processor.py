@@ -197,7 +197,7 @@ class FileUploadProcessor:
                 school_id=self._school_access_key, pupil_ids=pupil_ids)
             if pupils.count() < len(pupil_ids):
                 missing_slots = set(pupil_ids) - {pupil.pupil_id for pupil in pupils}
-                self.upload_error_message = f"No pupils with ids: {missing_slots} were found!"
+                self.upload_error_message = f"No timetable slots with ids: {missing_slots} were found!"
                 return None
             else:
                 return pupils
@@ -228,11 +228,12 @@ class FileUploadProcessor:
         :return - a set of integers, or None in the case where there is an error.
         :side effects - to set the upload_error_message instance attribute, if an error is encountered.
         """
-        valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
         # Clean up the string and make it into a list
+        raw_string_of_ids = re.sub(r"[:;&-]", ",", raw_string_of_ids)  # standardise allowed join characters
+
+        valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         raw_string_of_ids = "".join([character for character in raw_string_of_ids if character in valid_chars])
-        raw_string_of_ids = re.sub(",+", ",", raw_string_of_ids)
+        raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
         if len(raw_string_of_ids) == 0:
             # This isn't an issue directly, so just return None here
             return None

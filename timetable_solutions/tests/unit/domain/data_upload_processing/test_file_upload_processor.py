@@ -1,4 +1,6 @@
-"""Module containing unit tests for the FileUploadProcessor"""
+"""
+Module containing unit tests for the FileUploadProcessor
+"""
 
 # Django imports
 from django import test
@@ -21,7 +23,7 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
         """
         # noinspection PyTypeChecker
         processor = FileUploadProcessor(
-            csv_file=None, csv_headers=None, id_column_name=None, model=None, # None of these are relevant
+            csv_file=None, csv_headers=None, id_column_name=None, model=None,  # None of these are relevant
             school_access_key=123456, attempt_upload=False,
         )
         return processor
@@ -49,19 +51,20 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
 
     def test_get_pupils_from_raw_pupil_ids_string_missing_pupils(self):
         """
-        #TODO
+        Test that when a string contains a pupil id without a corresponding Pupil, an error message is set
         """
-        # # Set test parameters - we effectively parameterise this test with the raw string list
-        # processor = self._get_file_agnostic_processor()
-        #
-        # raw_string = "1, 4, 6"  # Bog standard string we know should work
-        #
-        # # Execute test unit
-        # pupils = processor._get_pupils_from_raw_pupil_ids_string(pupil_ids_raw=raw_string, row_number=1)
-        #
-        # # Check outcomes
-        # assert isinstance(pupils, models.PupilQuerySet)
-        # assert {pupil.pupil_id for pupil in pupils} == {1, 4, 6}
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+
+        raw_string = "1, 4, 1000000, 333"   # Note that pupil with ids 1000000 333 does not exist for school 123456
+
+        # Execute test unit
+        pupils = processor._get_pupils_from_raw_pupil_ids_string(pupil_ids_raw=raw_string, row_number=1)
+
+        # Check outcomes
+        assert pupils is None
+        assert "No timetable slot" in processor.upload_error_message
+        assert ("1000000" in processor.upload_error_message) and ("333" in processor.upload_error_message)
 
     def test_get_timetable_slots_from_raw_slot_ids_string_valid(self):
         """
@@ -82,19 +85,20 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
 
     def test_get_timetable_slots_from_raw_slot_ids_string_missing_slots(self):
         """
-        # TODO
+        Test that when a string contains a slot id without a corresponding Timetableslot, an error message is set
         """
-        # # Set test parameters
-        # processor = self._get_file_agnostic_processor()
-        #
-        # raw_string = "1, 2, 3"  # Bog standard string we know should work
-        #
-        # # Execute test unit
-        # slots = processor._get_timetable_slots_from_raw_slot_ids_string(slot_ids_raw=raw_string, row_number=1)
-        #
-        # # Check outcomes
-        # assert isinstance(slots, models.TimetableSlotQuerySet)
-        # assert {slot.slot_id for slot in slots} == {1, 2, 3}
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+
+        raw_string = "1, 2, 123456, 412"   # Note that slots with ids 123456, 412 does not exist for school 123456
+
+        # Execute test unit
+        slots = processor._get_timetable_slots_from_raw_slot_ids_string(slot_ids_raw=raw_string, row_number=1)
+
+        # Check outcomes
+        assert slots is None
+        assert "No pupil" in processor.upload_error_message
+        assert ("123456" in processor.upload_error_message) and ("412" in processor.upload_error_message)
 
     def test_get_integer_set_from_string_valid_strings(self):
         """
@@ -104,7 +108,8 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
         processor = self._get_file_agnostic_processor()
 
         valid_strings = [
-            "[1, 4, 6]", "1, 4, 6", "[,1, 4, 6", "1, 4, 6]###!!!", "gets-remo, 1, 4, 6, ved ]", "6,,, 4, 1!!!!",
+            "[1, 4, 6]", "1, 4, 6", "1; 4; 6", "1 & 4 & 6", "1, 4; 6 ", "[1 & 4 ; 6]"
+            "[,1, 4, 6", "1, 4, 6]###!!!", "gets-remo, 1, 4, 6, ved ]", "6,,, 4, 1!!!!",
             "1       ,                4-, 6, ", "[][][1][][], 4[][ ][][, 6[][][][,,,,,,,,,][][][]",
             "vdwljhcbdwckw1cdwceqdeqdeq][dewqdkebkebd,4,***********\n\n\n\n\n,,,,,,,,new line??? random chars ,,,6"
         ]
