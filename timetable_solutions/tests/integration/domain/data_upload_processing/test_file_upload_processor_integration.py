@@ -1,4 +1,4 @@
-"""Module containing unit tests for the FileUploadProcessor"""
+"""Module containing integration tests for the FileUploadProcessor"""
 
 # Standard library imports
 import datetime as dt
@@ -12,6 +12,13 @@ from data import models
 from domain import data_upload_processing
 from tests.input_settings import TEST_DATA_DIR
 
+
+# TODO - error cases to test
+# file contains error in bottom row -> nothing saved
+# file contains not unique unique togethers -> nothing saved
+    # First do all the unique togethers, and test
+# blank values instead of empty lists are handled in the right way
+    # this could be captured within the current tests (mix and match)
 
 class TestFileUploadProcessorIndependentFiles(TestCase):
     """Tests for the file uploads that depend on no existing data in the database"""

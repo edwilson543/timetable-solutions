@@ -264,6 +264,7 @@ class FileUploadProcessor:
         """
         # Check there is actually some data in the file
         if len(upload_df) == 0:
+            self.upload_error_message = "No data was present in the uploaded file!"
             return False
 
         # Check that the file has the required column headers
