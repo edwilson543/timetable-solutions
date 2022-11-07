@@ -1,8 +1,5 @@
 """Module containing unit tests for the FileUploadProcessor"""
 
-# Third party imports
-import pytest
-
 # Django imports
 from django import test
 
@@ -29,28 +26,75 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
         )
         return processor
 
+    # TESTS FOR GETTING PUPILS / TIMETABLE SLOTS FROM ROW
+    # TODO
+
     # TESTS FOR METHODS GETTING PUPILS / TIMETABLE SLOTS FORM STRING
-    def test_get_timetable_slots_from_raw_slot_ids_string(self):
+    def test_get_pupils_from_raw_pupil_ids_string_valid(self):
         """
-        Test that when the slot_ids_raw kwarg is a valid string representing a list of pupils, a queryset
-        of TimetableSlots is returned as expected.
+        Test that when the pupil_ids_raw kwarg is a valid string representing a list of pupils, a queryset
+        of Pupils is returned as expected.
         """
-        # Set test parameters - we effectively parameterise this test with the raw string list
-        row_number = 1  # This is irrelevant to this test
+        # Set test parameters
         processor = self._get_file_agnostic_processor()
 
-        valid_pupil_ids_raw_strings = [
-            "[1, 4, 6]", "1, 4, 6", "[,1, 4, 6", "1, 4, 6]###!!!", "gets-remo, 1, 4, 6, ved ", "6,,, 4, 1!!!!",
-            "1       ,                4-, 6, ", "[][][1][][], 4[][ ][][, 6[][][][,,,,,,,,,][][][]"
-        ]
+        raw_string = "1, 4, 6"  # Bog standard string we know should work
 
         # Execute test unit
-        for valid_string in valid_pupil_ids_raw_strings:
-            pupils = processor._get_pupils_from_raw_pupil_ids_string(pupil_ids_raw=valid_string, row_number=row_number)
+        pupils = processor._get_pupils_from_raw_pupil_ids_string(pupil_ids_raw=raw_string, row_number=1)
 
-            # Check outcomes
-            assert isinstance(pupils, models.PupilQuerySet), valid_string
-            assert {pupil.pupil_id for pupil in pupils} == {1, 4, 6}
+        # Check outcomes
+        assert isinstance(pupils, models.PupilQuerySet)
+        assert {pupil.pupil_id for pupil in pupils} == {1, 4, 6}
+
+    def test_get_pupils_from_raw_pupil_ids_string_missing_pupils(self):
+        """
+        #TODO
+        """
+        # # Set test parameters - we effectively parameterise this test with the raw string list
+        # processor = self._get_file_agnostic_processor()
+        #
+        # raw_string = "1, 4, 6"  # Bog standard string we know should work
+        #
+        # # Execute test unit
+        # pupils = processor._get_pupils_from_raw_pupil_ids_string(pupil_ids_raw=raw_string, row_number=1)
+        #
+        # # Check outcomes
+        # assert isinstance(pupils, models.PupilQuerySet)
+        # assert {pupil.pupil_id for pupil in pupils} == {1, 4, 6}
+
+    def test_get_timetable_slots_from_raw_slot_ids_string_valid(self):
+        """
+        Test that when the slot_ids_raw kwarg is a valid string representing a list of timetable slots, a queryset
+        of TimetableSlots is returned as expected.
+        """
+        # Set test parameters
+        processor = self._get_file_agnostic_processor()
+
+        raw_string = "1, 2, 3"  # Bog standard string we know should work
+
+        # Execute test unit
+        slots = processor._get_timetable_slots_from_raw_slot_ids_string(slot_ids_raw=raw_string, row_number=1)
+
+        # Check outcomes
+        assert isinstance(slots, models.TimetableSlotQuerySet)
+        assert {slot.slot_id for slot in slots} == {1, 2, 3}
+
+    def test_get_timetable_slots_from_raw_slot_ids_string_missing_slots(self):
+        """
+        # TODO
+        """
+        # # Set test parameters
+        # processor = self._get_file_agnostic_processor()
+        #
+        # raw_string = "1, 2, 3"  # Bog standard string we know should work
+        #
+        # # Execute test unit
+        # slots = processor._get_timetable_slots_from_raw_slot_ids_string(slot_ids_raw=raw_string, row_number=1)
+        #
+        # # Check outcomes
+        # assert isinstance(slots, models.TimetableSlotQuerySet)
+        # assert {slot.slot_id for slot in slots} == {1, 2, 3}
 
     def test_get_integer_set_from_string_valid_strings(self):
         """
@@ -70,7 +114,7 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
             integer_set = processor._get_integer_set_from_string(raw_string_of_ids=valid_string, row_number=1)
 
             # Check outcome
-            assert integer_set == {1, 4, 6}
+            assert integer_set == {1, 4, 6}, f"{valid_string} caused test failure!"
 
     def test_get_integer_set_from_string_invalid_harmless_strings_return_none(self):
         """
@@ -88,4 +132,4 @@ class TestFileUploadProcessorFileAgnostic(test.TestCase):
             integer_set = processor._get_integer_set_from_string(raw_string_of_ids=invalid_string, row_number=1)
 
             # Check outcome
-            assert integer_set is None, invalid_string
+            assert integer_set is None, f"{invalid_string} caused test failure!"
