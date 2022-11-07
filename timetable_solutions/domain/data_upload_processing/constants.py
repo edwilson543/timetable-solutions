@@ -1,4 +1,6 @@
-"""Module listing the headers of the csv files used in the application"""
+"""
+Module listing constants related to the processing of uploaded user files.
+"""
 
 # Standard library imports
 from dataclasses import dataclass
@@ -7,7 +9,7 @@ from typing import List
 
 class Header:
     """
-    Class storing string literals used by the file upload processor
+    Class storing string literals that are header of upload files that must be recognised by the file upload processor
     """
     # Misc.
     SCHOOL_ID = "school_id"
@@ -40,13 +42,18 @@ class Header:
 
 @dataclass(frozen=True)
 class FileStructure:
+    """
+    Parameterisation of the structure of each user uploaded file
+    """
     headers: List[str]
     id_column: str
 
 
 @dataclass(frozen=True)
 class UploadFileStructure:
-    """Storage of the file structure of all csv files that get uploaded / downloaded from the database by users."""
+    """
+    Storage of the file structure of all csv files that get uploaded / downloaded from the database by users.
+    """
     PUPILS = FileStructure(headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
                            id_column=Header.PUPIL_ID)
     TEACHERS = FileStructure(headers=[Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
