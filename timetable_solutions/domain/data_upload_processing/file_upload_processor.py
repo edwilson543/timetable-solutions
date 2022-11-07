@@ -77,6 +77,7 @@ class FileUploadProcessor:
 
         # Basic cleaning / checks on file content & structure
         upload_df.fillna(value=self.__nan_handler, inplace=True)
+        upload_df.replace(to_replace="", value=self.__nan_handler)
         upload_df = self._convert_df_to_correct_types(upload_df)
 
         if not self._check_upload_df_structure_and_content(upload_df=upload_df):
@@ -232,6 +233,9 @@ class FileUploadProcessor:
         # Clean up the string and make it into a list
         raw_string_of_ids = "".join([character for character in raw_string_of_ids if character in valid_chars])
         raw_string_of_ids = re.sub(",+", ",", raw_string_of_ids)
+        if len(raw_string_of_ids) == 0:
+            # This isn't an issue directly, so just return None here
+            return None
 
         if raw_string_of_ids[0] == ",":
             raw_string_of_ids = raw_string_of_ids[1:]
