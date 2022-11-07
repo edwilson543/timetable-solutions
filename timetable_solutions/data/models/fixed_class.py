@@ -58,7 +58,8 @@ class FixedClass(models.Model):
 
         # Field names
         pupils = "pupils"
-        time_slots = "time-slots"
+        time_slots = "time_slots"
+        user_defined = "user_defined"
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
