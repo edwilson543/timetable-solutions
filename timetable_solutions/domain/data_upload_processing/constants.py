@@ -6,6 +6,12 @@ from typing import List
 
 
 class Header:
+    """
+    Class storing string literals used by the file upload processor
+    """
+    # Misc.
+    SCHOOL_ID = "school_id"
+
     # Id columns
     PUPIL_ID = "pupil_id"
     TEACHER_ID = "teacher_id"
