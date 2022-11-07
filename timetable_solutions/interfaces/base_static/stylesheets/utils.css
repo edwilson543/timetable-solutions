@@ -1,0 +1,25 @@
+/* ====================
+Styling for components present in multiple html templates.
+This file is linked in base.html, and thereafter the classes are available in all child templates.
+ThE difference between this and base.css is that these classes are intended to be used in any template.
+==================== */
+
+/* ====================
+Error message banners
+(different to flash messages)
+==================== */
+.static_error_message {
+    /* Display */
+    padding: 3px;
+    width: 300 px;
+    margin: 5px;
+
+    /* Typography */
+    font-size: 12px;
+    color: var(--error_banner_red_border);
+
+    /* Background and border */
+    background-color: var(--error_banner_red);
+    border: 1px solid var(--error_banner_red_border);
+    border-radius: 4px;
+}
