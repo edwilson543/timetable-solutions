@@ -1,4 +1,10 @@
 /* ====================
+Styling for the base.html template used throughout the project.
+These ids / classes are not used anywhere except that template
+==================== */
+@import url(/static/stylesheets/colour_scheme.css);
+
+/* ====================
 Introduce a wrapper containing everything except the footer, which fills the negative bottom margin
 ==================== */
 #full_page_wrapper{
@@ -26,7 +32,7 @@ Head strap styling
     vertical-align: middle;
 
     /* Background */
-    background-color: #11014A;
+    background-color: var(--dark_blue_banners);
 }
 
 #head_strap_text {
@@ -138,7 +144,9 @@ Footer styling
     border-top: 1px solid black;
     border-top-style: double;
 }
-#footer_info:hover {background-color: #1f1530;}
+#footer_info:hover {
+    background-color: var(--purple_button);
+}
 
 @media screen and (max-width: 700px) {
     #footer_contact_info {display: none;}
@@ -155,11 +163,11 @@ Error message banners
 
     /* Typography */
     font-size: 12px;
-    color: #690007;
+    color: var(--error_banner_red_border);
 
     /* Background and border */
-    background-color: #ffb0b5;
-    border: 1px solid #690007;
+    background-color: var(--error_banner_red);
+    border: 1px solid var(--error_banner_red_border);
     border-radius: 4px;
 }
 
@@ -182,7 +190,7 @@ body, html {
     padding: 0;
 
     /* Background */
-    background-color: #d6d4d4;
+    background-color: var(--lilac_background);
 }
 
 a {
