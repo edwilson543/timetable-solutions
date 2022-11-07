@@ -86,20 +86,21 @@ class FileUploadProcessor:
 
         # Process each file row into a dictionary to pass to create_new
         create_new_dict_list = self._get_data_dict_list_for_create_new(upload_df=upload_df)
-        try:
-            with transaction.atomic():
-                for n, create_new_dict in enumerate(create_new_dict_list):
-                    self._model.create_new(**create_new_dict)
+        if self.upload_error_message is None:
+            try:
+                with transaction.atomic():
+                    for n, create_new_dict in enumerate(create_new_dict_list):
+                        self._model.create_new(**create_new_dict)
 
-            # Reaching this point means the upload processing has been successful
-            self.n_model_instances_created = len(create_new_dict_list)
+                # Reaching this point means the upload processing has been successful
+                self.n_model_instances_created = len(create_new_dict_list)
 
-        except ValidationError:
-            error = f"Could not interpret values in row {n} as a {self._model.Constant.human_string_singular}! " \
-                        f"Please check that all data is of the correct type!"
-            self.upload_error_message = error
+            except ValidationError:
+                error = f"Could not interpret values in row {n} as a {self._model.Constant.human_string_singular}!\n" \
+                            f"Please check that all data is of the correct type!"
+                self.upload_error_message = error
 
-    def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict]:
+    def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
         """
         Method to iterate through the rows of the dataframe, and create a list of dictionaries that can be passed to
         self._model.create_new(**create_new_dict).
@@ -125,7 +126,7 @@ class FileUploadProcessor:
                 row_number += 1
             else:
                 # A single error means we write off the entire file contents
-                return []
+                return None
 
         return create_new_dict_list
 
