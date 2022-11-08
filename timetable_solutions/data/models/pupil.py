@@ -78,6 +78,7 @@ class Pupil(models.Model):
     @classmethod
     def create_new(cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int):
         """Method to create a new Pupil instance."""
+        year_group = cls.YearGroup(year_group).value
         pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
                                    year_group=year_group)
         pupil.full_clean()
