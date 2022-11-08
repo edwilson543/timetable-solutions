@@ -250,15 +250,15 @@ class FileUploadProcessor:
         # Try to convert the string into a set of integers
         try:
             id_list = ast.literal_eval(raw_string_of_ids)
-            unique_id_list = {int(value) for value in id_list}
-            return unique_id_list
+            unique_id_set = {int(value) for value in id_list}
+            return unique_id_set
 
         except SyntaxError:
-            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '[1, 2, 3]'"
+            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '1; 2; 3'"
             self.upload_error_message = error
 
         except ValueError:
-            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '[1, 2, 3]'"
+            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
             self.upload_error_message = error
 
     # CHECKS ON UPLOAD FILE STRUCTURE
