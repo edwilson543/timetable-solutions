@@ -5,6 +5,7 @@ from datetime import time, timedelta
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
@@ -14,12 +15,11 @@ from data import models
 from tests.input_settings import TEST_DATA_DIR
 
 
-# TODO - fire some GET requests from logged out users
 class TestCaseWithUpload(TestCase):
     """Subclass of the TestCase class, capable of uploading test csv files (subclasses twice below)."""
     fixtures = ["user_school_profile.json"]
 
-    def upload_test_file(self, filename: str, url_data_name: UrlName) -> None:
+    def upload_test_file(self, filename: str, url_data_name: UrlName) -> HttpResponse:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
@@ -27,8 +27,9 @@ class TestCaseWithUpload(TestCase):
         self.client.login(username="dummy_teacher", password="dt123dt123")
         with open((TEST_DATA_DIR / filename), "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            url = reverse(url_data_name)
-            self.client.post(url, data={url_data_name: upload_file})
+        url = reverse(url_data_name)
+        response = self.client.post(url, data={url_data_name: upload_file})
+        return response
 
 
 class TestIndependentFileUploadViews(TestCaseWithUpload):
@@ -42,6 +43,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         Unit test for the TeacherListUpload View, that simulating a csv file upload of teachers successfully populates
         the database.
         """
+        # Execute test unit
         self.upload_test_file(filename="teachers.csv", url_data_name=UrlName.TEACHER_LIST_UPLOAD.value)
 
         # Test that the database is as expected
@@ -57,16 +59,20 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         work, and also that the database is unaffected.
         """
         # Try uploading the wrong file (pupils.csv)
-        self.upload_test_file(filename="pupils.csv", url_data_name=UrlName.TEACHER_LIST_UPLOAD.value)
+        response = self.upload_test_file(
+            filename="class_requirements.csv", url_data_name=UrlName.TEACHER_LIST_UPLOAD.value)
 
-        # Assert that nothing has happened
-        self.assertEqual(len(models.Teacher.objects.get_all_instances_for_school(school_id=123456)), 0)
+        # Check outcome
+        self.assertEqual(len(models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)), 0)
+        message = list(response.context["messages"])[0].message
+        assert "Input file headers" in message
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """
         Unit test for PupilListUpload View, that simulating a csv file upload of pupils successfully populates the
         database.
         """
+        # Execute test unit
         self.upload_test_file(filename="pupils.csv", url_data_name=UrlName.PUPIL_LIST_UPLOAD.value)
 
         # Test that the database is as expected
@@ -82,10 +88,12 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         and also that the database is unaffected.
         """
         # Try uploading the wrong file (teachers.csv)
-        self.upload_test_file(filename="teachers.csv", url_data_name=UrlName.PUPIL_LIST_UPLOAD.value)
+        response = self.upload_test_file(filename="teachers.csv", url_data_name=UrlName.PUPIL_LIST_UPLOAD.value)
 
         # Assert that nothing has happened
         self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
+        message = list(response.context["messages"])[0].message
+        assert "Input file headers" in message
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """
@@ -114,6 +122,20 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
+
+    def test_file_upload_page_redirects_logged_out_users_who_submit_get_requests(self):
+        """
+        Unit test that an anonymous user will be redirected to login, when submitting a GET request to the data
+        upload page
+        """
+        # Set test parameters
+        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
+
+        # Execute test unit - note no login
+        response = self.client.get(url)
+
+        # Check outcome
+        self.assertIn("users/accounts/login", response.url)
 
 
 class TestDependentFileUploadViews(TestCaseWithUpload):
