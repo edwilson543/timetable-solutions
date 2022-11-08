@@ -1,21 +1,26 @@
 version: "3.8"
 
 services:
+
   postgres_database:
     image: postgres
     volumes:
-      - ./data/db:/var/lib/postgresql/data  # Established mapping between our local data folder and the container
+      - ./data/db:/var/lib/postgresql/data  # Establishes mapping between our local data folder and the container
     environment: # Matches django settings module / gitignored .env file
       - POSTGRES_DB=$POSTGRES_NAME
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     container_name: postgres_container
+
   timetable_scheduling:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - .:/timetable_scheduling
+      - static_volume:/timetable_scheduling/staticfiles
     ports:
-      - 8000:8000
+      - "8000:8000"
     env_file:
       - ./.env
     image: tts_app:timetable_scheduling
@@ -29,3 +34,16 @@ services:
       "
     depends_on:
       - postgres_database
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - 80:8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/timetable_scheduling/staticfiles
+    depends_on:
+      - timetable_scheduling
+
+volumes:
+  static_volume:
