@@ -14,7 +14,9 @@ from data import models
 
 
 class TestFixedClass(test.TestCase):
-    """Unit tests for the FixedClass model's custom queryset manager"""
+    """
+    Unit tests for the FixedClass model
+    """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
 
