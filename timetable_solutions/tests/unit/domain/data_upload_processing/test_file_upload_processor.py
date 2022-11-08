@@ -63,7 +63,7 @@ class TestFileUploadProcessor(test.TestCase):
 
         # Check outcomes
         assert pupils is None
-        assert "No timetable slot" in processor.upload_error_message
+        assert "No pupil" in processor.upload_error_message
         assert ("1000000" in processor.upload_error_message) and ("333" in processor.upload_error_message)
 
     def test_get_timetable_slots_from_raw_slot_ids_string_valid(self):
@@ -97,7 +97,7 @@ class TestFileUploadProcessor(test.TestCase):
 
         # Check outcomes
         assert slots is None
-        assert "No pupil" in processor.upload_error_message
+        assert "No timetable slot" in processor.upload_error_message
         assert ("123456" in processor.upload_error_message) and ("412" in processor.upload_error_message)
 
     def test_get_integer_set_from_string_valid_strings(self):
