@@ -137,11 +137,11 @@ class TestFileUploadProcessorDependentFiles(TestCase):
 
         # Test the database is as expected
         all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
-        assert len(all_classes) == 12
+        self.assertEqual(len(all_classes), 12)
         classes_with_teachers = sum([1 for klass in all_classes if klass.teacher is not None])
-        assert classes_with_teachers == 12
+        self.assertEqual(classes_with_teachers, 12)
         total_non_unique_pupils = sum([klass.pupils.count() for klass in all_classes])
-        assert total_non_unique_pupils == 18
+        self.assertEqual(total_non_unique_pupils, 18)
 
         # Spot check on one specific UnsolvedClass
         klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
@@ -167,11 +167,13 @@ class TestFileUploadProcessorDependentFiles(TestCase):
 
         # Test the database is as expected
         all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
-        assert len(all_classes) == 12
+        self.assertEqual(len(all_classes), 12)
         classes_with_teachers = sum([1 for klass in all_classes if klass.teacher is not None])
-        assert classes_with_teachers == 11
+        self.assertEqual(classes_with_teachers, 11)
         total_non_unique_pupils = sum([klass.pupils.count() for klass in all_classes])
-        assert total_non_unique_pupils == 6
+        self.assertEqual(total_non_unique_pupils, 6)
+        total_non_unique_slots = sum([klass.time_slots.count() for klass in all_classes])
+        self.assertEqual(total_non_unique_slots, 60)
 
         # Spot checks on a couple of specific FixedClasses
         pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
