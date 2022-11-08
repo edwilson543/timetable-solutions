@@ -3,7 +3,7 @@
 # Standard library imports
 import datetime as dt
 from functools import lru_cache
-from typing import Set, List
+from typing import Self, Set, List
 
 # Django imports
 from django.db import models
@@ -47,10 +47,6 @@ class TimetableSlotQuerySet(models.QuerySet):
 class TimetableSlot(models.Model):
     """Model for stating the unique timetable slots when classes can take place"""
 
-    class Meta:
-        """Additional information relating to this model"""
-        ordering = ["day_of_week", "period_starts_at"]
-
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
     day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
@@ -59,6 +55,13 @@ class TimetableSlot(models.Model):
 
     # Introduce a custom manager
     objects = TimetableSlotQuerySet.as_manager()
+
+    class Meta:
+        """
+        Django Meta class for the TimetableSlot model
+        """
+        ordering = ["day_of_week", "period_starts_at"]
+        unique_together = [["school", "slot_id"]]
 
     class Constant:
         """
@@ -73,11 +76,11 @@ class TimetableSlot(models.Model):
 
     # FACTORIES
     @classmethod
-    def create_new(cls, school_id: int, slot_id: int, day_of_week: str, period_starts_at: dt.time,
-                   period_duration: dt.timedelta):
+    def create_new(cls, school_id: int, slot_id: int, day_of_week: WeekDay, period_starts_at: dt.time,
+                   period_duration: dt.timedelta) -> Self:
         """Method to create a new TimetableSlot instance."""
         try:
-            day_of_week = int(day_of_week)
+            day_of_week = WeekDay(day_of_week).value
         except ValueError:
             raise ValueError(f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
                              f"{type(day_of_week)}")
