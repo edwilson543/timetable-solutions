@@ -1,5 +1,8 @@
 """Module defining the model for a school_id classroom and any ancillary objects."""
 
+# Standard library imports
+from typing import Self
+
 # Django imports
 from django.db import models
 
@@ -34,6 +37,12 @@ class Classroom(models.Model):
     # Introduce a custom manager
     objects = ClassroomQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the Classroom model
+        """
+        unique_together = [["school", "classroom_id"], ["school", "building", "room_number"]]
+
     class Constant:
         """
         Additional constants to store about the Classroom model (that aren't an option in Meta)
@@ -51,7 +60,7 @@ class Classroom(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int):
+    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int) -> Self:
         """Method to create a new Classroom instance."""
         classroom = cls.objects.create(
             school_id=school_id, classroom_id=classroom_id, building=building, room_number=room_number)
