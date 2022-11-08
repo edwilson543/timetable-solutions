@@ -1,7 +1,7 @@
 """Module defining the model for a pupil and any ancillary objects."""
 
 # Standard library imports
-from typing import Set
+from typing import Self, Set
 
 # Django imports
 from django.db import models
@@ -50,6 +50,7 @@ class Pupil(models.Model):
         NINE = 9, "Nine"
         TEN = 10, "Ten"
 
+    # Model fields
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     pupil_id = models.IntegerField()
     firstname = models.CharField(max_length=20)
@@ -58,6 +59,12 @@ class Pupil(models.Model):
 
     # Introduce a custom manager
     objects = PupilQuerySet.as_manager()
+
+    class Meta:
+        """
+        Django Meta class for the Pupil model
+        """
+        unique_together = [["school", "pupil_id"]]
 
     class Constant:
         """
@@ -76,7 +83,7 @@ class Pupil(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int):
+    def create_new(cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int) -> Self:
         """Method to create a new Pupil instance."""
         year_group = cls.YearGroup(year_group).value
         pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
