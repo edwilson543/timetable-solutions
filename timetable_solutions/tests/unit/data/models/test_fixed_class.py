@@ -41,7 +41,8 @@ class TestFixedClass(test.TestCase):
 
     def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
         """
-        Tests that we can cannot create two Pupils with the same id / school, due to unique_together on the Meta class
+        Tests that we can cannot create two FixedClasses with the same (class_id, school, user_defined) combination,
+        due to unique_together on the Meta class
         """
         # Execute test unit
         with pytest.raises(ValidationError):
