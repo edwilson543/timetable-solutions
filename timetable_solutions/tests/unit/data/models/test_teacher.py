@@ -40,7 +40,7 @@ class TestTeacher(test.TestCase):
             models.Teacher.create_new(school_id=123456, teacher_id=1,  # Note that id 1 is unavailable
                                       firstname="test", surname="test", title="mr")
 
-    # FILTER METHODS TESTS
+    # FILTER METHOD TESTS
     def test_check_if_busy_at_time_slot_when_teacher_is_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to"""
         teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
