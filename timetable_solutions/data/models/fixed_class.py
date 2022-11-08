@@ -108,7 +108,7 @@ class FixedClass(models.Model):
 
     # MUTATORS
     def add_pupils(self, pupils: PupilQuerySet) -> None:
-        """Method adding adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
+        """Method adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
         self.pupils.add(*pupils)
 
     def add_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
