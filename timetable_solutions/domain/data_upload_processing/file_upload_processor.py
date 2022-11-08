@@ -201,7 +201,7 @@ class FileUploadProcessor:
                 school_id=self._school_access_key, pupil_ids=pupil_ids)
             if pupils.count() < len(pupil_ids):
                 missing_slots = set(pupil_ids) - {pupil.pupil_id for pupil in pupils}
-                self.upload_error_message = f"No timetable slots with ids: {missing_slots} were found!"
+                self.upload_error_message = f"No pupil(s) with ids: {missing_slots} were found!"
                 return None
             else:
                 return pupils
@@ -219,7 +219,7 @@ class FileUploadProcessor:
                 school_id=self._school_access_key, slot_ids=slot_ids)
             if slots.count() < len(slot_ids):
                 missing_slots = set(slot_ids) - {slot.slot_id for slot in slots}
-                self.upload_error_message = f"No pupils with ids: {missing_slots} were found!"
+                self.upload_error_message = f"No timetable slot(s) with ids: {missing_slots} were found!"
                 return None
             else:
                 return slots

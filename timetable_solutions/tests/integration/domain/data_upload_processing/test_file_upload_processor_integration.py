@@ -209,9 +209,9 @@ class TestFileUploadProcessorDependentFilesValidUploads(TestCase):
                          models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
 
 
-class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
+class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
     """
-    Tests for the file uploads with invalid content / structure.
+    Tests for pupil file uploads with invalid content / structure.
     """
 
     fixtures = ["user_school_profile.json"]
@@ -219,7 +219,7 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
 
     def run_test_for_pupils_with_error_in_row_n(self, filename: str, row_n: int):
         """
-        Utility test that can be run for different files, all with different types of error in row 4.
+        Utility test that can be run for different files, all with different types of error in row n.
         Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
         processed into the database.
         """
@@ -282,3 +282,50 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
 
         # Execute test
         self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
+
+
+class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
+    """
+    Tests for invalid fixed class uploads with invalid content / structure.
+    """
+
+    fixtures = ["user_school_profile.json", "pupils.json", "teachers.json", "timetable.json", "classrooms.json"]
+    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
+
+    def run_test_for_fixed_classes_with_error(self, filename: str) -> str:
+        """
+        Utility test that can be run for different files, all with different types of error in row n.
+        Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
+        processed into the database.
+        :return the error message produced by the processor
+        """
+        # Set test parameters
+        with open(self.invalid_uploads / filename, "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.FIXED_CLASSES.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.FIXED_CLASSES.id_column,
+            model=models.FixedClass, school_access_key=123456, is_fixed_class_upload=True)
+
+        # Check the outcome
+        all_fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
+        assert all_fixed_classes.count() == 0
+        self.assertTrue(not upload_processor.upload_successful)
+
+        return upload_processor.upload_error_message
+
+    def test_upload_fixed_classes_file_which_references_a_non_existent_pupil(self):
+        """
+        Unit test that a pupils file with a FLOAT in the year group column is rejected
+        """
+        # Set test parameters
+        filename = "fixed_classes_non_existent_pupil.csv"
+
+        # Execute test
+        error_message = self.run_test_for_fixed_classes_with_error(filename=filename)
+
+        # Check outcome
+        self.assertIn("No pupil", error_message)
+        self.assertIn("7", error_message)  # The non-existent pupil
