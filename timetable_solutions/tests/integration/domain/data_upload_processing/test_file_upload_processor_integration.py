@@ -136,13 +136,21 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         # Test the database is as expected
         all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
+        classes_with_teachers = sum([1 for klass in all_classes if klass.teacher is not None])
+        assert classes_with_teachers == 12
+        total_non_unique_pupils = sum([klass.pupils.count() for klass in all_classes])
+        assert total_non_unique_pupils == 18
+
+        # Spot check on one specific UnsolvedClass
         klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
                                                                            class_id="YEAR_ONE_MATHS_A")
         self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
         self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
 
     def test_upload_fixed_classes_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the fixed classes csv file and use it to populate database"""
+        """
+        Test that the FileUploadProcessor can upload the fixed classes csv file and use it to populate database
+        """
         # Upload the file
         with open(TEST_DATA_DIR / "fixed_classes.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
@@ -158,9 +166,16 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         # Test the database is as expected
         all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
         assert len(all_classes) == 12
+        classes_with_teachers = sum([1 for klass in all_classes if klass.teacher is not None])
+        assert classes_with_teachers == 11
+        total_non_unique_pupils = sum([klass.pupils.count() for klass in all_classes])
+        assert total_non_unique_pupils == 6
+
+        # Spot checks on a couple of specific FixedClasses
         pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
         self.assertQuerysetEqual(pup_lunch.pupils.all(),
                                  models.Pupil.objects.get_all_instances_for_school(school_id=123456), ordered=False)
+
         teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
         self.assertEqual(teach_ten_lunch.teacher,
                          models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
