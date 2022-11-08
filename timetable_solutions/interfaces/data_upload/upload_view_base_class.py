@@ -6,11 +6,12 @@ This module defines that generic view class, and its ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Type
+from typing import Dict, Type
 
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.http import HttpResponse
 from django import forms
 from django.views.generic import TemplateView
 from django import urls
@@ -46,7 +47,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(self, *args, **kwargs):
+    def get_context_data(self, *args, **kwargs) -> Dict[str, Dict[str, RequiredUpload]]:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -79,7 +80,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             }
         return context
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """
@@ -115,7 +116,7 @@ class DataUploadView(UploadPage):
         self._is_fixed_class_upload_view = is_fixed_class_upload_view
         self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs) -> HttpResponse:
         """
         All instances of the subclasses of this View upload a single file, which this post method handles.
         If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
