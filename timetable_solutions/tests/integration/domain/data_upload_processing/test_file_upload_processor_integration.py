@@ -212,8 +212,6 @@ class TestFileUploadProcessorDependentFilesValidUploads(TestCase):
 class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
     """
     Tests for the file uploads with invalid content / structure.
-    Note a general theme is to test the atomicity of uploads - we want none or all rows of the uploaded file to be
-    processed into the database.
     """
 
     fixtures = ["user_school_profile.json"]
@@ -222,6 +220,8 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
     def run_test_for_pupils_with_error_in_row_n(self, filename: str, row_n: int):
         """
         Utility test that can be run for different files, all with different types of error in row 4.
+        Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
+        processed into the database.
         """
         # Set test parameters
         with open(self.invalid_uploads / filename, "rb") as csv_file:
@@ -265,10 +265,20 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
 
     def test_upload_pupils_file_invalid_type_string_instead_of_int(self):
         """
-        Unit test that a pupils file with a string in the id column is rejected
+        Unit test that a pupils file with a STRING in the id column is rejected
         """
         # Set test parameters
-        filename = "pupils_invalid_type.csv"
+        filename = "pupils_string_in_id_column.csv"
+
+        # Execute test
+        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
+
+    def test_upload_pupils_file_invalid_type_float_instead_of_int(self):
+        """
+        Unit test that a pupils file with a FLOAT in the year group column is rejected
+        """
+        # Set test parameters
+        filename = "pupils_float_in_year_group_column.csv"
 
         # Execute test
         self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
