@@ -24,11 +24,12 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
     """Tests for the file uploads that depend on no existing data in the database"""
 
     fixtures = ["user_school_profile.json"]
+    valid_uploads = TEST_DATA_DIR / "valid_uploads"
 
     def test_upload_teachers_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the teacher csv file and use it to populate database"""
         # Upload the file
-        with open(TEST_DATA_DIR / "teachers.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "teachers.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
@@ -50,7 +51,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
     def test_upload_pupils_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the pupil csv file and use it to populate database"""
         # Upload the file
-        with open(TEST_DATA_DIR / "pupils.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "pupils.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
@@ -71,7 +72,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
     def test_upload_classrooms_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the classroom csv file and use it to populate database"""
         # Upload the file
-        with open(TEST_DATA_DIR / "classrooms.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "classrooms.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
@@ -91,7 +92,7 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
     def test_upload_timetable_structure_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the timetable csv file and use it to populate database"""
         # Upload the file
-        with open(TEST_DATA_DIR / "timetable.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "timetable.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
@@ -115,6 +116,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
     """Tests for the file uploads that depend on no existing data in the database, hence requiring fixtures."""
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+    valid_uploads = TEST_DATA_DIR / "valid_uploads"
 
     def test_upload_unsolved_classes_to_database_valid_upload(self):
         """
@@ -122,7 +124,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         to populate database
         """
         # Upload the file
-        with open(TEST_DATA_DIR / "class_requirements.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "class_requirements.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.UNSOLVED_CLASSES.headers,
@@ -152,7 +154,7 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         Test that the FileUploadProcessor can upload the fixed classes csv file and use it to populate database
         """
         # Upload the file
-        with open(TEST_DATA_DIR / "fixed_classes.csv", "rb") as csv_file:
+        with open(self.valid_uploads / "fixed_classes.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
             upload_processor = data_upload_processing.FileUploadProcessor(
                 csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.FIXED_CLASSES.headers,
