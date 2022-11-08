@@ -1,5 +1,8 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
+# Standard library imports
+from typing import Self
+
 # Django imports
 from django.db import models
 
@@ -41,6 +44,12 @@ class Teacher(models.Model):
     # Introduce a custom manager
     objects = TeacherQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the Teacher model
+        """
+        unique_together = [["school", "teacher_id"]]
+
     class Constant:
         """
         Additional constants to store about the Teacher model (that aren't an option in Meta)
@@ -58,7 +67,7 @@ class Teacher(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str):
+    def create_new(cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str) -> Self:
         """Method to create a new Teacher instance."""
         teacher = cls.objects.create(school_id=school_id, teacher_id=teacher_id, firstname=firstname, surname=surname,
                                      title=title)
