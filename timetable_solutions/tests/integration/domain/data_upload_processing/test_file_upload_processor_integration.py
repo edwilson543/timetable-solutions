@@ -219,12 +219,12 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
     fixtures = ["user_school_profile.json"]
     invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
-    def test_upload_pupils_file_missing_id(self):
+    def run_test_for_pupils_with_error_in_row_n(self, filename: str, row_n: int):
         """
-        Unit test that a pupils file whose only error is a missing id halfway down will be rejected for processing.
+        Utility test that can be run for different files, all with different types of error in row 4.
         """
         # Set test parameters
-        with open(self.invalid_uploads / "pupils_missing_id.csv", "rb") as csv_file:
+        with open(self.invalid_uploads / filename, "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
@@ -235,8 +235,40 @@ class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
 
         # Check the outcome
         self.assertTrue(not upload_processor.upload_successful)
-        self.assertIn("Could not interpret", upload_processor.upload_error_message)
+        self.assertIn(f"Could not interpret values in row {row_n}", upload_processor.upload_error_message)
 
         # Check NO pupils have been uploaded to the database
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         assert all_pupils.count() == 0
+
+    def test_upload_pupils_file_missing_id(self):
+        """
+        Unit test that a pupils file whose only error is a missing id halfway down will be rejected for processing.
+        """
+        # Set test parameters
+        filename = "pupils_missing_id.csv"
+
+        # Execute test
+        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=4)
+
+    def test_upload_pupils_file_missing_surname(self):
+        """
+        Unit test that a pupils file whose only error is a missing surname will be rejected for processing.
+        Note that the missing surname initially gets replace by the nan-handler, and later filtered out before trying
+        to create a Pupil instance.
+        """
+        # Set test parameters
+        filename = "pupils_missing_surname.csv"
+
+        # Execute test
+        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=4)
+
+    def test_upload_pupils_file_invalid_type_string_instead_of_int(self):
+        """
+        Unit test that a pupils file with a string in the id column is rejected
+        """
+        # Set test parameters
+        filename = "pupils_invalid_type.csv"
+
+        # Execute test
+        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)

@@ -95,7 +95,9 @@ class FileUploadProcessor:
                 # Reaching this point means the upload processing has been successful
                 self.n_model_instances_created = len(create_new_dict_list)
 
-            except (ValidationError, ValueError):
+            except (ValidationError,  # Model does not pass the full_clean checks
+                    TypeError,  # Model was missing a required field (via its the create_new method)
+                    ValueError):  # A string was passed to int(id_field)
                 error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
                             f"\nPlease check that all data is of the correct type!"
                 self.upload_error_message = error
@@ -137,7 +139,8 @@ class FileUploadProcessor:
         directly to self._model.create_new(**create_new_dict) to initialise a model instance
         :return dictionary mapping create_new kwargs to the field values of self._model
         """
-        create_new_dict = row.to_dict()
+        initial_create_new_dict = row.to_dict()
+        create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
         create_new_dict[Header.SCHOOL_ID] = self._school_access_key
         return create_new_dict
 
