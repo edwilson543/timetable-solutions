@@ -1,5 +1,5 @@
 """
-Unit tests for methods on the Pupil class
+Unit tests for methods on the Teacher class
 """
 
 # Third party imports
@@ -28,8 +28,8 @@ class TestTeacher(test.TestCase):
                                             firstname="test", surname="test", title="mr")
 
         # Check outcome
-        all_pupils = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        assert teacher in all_pupils
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        assert teacher in all_teachers
 
     def test_create_new_fails_when_teacher_id_not_unique_for_school(self):
         """
