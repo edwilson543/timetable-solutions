@@ -36,8 +36,8 @@ class UnsolvedClass(models.Model):
     n_double_periods - the number of double periods the unsolved class should be taught for, INCLUDING any FixedClass
     double periods. All count towards total_slots.
     """
-    class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    class_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,
                                 related_name="unsolved_classes", blank=True, null=True)
@@ -49,6 +49,12 @@ class UnsolvedClass(models.Model):
 
     # Introduce a custom manager
     objects = UnsolvedClassQuerySet.as_manager()
+
+    class Meta:
+        """
+        Django Meta class for the UnsolvedClass model
+        """
+        unique_together = [["school", "class_id"]]
 
     class Constant:
         """
@@ -89,7 +95,7 @@ class UnsolvedClass(models.Model):
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
-        Additional validation on UnsolvedClass instances. In particular we cannot imply a number of double periods that
+        Additional validation on UnsolvedClass instances. Note that we cannot imply a number of double periods that
         would exceed the total number of slots.
         """
         if self.n_double_periods > (self.total_slots / 2):
