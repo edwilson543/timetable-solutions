@@ -25,7 +25,7 @@ class TestCaseWithUpload(TestCase):
         :param url_data_name: the url extension for the given test file upload (also dict key in the data post request)
         """
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        with open((TEST_DATA_DIR / filename), "rb") as csv_file:
+        with open((TEST_DATA_DIR / "valid_uploads" / filename), "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
         url = reverse(url_data_name)
         response = self.client.post(url, data={url_data_name: upload_file})
