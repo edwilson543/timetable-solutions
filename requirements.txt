@@ -7,3 +7,4 @@ pytest-django==4.5.2
 pulp==2.6.0
 psycopg2-binary>=2.8
 python-decouple==3.6
+gunicorn==20.1.0

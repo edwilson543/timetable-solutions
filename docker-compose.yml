@@ -25,7 +25,7 @@ services:
       && python manage.py migrate
       && python manage.py load_all_fixtures
       && python manage.py collectstatic --noinput
-      && python manage.py runserver 0.0.0.0:8000
+      && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
       "
     depends_on:
       - postgres_database
