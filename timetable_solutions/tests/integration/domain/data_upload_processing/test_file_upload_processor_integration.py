@@ -14,14 +14,9 @@ from tests.input_settings import TEST_DATA_DIR
 
 
 # TODO - error cases to test
-# file contains error in bottom row -> nothing saved
-    # missing value
-    # incorrect type
-    # missing pupil
 # file contains not unique unique togethers -> nothing saved
     # First do all the unique togethers, and test
-# blank values instead of empty lists are handled in the right way
-    # this could be captured within the current tests (mix and match)
+
 
 class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
     """
@@ -318,7 +313,7 @@ class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
 
     def test_upload_fixed_classes_file_which_references_a_non_existent_pupil(self):
         """
-        Unit test that a pupils file with a FLOAT in the year group column is rejected
+        Unit test that a fixed classes file which references a non-existent pupil is rejected
         """
         # Set test parameters
         filename = "fixed_classes_non_existent_pupil.csv"
@@ -329,3 +324,16 @@ class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
         # Check outcome
         self.assertIn("No pupil", error_message)
         self.assertIn("7", error_message)  # The non-existent pupil
+
+    def test_upload_fixed_classes_file_which_references_a_non_existent_classroom(self):
+        """
+        Unit test that a fixed classes file which references a non-existent classroom is rejected
+        """
+        # Set test parameters
+        filename = "fixed_classes_non_existent_classroom.csv"
+
+        # Execute test
+        error_message = self.run_test_for_fixed_classes_with_error(filename=filename)
+
+        # Check outcome
+        self.assertIn("Could not interpret values in row 2", error_message)
