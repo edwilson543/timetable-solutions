@@ -15,26 +15,36 @@ from tests.input_settings import TEST_DATA_DIR
 
 # TODO - error cases to test
 # file contains error in bottom row -> nothing saved
+    # missing value
+    # incorrect type
+    # missing pupil
 # file contains not unique unique togethers -> nothing saved
     # First do all the unique togethers, and test
 # blank values instead of empty lists are handled in the right way
     # this could be captured within the current tests (mix and match)
 
-class TestFileUploadProcessorIndependentFiles(TestCase):
-    """Tests for the file uploads that depend on no existing data in the database"""
+class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
+    """
+    Tests for the file uploads that depend on no existing data in the database,
+    using files with valid content / structure.
+    """
 
     fixtures = ["user_school_profile.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
+    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
+    # TESTS FOR VALID FILE UPLOADS
     def test_upload_teachers_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the teacher csv file and use it to populate database"""
-        # Upload the file
+        # Set test parameters
         with open(self.valid_uploads / "teachers.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.TEACHERS.id_column,
-                model=models.Teacher, school_access_key=123456)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.TEACHERS.id_column,
+            model=models.Teacher, school_access_key=123456)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -50,13 +60,15 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
     def test_upload_pupils_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the pupil csv file and use it to populate database"""
-        # Upload the file
+        # Set test parameters
         with open(self.valid_uploads / "pupils.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-                model=models.Pupil, school_access_key=123456)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil, school_access_key=123456)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -71,13 +83,16 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
     def test_upload_classrooms_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the classroom csv file and use it to populate database"""
-        # Upload the file
+
+        # Set test parameters
         with open(self.valid_uploads / "classrooms.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.CLASSROOMS.id_column,
-                model=models.Classroom, school_access_key=123456)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.CLASSROOMS.id_column,
+            model=models.Classroom, school_access_key=123456)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -91,13 +106,15 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
 
     def test_upload_timetable_structure_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the timetable csv file and use it to populate database"""
-        # Upload the file
+        # Set test parameters
         with open(self.valid_uploads / "timetable.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.TIMETABLE.id_column,
-                model=models.TimetableSlot, school_access_key=123456)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.TIMETABLE.id_column,
+            model=models.TimetableSlot, school_access_key=123456)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -112,8 +129,11 @@ class TestFileUploadProcessorIndependentFiles(TestCase):
         self.assertEqual(slot.period_duration, dt.timedelta(hours=1))
 
 
-class TestFileUploadProcessorDependentFiles(TestCase):
-    """Tests for the file uploads that depend on no existing data in the database, hence requiring fixtures."""
+class TestFileUploadProcessorDependentFilesValidUploads(TestCase):
+    """
+    Tests for the file uploads that depend on existing data in the database, hence requiring fixtures.
+    All tests in this class use files with valid content / structure.
+    """
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
@@ -123,13 +143,15 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         Test that the FileUploadProcessor can upload the class requirements (unsolved classes) csv file and use it
         to populate database
         """
-        # Upload the file
+        # Set test parameters
         with open(self.valid_uploads / "class_requirements.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.UNSOLVED_CLASSES.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.UNSOLVED_CLASSES.id_column,
-                model=models.UnsolvedClass, school_access_key=123456, is_unsolved_class_upload=True)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.UNSOLVED_CLASSES.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.UNSOLVED_CLASSES.id_column,
+            model=models.UnsolvedClass, school_access_key=123456, is_unsolved_class_upload=True)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -153,13 +175,15 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         """
         Test that the FileUploadProcessor can upload the fixed classes csv file and use it to populate database
         """
-        # Upload the file
+        # Set test parameters
         with open(self.valid_uploads / "fixed_classes.csv", "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-            upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.FIXED_CLASSES.headers,
-                id_column_name=data_upload_processing.UploadFileStructure.FIXED_CLASSES.id_column,
-                model=models.FixedClass, school_access_key=123456, is_fixed_class_upload=True)
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.FIXED_CLASSES.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.FIXED_CLASSES.id_column,
+            model=models.FixedClass, school_access_key=123456, is_fixed_class_upload=True)
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -183,3 +207,36 @@ class TestFileUploadProcessorDependentFiles(TestCase):
         teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
         self.assertEqual(teach_ten_lunch.teacher,
                          models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
+
+
+class TestFileUploadProcessorIndependentFilesInvalidUploads(TestCase):
+    """
+    Tests for the file uploads with invalid content / structure.
+    Note a general theme is to test the atomicity of uploads - we want none or all rows of the uploaded file to be
+    processed into the database.
+    """
+
+    fixtures = ["user_school_profile.json"]
+    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
+
+    def test_upload_pupils_file_missing_id(self):
+        """
+        Unit test that a pupils file whose only error is a missing id halfway down will be rejected for processing.
+        """
+        # Set test parameters
+        with open(self.invalid_uploads / "pupils_missing_id.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil, school_access_key=123456)
+
+        # Check the outcome
+        self.assertTrue(not upload_processor.upload_successful)
+        self.assertIn("Could not interpret", upload_processor.upload_error_message)
+
+        # Check NO pupils have been uploaded to the database
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        assert all_pupils.count() == 0

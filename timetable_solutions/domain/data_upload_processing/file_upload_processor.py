@@ -95,9 +95,9 @@ class FileUploadProcessor:
                 # Reaching this point means the upload processing has been successful
                 self.n_model_instances_created = len(create_new_dict_list)
 
-            except ValidationError:
-                error = f"Could not interpret values in row {n} as a {self._model.Constant.human_string_singular}!\n" \
-                            f"Please check that all data is of the correct type!"
+            except (ValidationError, ValueError):
+                error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
+                            f"\nPlease check that all data is of the correct type!"
                 self.upload_error_message = error
 
     def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
@@ -281,7 +281,7 @@ class FileUploadProcessor:
 
         # Check that the id column contains no duplicates
         if self._id_column_name is not None:
-            # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant below
+            # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant here
             ids_unique = upload_df[self._id_column_name].is_unique
             if not ids_unique:
                 self.upload_error_message = f"Input file contained repeated ids (id column is {self._id_column_name})"
