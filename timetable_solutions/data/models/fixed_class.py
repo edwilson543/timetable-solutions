@@ -49,6 +49,12 @@ class FixedClass(models.Model):
     # Introduce a custom manager
     objects = FixedClassQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the FixedClass model
+        """
+        unique_together = [["school", "class_id", "user_defined"]]
+
     class Constant:
         """
         Additional constants to store about the FixedClass model (that aren't an option in Meta)

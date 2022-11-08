@@ -7,6 +7,7 @@ import pytest
 
 # Django imports
 from django import test
+from django.core.exceptions import ValidationError
 
 # Local application imports
 from data import models
@@ -17,7 +18,35 @@ class TestFixedClass(test.TestCase):
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "fixed_classes.json"]
 
-    # FACTORIES
+    # FACTORY METHOD TESTS
+    def test_create_new_valid_fixed_class(self):
+        """
+        Tests that we can create and save a FixedClass via the create_new method
+        """
+        # Set test parameters
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+
+        # Execute test unit
+        fc = models.FixedClass.create_new(school_id=123456, class_id="TEST-A", subject_name="TEST", user_defined=True,
+                                          pupils=all_pupils, time_slots=all_slots, teacher_id=1, classroom_id=1)
+
+        # Check outcome
+        all_fcs = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
+        assert fc in all_fcs
+        self.assertQuerysetEqual(all_pupils, fc.pupils.all(), ordered=False)
+        self.assertQuerysetEqual(all_slots, fc.time_slots.all(), ordered=False)
+
+    def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
+        """
+        Tests that we can cannot create two Pupils with the same id / school, due to unique_together on the Meta class
+        """
+        # Execute test unit
+        with pytest.raises(ValidationError):
+            models.FixedClass.create_new(
+                school_id=123456, class_id="YEAR_ONE_MATHS_A", user_defined=False,  # This combo is already in fixture
+                subject_name="TEST", pupils=None, time_slots=None, teacher_id=1, classroom_id=1)
+
     def test_delete_all_non_user_defined_fixed_classes(self):
         """
         Test that the behaviour when deleting the queryset of FixedClass instances is as expected, i.e. that nothing is
@@ -43,7 +72,7 @@ class TestFixedClass(test.TestCase):
         assert models.Teacher.objects.get_all_instances_for_school(school_id=123456).count() == 11
         assert models.Classroom.objects.get_all_instances_for_school(school_id=123456).count() == 12
 
-    # QUERIES
+    # QUERY METHOD TESTS
     def test_get_double_period_count_on_day_raises(self):
         """Unit test to check that we are disallowed from counting the double periods on a non-user defined FC."""
         # Set test parameters
