@@ -14,8 +14,9 @@ from tests.input_settings import TEST_DATA_DIR
 
 
 # TODO - error cases to test
-# file contains not unique unique togethers -> nothing saved
-    # First do all the unique togethers, and test
+# Upload a pupil file twice, check the second time give an error
+# Try uploading a csv file which has columns all over the place
+# Upload an image
 
 
 class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
@@ -26,7 +27,6 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
 
     fixtures = ["user_school_profile.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
-    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
     # TESTS FOR VALID FILE UPLOADS
     def test_upload_teachers_to_database_valid_upload(self):
@@ -234,7 +234,7 @@ class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
 
         # Check NO pupils have been uploaded to the database
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        assert all_pupils.count() == 0
+        self.assertEqual(all_pupils.count(), 0)
 
     def test_upload_pupils_file_missing_id(self):
         """
@@ -306,7 +306,7 @@ class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
 
         # Check the outcome
         all_fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
-        assert all_fixed_classes.count() == 0
+        self.assertEqual(all_fixed_classes.count(), 0)
         self.assertTrue(not upload_processor.upload_successful)
 
         return upload_processor.upload_error_message
@@ -337,3 +337,49 @@ class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
 
         # Check outcome
         self.assertIn("Could not interpret values in row 2", error_message)
+
+
+class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
+    """
+    Tests for attempting to upload files which fall in one of the following categories:
+        - Incorrect file type (e.g. .png)
+        - Bad csv structure (e.g. certain rows have more columns than in the headers)
+        - Simulate a resubmitted form -> should not upload the same data twice
+    """
+
+    fixtures = ["user_school_profile.json"]
+    valid_uploads = TEST_DATA_DIR / "valid_uploads"
+
+    def test_resubmitted_upload_is_rejected(self):
+        """
+        Test that if we successfully upload a pupils file, if we then 'resubmit the form', the data is the
+        processed twice.
+        """
+        # Set test parameters
+        test_filepath = self.valid_uploads / "pupils.csv"
+        with open(test_filepath, "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil, school_access_key=123456, attempt_upload=False)
+
+        # Execute test unit one
+        processor._upload_file_content(file=upload_file)
+
+        # Check outcome one
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        self.assertEqual(all_pupils.count(), 6)
+        self.assertIsNone(processor.upload_error_message)
+
+        # Execute test unit two - 'resubmit the form'
+        # Note 1 mangles the file (only in test) so we re-read it
+        with open(test_filepath, "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        processor._upload_file_content(file=upload_file)
+
+        # Check outcome one
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        self.assertEqual(all_pupils.count(), 6)
+        self.assertIsNotNone(processor.upload_error_message)
