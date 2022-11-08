@@ -1,15 +1,25 @@
 version: "3.8"
+
 services:
-  django_timetable_scheduling:
+  postgres_database:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data  # Established mapping between our local data folder and the container
+    environment: # Matches django settings module / gitignored .env file
+      - POSTGRES_DB=$POSTGRES_NAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    container_name: postgres_container
+  timetable_scheduling:
     build: .
     volumes:
       - .:/timetable_scheduling
-      # TODO - get static file serving working properly.
-      - ./timetable_scheduling/timetable_solutions/static:/timetable_scheduling/timetable_solutions/static
     ports:
       - 8000:8000
-    image: tts_app:django_timetable_scheduling
-    container_name: django_timetable_scheduling_container
+    env_file:
+      - ./.env
+    image: tts_app:timetable_scheduling
+    container_name: timetable_scheduling_container
     command: bash -c "
       cd timetable_solutions
       && python manage.py migrate
@@ -19,12 +29,3 @@ services:
       "
     depends_on:
       - postgres_database
-  postgres_database:
-    image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data  # Established mapping between our local data folder and the container
-    environment:  # Matches django settings module / gitignored .env file
-      - POSTGRES_DB=$POSTGRES_NAME
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-    container_name: postgres_container

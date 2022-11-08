@@ -65,7 +65,12 @@ To run the production environment locally:
         Create a .env file in the project root, specifying all environment variables referenced in docker-compose.yml
     </li>
     <li>
+        Note that the default docker platform on some macs is different to on linux / other macs, and therefore
+        <a href="https://stackoverflow.com/questions/65612411/forcing-docker-to-use-linux-amd64-platform-by-default-on-macos">
+            requires special treatment of the DEFAULT_DOCKER_PLATFORM environment variable. 
+        </a>Note also running docker-compose build before docker-compose up seems to be a requirement.<br>
         From the project root build the docker images and spin up the containers:<br>
+        <code>docker-compose build</code><br>
         <code>docker-compose up</code>
     </li>
 </ol>
