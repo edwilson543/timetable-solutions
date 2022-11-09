@@ -7,8 +7,9 @@ ENV/
 env.bak/
 venv.bak/
 
-# Unit test / coverage reports
+# Testing
 .pytest_cache/
+tests/
 
 # Django stuff:
 *.log
