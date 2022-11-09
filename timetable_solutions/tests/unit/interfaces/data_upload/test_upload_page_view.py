@@ -57,7 +57,7 @@ class TestUploadPageView(test.TestCase):
         A get request should return all the forms and their upload status.
         """
         # Set test parameters
-        login = self.client.login(username="dummy_teacher", password="dt123dt123")
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
 
         # Execute test unit
@@ -80,7 +80,7 @@ class TestUploadPageView(test.TestCase):
         UploadPage handles POST requests in the same way as GET requests, therefore we expect and identical outcome.
         """
         # Set test parameters
-        login = self.client.login(username="dummy_teacher", password="dt123dt123")
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
 
         # Execute test unit
@@ -116,8 +116,8 @@ class TestUploadPageView(test.TestCase):
         self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
 
 
-class TestUploadPageReviewExistingUploads(test.TestCase):
-    """Unit tests for the upload_page_view when some files have been uploaded."""
+class TestUploadPageViewExistingUploads(test.TestCase):
+    """Unit tests for the UploadPage when some files have been uploaded."""
 
     fixtures = ["user_school_profile.json", "pupils.json", "teachers.json"]
 
@@ -127,7 +127,7 @@ class TestUploadPageReviewExistingUploads(test.TestCase):
         this test class
         """
         # Set test parameters
-        login = self.client.login(username="dummy_teacher", password="dt123dt123")
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
 
         # Execute test unit
