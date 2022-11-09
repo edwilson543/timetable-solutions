@@ -8,7 +8,7 @@ from constants.url_names import UrlName
 from . import views
 
 urlpatterns = [
-    path('', views.UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
+    path('', views.UploadPageBase.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
     path('teacher_list/', views.TeacherListUpload.as_view(), name=UrlName.TEACHER_LIST_UPLOAD.value),
     path('pupil_list/', views.PupilListUpload.as_view(), name=UrlName.PUPIL_LIST_UPLOAD.value),
     path('classroom_list/', views.ClassroomListUpload.as_view(), name=UrlName.CLASSROOM_LIST_UPLOAD.value),

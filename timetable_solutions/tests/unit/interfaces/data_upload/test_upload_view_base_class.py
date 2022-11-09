@@ -8,7 +8,7 @@ from django.urls import reverse
 # Local application imports
 from constants.url_names import UrlName
 from domain.data_upload_processing import UploadStatus
-from interfaces.data_upload.views.upload_view_base_class import RequiredUpload, UploadPage
+from interfaces.data_upload.views.base_classes import RequiredUpload, UploadPageBase
 from interfaces.data_upload import forms
 
 
@@ -30,7 +30,7 @@ class TestUploadPageView(test.TestCase):
         request = factory.get(url)
         user = User.objects.get_by_natural_key(username="dummy_teacher")
         request.user = user
-        upload_page = UploadPage(request=request)
+        upload_page = UploadPageBase(request=request)
 
         # Execute test unit
         context = upload_page.get_context_data()

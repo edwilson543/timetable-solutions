@@ -36,7 +36,7 @@ class RequiredUpload:
     url_name: UrlName
 
 
-class UploadPage(LoginRequiredMixin, TemplateView):
+class UploadPageBase(LoginRequiredMixin, TemplateView):
     """
     Template view with the following main purposes:
         - Handling HTTP to the base data upload page (whose url this class is attached to)
@@ -87,49 +87,42 @@ class UploadPage(LoginRequiredMixin, TemplateView):
         return self.get(request=request, *args, **kwargs)
 
 
-class DataUploadView(UploadPage):
+class DataUploadBase(UploadPageBase):
+    """
+    Base view class for views handling the upload of a single file type to the database (via the post method).
+    One subclass is declared per file type that the user needs to upload.
+    Note - subclasses are used, rather than creating instances, since View.as_view(), used in the url
+    dispatcher, is only available on classes and not on instances. (and from upload_views.py its clear that each subclass
+    requires virtually no code anyway).
+    This class itself subclasses UploadPage, for the get method and login authorisation.
 
-    def __init__(self,
-                 file_structure: data_upload_processing.FileStructure,
-                 model: Type[ModelSubclass],
-                 form: Type[forms.FormSubclass],
-                 is_fixed_class_upload_view: bool = False,
-                 is_unsolved_class_upload_view: bool = False):
-        """
-        Base view class for views handling the upload of a single file type to the database (via the post method).
-        One subclass is declared per file type that the user needs to upload.
-        Note - subclasses are used, rather than creating instances, since View.as_view(), used in the url
-        dispatcher, is only available on classes and not on instances. (and from upload_views.py its clear that each subclass
-        requires virtually no code anyway).
-        This class itself subclasses UploadPage, for the get method and login authorisation.
+    :param file_structure - the column headers and id column of the uploaded file
+    :param model - the model the uploaded file is seeking to create instances of
+    :param form - the form that the view receives input from
+    :param is_unsolved_class_upload_view & is_fixed_class_upload_view - boolean values handling special cases
+    requiring different processing of the user uploaded file
+    """
 
-        :param file_structure - the column headers and id column of the uploaded file
-        :param model - the model the uploaded file is seeking to create instances of
-        :param form - the form that the view receives input from
-        :param is_unsolved_class_upload_view & is_fixed_class_upload_view - boolean values handling special cases
-        requiring different processing of the user uploaded file
-        """
-        super().__init__()
-        self._file_structure = file_structure
-        self._model = model
-        self._form = form
-        self._is_fixed_class_upload_view = is_fixed_class_upload_view
-        self._is_unsolved_class_upload_view = is_unsolved_class_upload_view
+    file_structure: data_upload_processing.FileStructure
+    model: Type[ModelSubclass]
+    form: Type[forms.FormSubclass]
+    is_fixed_class_upload_view: bool = False
+    is_unsolved_class_upload_view: bool = False
 
     def post(self, request, *args, **kwargs) -> HttpResponse:
         """
         All instances of the subclasses of this View upload a single file, which this post method handles.
         If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
         """
-        form = self._form(request.POST, request.FILES)
+        form = self.form(request.POST, request.FILES)
         school_access_key = request.user.profile.school.school_access_key
         if form.is_valid():
-            file = request.FILES[self._form.Meta.file_field_name]
+            file = request.FILES[self.form.Meta.file_field_name]
             upload_processor = data_upload_processing.FileUploadProcessor(
-                csv_file=file, csv_headers=self._file_structure.headers, id_column_name=self._file_structure.id_column,
-                model=self._model, school_access_key=school_access_key,
-                is_fixed_class_upload=self._is_fixed_class_upload_view,
-                is_unsolved_class_upload=self._is_unsolved_class_upload_view
+                csv_file=file, csv_headers=self.file_structure.headers, id_column_name=self.file_structure.id_column,
+                model=self.model, school_access_key=school_access_key,
+                is_fixed_class_upload=self.is_fixed_class_upload_view,
+                is_unsolved_class_upload=self.is_unsolved_class_upload_view
             )
 
             # Create a flash message
@@ -137,7 +130,7 @@ class DataUploadView(UploadPage):
                 messages.add_message(request, level=messages.ERROR, message=upload_processor.upload_error_message)
             elif upload_processor.upload_successful:
                 message = f"Successfully saved your data for {upload_processor.n_model_instances_created} " \
-                          f"{self._model.Constant.human_string_plural}!"
+                          f"{self.model.Constant.human_string_plural}!"
                 messages.add_message(request, level=messages.SUCCESS, message=message)
             else:
                 # Added insurance, in case the file upload processor hasn't uploaded, or made an error message
@@ -145,3 +138,11 @@ class DataUploadView(UploadPage):
                 messages.add_message(request, level=messages.ERROR, message=message)
 
         return self.get(request=self.request, *args, **kwargs)
+
+
+class DataResetBase(UploadPageBase):
+    """
+    View for handling the reset data buttons provided on the data reset page.
+    """
+    def post(self):
+        pass
