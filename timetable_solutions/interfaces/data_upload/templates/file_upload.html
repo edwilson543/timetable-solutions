@@ -68,7 +68,8 @@
                 </td>
                 {% elif required_form.upload_status == "complete" %}
                 <td class="table_cell">
-                    <form action=#>
+                    <form action="{% url required_form.reset_url_name %}" method="post">
+                        {% csrf_token %}
                         <button class="specific_reset_button" type="submit">
                             Reset
                         </button>

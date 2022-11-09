@@ -34,6 +34,7 @@ class RequiredUpload:
     upload_status: data_upload_processing.UploadStatus  # User interpretable status string
     empty_form: forms.Form
     upload_url_name: UrlName
+    reset_url_name:  UrlName
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
@@ -60,22 +61,30 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             "required_forms": {
                     "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
                                              empty_form=forms.PupilListUpload(),
-                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value),
+                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+                                             reset_url_name=UrlName.PUPIL_LIST_RESET.value),
                     "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                                empty_form=forms.TeacherListUpload(),
-                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value),
+                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+                                               reset_url_name=UrlName.TEACHER_LIST_RESET.value),
                     "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                  empty_form=forms.ClassroomListUpload(),
-                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
+                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET.value),
                     "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                 empty_form=forms.TimetableStructureUpload(),
-                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
+                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value),
                     "unsolved_classes": RequiredUpload(
                         form_name="Class requirements", upload_status=upload_status.unsolved_classes,
-                        empty_form=forms.UnsolvedClassUpload(), upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
+                        empty_form=forms.UnsolvedClassUpload(),
+                        upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
+                        reset_url_name=UrlName.UNSOLVED_CLASSES_RESET.value),
                     "fixed_classes": RequiredUpload(
                         form_name="Fixed classes", upload_status=upload_status.fixed_classes,
-                        empty_form=forms.FixedClassUpload(), upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
+                        empty_form=forms.FixedClassUpload(),
+                        upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
+                        reset_url_name=UrlName.FIXED_CLASSES_RESET.value)
                     }
             }
         return context
@@ -151,7 +160,7 @@ class DataResetBase(LoginRequiredMixin, View):
     """
     View for handling the reset data buttons provided on the data reset page.
     """
-    # Tables which can be reset by this view
+    # Tables which can be reset by this view - each subclass sets these as appropraite (typically just one to True)
     pupils: bool = False
     teachers: bool = False
     classrooms: bool = False
@@ -169,6 +178,8 @@ class DataResetBase(LoginRequiredMixin, View):
     def post(self, request: http.HttpRequest) -> http.HttpResponseRedirect:
         """
         Post method to carry out the resetting of the user's data.
+        We use the ResetUploads class to allow extendability of the reset logic without ending up with an enormous
+        view, and to keep the HTTP handling / domain-focused logic distinct
         """
         school_access_key = request.user.profile.school.school_access_key
 

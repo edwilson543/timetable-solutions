@@ -36,12 +36,12 @@ class UrlName(Enum):
     UNSOLVED_CLASSES_UPLOAD = "unsolved_class_upload"
 
     # File upload reset urls
-    # CLASSROOM_LIST_UPLOAD = "classroom_list"
-    # FIXED_CLASSES_UPLOAD = "fixed_classes"
-    # PUPIL_LIST_UPLOAD = "pupil_list"
-    # TEACHER_LIST_UPLOAD = "teacher_list"
-    # TIMETABLE_STRUCTURE_UPLOAD = "timetable_structure"
-    # UNSOLVED_CLASSES_UPLOAD = "unsolved_classes"
+    CLASSROOM_LIST_RESET = "classroom_reset"
+    FIXED_CLASSES_RESET = "fixed_class_reset"
+    PUPIL_LIST_RESET = "pupil_reset"
+    TEACHER_LIST_RESET = "teacher_reset"
+    TIMETABLE_STRUCTURE_RESET = "timetable_reset"
+    UNSOLVED_CLASSES_RESET = "unsolved_class_reset"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"

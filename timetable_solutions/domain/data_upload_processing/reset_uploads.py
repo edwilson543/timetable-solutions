@@ -7,10 +7,10 @@ uploaded)
 from data import models
 
 
-class UploadsToReset:
+class ResetUploads:
     """
-    Class to store which tables need resetting, and for which school
-    Instantiated by various views
+    Class to store which tables need resetting, and for which school, and do the resetting.
+    Instantiated by various views, kept separate for cleanliness and to allow extendability.
     """
     def __init__(self,
                  school_access_key: int,

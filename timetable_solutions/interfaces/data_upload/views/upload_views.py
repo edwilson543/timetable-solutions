@@ -1,5 +1,5 @@
 """
-Views relating to the upload of user data - each subclass of DataUploadView handles the upload of one specific csv file.
+Views relating to the upload of user data - each subclass of DataUploadBase handles the upload of one specific csv file.
 """
 
 # Local application imports
@@ -7,16 +7,6 @@ from data import models
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 from .base_classes import DataUploadBase
-
-
-class TeacherListUpload(DataUploadBase):
-    """
-    View class to control the uploading of the list of teachers by the user
-    """
-
-    file_structure = data_upload_processing.constants.UploadFileStructure.TEACHERS
-    model = models.Teacher
-    form = forms.TeacherListUpload
 
 
 class PupilListUpload(DataUploadBase):
@@ -27,6 +17,16 @@ class PupilListUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.PUPILS
     model = models.Pupil
     form = forms.PupilListUpload
+
+
+class TeacherListUpload(DataUploadBase):
+    """
+    View class to control the uploading of the list of teachers by the user
+    """
+
+    file_structure = data_upload_processing.constants.UploadFileStructure.TEACHERS
+    model = models.Teacher
+    form = forms.TeacherListUpload
 
 
 class ClassroomListUpload(DataUploadBase):
