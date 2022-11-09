@@ -8,7 +8,7 @@ from django.urls import reverse
 # Local application imports
 from constants.url_names import UrlName
 from domain.data_upload_processing import UploadStatus
-from interfaces.data_upload.views.base_classes import RequiredUpload, UploadPageBase
+from interfaces.data_upload.views.base_classes import RequiredUpload, UploadPage
 from interfaces.data_upload import forms
 
 
@@ -30,7 +30,7 @@ class TestUploadPageView(test.TestCase):
         request = factory.get(url)
         user = User.objects.get_by_natural_key(username="dummy_teacher")
         request.user = user
-        upload_page = UploadPageBase(request=request)
+        upload_page = UploadPage(request=request)
 
         # Execute test unit
         context = upload_page.get_context_data()
@@ -44,13 +44,13 @@ class TestUploadPageView(test.TestCase):
         assert classrooms.form_name == "Classrooms"
         assert classrooms.upload_status == UploadStatus.INCOMPLETE.value
         assert isinstance(classrooms.empty_form, forms.ClassroomListUpload)
-        assert classrooms.url_name == UrlName.CLASSROOM_LIST_UPLOAD.value
+        assert classrooms.upload_url_name == UrlName.CLASSROOM_LIST_UPLOAD.value
 
         unsolved_classes = required_forms["unsolved_classes"]
         assert unsolved_classes.form_name == "Class requirements"
         assert unsolved_classes.upload_status == UploadStatus.DISALLOWED.value
         assert isinstance(unsolved_classes.empty_form, forms.UnsolvedClassUpload)
-        assert unsolved_classes.url_name == UrlName.UNSOLVED_CLASSES_UPLOAD.value
+        assert unsolved_classes.upload_url_name == UrlName.UNSOLVED_CLASSES_UPLOAD.value
 
     def test_get_request_returns_correct_context(self):
         """

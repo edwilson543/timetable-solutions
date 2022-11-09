@@ -13,7 +13,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django import http
 from django import forms
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View
 from django import urls
 
 # Local application imports
@@ -33,10 +33,10 @@ class RequiredUpload:
     form_name: str  # Name of the form that will be shown to the user
     upload_status: data_upload_processing.UploadStatus  # User interpretable status string
     empty_form: forms.Form
-    url_name: UrlName
+    upload_url_name: UrlName
 
 
-class UploadPageBase(LoginRequiredMixin, TemplateView):
+class UploadPage(LoginRequiredMixin, TemplateView):
     """
     Template view with the following main purposes:
         - Handling HTTP to the base data upload page (whose url this class is attached to)
@@ -60,34 +60,34 @@ class UploadPageBase(LoginRequiredMixin, TemplateView):
             "required_forms": {
                     "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
                                              empty_form=forms.PupilListUpload(),
-                                             url_name=UrlName.PUPIL_LIST_UPLOAD.value),
+                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value),
                     "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                                empty_form=forms.TeacherListUpload(),
-                                               url_name=UrlName.TEACHER_LIST_UPLOAD.value),
+                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value),
                     "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                  empty_form=forms.ClassroomListUpload(),
-                                                 url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
+                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value),
                     "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                 empty_form=forms.TimetableStructureUpload(),
-                                                url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
+                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
                     "unsolved_classes": RequiredUpload(
                         form_name="Class requirements", upload_status=upload_status.unsolved_classes,
-                        empty_form=forms.UnsolvedClassUpload(), url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
+                        empty_form=forms.UnsolvedClassUpload(), upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
                     "fixed_classes": RequiredUpload(
                         form_name="Fixed classes", upload_status=upload_status.fixed_classes,
-                        empty_form=forms.FixedClassUpload(), url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
+                        empty_form=forms.FixedClassUpload(), upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value)
                     }
             }
         return context
 
-    def post(self, request, *args, **kwargs) -> http.HttpResponse:
+    def post(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """
         return self.get(request=request, *args, **kwargs)
 
 
-class DataUploadBase(UploadPageBase):
+class DataUploadBase(LoginRequiredMixin, View):
     """
     Base view class for views handling the upload of a single file type to the database (via the post method).
     One subclass is declared per file type that the user needs to upload.
@@ -109,15 +109,16 @@ class DataUploadBase(UploadPageBase):
     is_fixed_class_upload_view: bool = False
     is_unsolved_class_upload_view: bool = False
 
-    def get(self, request, *args, **kwargs) -> http.HttpResponseRedirect:
+    @staticmethod
+    def get() -> http.HttpResponseRedirect:
         """
         Method to redirect users accessing the endpoints directly to data upload page.
         """
         return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
 
-    def post(self, request, *args, **kwargs) -> http.HttpResponseRedirect:
+    def post(self, request: http.HttpRequest) -> http.HttpResponseRedirect:
         """
-        All instances of the subclasses of this View upload a single file, which this post method handles.
+        All subclasses of this View upload a single file, which this post method handles.
         If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
         """
         form = self.form(request.POST, request.FILES)
@@ -143,12 +144,38 @@ class DataUploadBase(UploadPageBase):
                 message = "Could not read data from file. Please check it matches the example file and try again."
                 messages.add_message(request, level=messages.ERROR, message=message)
 
-        return self.get(request, *args, **kwargs)
+        return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
 
 
-class DataResetBase(UploadPageBase):
+class DataResetBase(LoginRequiredMixin, View):
     """
     View for handling the reset data buttons provided on the data reset page.
     """
-    def post(self):
-        pass
+    # Tables which can be reset by this view
+    pupils: bool = False
+    teachers: bool = False
+    classrooms: bool = False
+    timetable: bool = False
+    unsolved_classes: bool = False
+    fixed_classes: bool = False
+
+    @staticmethod
+    def get() -> http.HttpResponseRedirect:
+        """
+        Method to redirect users accessing the endpoints directly to data upload page.
+        """
+        return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
+
+    def post(self, request: http.HttpRequest) -> http.HttpResponseRedirect:
+        """
+        Post method to carry out the resetting of the user's data.
+        """
+        school_access_key = request.user.profile.school.school_access_key
+
+        data_upload_processing.ResetUploads(
+            school_access_key=school_access_key,
+            pupils=self.pupils, teachers=self.teachers, classrooms=self.classrooms, timetable=self.timetable,
+            unsolved_classes=self.unsolved_classes, fixed_classes=self.fixed_classes
+        )
+
+        return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))

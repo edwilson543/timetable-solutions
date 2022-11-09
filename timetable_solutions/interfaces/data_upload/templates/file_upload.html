@@ -56,7 +56,7 @@
                 </td>
                 {% if required_form.upload_status == "incomplete" %}
                 <td class="table_cell">
-                    <form enctype="multipart/form-data" action="{% url required_form.url_name %}" method="post">
+                    <form enctype="multipart/form-data" action="{% url required_form.upload_url_name %}" method="post">
                         {% csrf_token %}
                         <div class="center_align_box">
                         {{ required_form.empty_form.as_div }}

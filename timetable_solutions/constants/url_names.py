@@ -25,13 +25,23 @@ class UrlName(Enum):
     SCHOOL_REGISTRATION = "school_registration"
 
     # Data upload app
-    CLASSROOM_LIST_UPLOAD = "classroom_list"
     FILE_UPLOAD_PAGE = "file_upload_page"
-    FIXED_CLASSES_UPLOAD = "fixed_classes"
-    PUPIL_LIST_UPLOAD = "pupil_list"
-    TEACHER_LIST_UPLOAD = "teacher_list"
-    TIMETABLE_STRUCTURE_UPLOAD = "timetable_structure"
-    UNSOLVED_CLASSES_UPLOAD = "unsolved_classes"
+
+    # File upload urls
+    CLASSROOM_LIST_UPLOAD = "classroom_upload"
+    FIXED_CLASSES_UPLOAD = "fixed_class_upload"
+    PUPIL_LIST_UPLOAD = "pupil_upload"
+    TEACHER_LIST_UPLOAD = "teacher_upload"
+    TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
+    UNSOLVED_CLASSES_UPLOAD = "unsolved_class_upload"
+
+    # File upload reset urls
+    # CLASSROOM_LIST_UPLOAD = "classroom_list"
+    # FIXED_CLASSES_UPLOAD = "fixed_classes"
+    # PUPIL_LIST_UPLOAD = "pupil_list"
+    # TEACHER_LIST_UPLOAD = "teacher_list"
+    # TIMETABLE_STRUCTURE_UPLOAD = "timetable_structure"
+    # UNSOLVED_CLASSES_UPLOAD = "unsolved_classes"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
