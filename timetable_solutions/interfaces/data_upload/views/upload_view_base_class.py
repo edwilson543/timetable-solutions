@@ -99,7 +99,7 @@ class DataUploadView(UploadPage):
         Base view class for views handling the upload of a single file type to the database (via the post method).
         One subclass is declared per file type that the user needs to upload.
         Note - subclasses are used, rather than creating instances, since View.as_view(), used in the url
-        dispatcher, is only available on classes and not on instances. (and from views.py its clear that each subclass
+        dispatcher, is only available on classes and not on instances. (and from upload_views.py its clear that each subclass
         requires virtually no code anyway).
         This class itself subclasses UploadPage, for the get method and login authorisation.
 

@@ -8,7 +8,7 @@ from django.urls import reverse
 # Local application imports
 from constants.url_names import UrlName
 from domain.data_upload_processing import UploadStatus
-from interfaces.data_upload.upload_view_base_class import RequiredUpload, UploadPage
+from interfaces.data_upload.views.upload_view_base_class import RequiredUpload, UploadPage
 from interfaces.data_upload import forms
 
 
