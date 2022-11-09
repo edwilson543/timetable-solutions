@@ -37,13 +37,25 @@ class TimetableStructureReset(DataResetBase):
 
 class UnsolvedClassReset(DataResetBase):
     """
-    Class used to handle the resetting of pupil data.
+    Class used to handle the resetting of fixed class data.
     """
     unsolved_classes = True
 
 
 class FixedClassReset(DataResetBase):
     """
-    Class used to handle the resetting of pupil data.
+    Class used to handle the resetting of unsolved data.
     """
+    fixed_classes = True
+
+
+class AllSchoolDataReset(DataResetBase):
+    """
+    Class used to reset ALL the data relevant to a given school (accept users / the school itself)
+    """
+    pupils = True
+    teachers = True
+    classrooms = True
+    timetable = True
+    unsolved_classes = True
     fixed_classes = True

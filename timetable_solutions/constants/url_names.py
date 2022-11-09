@@ -42,6 +42,7 @@ class UrlName(Enum):
     TEACHER_LIST_RESET = "teacher_reset"
     TIMETABLE_STRUCTURE_RESET = "timetable_reset"
     UNSOLVED_CLASSES_RESET = "unsolved_class_reset"
+    ALL_DATA_RESET = "all_data_reset"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"

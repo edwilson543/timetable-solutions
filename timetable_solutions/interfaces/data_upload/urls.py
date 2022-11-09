@@ -25,5 +25,6 @@ urlpatterns = [
     path('classroom_reset/', views.ClassroomListReset.as_view(), name=UrlName.CLASSROOM_LIST_RESET.value),
     path('timetable_reset/', views.TimetableStructureReset.as_view(), name=UrlName.TIMETABLE_STRUCTURE_RESET.value),
     path('unsolved_class_reset/', views.UnsolvedClassReset.as_view(), name=UrlName.UNSOLVED_CLASSES_RESET.value),
-    path('fixed_class_reset/', views.FixedClassReset.as_view(), name=UrlName.FIXED_CLASSES_RESET.value)
+    path('fixed_class_reset/', views.FixedClassReset.as_view(), name=UrlName.FIXED_CLASSES_RESET.value),
+    path('all_data_reset/', views.AllSchoolDataReset.as_view(), name=UrlName.ALL_DATA_RESET.value),
 ]

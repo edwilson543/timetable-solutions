@@ -138,3 +138,27 @@ class TestDataResetViews(test.TestCase):
         assert all_unsolved_classes.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
+
+    def test_reset_all_view_resets_all_relevant_tables(self):
+        """
+        Test that a POST request to the reset all view will reset every table for a school
+        """
+        # Set test parameters
+        url = urls.reverse(UrlName.ALL_DATA_RESET.value)
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        expected_redirect_url = urls.reverse(UrlName.FILE_UPLOAD_PAGE.value)
+
+        # Execute test unit
+        response = self.client.post(url)
+
+        # Check outcome
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_unsolved_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
+        relevant_fixed_classes = models.FixedClass.objects.get_user_defined_fixed_classes(school_id=123456)
+        assert all_pupils.count() == all_teachers.count() == all_classrooms.count() == 0
+        assert all_slots.count() == all_unsolved_classes.count() == relevant_fixed_classes.count() == 0
+
+        self.assertRedirects(response, expected_url=expected_redirect_url)

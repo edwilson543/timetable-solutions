@@ -87,11 +87,13 @@
         </table>
         <div id="action_button_container">
                 <form action=#>
+                {% csrf_token %}
                 <button class="management_button" type="submit">
                     View and edit data
                 </button>
             </form>
-            <form action=#>
+            <form action="{% url 'all_data_reset' %}" method="post">
+                {% csrf_token %}
                 <button class="management_button" type="submit">
                     Reset all
                 </button>
