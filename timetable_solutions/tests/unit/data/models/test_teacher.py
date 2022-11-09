@@ -7,7 +7,7 @@ import pytest
 
 # Django imports
 from django import test
-from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -36,7 +36,7 @@ class TestTeacher(test.TestCase):
         Tests that we can cannot create two Teachers with the same id / school, due to unique_together on the Meta class
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.Teacher.create_new(school_id=123456, teacher_id=1,  # Note that id 1 is unavailable
                                       firstname="test", surname="test", title="mr")
 

@@ -12,7 +12,7 @@ import pandas as pd
 # Django imports
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
-from django.db import transaction
+from django.db import transaction, IntegrityError
 
 # Local application imports
 from data import models
@@ -100,6 +100,9 @@ class FileUploadProcessor:
                     ValueError):  # A string was passed to int(id_field)
                 error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
                             f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
+                self.upload_error_message = error
+            except IntegrityError:
+                error = f"ID given for {self._model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
 
     def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:

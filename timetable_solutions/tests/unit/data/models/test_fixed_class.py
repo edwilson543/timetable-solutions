@@ -7,7 +7,7 @@ import pytest
 
 # Django imports
 from django import test
-from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -45,7 +45,7 @@ class TestFixedClass(test.TestCase):
         due to unique_together on the Meta class
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.FixedClass.create_new(
                 school_id=123456, class_id="YEAR_ONE_MATHS_A", user_defined=False,  # This combo is already in fixture
                 subject_name="TEST", pupils=None, time_slots=None, teacher_id=1, classroom_id=1)

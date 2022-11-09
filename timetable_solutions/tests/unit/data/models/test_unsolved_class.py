@@ -8,6 +8,7 @@ import pytest
 # Django imports
 from django import test
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -44,7 +45,7 @@ class TestUnsolvedClass(test.TestCase):
         due to unique_together on the Meta class
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.UnsolvedClass.create_new(
                 school_id=123456, class_id="YEAR_ONE_MATHS_A", subject_name="TEST",  # Note class id taken for school
                 pupils=None, total_slots=10, n_double_periods=3, teacher_id=1, classroom_id=1)

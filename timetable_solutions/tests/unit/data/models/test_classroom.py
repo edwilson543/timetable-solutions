@@ -7,7 +7,7 @@ import pytest
 
 # Django imports
 from django import test
-from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -36,7 +36,7 @@ class TestClassroom(test.TestCase):
         Meta class
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.Classroom.create_new(school_id=123456, classroom_id=1,  # Note that id 1 is already taken
                                         building="Test", room_number=1)
 
@@ -46,7 +46,7 @@ class TestClassroom(test.TestCase):
         Meta class
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.Classroom.create_new(school_id=123456, classroom_id=100,  # Note that id 100 is available
                                         building="MB", room_number=47)  #  MB 47 however is not available
 

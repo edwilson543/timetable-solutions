@@ -10,7 +10,7 @@ import pytest
 
 # Django imports
 from django import test
-from django.core.exceptions import  ValidationError
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -55,7 +55,7 @@ class TestTimetableSlot(test.TestCase):
         Meta class.
         """
         # Execute test unit
-        with pytest.raises(ValidationError):
+        with pytest.raises(IntegrityError):
             models.TimetableSlot.create_new(
                 school_id=123456, slot_id=1,  # Note that slot 1 is already taken
                 day_of_week=1, period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))

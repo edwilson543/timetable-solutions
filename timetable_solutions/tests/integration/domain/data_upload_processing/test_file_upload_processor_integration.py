@@ -13,12 +13,6 @@ from domain import data_upload_processing
 from tests.input_settings import TEST_DATA_DIR
 
 
-# TODO - error cases to test
-# Upload a pupil file twice, check the second time give an error
-# Try uploading a csv file which has columns all over the place
-# Upload an image
-
-
 class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
     """
     Tests for the file uploads that depend on no existing data in the database,
@@ -350,6 +344,14 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
     fixtures = ["user_school_profile.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
 
+    def test_uploading_a_png_file(self):
+        # TODO
+        pass
+
+    def test_uploading_a_bad_csv_file(self):
+        #TODO
+        pass
+
     def test_resubmitted_upload_is_rejected(self):
         """
         Test that if we successfully upload a pupils file, if we then 'resubmit the form', the data is the
@@ -383,3 +385,4 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         self.assertEqual(all_pupils.count(), 6)
         self.assertIsNotNone(processor.upload_error_message)
+        self.assertIn("not unique", processor.upload_error_message)
