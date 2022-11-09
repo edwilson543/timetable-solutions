@@ -42,6 +42,8 @@ class ResetUploads:
         """
         if self._fixed_classes:
             models.FixedClass.delete_all_user_defined_fixed_classes(school_id=self._school_access_key)
+            # We also need to delete any solutions the user has already generated
+            models.FixedClass.delete_all_non_user_defined_fixed_classes(school_id=self._school_access_key)
             
         if self._unsolved_classes:
             models.UnsolvedClass.delete_all_instances_for_school(school_id=self._school_access_key)
