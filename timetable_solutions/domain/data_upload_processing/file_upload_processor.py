@@ -11,7 +11,7 @@ import pandas as pd
 
 # Django imports
 from django.conf import settings
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
 
@@ -71,6 +71,7 @@ class FileUploadProcessor:
         Note that we either want all rows to become model instances or none of them to, hence we use an atomic
         transaction once we have cleaned all the data.
         """
+        # Check the file type and then try to read it in as a csv
         file_extension = file.name.split(".")[1]
         if file_extension != "csv":
             self.upload_error_message = f"Please upload your file as with the .csv!\n" \
@@ -124,6 +125,9 @@ class FileUploadProcessor:
                 self.upload_error_message = error
                 if settings.DEBUG:
                     self.upload_error_message = debug_only_message
+            except ObjectDoesNotExist as debug_only_message:
+                self.upload_error_message = f"Row {n + 1} of your file referenced a pupil / teacher / classroom / " \
+                                            f"timetable slot id which does not exist!\n Please check this!"
 
     def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
         """

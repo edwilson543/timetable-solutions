@@ -331,7 +331,8 @@ class TestFileUploadProcessorIndependentFilesInvalidFixedClassUploads(TestCase):
         error_message = self.run_test_for_fixed_classes_with_error(filename=filename)
 
         # Check outcome
-        self.assertIn("Could not interpret values in row 2", error_message)
+        self.assertIn("Row 2", error_message)
+        self.assertIn("does not exist", error_message)
 
 
 class TestFileUploadProcessorInvalidMiscellaneous(TestCase):

@@ -88,10 +88,21 @@ class FixedClass(models.Model):
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
         since they have a many-to-many relationship to the FixedClass model, so the fixed class must be saved first.
         """
+        if teacher_id is not None:
+            teacher = Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+        else:
+            teacher = None
+
+        if classroom_id is not None:
+            classroom = Classroom.objects.get_individual_classroom(school_id=school_id, classroom_id=classroom_id)
+        else:
+            classroom = None
+
         subject_name = subject_name.upper()
+
         fixed_cls = cls.objects.create(
-            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
-            classroom_id=classroom_id, user_defined=user_defined)
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher=teacher,
+            classroom=classroom, user_defined=user_defined)
         fixed_cls.full_clean()
         fixed_cls.save()
 

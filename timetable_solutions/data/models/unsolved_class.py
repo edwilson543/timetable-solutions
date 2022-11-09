@@ -82,12 +82,16 @@ class UnsolvedClass(models.Model):
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
         Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
+        teacher = Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+        classroom = Classroom.objects.get_individual_classroom(school_id=school_id, classroom_id=classroom_id)
         subject_name = subject_name.upper()
+
         unsolved_cls = cls.objects.create(
-            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
-            classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher=teacher,
+            classroom=classroom, total_slots=total_slots, n_double_periods=n_double_periods)
         unsolved_cls.full_clean()
         unsolved_cls.save()
+
         if (pupils is not None) and (pupils.count() > 0):
             unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
