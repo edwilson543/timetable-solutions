@@ -29,9 +29,9 @@ class ResetUploads:
         self._classrooms = classrooms
         self._timetable = timetable
         
-        # Due to protected foreign keys, the fixed / unsolved classes get deleted in any of the following cases
-        self._fixed_classes = teachers or classrooms or fixed_classes
-        self._unsolved_classes = teachers or classrooms or unsolved_classes
+        # Note it doesn't make sense to persevere the fixed / unsolved classes if any of the key tables are wiped
+        self._fixed_classes = pupils or teachers or classrooms or timetable or fixed_classes
+        self._unsolved_classes = pupils or teachers or classrooms or timetable or unsolved_classes
 
         self._reset_data()
 
