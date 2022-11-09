@@ -99,12 +99,11 @@ class FixedClass(models.Model):
         return fixed_cls
 
     @classmethod
-    def delete_all_non_user_defined_fixed_classes(cls, school_id: int, return_info: bool = False) -> Tuple | None:
+    def delete_all_non_user_defined_fixed_classes(cls, school_id: int) -> Tuple:
         """Method deleting the queryset of FixedClass instances previously produced by the solver"""
         fcs = cls.objects.get_non_user_defined_fixed_classes(school_id=school_id)
-        info = fcs.delete()
-        if return_info:
-            return info
+        outcome = fcs.delete()
+        return outcome
 
     # MUTATORS
     def add_pupils(self, pupils: PupilQuerySet) -> None:

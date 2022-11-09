@@ -1,7 +1,7 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
 # Standard library imports
-from typing import Self
+from typing import Self, Tuple
 
 # Django imports
 from django.db import models
@@ -73,6 +73,15 @@ class Teacher(models.Model):
                                      title=title)
         teacher.full_clean()
         return teacher
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the Teacher instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # FILTER METHODS
     def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:

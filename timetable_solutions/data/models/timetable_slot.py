@@ -3,7 +3,7 @@
 # Standard library imports
 import datetime as dt
 from functools import lru_cache
-from typing import Self, Set, List
+from typing import List, Self, Set, Tuple
 
 # Django imports
 from django.db import models
@@ -74,6 +74,10 @@ class TimetableSlot(models.Model):
         """String representation of the model for the django admin site"""
         return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
 
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
+
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, slot_id: int, day_of_week: WeekDay, period_starts_at: dt.time,
@@ -88,6 +92,15 @@ class TimetableSlot(models.Model):
                                   period_starts_at=period_starts_at, period_duration=period_duration)
         slot.full_clean()
         return slot
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the TimetableSlot instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # QUERIES
     @classmethod

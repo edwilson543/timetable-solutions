@@ -1,7 +1,7 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
 # Standard library imports
-from typing import Self
+from typing import Self, Tuple
 
 # Django imports
 from django.core.exceptions import ValidationError
@@ -91,6 +91,15 @@ class UnsolvedClass(models.Model):
         if (pupils is not None) and (pupils.count() > 0):
             unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the Unsolved instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
