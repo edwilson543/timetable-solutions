@@ -64,8 +64,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Check outcome
         self.assertEqual(len(models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)), 0)
-        message = list(response.context["messages"])[0].message
-        assert "Input file headers" in message
+        assert isinstance(response.cookies["messages"].value, str)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
         """
@@ -92,8 +91,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Assert that nothing has happened
         self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
-        message = list(response.context["messages"])[0].message
-        assert "Input file headers" in message
+        assert isinstance(response.cookies["messages"].value, str)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
         """

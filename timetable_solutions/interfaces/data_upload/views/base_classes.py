@@ -11,7 +11,7 @@ from typing import Dict, Type
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.http import HttpResponse
+from django import http
 from django import forms
 from django.views.generic import TemplateView
 from django import urls
@@ -80,7 +80,7 @@ class UploadPageBase(LoginRequiredMixin, TemplateView):
             }
         return context
 
-    def post(self, request, *args, **kwargs) -> HttpResponse:
+    def post(self, request, *args, **kwargs) -> http.HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """
@@ -109,7 +109,13 @@ class DataUploadBase(UploadPageBase):
     is_fixed_class_upload_view: bool = False
     is_unsolved_class_upload_view: bool = False
 
-    def post(self, request, *args, **kwargs) -> HttpResponse:
+    def get(self, request, *args, **kwargs) -> http.HttpResponseRedirect:
+        """
+        Method to redirect users accessing the endpoints directly to data upload page.
+        """
+        return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
+
+    def post(self, request, *args, **kwargs) -> http.HttpResponseRedirect:
         """
         All instances of the subclasses of this View upload a single file, which this post method handles.
         If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
@@ -137,7 +143,7 @@ class DataUploadBase(UploadPageBase):
                 message = "Could not read data from file. Please check it matches the example file and try again."
                 messages.add_message(request, level=messages.ERROR, message=message)
 
-        return self.get(request=self.request, *args, **kwargs)
+        return self.get(request, *args, **kwargs)
 
 
 class DataResetBase(UploadPageBase):
