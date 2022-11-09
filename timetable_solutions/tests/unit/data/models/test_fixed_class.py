@@ -18,7 +18,7 @@ class TestFixedClass(test.TestCase):
     Unit tests for the FixedClass model
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "fixed_classes.json", "fixed_classes_lunch.json"]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_fixed_class(self):
@@ -49,6 +49,20 @@ class TestFixedClass(test.TestCase):
             models.FixedClass.create_new(
                 school_id=123456, class_id="YEAR_ONE_MATHS_A", user_defined=False,  # This combo is already in fixture
                 subject_name="TEST", pupils=None, time_slots=None, teacher_id=1, classroom_id=1)
+
+    def test_delete_all_user_defined_fixed_classes_successful(self):
+        """
+        Test that we can delete all the FixedClass instances belonging to a school, that the user has defined.
+        """
+        # Execute test unit
+        outcome = models.FixedClass.delete_all_user_defined_fixed_classes(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.FixedClass"] == 12
+
+        all_user_defined_fcs = models.FixedClass.objects.get_user_defined_fixed_classes(school_id=123456)
+        assert all_user_defined_fcs.count() == 0
 
     def test_delete_all_non_user_defined_fixed_classes(self):
         """

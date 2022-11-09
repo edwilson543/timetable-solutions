@@ -25,6 +25,10 @@ class FixedClassQuerySet(models.QuerySet):
         """Method to return an individual FixedClass instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(class_id=class_id))
 
+    def get_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
+        """Method returning the queryset of FixedClass instances uploaded by the user"""
+        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True))
+
     def get_non_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of FixedClass instances created by the solver"""
         return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=False))
@@ -82,7 +86,7 @@ class FixedClass(models.Model):
                    teacher_id: int | None = None, classroom_id: int | None = None) -> Self:
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
-        since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
+        since they have a many-to-many relationship to the FixedClass model, so the fixed class must be saved first.
         """
         subject_name = subject_name.upper()
         fixed_cls = cls.objects.create(
@@ -97,6 +101,13 @@ class FixedClass(models.Model):
             fixed_cls.add_time_slots(time_slots=time_slots)
 
         return fixed_cls
+
+    @classmethod
+    def delete_all_user_defined_fixed_classes(cls, school_id: int) -> Tuple:
+        """Method deleting the queryset of FixedClass instances uploaded by a user for their school"""
+        fcs = cls.objects.get_user_defined_fixed_classes(school_id=school_id)
+        outcome = fcs.delete()
+        return outcome
 
     @classmethod
     def delete_all_non_user_defined_fixed_classes(cls, school_id: int) -> Tuple:
