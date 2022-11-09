@@ -70,10 +70,24 @@ class FileUploadProcessor:
         Note that we either want all rows to become model instances or none of them to, hence we use an atomic
         transaction once we have cleaned all the data.
         """
-        file_bytes = file.read().decode("utf-8")
-        file_stream = StringIO(file_bytes)
-        # noinspection PyTypeChecker
-        upload_df = pd.read_csv(file_stream, sep=",")
+        file_extension = file.name.split(".")[1]
+        if file_extension != "csv":
+            self.upload_error_message = f"Please upload your file as with the .csv!\n" \
+                                        f"File extension given was .{file_extension}."
+            return
+
+        try:
+            file_bytes = file.read().decode("utf-8")
+            file_stream = StringIO(file_bytes)
+            # noinspection PyTypeChecker
+            upload_df = pd.read_csv(file_stream, sep=",")
+        except UnicodeDecodeError:
+            self.upload_error_message = "Please check that your file is encoded using UTF-8!"
+            return
+        except pd.errors.ParserError:
+            self.upload_error_message = "Bad file structure identified!\n" \
+                                        "Please check that data is only given under the defined columns."
+            return
 
         # Basic cleaning / checks on file content & structure
         upload_df.fillna(value=self.__nan_handler, inplace=True)

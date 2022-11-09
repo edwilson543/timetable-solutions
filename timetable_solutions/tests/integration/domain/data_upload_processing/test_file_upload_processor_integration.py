@@ -8,6 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 # Local application imports
+from base_files.settings.base_settings import BASE_DIR
 from data import models
 from domain import data_upload_processing
 from tests.input_settings import TEST_DATA_DIR
@@ -343,14 +344,53 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
 
     fixtures = ["user_school_profile.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
+    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
     def test_uploading_a_png_file(self):
-        # TODO
-        pass
+        """
+        Unit test that the upload processor will reject a file that does not have the csv extension
+        """
+        # Set test parameters
+        png_filepath = BASE_DIR / "interfaces" / "base_static" / "img" / "favicon.png"
+        with open(png_filepath, "rb") as png_file:
+            upload_file = SimpleUploadedFile(png_file.name, png_file.read())
+
+        # Execute test unit
+        processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil, school_access_key=123456)
+
+        # Check outcome
+        self.assertIsNotNone(processor.upload_error_message)
+        self.assertIn(".png", processor.upload_error_message)
+
+        # Check no pupils were created...
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        self.assertEqual(all_pupils.count(), 0)
 
     def test_uploading_a_bad_csv_file(self):
-        #TODO
-        pass
+        """
+        Test that a file that has random values is undefined columns gets rejected
+        """
+        # Set test parameters
+        test_filepath = self.invalid_uploads / "pupils_bad_column_structure.csv"
+        with open(test_filepath, "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        # Execute test unit
+        processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil, school_access_key=123456)
+
+        # Check outcome
+        self.assertIsNotNone(processor.upload_error_message)
+        self.assertIn("Bad file structure", processor.upload_error_message)
+
+        # Check no pupils were created...
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        self.assertEqual(all_pupils.count(), 0)
 
     def test_resubmitted_upload_is_rejected(self):
         """
