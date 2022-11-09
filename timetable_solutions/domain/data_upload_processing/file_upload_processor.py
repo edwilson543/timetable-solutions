@@ -10,6 +10,7 @@ from typing import Dict, List, Set, Type
 import pandas as pd
 
 # Django imports
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
@@ -111,13 +112,18 @@ class FileUploadProcessor:
 
             except (ValidationError,  # Model does not pass the full_clean checks
                     TypeError,  # Model was missing a required field (via its the create_new method)
-                    ValueError):  # A string was passed to int(id_field)
+                    ValueError) as debug_only_message:  # A string was passed to int(id_field)
+
                 error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
                             f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
                 self.upload_error_message = error
-            except IntegrityError:
+                if settings.DEBUG:
+                    self.upload_error_message = debug_only_message
+            except IntegrityError as debug_only_message:
                 error = f"ID given for {self._model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
+                if settings.DEBUG:
+                    self.upload_error_message = debug_only_message
 
     def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
         """
