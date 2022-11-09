@@ -10,7 +10,7 @@ services:
       - POSTGRES_DB=$POSTGRES_NAME
       - POSTGRES_USER=$POSTGRES_USER
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-    container_name: postgres_container
+    container_name: tts_postgres_c
 
   django_app:
     restart: always
@@ -20,13 +20,13 @@ services:
     volumes:
       - .:/timetable_scheduling
       - django_build:/timetable_scheduling  # Note /timetable_scheduling is WORKDIR in Dockerfile
-#      - static_volume:/timetable_scheduling/staticfiles
+      - static_volume:/timetable_scheduling/timetable_solutions/static
     ports:
       - 8000:8000
     env_file:
       - ./.env
     image: tts_app:timetable_scheduling
-    container_name: timetable_scheduling_container
+    container_name: tts_django_c
     command: bash -c "
       cd timetable_solutions
       && python manage.py migrate
@@ -39,15 +39,16 @@ services:
 
   nginx:
     image: nginx:latest
+    container_name: tts_nginx_c
     ports:
       - 80:8080
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - django_build:/var/www/timetable_scheduling  # Copy over to mirrored CWD
-#      - static_volume:/timetable_scheduling/staticfiles
+      - static_volume:/var/www/timetable_scheduling/staticfiles  # Copy over static into nginx staticfiles
     depends_on:
       - django_app
 
 volumes:
   django_build:
-#  static_volume:
+  static_volume:
