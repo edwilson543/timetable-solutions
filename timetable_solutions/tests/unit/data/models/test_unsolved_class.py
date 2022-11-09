@@ -65,3 +65,17 @@ class TestUnsolvedClass(test.TestCase):
                 total_slots=total_slots, n_double_periods=n_double_periods,
                 school_id=123456, class_id="UNIQUE-TEST", subject_name="TEST",
                 pupils=None, teacher_id=1, classroom_id=1)
+
+    def test_delete_all_instances_for_school_successful(self):
+        """
+        Test that we can successfully delete all UnsolvedClass instances associated with a school
+        """
+        # Execute test unit
+        outcome = models.UnsolvedClass.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.UnsolvedClass"] == 12
+
+        all_usc = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
+        assert all_usc.count() == 0

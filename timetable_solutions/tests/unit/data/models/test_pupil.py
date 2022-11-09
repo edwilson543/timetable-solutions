@@ -39,6 +39,21 @@ class TestPupil(test.TestCase):
             models.Pupil.create_new(school_id=123456, pupil_id=1,  # Note the pupil_id 1 is already taken
                                     firstname="test", surname="test", year_group=1)
 
+    def test_delete_all_instances_for_school_successful(self):
+        """
+        Test that we can successfully delete all pupils associated with a school
+        """
+        # Execute test unit
+        outcome = models.Pupil.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.Pupil"] == 6
+        assert deleted_ref["data.FixedClass_pupils"] == 18
+
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        assert all_pupils.count() == 0
+
     # FILTER METHOD TESTS
     def test_check_if_busy_at_time_slot_when_pupil_is_busy(self):
         """

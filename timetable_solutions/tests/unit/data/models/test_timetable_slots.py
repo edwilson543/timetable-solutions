@@ -72,6 +72,20 @@ class TestTimetableSlot(test.TestCase):
                 day_of_week=100,  # Invalid day of week
                 period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
 
+    def test_delete_all_instances_for_school_successful(self):
+        """
+        Test that we can successfully delete all timetable slots associated with a school
+        """
+        # Execute test unit
+        outcome = models.TimetableSlot.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.TimetableSlot"] == 35
+
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        assert all_slots.count() == 0
+
     # QUERY METHOD TESTS
     def test_get_timeslots_on_given_day(self):
         """Test that filtering timeslots by school and day to get the slot ids is working as expected"""

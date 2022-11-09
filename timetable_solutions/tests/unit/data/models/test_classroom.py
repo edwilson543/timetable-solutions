@@ -8,6 +8,7 @@ import pytest
 # Django imports
 from django import test
 from django.db import IntegrityError
+from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
@@ -48,7 +49,16 @@ class TestClassroom(test.TestCase):
         # Execute test unit
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(school_id=123456, classroom_id=100,  # Note that id 100 is available
-                                        building="MB", room_number=47)  #  MB 47 however is not available
+                                        building="MB", room_number=47)  #  MB47 however is not available
+
+    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_fixed_classes(self):
+        """
+        Test that we cannot delete all classrooms associated with a school, when there is at least one FixedClass
+        referencing the classrooms we are trying to delete.
+        """
+        # Execute test unit
+        with pytest.raises(ProtectedError):
+            models.Classroom.delete_all_instances_for_school(school_id=123456)
 
     # FILTER METHODS TESTS
     def test_check_if_occupied_at_time_slot_classroom_occupied(self):
@@ -66,3 +76,26 @@ class TestClassroom(test.TestCase):
 
         is_occupied = classroom.check_if_occupied_at_time_slot(slot=slot)
         assert not is_occupied
+
+
+class TestClassroomLessFixtures(test.TestCase):
+    """
+    Test class only loading in the school / classroom fixtures, to avoid foreign key issues.
+    """
+
+    fixtures = ["user_school_profile.json", "classrooms.json"]
+
+    def test_delete_all_instances_for_school_successful(self):
+        """
+        Test that we can successfully delete all classrooms associated with a school, when there are no FixedClass
+        instances referencing the classrooms as foreign keys.
+        """
+        # Execute test unit
+        outcome = models.Classroom.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.Classroom"] == 12
+
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
+        assert all_classrooms.count() == 0

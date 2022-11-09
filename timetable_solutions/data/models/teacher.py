@@ -77,7 +77,8 @@ class Teacher(models.Model):
     @classmethod
     def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
         """
-        Method to delete all the Teacher instances associated with a particular school
+        Method to delete all the Teacher instances associated with a particular school.
+        Note this will only work if all referencing FixedClasses have first been deleted.
         """
         instances = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = instances.delete()
