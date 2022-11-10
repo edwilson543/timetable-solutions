@@ -6,7 +6,12 @@
     {% for message in messages %}
     <div class="flash_message_base {{ message.tags }}_message">
         <span class="error_message_text">
-            {{ message }}
+            <!--Allow html embedded in the python string to be rendered as html-->
+            {% if 'safe' in message.tags %}
+                {{ message | safe }}
+            {% else %}
+                {{ message }}
+            {% endif %}
         </span>
         <div class="close_error_button">
             &times

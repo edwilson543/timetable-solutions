@@ -1,6 +1,8 @@
 /* ====================
 CSS file to pair with django's flash messages framework
 ==================== */
+@import url(/static/stylesheets/colour_scheme.css);
+
 :root {
     /* Positioning */
     --banner_z_index: 1000;
@@ -22,6 +24,8 @@ CSS file to pair with django's flash messages framework
     --message_duration: 20s;
 
     /* COLOURS - one set per django flash message level */
+    --close_button_background: #d1cfcf;
+
     /* INFO = Blue */
     --info_background: #c4dcf2;
     --info_background_hover: #b6cce0;
@@ -124,6 +128,10 @@ Components of the flash messages
     /* Avoid overlap with the close button */
     margin-right: var(--close_button_total_width);
 }
+.error_message_text a {
+    color: var(--bright_blue_link);
+    text-decoration: underline;
+}
 
 .close_error_button {
     /* Positioning */
@@ -143,7 +151,7 @@ Components of the flash messages
     text-align: center;
 
     /* Background, border and misc */
-    background-color: #d1cfcf;
+    background-color: var(--close_button_background);
     opacity: 0.7;
     border-radius: 5px;
     cursor: pointer;
