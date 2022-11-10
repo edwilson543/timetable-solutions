@@ -261,7 +261,8 @@ class FileUploadProcessor:
                 return slots
 
     # STRING CLEANING METHODS
-    def _get_clean_id_from_file_field_value(self, user_input_id: str, row_number: int, field_name: str) -> int | None:
+    def _get_clean_id_from_file_field_value(self, user_input_id: str | int | float | None, row_number: int,
+                                            field_name: str) -> int | None:
         """
         Method to clean a string the user has entered which should just be a single number (or None).
         We use _get_integer_set_from_string, and then return the single integer or None, in the case where the user

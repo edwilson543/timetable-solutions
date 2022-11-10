@@ -139,6 +139,73 @@ class TestFileUploadProcessor(test.TestCase):
             # Check outcome
             assert integer_set is None, f"{invalid_string} caused test failure!"
 
+    # TESTS FOR STRING CLEANING ON INDIVIDUAL IDS
+    def test_get_clean_id_from_file_field_value_unchanged_for_integers(self):
+        """
+        Test that when we pass an INTEGER id (the ideal format), it is unchanged by the cleaner.
+        """
+        # Set tst parameters
+        raw_ids = [1, 10, 100, 123, 423412]
+        processor = self._get_file_agnostic_processor()
+
+        # Execute test unit
+        for raw_id in raw_ids:
+            cleaned_id = processor._get_clean_id_from_file_field_value(user_input_id=raw_id,
+                                                                       row_number=1, field_name="irrelevant")
+
+            # Check outcome
+            assert cleaned_id == raw_id
+
+    def test_get_clean_id_from_file_field_value_changed_for_floats(self):
+        """
+        Test that when we pass an FLOAT id the 0s don't get counted as factors of 10.
+        """
+        # Set tst parameters
+        raw_ids = [1.0, 10.0, 100.0, 123.0, 423412.0]
+        expected_converted_ids = [1, 10, 100, 123, 423412]
+        processor = self._get_file_agnostic_processor()
+
+        # Execute test unit
+        for n, raw_id in enumerate(raw_ids):
+            cleaned_id = processor._get_clean_id_from_file_field_value(user_input_id=raw_id,
+                                                                       row_number=1, field_name="irrelevant")
+
+            # Check outcome
+            assert cleaned_id == expected_converted_ids[n]
+
+    def test_get_clean_id_from_file_field_value_changed_for_strings(self):
+        """
+        Test that when we pass strings as IDs, they are handled in the appropriate way.
+        """
+        # Set tst parameters
+        raw_ids = ["1.0", "10.0", "100", "123.0", "423412.0"]
+        expected_converted_ids = [1, 10, 100, 123, 423412]
+        processor = self._get_file_agnostic_processor()
+
+        # Execute test unit
+        for n, raw_id in enumerate(raw_ids):
+            cleaned_id = processor._get_clean_id_from_file_field_value(user_input_id=raw_id,
+                                                                       row_number=1, field_name="irrelevant")
+
+            # Check outcome
+            assert cleaned_id == expected_converted_ids[n]
+
+    def test_get_clean_id_from_file_field_error_for_string_list(self):
+        """
+        Test that when we pass strings as IDs, they are handled in the appropriate way.
+        """
+        # Set tst parameters
+        raw_id = "1, 2, 3"
+        processor = self._get_file_agnostic_processor()
+
+        # Execute test unit
+        processor._get_clean_id_from_file_field_value(user_input_id=raw_id,
+                                                      row_number=1, field_name="irrelevant")
+
+        # Check outcome
+        assert processor.upload_error_message is not None
+        assert "Multiple" in processor.upload_error_message
+
     # TESTS FOR CHECKING UPLOAD FILE STRUCTURE AND CONTENT
     def test_check_upload_df_structure_and_content_no_data(self):
         """
