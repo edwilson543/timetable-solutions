@@ -128,6 +128,8 @@ class FileUploadProcessor:
             except ObjectDoesNotExist as debug_only_message:
                 self.upload_error_message = f"Row {n + 1} of your file referenced a pupil / teacher / classroom / " \
                                             f"timetable slot id which does not exist!\n Please check this!"
+                if settings.DEBUG:
+                    self.upload_error_message = debug_only_message
 
     def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
         """
@@ -147,7 +149,8 @@ class FileUploadProcessor:
                 create_new_dict = self._get_data_dict_from_row_for_create_new_fixed_class(
                     row=data_ser, row_number=row_number)
             else:
-                create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=data_ser)
+                create_new_dict = self._get_data_dict_from_row_for_create_new_default(
+                    row=data_ser, row_number=row_number)
 
             # dict-getting methods will set errors, so if there is / isn't one set, proceed as appropriate
             if self.upload_error_message is None:
@@ -160,7 +163,7 @@ class FileUploadProcessor:
         return create_new_dict_list
 
     # METHODS CREATING DICTIONARIES TO BE PASSED TO self._model.create_new()
-    def _get_data_dict_from_row_for_create_new_default(self, row: pd.Series) -> Dict[str, str | int]:
+    def _get_data_dict_from_row_for_create_new_default(self, row: pd.Series, row_number: int) -> Dict[str, str | int]:
         """
         Method to take an individual row from the csv file, and convert it into a dictionary which can be passed
         directly to self._model.create_new(**create_new_dict) to initialise a model instance
@@ -169,6 +172,7 @@ class FileUploadProcessor:
         initial_create_new_dict = row.to_dict()
         create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
         create_new_dict[Header.SCHOOL_ID] = self._school_access_key
+
         return create_new_dict
 
     def _get_data_dict_from_row_for_create_new_unsolved_class(self, row: pd.Series, row_number: int) -> Dict | None:
@@ -180,8 +184,17 @@ class FileUploadProcessor:
         :param row_number - the (1-based) number of the row we are processing. Only used for error messages.
         :return mapping of self._model.create_new method kwargs: kwarg values
         """
-        initial_create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=row)
-        create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
+        create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=row, row_number=row_number)
+
+        if Header.TEACHER_ID in create_new_dict.keys():
+            raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
+            create_new_dict[Header.TEACHER_ID] = self._get_clean_id_from_file_field_value(
+                user_input_id=raw_teacher_id, row_number=row_number, field_name="teachers")
+
+        if Header.CLASSROOM_ID in create_new_dict.keys():
+            raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
+            create_new_dict[Header.CLASSROOM_ID] = self._get_clean_id_from_file_field_value(
+                user_input_id=raw_classroom_id, row_number=row_number, field_name="classrooms")
 
         if Header.PUPIL_IDS in create_new_dict.keys():
             raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
@@ -199,29 +212,14 @@ class FileUploadProcessor:
         :param row_number - the (1-based) number of the row we are processing. Only used for error messages.
         :return mapping of self._model.create_new method kwargs: kwarg values
         """
-        initial_create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=row)
-        create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
+        create_new_dict = self._get_data_dict_from_row_for_create_new_unsolved_class(
+            row=row, row_number=row_number)
         create_new_dict[models.FixedClass.Constant.user_defined] = True  # Not present in file, so manually add
-
-        if Header.PUPIL_IDS in create_new_dict.keys():
-            raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
-            create_new_dict[models.FixedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
-                pupil_ids_raw=raw_pupil_ids, row_number=row_number)
 
         if Header.SLOT_IDS in create_new_dict.keys():
             raw_slot_ids = create_new_dict.pop(Header.SLOT_IDS)
             create_new_dict[models.FixedClass.Constant.time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
                 slot_ids_raw=raw_slot_ids, row_number=row_number)
-
-        if Header.TEACHER_ID in create_new_dict.keys():
-            raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
-            create_new_dict[Header.TEACHER_ID] = self._get_clean_id_from_file_field_value(
-                user_input_id=raw_teacher_id, row_number=row_number, field_name="teachers")
-
-        if Header.CLASSROOM_ID in create_new_dict.keys():
-            raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
-            create_new_dict[Header.CLASSROOM_ID] = self._get_clean_id_from_file_field_value(
-                user_input_id=raw_classroom_id, row_number=row_number, field_name="classrooms")
 
         return create_new_dict
 
@@ -270,12 +268,13 @@ class FileUploadProcessor:
         has not given a valid value (which may not be an issue, since some id fields are nullable).
         """
         if user_input_id is not None:
-            user_input_id = str(int(user_input_id))
-            id_set = self._get_integer_set_from_string(raw_string_of_ids=user_input_id, row_number=row_number)
+            user_input_id = str(user_input_id)
+            user_input_id_no_floats = re.sub(r"[.].+", "", user_input_id)  # User's id may be read-in as '10.0'
+            id_set = self._get_integer_set_from_string(raw_string_of_ids=user_input_id_no_floats, row_number=row_number)
             if id_set is not None:
                 if len(id_set) > 1:
                     self.upload_error_message = f"Cannot currently have multiple {field_name} for a single class!\n" \
-                                                f"Multiple ids were given in row {row_number}"
+                                                f"Multiple ids were given in row: {row_number} - {user_input_id}"
                     return None
                 else:
                     cleaned_id = next(iter(id_set))
@@ -295,7 +294,7 @@ class FileUploadProcessor:
         valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
         raw_string_of_ids = "".join([character for character in raw_string_of_ids if character in valid_chars])
         raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
-        if len(raw_string_of_ids) == 0:
+        if len(raw_string_of_ids) == 0 or raw_string_of_ids == ",":
             # This isn't an issue directly, so just return None here
             return None
 
