@@ -3,10 +3,10 @@ Module defining constants relating to urls.
 """
 
 # Standard library imports
-from enum import Enum
+from enum import StrEnum
 
 
-class UrlName(Enum):
+class UrlName(StrEnum):
     """
     Enumeration of ALL url shortcut names in the entire project.
 
@@ -25,13 +25,32 @@ class UrlName(Enum):
     SCHOOL_REGISTRATION = "school_registration"
 
     # Data upload app
-    CLASSROOM_LIST_UPLOAD = "classroom_list"
     FILE_UPLOAD_PAGE = "file_upload_page"
-    FIXED_CLASSES_UPLOAD = "fixed_classes"
-    PUPIL_LIST_UPLOAD = "pupil_list"
-    TEACHER_LIST_UPLOAD = "teacher_list"
-    TIMETABLE_STRUCTURE_UPLOAD = "timetable_structure"
-    UNSOLVED_CLASSES_UPLOAD = "unsolved_classes"
+
+    # File upload urls
+    CLASSROOM_LIST_UPLOAD = "classroom_upload"
+    FIXED_CLASSES_UPLOAD = "fixed_class_upload"
+    PUPIL_LIST_UPLOAD = "pupil_upload"
+    TEACHER_LIST_UPLOAD = "teacher_upload"
+    TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
+    UNSOLVED_CLASSES_UPLOAD = "unsolved_class_upload"
+
+    # File upload reset urls
+    CLASSROOM_LIST_RESET = "classroom_reset"
+    FIXED_CLASSES_RESET = "fixed_class_reset"
+    PUPIL_LIST_RESET = "pupil_reset"
+    TEACHER_LIST_RESET = "teacher_reset"
+    TIMETABLE_STRUCTURE_RESET = "timetable_reset"
+    UNSOLVED_CLASSES_RESET = "unsolved_class_reset"
+    ALL_DATA_RESET = "all_data_reset"
+
+    # Example file download urls
+    CLASSROOM_DOWNLOAD = "classroom_download"
+    FIXED_CLASSES_DOWNLOAD = "fixed_class_download"
+    PUPIL_DOWNLOAD = "pupil_download"
+    TEACHER_DOWNLOAD = "teacher_download"
+    TIMETABLE_DOWNLOAD = "timetable_download"
+    UNSOLVED_CLASSES_DOWNLOAD = "unsolved_class_download"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"

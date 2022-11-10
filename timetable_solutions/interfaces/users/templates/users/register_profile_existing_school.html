@@ -23,13 +23,13 @@ input[type="submit"] {background-color: #004000;}
         Please enter your school's access key below
     </h4>
     {% if error_message is not None %}
-    <p class="error_message">
+    <p class="static_error_message">
         {{error_message}}
     </p>
     {% endif %}
     <form method="post">
         {% csrf_token %}
-        {{form}}
+        {{ form.as_div }}
         <input type="submit" value="Complete registration">
     </form>
     <hr>

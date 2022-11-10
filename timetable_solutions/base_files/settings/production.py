@@ -1,18 +1,32 @@
-"""Settings specific to the aws production environment"""
+"""
+Settings specific to the production environment.
+python-decouple's config is used extensively to retrieve environment variables.
+"""
 
-# Standard library imports
-import os
+# Third party imports
+from decouple import config
+
+# Django imports
+from django.contrib import messages
 
 # Local application imports
 from .base_settings import *
 
-# Per django security warning, the secret key is loaded in from an environment variable
-# The SECRET_KEY environment variable has been set on the elastic beanstalk environment
-SECRET_KEY = os.environ.get("SECRET_KEY")
-
 # Per Django security warning, debug is turned off for production!
-DEBUG = False
+DEBUG = int(config("DEBUG"))
+MESSAGE_LEVEL = messages.INFO
 
-ALLOWED_HOSTS = ["timetable-solutions.eu-west-2.elasticbeanstalk.com"]
+ALLOWED_HOSTS = ["0.0.0.0", "localhost"]  # For running production environment locally with docker
 
-DATABASES = {}  # TODO
+SECRET_KEY = config("SECRET_KEY")
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": config("POSTGRES_NAME"),
+        "USER": config("POSTGRES_USER"),
+        "PASSWORD": config("POSTGRES_PASSWORD"),
+        "HOST": config("POSTGRES_HOST"),
+        "PORT": int(config("POSTGRES_PORT")),
+    }
+}

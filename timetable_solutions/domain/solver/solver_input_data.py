@@ -5,7 +5,7 @@ Module defining the data used by the solver, and how this data is accessed from 
 from dataclasses import dataclass
 import datetime as dt
 from functools import cached_property
-from typing import List, Tuple, Union, Dict
+from typing import List, Tuple, Dict
 
 # Local application imports
 from data import models
@@ -37,7 +37,7 @@ class SolutionSpecification:
     # Instance attributes
     allow_split_classes_within_each_day: bool
     allow_triple_periods_and_above: bool
-    optimal_free_period_time_of_day: Union[str, dt.time] = OptimalFreePeriodOptions.NONE
+    optimal_free_period_time_of_day: str | dt.time = OptimalFreePeriodOptions.NONE
     ideal_proportion_of_free_periods_at_this_time: float = 1.0
 
 
@@ -133,7 +133,7 @@ class TimetableSolverInputs:
         return finish
 
     # QUERIES
-    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: str) -> Union[models.FixedClass, None]:
+    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: str) -> models.FixedClass | None:
         """
         Method to retrieve the FixedClass instance corresponding to an UnsolvedClass id
         :return either the FixedClass instance, or None if there is not a corresponding instance.

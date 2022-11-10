@@ -17,6 +17,19 @@ For more info, see the project wiki.
 
 
 <h2>Project setup</h2>
+
+<h4>System requirements</h4>
+<ul>
+    <li>Python 3.11</li>
+    <li>
+        If using a mac with an Apple silicon chip, you will need Rosetta installed:<br>
+        <code>softwareupdate --install-rosetta</code>
+    </li>
+    <li>Optionally, docker for running the production environment</li>
+    
+</ul>
+
+<h4>Basic setup</h4>
 <ol>
     <li>Fork and clone repository</li>
     <li>Setup virtual environment</li>
@@ -25,6 +38,11 @@ For more info, see the project wiki.
         The project is configured to use pytest-django. To check the tests are passing, at src/timetable_solutions/:<br>
         <code>pytest</code>
     </li>
+</ol>
+
+<h4>Development setup</h4>
+The local development setup uses a sqlite database, so to use the development server you just need to:
+<ol>    
     <li>
         Migrate the models (the migrations are all committed)<br>
         <code>python manage.py migrate</code>
@@ -35,5 +53,26 @@ For more info, see the project wiki.
     <li>
         Alternatively, create/upload your own data through the app.
     </li>
+    <li>
+        <code>python manage.py runserver</code><br>
+    </li>
 </ol>
+
+<h4>Production setup</h4>
+To run the production environment locally:
+<ol>
+    <li>
+        Create a .env file in the project root, specifying all environment variables referenced in docker-compose.yml
+    </li>
+    <li>
+        Note that the default docker platform on some macs is different to on linux / other macs, and therefore
+        <a href="https://stackoverflow.com/questions/65612411/forcing-docker-to-use-linux-amd64-platform-by-default-on-macos">
+            requires special treatment of the DEFAULT_DOCKER_PLATFORM environment variable. 
+        </a>Note also running docker-compose build before docker-compose up seems to be a requirement.<br>
+        From the project root build the docker images and spin up the containers:<br>
+        <code>docker-compose build</code><br>
+        <code>docker-compose up</code>
+    </li>
+</ol>
+
 <hr>

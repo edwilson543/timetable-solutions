@@ -55,6 +55,7 @@ class TimetableSolverOutcome:
         """
         models.FixedClass.create_new(
             school_id=unsolved_class.school.school_access_key, user_defined=False, class_id=unsolved_class.class_id,
-            pupils=unsolved_class.pupils.all(), time_slots=timeslots, classroom_id=unsolved_class.classroom.pk,
-            subject_name=unsolved_class.subject_name, teacher_id=unsolved_class.teacher.pk
+            pupils=unsolved_class.pupils.all(), time_slots=timeslots,
+            classroom_id=unsolved_class.classroom.classroom_id,
+            subject_name=unsolved_class.subject_name, teacher_id=unsolved_class.teacher.teacher_id
         )

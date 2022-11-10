@@ -8,45 +8,11 @@
 {% block head_content %}
 <title> File upload </title>
 <link rel="stylesheet" href="{% static 'stylesheets/app_dashboard_base.css' %}">
+<link rel="stylesheet" href="{% static 'data_upload/stylesheets/file_upload.css' %}">
 {% endblock %}
 
 <style>
 {% block style_block %}
-
-#reset_button {
-    font-size: 15px;
-    color: black;
-    background-color: grey;
-    text-align: center;
-    border: 1px solid black;
-    border-radius: 1px;
-    padding: 2px;
-}
-
-#upload_file_table td {
-  text-align: center;
-  vertical-align: middle;
-  width: 20%;
-}
-#upload_file_table {
-  width:90%;
-  height: 90%;
-}
-
-.upload_cell {
-  background-color: white;
-  border: 1px solid black;
-  border-collapse: collapse;
-  border-radius: 3px;
-  text-align: center;
-  padding: 15px;
-}
-
-.upload_button {
-    float: left;
-    margin-left: 10%;
-}
-
 {% endblock %}
 </style>
 
@@ -56,37 +22,85 @@
 {% block content %}
 
 <div id="content_container">
-<table id="upload_file_table">
-    <tr>
-        <th>File name</th>
-        <th>Download example file</th>
-        <th style="width:20%;">Add file</th>
-    </tr>
-    {% for required_form in required_forms.values %}
-    <tr>
-        <td class="upload_cell">{{required_form.form_name}}</td>
-        <td class="upload_cell">Placeholder</td>
-        {% if required_form.upload_status == "Incomplete" %}
-        <td class="upload_cell">
-            <form enctype="multipart/form-data" action="{% url required_form.url_name %}" method="post">
+    <div id="grid_container">
+        <div id="dashboard_title">
+            <h4>Upload your data</h4>
+        </div>
+        <div id="info_container" class="info_frame">
+            <p style="font-size:16px;"><i>
+            The table below lists the different files you will need to upload to start creating timetables.
+            The structure assumes you have already grouped pupils into classes and assigned teachers and classrooms to
+            these classes.<br>
+            You can download an example file for each required upload, and reset your uploads at any point.
+<!--        TODO - link up button for: You can also view and edit your data at any point.-->
+            </i></p>
+        </div>
+        <div id="form_container">
+        <table id="upload_file_table">
+            {% for required_form in required_forms.values %}
+            <tr class="{{ required_form.upload_status | lower }}_row">
+                <td class="table_cell">
+                    <b>
+                        {{required_form.form_name}}<br>
+                    </b>
+                    <i>
+                        ({{ required_form.upload_status | title }})
+                    </i>
+                </td>
+                <td class="table_cell">
+                    <form action="{% url required_form.example_download_url_name %}" method="get">
+                        <button class="get_example_button" type="submit">
+                            See example
+                        </button>
+                    </form>
+                </td>
+                {% if required_form.upload_status == "incomplete" %}
+                <td class="table_cell">
+                    <form enctype="multipart/form-data" action="{% url required_form.upload_url_name %}" method="post">
+                        {% csrf_token %}
+                        <div class="center_align_box">
+                        {{ required_form.empty_form.as_div }}
+                        </div>
+                        <button class="upload_button" type="submit">
+                            Upload
+                        </button>
+                    </form>
+                </td>
+                {% elif required_form.upload_status == "complete" %}
+                <td class="table_cell">
+                    <form action="{% url required_form.reset_url_name %}" method="post">
+                        {% csrf_token %}
+                        <button class="specific_reset_button" type="submit">
+                            Reset
+                        </button>
+                    </form>
+                </td>
+                {% elif required_form.upload_status == "disallowed" %}
+                <td class="table_cell">
+                   <p><i>
+                       First complete all the other required uploads.
+                   </i></p>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
+        <div id="action_button_container">
+                <form action=#>
                 {% csrf_token %}
-                <table>
-                    {{ required_form.empty_form.as_table }}
-                </table>
-                <button class="upload_button" type="submit">Upload</button>
+                <button class="management_button" type="submit">
+                    View and edit data
+                </button>
             </form>
-        </td>
-        {% else %}
-        <td class="upload_cell">{{required_form.upload_status}}</td>
-        {% endif %}
-    </tr>
-    {% endfor %}
-    <tr>
-        <td></td>
-        <td></td>
-        <td><a id="reset_button" href=#>Reset all</a></td>
-    </tr>
-</table>
+            <form action="{% url 'all_data_reset' %}" method="post">
+                {% csrf_token %}
+                <button class="management_button" type="submit">
+                    Reset all
+                </button>
+            </form>
+        </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

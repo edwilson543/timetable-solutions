@@ -1,0 +1,13 @@
+class_id,subject_name,teacher_id,pupil_ids,classroom_id,total_slots,n_double_periods
+YEAR_ONE_MATHS_A,Maths,1,1;2,1,8,3
+YEAR_ONE_MATHS_B,Maths,2,3,2,8,3
+YEAR_ONE_ENGLISH_A,English,3,1;2,3,8,3
+YEAR_ONE_ENGLISH_B,English,4,3,4,8,3
+YEAR_ONE_FRENCH_A,French,5,1;2,5,8,3
+YEAR_ONE_FRENCH_B,French,6,3,6,8,3
+YEAR_TWO_MATHS_A,Maths,7,4;6,7,8,3
+YEAR_TWO_MATHS_B,Maths,8,5,8,8,3
+YEAR_TWO_ENGLISH_A,English,9,4;6,9,8,3
+YEAR_TWO_ENGLISH_B,English,10,5,10,8,3
+YEAR_TWO_FRENCH_A,French,11,4;6,11,8,3
+YEAR_TWO_FRENCH_B,French,1,5,12,8,3

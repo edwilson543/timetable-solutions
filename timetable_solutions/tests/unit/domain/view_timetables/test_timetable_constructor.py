@@ -78,7 +78,7 @@ class TestTimetableConstruction(TestCase):
         self.assertEqual(monday_period_one.classroom.building, "MB")
         free_period = timetable["12:00-13:00"][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a FixedClass instance
-        self.assertEqual(free_period, view_timetables.TimetableColour.FREE.name)
+        self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)
 
     def test_get_timetable_slot_indexed_timetable_for_a_teacher(self):
         """Test that the correct timetable is returned for a given pupil, in the correct structure."""
@@ -96,4 +96,4 @@ class TestTimetableConstruction(TestCase):
         self.assertIsInstance(monday_period_one, models.FixedClass)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
-        self.assertEqual(free_period, view_timetables.TimetableColour.FREE.name)
+        self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)

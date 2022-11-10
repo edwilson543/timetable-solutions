@@ -3,7 +3,7 @@
 # Standard library imports
 import datetime as dt
 from functools import lru_cache
-from typing import Set, List
+from typing import List, Self, Set, Tuple
 
 # Django imports
 from django.db import models
@@ -47,10 +47,6 @@ class TimetableSlotQuerySet(models.QuerySet):
 class TimetableSlot(models.Model):
     """Model for stating the unique timetable slots when classes can take place"""
 
-    class Meta:
-        """Additional information relating to this model"""
-        ordering = ["day_of_week", "period_starts_at"]
-
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
     day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
@@ -60,23 +56,51 @@ class TimetableSlot(models.Model):
     # Introduce a custom manager
     objects = TimetableSlotQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the TimetableSlot model
+        """
+        ordering = ["day_of_week", "period_starts_at"]
+        unique_together = [["school", "slot_id"]]
+
+    class Constant:
+        """
+        Additional constants to store about the TimetableSlot model (that aren't an option in Meta)
+        """
+        human_string_singular = "timetable slot"
+        human_string_plural = "timetable slots"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.day_of_week}, {self.period_starts_at}"
+        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
+
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
 
     # FACTORIES
     @classmethod
-    def create_new(cls, school_id: int, slot_id: int, day_of_week: str, period_starts_at: dt.time,
-                   period_duration: dt.timedelta):
+    def create_new(cls, school_id: int, slot_id: int, day_of_week: WeekDay, period_starts_at: dt.time,
+                   period_duration: dt.timedelta) -> Self:
         """Method to create a new TimetableSlot instance."""
         try:
-            day_of_week = int(day_of_week)
+            day_of_week = WeekDay(day_of_week).value
         except ValueError:
             raise ValueError(f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
                              f"{type(day_of_week)}")
         slot = cls.objects.create(school_id=school_id, slot_id=slot_id, day_of_week=day_of_week,
                                   period_starts_at=period_starts_at, period_duration=period_duration)
+        slot.full_clean()
         return slot
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the TimetableSlot instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # QUERIES
     @classmethod

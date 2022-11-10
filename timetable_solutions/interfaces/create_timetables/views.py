@@ -7,13 +7,14 @@ from typing import List, Dict
 
 # Django imports
 from django import urls
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
 
 # Local application imports
 from constants.url_names import UrlName
-from domain.data_upload_processing import get_upload_status
+from domain.data_upload_processing import UploadStatusTracker
 from domain import solver
 from domain import utils as domain_utils
 from interfaces.create_timetables import forms
@@ -44,10 +45,13 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         """
         error_messages = self._run_solver_from_view(form=form)
         if len(error_messages) == 0:
+            message = "Solutions have ben found for your timetabling problem!"
+            messages.add_message(self.request, level=messages.SUCCESS, message=message)
             return super().form_valid(form)  # Method inherited from ModelFormMixin
         else:
+            for message in error_messages:
+                messages.add_message(self.request, level=messages.ERROR, message=message)
             context_data = self.get_context_data()
-            context_data["error_messages"] = error_messages
             return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
 
     def _run_solver_from_view(self, form) -> List[str]:
@@ -69,11 +73,8 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         timetables, and False if they need to complete the data upload step.
         """
         context_data = super().get_context_data()  # Method inherited from views.generic.edit.FormMixin
-        upload_status = get_upload_status(school=self.request.user.profile.school)
-        ready_to_create: bool = (
-                upload_status.PUPILS * upload_status.TEACHERS * upload_status.TIMETABLE *
-                upload_status.CLASSROOMS * upload_status.UNSOLVED_CLASSES * upload_status.FIXED_CLASSES)
-        context_data["ready_to_create"] = ready_to_create
+        upload_status = UploadStatusTracker.get_upload_status(school=self.request.user.profile.school)
+        context_data["ready_to_create"] = upload_status.all_uploads_complete
         return context_data
 
     def get_form_kwargs(self) -> Dict:

@@ -1,5 +1,8 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
+# Standard library imports
+from typing import Self, Tuple
+
 # Django imports
 from django.db import models
 
@@ -41,17 +44,45 @@ class Teacher(models.Model):
     # Introduce a custom manager
     objects = TeacherQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the Teacher model
+        """
+        unique_together = [["school", "teacher_id"]]
+
+    class Constant:
+        """
+        Additional constants to store about the Teacher model (that aren't an option in Meta)
+        """
+        human_string_singular = "teacher"
+        human_string_plural = "teachers"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.title} {self.surname}, {self.firstname}"
 
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"Teacher {self.school}: {self.teacher_id}"
+
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str):
+    def create_new(cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str) -> Self:
         """Method to create a new Teacher instance."""
         teacher = cls.objects.create(school_id=school_id, teacher_id=teacher_id, firstname=firstname, surname=surname,
                                      title=title)
+        teacher.full_clean()
         return teacher
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the Teacher instances associated with a particular school.
+        Note this will only work if all referencing FixedClasses have first been deleted.
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # FILTER METHODS
     def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:

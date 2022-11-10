@@ -1,5 +1,8 @@
 """Module defining the model for a school_id classroom and any ancillary objects."""
 
+# Standard library imports
+from typing import Self, Tuple
+
 # Django imports
 from django.db import models
 
@@ -34,17 +37,46 @@ class Classroom(models.Model):
     # Introduce a custom manager
     objects = ClassroomQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the Classroom model
+        """
+        unique_together = [["school", "classroom_id"], ["school", "building", "room_number"]]
+
+    class Constant:
+        """
+        Additional constants to store about the Classroom model (that aren't an option in Meta)
+        """
+        human_string_singular = "classroom"
+        human_string_plural = "classrooms"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.building},  {self.room_number}"
 
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"Classroom: {self.school}: {self.classroom_id}"
+
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int):
-        """Method to create a new Classroom instance."""
+    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int) -> Self:
+        """
+        Method to create a new Classroom instance.
+        """
         classroom = cls.objects.create(
             school_id=school_id, classroom_id=classroom_id, building=building, room_number=room_number)
+        classroom.full_clean()
         return classroom
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the Classroom instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # FILTER METHODS
     def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:

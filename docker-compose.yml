@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+
+  postgres_database:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data  # Establishes mapping between local data folder and the container
+    environment: # Matches django settings module / gitignored .env file
+      - POSTGRES_DB=$POSTGRES_NAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+    container_name: tts_postgres_c
+
+  django_app:
+    restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
+    build:
+      context: .  # Root directory (where this file is)
+      dockerfile: Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
+    volumes:
+      - .:/timetable_scheduling  # Mirror local files with container  - TODO - try deleting
+      - django_build:/timetable_scheduling  # Note /timetable_scheduling is WORKDIR in Dockerfile
+      - static_volume:/timetable_scheduling/timetable_solutions/static  # mirror static COLLECTION in container
+    ports:
+      - 8000:8000  # TODO -> this can probably be replaced by an expose 8000???
+    env_file:
+      - ./.env  # Uncomitted env file
+    image: tts_app:timetable_scheduling
+    container_name: tts_django_c
+    command: bash -c "
+      cd timetable_solutions
+      && python manage.py migrate
+      && python manage.py load_all_fixtures
+      && python manage.py collectstatic --noinput
+      && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
+      "
+    depends_on:
+      - postgres_database
+
+  nginx:
+    image: nginx:latest
+    container_name: tts_nginx_c
+    ports:
+      - 80:8080
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro  # Standard nginx configuration
+      - django_build:/var/www/timetable_scheduling  # Copy over our django build into the equivalent in the nginx cont
+      - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
+    depends_on:
+      - django_app
+
+volumes:
+  django_build:  # django builds allows the django app to be reflected in the nginx container
+  static_volume:  # static_volume acts like a pivot between static files in the django_app and nginx containers

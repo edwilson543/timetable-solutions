@@ -1,4 +1,9 @@
 /* ====================
+CSS for each component of the site's (optional) dashboard.
+Used by the data upload page, the create page, and the view dashboard.
+==================== */
+
+/* ====================
 Container for the main content in the center of the page
 ==================== */
 #content_container {
@@ -13,6 +18,8 @@ Container for the main content in the center of the page
     width: 800px;
     height: 70%;
     padding: 20px;
+    margin-top: 10px;
+    margin-bottom: 40px;
 
     /* Background and border */
     background-color: white;

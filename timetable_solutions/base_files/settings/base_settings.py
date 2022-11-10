@@ -108,6 +108,9 @@ STATICFILES_DIRS = [
    BASE_DIR / 'interfaces' / 'base_static',
 ]
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -118,6 +121,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = "/users/accounts/login/"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "dashboard"
+
+# Forms - use default div renderer
+FORM_RENDERER = "django.forms.renderers.DjangoDivFormRenderer"
 
 # Testing
 FIXTURE_DIRS = [BASE_DIR / "tests" / "test_scenario_fixtures"]

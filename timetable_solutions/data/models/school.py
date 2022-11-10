@@ -15,7 +15,7 @@ class School(models.Model):
     """
     Model representing a school_id, with every other model associated with one school_id instance via a foreign key
     """
-    school_access_key = models.SmallIntegerField(primary_key=True)
+    school_access_key = models.PositiveIntegerField(primary_key=True)
     school_name = models.CharField(max_length=50)
 
     # Introduce a custom manager
@@ -30,6 +30,7 @@ class School(models.Model):
     def create_new(cls, school_access_key: int, school_name: str):
         """Method to create a new School instance."""
         school = cls.objects.create(school_access_key=school_access_key, school_name=school_name)
+        school.full_clean()
         return school
 
     # PROPERTIES

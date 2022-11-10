@@ -12,7 +12,9 @@
 {% block style_block %}
 
 input[type="submit"] {background-color: #004000;}
-
+.helptext {
+    display: none;
+}
 {% endblock %}
 </style>
 </head>
@@ -21,14 +23,14 @@ input[type="submit"] {background-color: #004000;}
 {% block content %}
 <div id="form_container">
     {% for error_message in error_messages.values %}
-    <p class="error_message">{{error_message}}</p>
+    <p class="static_error_message">{{error_message}}</p>
     {% endfor %}
     <form method="post">
         {% csrf_token %}
         {{form}}
         <input type="submit" value="Register">
     </form>
-    <hr style="color:black;width:90%;margin-bottom:15px;">
+    <hr>
     <a href="{% url 'login' %}" class="wide_red_button">Back to login</a>
 </div>
 {% endblock %}

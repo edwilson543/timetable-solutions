@@ -1,0 +1,34 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'stylesheets/flash_messages.css' %}">
+
+{% if messages %}
+<div class="flash_message_container">
+    {% for message in messages %}
+    <div class="flash_message_base {{ message.tags }}_message">
+        <span class="error_message_text">
+            <!--Allow html embedded in the python string to be rendered as html-->
+            {% if 'safe' in message.tags %}
+                {{ message | safe }}
+            {% else %}
+                {{ message }}
+            {% endif %}
+        </span>
+        <div class="close_error_button">
+            &times
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!--JavaScript to allow users to close the flash messages-->
+<script>
+var closebtns = document.getElementsByClassName("close_error_button");
+var i;
+
+for (i = 0; i < closebtns.length; i++) {
+  closebtns[i].addEventListener("click", function() {
+    this.parentElement.style.display = 'none';
+  });
+}
+</script>

@@ -1,7 +1,7 @@
 """Module defining the model for a 'FixedClass' (i.e. a class with solved timetable slots) and any ancillary objects."""
 
 # Standard library imports
-from typing import Optional, Union, Tuple
+from typing import Self, Tuple
 
 # Django imports
 from django.db import models
@@ -24,6 +24,10 @@ class FixedClassQuerySet(models.QuerySet):
     def get_individual_fixed_class(self, school_id: int, class_id: int):
         """Method to return an individual FixedClass instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(class_id=class_id))
+
+    def get_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
+        """Method returning the queryset of FixedClass instances uploaded by the user"""
+        return self.filter(models.Q(school_id=school_id) & models.Q(user_defined=True))
 
     def get_non_user_defined_fixed_classes(self, school_id: int) -> models.QuerySet:
         """Method returning the queryset of FixedClass instances created by the solver"""
@@ -49,23 +53,57 @@ class FixedClass(models.Model):
     # Introduce a custom manager
     objects = FixedClassQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the FixedClass model
+        """
+        unique_together = [["school", "class_id", "user_defined"]]
+
+    class Constant:
+        """
+        Additional constants to store about the FixedClass model (that aren't an option in Meta)
+        """
+        human_string_singular = "fixed class"
+        human_string_plural = "fixed classes"
+
+        # Field names
+        pupils = "pupils"
+        time_slots = "time_slots"
+        user_defined = "user_defined"
+
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.school}: {self.class_id} (fixed)"
 
+    def __repr__(self):
+        """String representation of the model for debugging"""
+        return f"FixedClass: {self.school}: {self.class_id}"
+
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, class_id: str, subject_name: str, user_defined: bool,
-                   pupils: Optional[PupilQuerySet] = None, time_slots: Optional[TimetableSlotQuerySet] = None,
-                   teacher_id: Optional[int] = None, classroom_id: Optional[int] = None):
+                   pupils: PupilQuerySet | None = None, time_slots: TimetableSlotQuerySet | None = None,
+                   teacher_id: int | None = None, classroom_id: int | None = None) -> Self:
         """
         Method to create a new FixedClass instance. Note that pupils and timetable slots get added separately,
-        since they have a many to many relationship to the FixedClass model, so the fixed class must be saved first.
+        since they have a many-to-many relationship to the FixedClass model, so the fixed class must be saved first.
         """
+        if teacher_id is not None:
+            teacher = Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+        else:
+            teacher = None
+
+        if classroom_id is not None:
+            classroom = Classroom.objects.get_individual_classroom(school_id=school_id, classroom_id=classroom_id)
+        else:
+            classroom = None
+
         subject_name = subject_name.upper()
+
         fixed_cls = cls.objects.create(
-            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
-            classroom_id=classroom_id, user_defined=user_defined)
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher=teacher,
+            classroom=classroom, user_defined=user_defined)
+        fixed_cls.full_clean()
         fixed_cls.save()
 
         if (pupils is not None) and (pupils.count() > 0):
@@ -76,16 +114,22 @@ class FixedClass(models.Model):
         return fixed_cls
 
     @classmethod
-    def delete_all_non_user_defined_fixed_classes(cls, school_id: int, return_info: bool = False) -> Union[Tuple, None]:
+    def delete_all_user_defined_fixed_classes(cls, school_id: int) -> Tuple:
+        """Method deleting the queryset of FixedClass instances uploaded by a user for their school"""
+        fcs = cls.objects.get_user_defined_fixed_classes(school_id=school_id)
+        outcome = fcs.delete()
+        return outcome
+
+    @classmethod
+    def delete_all_non_user_defined_fixed_classes(cls, school_id: int) -> Tuple:
         """Method deleting the queryset of FixedClass instances previously produced by the solver"""
         fcs = cls.objects.get_non_user_defined_fixed_classes(school_id=school_id)
-        info = fcs.delete()
-        if return_info:
-            return info
+        outcome = fcs.delete()
+        return outcome
 
     # MUTATORS
     def add_pupils(self, pupils: PupilQuerySet) -> None:
-        """Method adding adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
+        """Method adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
         self.pupils.add(*pupils)
 
     def add_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:

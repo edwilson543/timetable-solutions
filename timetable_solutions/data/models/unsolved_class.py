@@ -1,5 +1,8 @@
 """Module defining the model for a user-specified class requirements ('unsolved classes') and any ancillary objects."""
 
+# Standard library imports
+from typing import Self, Tuple
+
 # Django imports
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -33,8 +36,8 @@ class UnsolvedClass(models.Model):
     n_double_periods - the number of double periods the unsolved class should be taught for, INCLUDING any FixedClass
     double periods. All count towards total_slots.
     """
-    class_id = models.CharField(max_length=20)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
+    class_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
     teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,
                                 related_name="unsolved_classes", blank=True, null=True)
@@ -47,6 +50,22 @@ class UnsolvedClass(models.Model):
     # Introduce a custom manager
     objects = UnsolvedClassQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the UnsolvedClass model
+        """
+        unique_together = [["school", "class_id"]]
+
+    class Constant:
+        """
+        Additional constants to store about the UnsolvedClass model (that aren't an option in Meta)
+        """
+        human_string_singular = "required class"
+        human_string_plural = "required classes"
+
+        # Field names
+        pupils = "pupils"
+
     def __str__(self):
         """String representation of the model for the django admin site"""
         return f"USC: {self.school}, {self.class_id}"
@@ -57,25 +76,39 @@ class UnsolvedClass(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int,
-                   classroom_id: int, total_slots: int, n_double_periods: int, pupils: PupilQuerySet):
+    def create_new(cls, school_id: int, class_id: str, subject_name: str, teacher_id: int, classroom_id: int,
+                   total_slots: int, n_double_periods: int, pupils: PupilQuerySet | None = None) -> Self:
         """
         Method to create a new UnsolvedClass instance. Note that pupils are added separately since Pupil has a
         Many-to-many relationship with UnsolvedClasses, so the UnsolvedClass instance must first be saved.
         """
+        teacher = Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+        classroom = Classroom.objects.get_individual_classroom(school_id=school_id, classroom_id=classroom_id)
         subject_name = subject_name.upper()
+
         unsolved_cls = cls.objects.create(
-            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher_id=teacher_id,
-            classroom_id=classroom_id, total_slots=total_slots, n_double_periods=n_double_periods)
+            school_id=school_id, class_id=class_id, subject_name=subject_name, teacher=teacher,
+            classroom=classroom, total_slots=total_slots, n_double_periods=n_double_periods)
+        unsolved_cls.full_clean()
         unsolved_cls.save()
-        if len(pupils) > 0:
+
+        if (pupils is not None) and (pupils.count() > 0):
             unsolved_cls.pupils.add(*pupils)
         return unsolved_cls
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+        """
+        Method to delete all the Unsolved instances associated with a particular school
+        """
+        instances = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = instances.delete()
+        return outcome
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
-        Additional validation on UnsolvedClass instances. In particular we cannot imply a number of double periods that
+        Additional validation on UnsolvedClass instances. Note that we cannot imply a number of double periods that
         would exceed the total number of slots.
         """
         if self.n_double_periods > (self.total_slots / 2):
