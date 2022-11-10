@@ -2,10 +2,14 @@
 Integration tests for combinations of processes relating to file upload.
 """
 
+# Standard library imports
+from pathlib import Path
+
 # Django imports
 from django import http
 from django import test
 from django import urls
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
@@ -19,14 +23,16 @@ class TestFileUploadIntegration(test.TestCase):
 
     fixtures = ["user_school_profile.json"]
 
-    def upload_test_file(self, filename: str, url_name: UrlName, file_field_name: str) -> http.HttpResponse:
+    def upload_test_file(self, filename: str, url_name: UrlName, file_field_name: str,
+                         base_path: Path = TEST_DATA_DIR / "valid_uploads") -> http.HttpResponse:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_name: the url extension for the given test file upload (also dict key in the data post request)
         :param file_field_name: name of the field in the form used to hold the uploaded file
+        :param base_path: directory of the file we are uploading
         """
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        with open((TEST_DATA_DIR / "valid_uploads" / filename), "rb") as csv_file:
+        with open((base_path / filename), "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
         url = urls.reverse(url_name)
         response = self.client.post(url, data={file_field_name: upload_file})
@@ -90,3 +96,28 @@ class TestFileUploadIntegration(test.TestCase):
             url = urls.reverse(UrlName.ALL_DATA_RESET.value)
             self.client.post(url)
             self.check_database_status(should_be_populated=False)
+
+    def test_example_files_given_to_user_actually_upload(self):
+        """
+        Test to see that if we try and upload the example download files, that it works.
+        i.e. the files given to the user as examples are valid.
+        """
+        # Set test parameters
+        base_path = settings.BASE_DIR / settings.MEDIA_ROOT / "example_files"
+
+        # Execute test unit
+        self.upload_test_file(filename="example_pupils.csv", url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+                              file_field_name=forms.PupilListUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_teachers.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+                              file_field_name=forms.TeacherListUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_classrooms.csv", url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+                              file_field_name=forms.ClassroomListUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+                              file_field_name=forms.TimetableStructureUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_class_requirements.csv", url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
+                              file_field_name=forms.UnsolvedClassUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_fixed_classes.csv", url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
+                              file_field_name=forms.FixedClassUpload.Meta.file_field_name, base_path=base_path)
+
+        # Check outcome
+        self.check_database_status(should_be_populated=True)
