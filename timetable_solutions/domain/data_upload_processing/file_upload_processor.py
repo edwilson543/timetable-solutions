@@ -171,7 +171,7 @@ class FileUploadProcessor:
         create_new_dict[Header.SCHOOL_ID] = self._school_access_key
         return create_new_dict
 
-    def _get_data_dict_from_row_for_create_new_unsolved_class(self, row: pd.Series, row_number: int) -> Dict:
+    def _get_data_dict_from_row_for_create_new_unsolved_class(self, row: pd.Series, row_number: int) -> Dict | None:
         """
         Method to process a single row of the unsolved class csv file upload (already converted to a Series).
 
@@ -213,8 +213,19 @@ class FileUploadProcessor:
             create_new_dict[models.FixedClass.Constant.time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
                 slot_ids_raw=raw_slot_ids, row_number=row_number)
 
+        if Header.TEACHER_ID in create_new_dict.keys():
+            raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
+            create_new_dict[Header.TEACHER_ID] = self._get_clean_id_from_file_field_value(
+                user_input_id=raw_teacher_id, row_number=row_number, field_name="teachers")
+
+        if Header.CLASSROOM_ID in create_new_dict.keys():
+            raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
+            create_new_dict[Header.CLASSROOM_ID] = self._get_clean_id_from_file_field_value(
+                user_input_id=raw_classroom_id, row_number=row_number, field_name="classrooms")
+
         return create_new_dict
 
+    # METHODS TO GET QUERY SETS FROM RAW STRINGS
     def _get_pupils_from_raw_pupil_ids_string(self, pupil_ids_raw: str,
                                               row_number: int) -> models.PupilQuerySet | None:
         """
@@ -250,6 +261,25 @@ class FileUploadProcessor:
                 return None
             else:
                 return slots
+
+    # STRING CLEANING METHODS
+    def _get_clean_id_from_file_field_value(self, user_input_id: str, row_number: int, field_name: str) -> int | None:
+        """
+        Method to clean a string the user has entered which should just be a single number (or None).
+        We use _get_integer_set_from_string, and then return the single integer or None, in the case where the user
+        has not given a valid value (which may not be an issue, since some id fields are nullable).
+        """
+        if user_input_id is not None:
+            user_input_id = str(int(user_input_id))
+            id_set = self._get_integer_set_from_string(raw_string_of_ids=user_input_id, row_number=row_number)
+            if id_set is not None:
+                if len(id_set) > 1:
+                    self.upload_error_message = f"Cannot currently have multiple {field_name} for a single class!\n" \
+                                                f"Multiple ids were given in row {row_number}"
+                    return None
+                else:
+                    cleaned_id = next(iter(id_set))
+                    return cleaned_id
 
     def _get_integer_set_from_string(self, raw_string_of_ids: str, row_number: int) -> Set[int] | None:
         """
