@@ -9,6 +9,7 @@ from typing import Dict
 # Django imports
 from django import urls, forms, http
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from django.views.generic import TemplateView
 
 # Local application imports
@@ -53,6 +54,12 @@ class UploadPage(LoginRequiredMixin, TemplateView):
         """
         school = self.request.user.profile.school
         upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
+
+        if upload_status.all_uploads_complete:
+            message = "You have uploaded all the required files, and can now start generating timetable solutions!\n" \
+                      f"Navigate over to the " \
+                      f"<a href='{urls.reverse(UrlName.CREATE_TIMETABLES.value)}'>create</a> page to get started."
+            messages.add_message(request=self.request, level=messages.INFO, message=message, extra_tags="safe")
 
         context = {
             "required_forms": {
