@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import Dict, Type
 
 # Django imports
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django import http
@@ -35,6 +36,15 @@ class RequiredUpload:
     empty_form: forms.Form
     upload_url_name: UrlName
     reset_url_name:  UrlName
+    example_download_url_suffix: str  # e.g. 'pupils.csv'
+
+    @property
+    def example_download_absolute_url(self):
+        """
+        Property providing the absolute url to the page that will download an example file, for this required upload.
+        """
+        url = settings.MEDIA_URL + "/example_files/" + self.example_download_url_suffix
+        return url
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
@@ -62,29 +72,35 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
                                              empty_form=forms.PupilListUpload(),
                                              upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                                             reset_url_name=UrlName.PUPIL_LIST_RESET.value),
+                                             reset_url_name=UrlName.PUPIL_LIST_RESET.value,
+                                             example_download_url_suffix="example_pupils.csv"),
                     "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                                empty_form=forms.TeacherListUpload(),
                                                upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-                                               reset_url_name=UrlName.TEACHER_LIST_RESET.value),
+                                               reset_url_name=UrlName.TEACHER_LIST_RESET.value,
+                                               example_download_url_suffix="example_teachers.csv"),
                     "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                  empty_form=forms.ClassroomListUpload(),
                                                  upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
-                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET.value),
+                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET.value,
+                                                 example_download_url_suffix="example_classrooms.csv"),
                     "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                 empty_form=forms.TimetableStructureUpload(),
                                                 upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
-                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value),
+                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value,
+                                                example_download_url_suffix="example_timetable.csv"),
                     "unsolved_classes": RequiredUpload(
                         form_name="Class requirements", upload_status=upload_status.unsolved_classes,
                         empty_form=forms.UnsolvedClassUpload(),
                         upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
-                        reset_url_name=UrlName.UNSOLVED_CLASSES_RESET.value),
+                        reset_url_name=UrlName.UNSOLVED_CLASSES_RESET.value,
+                        example_download_url_suffix="example_class_requirements.csv"),
                     "fixed_classes": RequiredUpload(
                         form_name="Fixed classes", upload_status=upload_status.fixed_classes,
                         empty_form=forms.FixedClassUpload(),
                         upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
-                        reset_url_name=UrlName.FIXED_CLASSES_RESET.value)
+                        reset_url_name=UrlName.FIXED_CLASSES_RESET.value,
+                        example_download_url_suffix="example_fixed_classes.csv")
                     }
             }
         return context
