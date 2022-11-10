@@ -4,6 +4,7 @@
 from django.urls import path
 
 # Local application imports
+from constants.example_files import ExampleFile
 from constants.url_names import UrlName
 from . import views
 
@@ -27,4 +28,12 @@ urlpatterns = [
     path('unsolved_class_reset/', views.UnsolvedClassReset.as_view(), name=UrlName.UNSOLVED_CLASSES_RESET.value),
     path('fixed_class_reset/', views.FixedClassReset.as_view(), name=UrlName.FIXED_CLASSES_RESET.value),
     path('all_data_reset/', views.AllSchoolDataReset.as_view(), name=UrlName.ALL_DATA_RESET.value),
+
+    # Data example DOWNLOAD endpoints
+    path('pupil_download/', views.PupilDownload.as_view(), name=UrlName.PUPIL_DOWNLOAD.value),
+    path('teacher_download/', views.TeacherDownload.as_view(), name=UrlName.TEACHER_DOWNLOAD.value),
+    path('classroom_download/', views.ClassroomDownload.as_view(), name=UrlName.CLASSROOM_DOWNLOAD.value),
+    path('timetable_download/', views.TimetableDownload.as_view(), name=UrlName.TIMETABLE_DOWNLOAD.value),
+    path('uns_class_download/', views.UnsolvedClassDownload.as_view(), name=UrlName.UNSOLVED_CLASSES_DOWNLOAD.value),
+    path('fixed_class_download/', views.FixedClassDownload.as_view(), name=UrlName.FIXED_CLASSES_DOWNLOAD.value),
 ]

@@ -2,12 +2,14 @@
 Base classes for the views used to handle different types of actions relating to the data upload page. These are:
     - DataUploadBase - base class for uploading data to the database
     - DataResetBase - base class for resetting a user's data
+    - ExampleDownloadBase - base class for allowing the download of example upload files
 The pattern is to implement all logic in these base classes, and then for each required upload, create one subclass
 which has next to no code in it.
 """
 
 # Standard library imports
-from typing import Type
+from pathlib import Path
+from typing import Callable, Type
 
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -116,3 +118,27 @@ class DataResetBase(LoginRequiredMixin, View):
         )
 
         return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
+
+
+class ExampleDownloadBase(LoginRequiredMixin):
+    """
+    Class responsible for allowing users to download the example files
+    """
+
+    example_filepath: Path  # Absolute path in the local filesystem to the file to download
+
+    @classmethod
+    def as_view(cls) -> Callable:
+        """
+        as_view is used to keep a clean interface with the other views in the url dispatcher
+        """
+        return cls._view
+
+    @classmethod
+    def _view(cls, request: http.HttpRequest) -> http.FileResponse:
+        """
+        Method to instantiate and return a file response object, using the example_filepath class attribute.
+        """
+        del request  # request is not used, but must be included as an argument
+        response = http.FileResponse(open(cls.example_filepath, "rb"), as_attachment=True)
+        return response

@@ -2,9 +2,6 @@
 Module defining constants relating to urls.
 """
 
-# Django imports
-from django.conf import settings
-
 # Standard library imports
 from enum import StrEnum
 
@@ -47,6 +44,14 @@ class UrlName(StrEnum):
     UNSOLVED_CLASSES_RESET = "unsolved_class_reset"
     ALL_DATA_RESET = "all_data_reset"
 
+    # Example file download urls
+    CLASSROOM_DOWNLOAD = "classroom_download"
+    FIXED_CLASSES_DOWNLOAD = "fixed_class_download"
+    PUPIL_DOWNLOAD = "pupil_download"
+    TEACHER_DOWNLOAD = "teacher_download"
+    TIMETABLE_DOWNLOAD = "timetable_download"
+    UNSOLVED_CLASSES_DOWNLOAD = "unsolved_class_download"
+
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 
@@ -56,23 +61,3 @@ class UrlName(StrEnum):
     TEACHERS_NAVIGATOR = "teachers_navigator"
     TEACHER_TIMETABLE = "teacher_timetable"  # Note reverse also requires a teacher id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
-
-
-class ExampleFile(StrEnum):
-    """
-    Enumeration of all the example files that can be downloaded by users, and construction of their respective urls.
-    """
-    PUPILS = "example_pupils.csv"
-    TEACHERS = "example_teachers.csv"
-    CLASSROOMS = "example_classrooms.csv"
-    TIMETABLE = "example_timetable.csv"
-    UNSOLVED_CLASS = "example_class_requirements.csv"
-    FIXED_CLASS = "example_fixed_class.csv"
-
-    @property
-    def url(self) -> str:
-        """
-        Property indicating the url of the example file, relative to the MEDIA_URL
-        """
-        url = settings.MEDIA_URL + "/example_files/" + self.value
-        return url

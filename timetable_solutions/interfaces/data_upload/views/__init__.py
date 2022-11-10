@@ -6,3 +6,5 @@ from .upload_views import (PupilListUpload, TeacherListUpload, ClassroomListUplo
                            UnsolvedClassUpload, FixedClassUpload)
 from .reset_views import (PupilListReset, TeacherListReset, ClassroomListReset, TimetableStructureReset,
                           UnsolvedClassReset, FixedClassReset, AllSchoolDataReset)
+from.download_views import (PupilDownload, TeacherDownload, ClassroomDownload, TimetableDownload,
+                            UnsolvedClassDownload, FixedClassDownload)

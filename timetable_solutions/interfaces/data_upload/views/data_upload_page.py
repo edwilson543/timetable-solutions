@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 # Local application imports
-from constants.url_names import UrlName, ExampleFile
+from constants.url_names import UrlName
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 
@@ -30,7 +30,7 @@ class RequiredUpload:
     empty_form: forms.Form
     upload_url_name: UrlName
     reset_url_name:  UrlName
-    example_download_absolute_url: str  # provided by the ExampleFile Enum
+    example_download_url_name: UrlName
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
@@ -48,7 +48,8 @@ class UploadPage(LoginRequiredMixin, TemplateView):
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
-        We retrieve the upload status of each of the necessary datasets for the given school
+
+        Note the context also provides several url names for reversing in the template tags.
         """
         school = self.request.user.profile.school
         upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
@@ -59,34 +60,34 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                                              empty_form=forms.PupilListUpload(),
                                              upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value,
                                              reset_url_name=UrlName.PUPIL_LIST_RESET.value,
-                                             example_download_absolute_url=ExampleFile.PUPILS.url),
+                                             example_download_url_name=UrlName.PUPIL_DOWNLOAD.value),
                     "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                                empty_form=forms.TeacherListUpload(),
                                                upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value,
                                                reset_url_name=UrlName.TEACHER_LIST_RESET.value,
-                                               example_download_absolute_url=ExampleFile.TEACHERS.url),
+                                               example_download_url_name=UrlName.TEACHER_DOWNLOAD.value),
                     "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                  empty_form=forms.ClassroomListUpload(),
                                                  upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
                                                  reset_url_name=UrlName.CLASSROOM_LIST_RESET.value,
-                                                 example_download_absolute_url=ExampleFile.CLASSROOMS.url),
+                                                 example_download_url_name=UrlName.CLASSROOM_DOWNLOAD.value),
                     "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                 empty_form=forms.TimetableStructureUpload(),
                                                 upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
                                                 reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value,
-                                                example_download_absolute_url=ExampleFile.TIMETABLE.url),
+                                                example_download_url_name=UrlName.TIMETABLE_DOWNLOAD.value),
                     "unsolved_classes": RequiredUpload(
                         form_name="Class requirements", upload_status=upload_status.unsolved_classes,
                         empty_form=forms.UnsolvedClassUpload(),
                         upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
                         reset_url_name=UrlName.UNSOLVED_CLASSES_RESET.value,
-                        example_download_absolute_url=ExampleFile.UNSOLVED_CLASS.url),
+                        example_download_url_name=UrlName.UNSOLVED_CLASSES_DOWNLOAD.value),
                     "fixed_classes": RequiredUpload(
                         form_name="Fixed classes", upload_status=upload_status.fixed_classes,
                         empty_form=forms.FixedClassUpload(),
                         upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
                         reset_url_name=UrlName.FIXED_CLASSES_RESET.value,
-                        example_download_absolute_url=ExampleFile.FIXED_CLASS.url)
+                        example_download_url_name=UrlName.FIXED_CLASSES_DOWNLOAD.value)
                     }
             }
         return context
