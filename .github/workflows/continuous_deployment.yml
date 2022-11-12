@@ -50,3 +50,53 @@ jobs:
         run: |
           docker push ${{ env.APP_IMAGE }}
           docker push ${{ env.NGINX_IMAGE }}
+
+  deploy:
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v1
+      - name: Add environment variables to .env
+        run: |
+          echo DEBUG=0 >> .env
+          echo SQL_ENGINE=django.db.backends.postgresql >> .env
+          echo DATABASE=postgres >> .env
+          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo SQL_DATABASE=${{ secrets.POSTGRES_NAME }} >> .env
+          echo SQL_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo SQL_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo SQL_HOST=${{ secrets.POSTGRES_HOST }} >> .env
+          echo SQL_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
+          echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          echo DOCKERHUB_USERNAME=${{ env.DOCKERHUB_USERNAME }} >>.env
+          echo DOCKERHUB_TOKEN=${{ env.DOCKERHUB_TOKEN }} >>.env
+      - name: Add private SSH key to the ssh-agent
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+      - name: Add the private ssh key to the ssh-agent
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          # Adding the private key to the ssh agent allows us to ssh into the remote server below
+          run: |
+            mkdir -p ~/.ssh
+            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Build and deploy images inside Digital Ocean droplet
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        # We SSH into the remote server, copy over the /env file and docker-compose file,
+        # We then enter the app directory (which was initially setup using the command line)
+        # Pull the docker images from dockerhub (thanks to the 'build' job), and use these to spin up the containers
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@{{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/app
+          ssh -o StrictHostKeyChecking=no root@{{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+          cd /app
+          source .env
+          docker login -u ${{ env.DOCKERHUB_USERNAME }} -p ${{ env.DOCKERHUB_TOKEN }}
+          docker pull ${{ env.APP_IMAGE }}/tts_app
+          docker pull ${{ env.NGINX_IMAGE }}/nginx_app
+          docker-compose -f docker-compose.prod.yml up -d
+          ENDSSH
