@@ -1,3 +1,7 @@
+# Git
+.git
+.gitignore
+
 # Environments
 .env
 .venv
@@ -20,6 +24,6 @@ db.sqlite3-journal
 data/
 
 # Unnecessary project components
-.github/
 assets/
 scripts/
+static/
