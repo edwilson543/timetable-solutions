@@ -1,6 +1,11 @@
 name: Continuous delivery to production
 
 on: [push]
+#on:
+#  - workflow_run:
+#    workflows: [CI testing]
+#    types:
+#      - completed
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
@@ -40,7 +45,7 @@ jobs:
           docker pull ${{ env.NGINX_IMAGE }} || true
       - name: Build docker images
         run: |
-          docker-compose -f docker-compose.cd.yml build
+          docker-compose -f docker-compose.prod.yml build
       - name: Push docker images
         run: |
           docker push ${{ env.APP_IMAGE }}

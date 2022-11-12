@@ -14,8 +14,6 @@ services:
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
     expose:
       - 8000
-    env_file:
-      - .env  # Uncomitted env file
     image: "${APP_IMAGE}"
     container_name: tts_django_c
     command: bash -c "
@@ -42,4 +40,4 @@ services:
 
 volumes:
   static_volume:  # static_volume acts like a pivot between static files in the tts_app and nginx containers
-  media_volume:
+  media_volume:  # Similarly for media_volume
