@@ -11,6 +11,8 @@ services:
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
     ports:
       - 8000:8000
+    env_file:
+      - .env
     command: bash -c "
       python manage.py migrate
       && python manage.py load_all_fixtures

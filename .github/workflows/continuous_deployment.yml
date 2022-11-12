@@ -73,8 +73,8 @@ jobs:
           echo SQL_PORT=${{ secrets.POSTGRES_PORT }} >> .env
           echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
-          echo DOCKERHUB_USERNAME=${{ env.DOCKERHUB_USERNAME }} >>.env
-          echo DOCKERHUB_TOKEN=${{ env.DOCKERHUB_TOKEN }} >>.env
+          echo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} >>.env
+          echo DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }} >>.env
       - name: Add private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
