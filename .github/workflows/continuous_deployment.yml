@@ -61,6 +61,8 @@ jobs:
       - name: Checkout main
         uses: actions/checkout@v1
       - name: Add environment variables to .env
+        # For the django settings modules, we need to export all relevant secrets as environment variables
+        # We also require other variables (e.g. dockerhub credentials) for ease of use in the remote server
         run: |
           echo DEBUG=0 >> .env
           echo SQL_ENGINE=django.db.backends.postgresql >> .env
@@ -71,6 +73,7 @@ jobs:
           echo SQL_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo SQL_HOST=${{ secrets.POSTGRES_HOST }} >> .env
           echo SQL_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo DIGITAL_OCEAN_IP_ADDRESS=${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} >> .env
           echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
           echo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} >>.env
@@ -94,8 +97,8 @@ jobs:
           scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:.
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
           source .env
-          echo ${{ env.DOCKERHUB_PASSWORD }} | docker login -u ${{ env.DOCKERHUB_USERNAME }} --password-stdin
-          docker pull ${{ env.APP_IMAGE }}
-          docker pull ${{ env.NGINX_IMAGE }}
+          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
+          docker pull $APP_IMAGE
+          docker pull $NGINX_IMAGE
           docker-compose -f docker-compose.prod.yml up -d
           ENDSSH
