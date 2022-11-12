@@ -75,9 +75,6 @@ jobs:
       - name: Add private SSH key to the ssh-agent
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-      - name: Add the private ssh key to the ssh-agent
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           # Adding the private key to the ssh agent allows us to ssh into the remote server below
           run: |
             mkdir -p ~/.ssh
