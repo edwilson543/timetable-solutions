@@ -9,8 +9,8 @@ services:
     volumes:
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
-    expose:
-      - 8000
+    ports:
+      - 8000:8000
     command: bash -c "
       python manage.py migrate
       && python manage.py load_all_fixtures

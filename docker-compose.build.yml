@@ -3,7 +3,7 @@ version: "3.8"
 services:
 
   tts_app:
-    restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
+    image: "${APP_IMAGE}"
     build:
       context: .  # Root directory (where this file is)
       dockerfile: timetable_solutions/Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
@@ -14,7 +14,6 @@ services:
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
     expose:
       - 8000
-    image: "${APP_IMAGE}"
 
   tts_nginx:
     image: "${NGINX_IMAGE}"

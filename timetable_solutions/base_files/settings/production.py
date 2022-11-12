@@ -16,7 +16,7 @@ from .base_settings import *
 DEBUG = int(config("DEBUG"))
 MESSAGE_LEVEL = messages.INFO
 
-ALLOWED_HOSTS = ["0.0.0.0", "localhost"]  # For running production environment locally with docker
+ALLOWED_HOSTS = ["0.0.0.0", "localhost", config("DIGITAL_OCEAN_IP_ADDRESS")]  # For running production environment locally with docker
 
 SECRET_KEY = config("SECRET_KEY")
 
