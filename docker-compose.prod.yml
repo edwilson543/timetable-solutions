@@ -4,7 +4,6 @@ services:
 
   tts_app:
     image: "${APP_IMAGE}"
-    container_name: tts_django_c
     restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
     volumes:
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
@@ -22,7 +21,6 @@ services:
 
   tts_nginx:
     image: "${NGINX_IMAGE}"
-    container_name: tts_nginx_c
     volumes:
       - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
       - media_volume:/var/www/timetable_scheduling/mediafiles
