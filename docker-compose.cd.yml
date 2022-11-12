@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
 
-  web:
+  tts_app:
     restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
     build:
       context: .  # Root directory (where this file is)
       dockerfile: Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
       cache_from:
-        - "${WEB_IMAGE}"
+        - "${APP_IMAGE}"
     volumes:
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
@@ -16,7 +16,7 @@ services:
       - 8000
     env_file:
       - .env  # Uncomitted env file
-    image: "${WEB_IMAGE}"
+    image: "${APP_IMAGE}"
     container_name: tts_django_c
     command: bash -c "
       python manage.py migrate
@@ -25,7 +25,7 @@ services:
       && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
       "
 
-  nginx:
+  tts_nginx:
     image: "${NGINX_IMAGE}"
     container_name: tts_nginx_c
     ports:
@@ -35,8 +35,8 @@ services:
       - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
       - media_volume:/var/www/timetable_scheduling/mediafiles
     depends_on:
-      - web
+      - tts_app
 
 volumes:
-  static_volume:  # static_volume acts like a pivot between static files in the web and nginx containers
+  static_volume:  # static_volume acts like a pivot between static files in the tts_app and nginx containers
   media_volume:
