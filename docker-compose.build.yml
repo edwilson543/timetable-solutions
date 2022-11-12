@@ -3,29 +3,30 @@ version: "3.8"
 services:
 
   tts_app:
-    image: "${APP_IMAGE}"
-    container_name: tts_django_c
     restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
+    build:
+      context: .  # Root directory (where this file is)
+      dockerfile: timetable_solutions/Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
+      cache_from:
+        - "${APP_IMAGE}"
     volumes:
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
       - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
     expose:
       - 8000
-    command: bash -c "
-      python manage.py migrate
-      && python manage.py load_all_fixtures
-      && python manage.py collectstatic --noinput
-      && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
-      "
+    image: "${APP_IMAGE}"
 
   tts_nginx:
     image: "${NGINX_IMAGE}"
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
     container_name: tts_nginx_c
+    ports:
+      - 80:80
     volumes:
       - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
       - media_volume:/var/www/timetable_scheduling/mediafiles
-    ports:
-      - 80:80
     depends_on:
       - tts_app
 
