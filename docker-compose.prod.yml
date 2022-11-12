@@ -6,7 +6,7 @@ services:
     restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
     build:
       context: .  # Root directory (where this file is)
-      dockerfile: Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
+      dockerfile: timetable_solutions/Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
       cache_from:
         - "${APP_IMAGE}"
     volumes:
@@ -32,7 +32,6 @@ services:
     ports:
       - 80:80
     volumes:
-#      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro  # Standard nginx configuration
       - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
       - media_volume:/var/www/timetable_scheduling/mediafiles
     depends_on:

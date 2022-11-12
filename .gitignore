@@ -162,8 +162,7 @@ celerybeat.pid
 
 # Environments
 .env
-.env.dev
-.env.prod
+.env-prod
 .venv
 env/
 venv/
