@@ -22,9 +22,8 @@ jobs:
       - name: Add environment variables to .env
         run: |
           echo DEBUG=0 >> .env
-          echo SQL_ENGINE=django.db.backends.postgresql >> .env
           echo DATABASE=postgres >> .env
-          echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
           echo POSTGRES_NAME=${{ secrets.POSTGRES_NAME }} >> .env
           echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
@@ -65,14 +64,13 @@ jobs:
         # We also require other variables (e.g. dockerhub credentials) for ease of use in the remote server
         run: |
           echo DEBUG=0 >> .env
-          echo SQL_ENGINE=django.db.backends.postgresql >> .env
           echo DATABASE=postgres >> .env
           echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
-          echo SQL_DATABASE=${{ secrets.POSTGRES_NAME }} >> .env
-          echo SQL_USER=${{ secrets.POSTGRES_USER }} >> .env
-          echo SQL_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo SQL_HOST=${{ secrets.POSTGRES_HOST }} >> .env
-          echo SQL_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo POSTGRES_NAME=${{ secrets.POSTGRES_NAME }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
+          echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
           echo DIGITAL_OCEAN_IP_ADDRESS=${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} >> .env
           echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
