@@ -12,7 +12,7 @@ services:
       - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     container_name: tts_postgres_c
 
-  django_app:
+  web:
     restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
     build:
       context: .  # Root directory (where this file is)
@@ -46,8 +46,8 @@ services:
       - django_build:/var/www/timetable_scheduling  # Copy over our django build into the equivalent in the nginx cont
       - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
     depends_on:
-      - django_app
+      - web
 
 volumes:
   django_build:  # django builds allows the django app to be reflected in the nginx container
-  static_volume:  # static_volume acts like a pivot between static files in the django_app and nginx containers
+  static_volume:  # static_volume acts like a pivot between static files in the web and nginx containers

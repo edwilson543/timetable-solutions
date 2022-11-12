@@ -29,8 +29,8 @@ jobs:
         run: |
           echo "WEB_IMAGE=$(echo ${{env.WEB_IMAGE}} )" >> $GITHUB_ENV
           echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
-      - name: Login to Github packages
-        run: echo ${PERSONAL_ACCESS_TOKEN} | docker login gchr.io -u ${{ secrets.NAMESPACE }} --password-stdin
+      - name: Login to Dockerhub
+        run: echo ${PERSONAL_ACCESS_TOKEN} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
         env:
           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - name: Pull docker images
