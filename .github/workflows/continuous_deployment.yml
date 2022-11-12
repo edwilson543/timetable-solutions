@@ -54,6 +54,8 @@ jobs:
   deploy:
     name: Deploy to DigitalOcean
     runs-on: ubuntu-20.04
+    needs: build
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -76,11 +78,11 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           # Adding the private key to the ssh agent allows us to ssh into the remote server below
-          run: |
-            mkdir -p ~/.ssh
-            ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
-            ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+        run: |
+          mkdir -p ~/.ssh
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
       - name: Build and deploy images inside Digital Ocean droplet
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
