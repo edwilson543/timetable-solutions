@@ -18,7 +18,7 @@ services:
       context: .  # Root directory (where this file is)
       dockerfile: Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
     volumes:
-      - .:/timetable_scheduling  # Mirror local files with container  - TODO - try deleting
+      - .:/timetable_scheduling  # Mirror local files with container
       - django_build:/timetable_scheduling  # Note /timetable_scheduling is WORKDIR in Dockerfile
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
     ports:
