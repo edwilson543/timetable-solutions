@@ -20,7 +20,7 @@ services:
     volumes:
       - .:/timetable_scheduling  # Mirror local files with container  - TODO - try deleting
       - django_build:/timetable_scheduling  # Note /timetable_scheduling is WORKDIR in Dockerfile
-      - static_volume:/timetable_scheduling/timetable_solutions/static  # mirror static COLLECTION in container
+      - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
     ports:
       - 8000:8000  # TODO -> this can probably be replaced by an expose 8000???
     env_file:
@@ -28,8 +28,7 @@ services:
     image: tts_app:timetable_scheduling
     container_name: tts_django_c
     command: bash -c "
-      cd timetable_solutions
-      && python manage.py migrate
+      python manage.py migrate
       && python manage.py load_all_fixtures
       && python manage.py collectstatic --noinput
       && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
