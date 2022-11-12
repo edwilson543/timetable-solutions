@@ -21,8 +21,8 @@ services:
       - .:/timetable_scheduling  # Mirror local files with container
       - django_build:/timetable_scheduling  # Note /timetable_scheduling is WORKDIR in Dockerfile
       - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
-    ports:
-      - 8000:8000  # TODO -> this can probably be replaced by an expose 8000???
+    expose:
+      - 8000
     env_file:
       - ./.env  # Uncomitted env file
     image: tts_app:timetable_scheduling
