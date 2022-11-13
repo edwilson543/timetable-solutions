@@ -14,6 +14,7 @@ env:
 jobs:
 
   build:
+    # Build the docker images from docker-compose.build.yml, and push them to docker hub
     name: Build Docker images
     runs-on: ubuntu-20.04
     steps:
@@ -52,10 +53,10 @@ jobs:
           docker push ${{ env.NGINX_IMAGE }}
 
   deploy:
+    # SSH into the remote server, pull the images from dockerhub and spin up some containers from them
     name: Deploy to DigitalOcean
     runs-on: ubuntu-20.04
     needs: build
-#    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -96,7 +97,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
           cd /app
           source .env
-          echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin
           docker pull $APP_IMAGE
           docker pull $NGINX_IMAGE
           docker-compose -f docker-compose.prod.yml up -d
