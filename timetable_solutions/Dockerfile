@@ -9,8 +9,10 @@ ENV DJANGO_SETTINGS_MODULE=base_files.settings.production
 # Set the working directory
 WORKDIR /timetable_scheduling
 
-# Install dependencies (note we don't install the test suit dependencies)
-RUN pip install --upgrade pip
+# Install dependencies (note we don't install the test suite dependencies)
 COPY ./timetable_solutions/app-requirements.txt app-requirements.txt
-RUN pip3 install -r app-requirements.txt
+RUN pip install --upgrade pip
+RUN pip install -r app-requirements.txt
+
+# Copy over the full django project
 COPY ./timetable_solutions .
