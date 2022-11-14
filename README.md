@@ -3,7 +3,7 @@
 <h3>
 This is a work in progress project to provide a timetabling service for schools, 
 implemented using django and deployed at
-<a href="timetable-solutions.com">timetable-solutions.com</a>
+<a href="http://timetable-solutions.com">timetable-solutions.com</a>
 </h3>
 
 <h5>
