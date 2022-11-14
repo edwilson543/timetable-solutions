@@ -32,8 +32,8 @@ For more info, see the project wiki.
 <h4>Basic setup</h4>
 <ol>
     <li>Fork and clone repository</li>
-    <li>Setup virtual environment</li>
-    <li>Install the dependencies from requirements.txt (with pip is fine)</li>
+    <li>Setup virtual environment at project root (or alternatively, within /timetable_solutions)</li>
+    <li>Install the dependencies from app-requirements.txt and test-requirements.txt with pip</li>
     <li>
         The project is configured to use pytest-django. To check the tests are passing, at src/timetable_solutions/:<br>
         <code>pytest</code>
