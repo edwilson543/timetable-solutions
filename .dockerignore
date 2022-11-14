@@ -1,25 +1,19 @@
+# Git
+.git
+.gitignore
+
 # Environments
 .env
-.venv
-env/
+.env-prod
 venv/
-ENV/
-env.bak/
-venv.bak/
 
 # Testing
 .pytest_cache/
-tests/
+*/tests/
+*/pytest.ini
+*/test-requirements.txt
 
 # Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-.data
+*/static/
+*/db.sqlite3
 data/
-
-# Unnecessary project components
-.github/
-assets/
-scripts/

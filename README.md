@@ -1,18 +1,36 @@
-<h2>Timetable scheduling solutions web application implemented in django</h2>
+<h1>School timetable scheduling web application</h1>
 
-<p>
-This is a WIP project, to create a timetabling service for schools.<br>
-The core functionality of the application is / will be:
-</p>
+<h3>
+This is a work in progress project to provide a timetabling service for schools, 
+implemented using django and deployed at
+<a href="timetable-solutions.com">timetable-solutions.com</a>
+</h3>
+
+<h5>
+Core functionality:
+</h5>
 <ol>
-    <li>Create an account and register a school</li>
-    <li>Upload teacher/pupils/classrooms data for the year</li>
-    <li>Upload the classes that must take place, and any classes that must take place at a certain time</li>
-    <li>Set preferences for the timetable structure (e.g. when the best times for free periods are)</li>
-    <li>The requirements / preferences are then formulated as a linear programming problem and a solver API is called</li>
-    <li>Pupil and teacher timetables are available for viewing / download in the app</li>
+    <li>Create an account and register a school with the site</li>
+    <li>Upload teacher, pupil and classroom data</li>
+    <li>Upload the classes that must take place, for how many periods and double periods per week,
+        as well as any classes that must take place at a certain time</li>
+    <li>Set preferences for the timetables that will be generated (e.g. when the best times for free periods are)</li>
+    <li>View and download the pupil and teacher timetables (eventually email these out too)</li>
 </ol>
-For more info, see the project wiki.
+
+<h5>Tech stack:</h5>
+<ul>
+    <li>Django for the web application backend logic</li>
+    <li>PuLP for linear programming (a third-party python package) with COIN API configured as the solver,
+    to generate the timetable solutions</li>
+    <li>Django templates and external css for the frontend</li>
+    <li>Pytest-django for running the test suite</li>
+    <li>Continuous integration with GitHub actions; running the test suite on git pushes and pull requests </li>
+    <li>Continuous deployment with GitHub actions, Docker and Docker Hub, to Digital Ocean</li>
+    <li>In production, a PostgreSQL database is used, and for development a SQLite3 database</li>
+    <li>In production, gunicorn is used as the application server, and nginx as the web server</li>
+</ul>
+
 <hr>
 
 
@@ -25,53 +43,54 @@ For more info, see the project wiki.
         If using a mac with an Apple silicon chip, you will need Rosetta installed:<br>
         <code>softwareupdate --install-rosetta</code>
     </li>
-    <li>Optionally, docker for running the production environment</li>
+    <li>Optionally, docker for running the production environment locally</li>
     
 </ul>
 
 <h4>Basic setup</h4>
 <ol>
     <li>Fork and clone repository</li>
-    <li>Setup virtual environment</li>
-    <li>Install the dependencies from requirements.txt (with pip is fine)</li>
+    <li>Setup virtual environment at project root (or alternatively, within /timetable_solutions)</li>
+    <li><b>pip install</b> the dependencies from app-requirements.txt and test-requirements.txt</li>
     <li>
-        The project is configured to use pytest-django. To check the tests are passing, at src/timetable_solutions/:<br>
+        Check the tests are passing; with /timetable_solutions as the working directory:<br>
         <code>pytest</code>
     </li>
 </ol>
 
 <h4>Development setup</h4>
-The local development setup uses a sqlite database, so to use the development server you just need to:
+The local development setup uses a SQLite database. So to run the app from the development server, with
+timetable_solutions as the working directory:
 <ol>    
     <li>
-        Migrate the models (the migrations are all committed)<br>
+        Migrate the models:<br>
         <code>python manage.py migrate</code>
     </li>
-    <li>Install the fixtures if you want some dummy data to view, by:<br>
-        <code>cd timetable_solutions</code><br>
-        <code>python manage.py load_all_fixtures</code>
     <li>
-        Alternatively, create/upload your own data through the app.
+        Install the fixtures if you want some dummy data to view 
+        (alternatively, create / upload your own data through the app):<br>
+        <code>python manage.py load_all_fixtures</code>
     </li>
     <li>
+        Run the development server:<br>   
         <code>python manage.py runserver</code><br>
     </li>
 </ol>
 
 <h4>Production setup</h4>
-To run the production environment locally:
+You can run an environment equivalent to the production environment, using local docker containers:
 <ol>
     <li>
-        Create a .env file in the project root, specifying all environment variables referenced in docker-compose.yml
+        Create a .env file in the project root, specifying all environment variables referenced in the production
+        settings at timetable_solutions/base_files/settings/production.py
     </li>
     <li>
-        Note that the default docker platform on some macs is different to on linux / other macs, and therefore
-        <a href="https://stackoverflow.com/questions/65612411/forcing-docker-to-use-linux-amd64-platform-by-default-on-macos">
-            requires special treatment of the DEFAULT_DOCKER_PLATFORM environment variable. 
-        </a>Note also running docker-compose build before docker-compose up seems to be a requirement.<br>
-        From the project root build the docker images and spin up the containers:<br>
-        <code>docker-compose build</code><br>
-        <code>docker-compose up</code>
+        Build the docker images - with the project root as your working directory:<br>
+        <code>docker-compose -f docker-compose.dev.yml build</code>
+    </li>
+    <li>
+        Spin up the docker containers:<br>
+        <code>docker-compose -f docker-compose.dev.yml up</code>
     </li>
 </ol>
 

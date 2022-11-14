@@ -6,8 +6,10 @@ import json
 # Third party imports
 from rest_framework.test import APIRequestFactory
 from rest_framework.response import Response
+import pytest
 
 # Django imports
+from django.conf import settings
 from django import test
 
 # Local application imports
@@ -16,6 +18,7 @@ from interfaces.rest_api import views
 from tests.input_settings import FIXTURE_DIR
 
 
+@pytest.mark.skipif(condition=(not settings.ENABLE_REST_API), reason="API disabled in production.")
 class TestFixedClassViewSet(test.TestCase):
     """Tests for the FixedClass ModelViewSet"""
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",

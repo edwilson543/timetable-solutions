@@ -3,13 +3,18 @@
 # Standard library imports
 import json
 
+# Third party imports
+import pytest
+
 # Django imports
+from django.conf import settings
 from django import test
 
 # Local application imports
 from tests.input_settings import FIXTURE_DIR
 
 
+@pytest.mark.skipif(condition=(not settings.ENABLE_REST_API), reason="API disabled in production.")
 class TestUnsolvedClassViewSet(test.TestCase):
     """Tests for the FixedClass ModelViewSet"""
 

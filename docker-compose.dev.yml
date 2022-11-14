@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+
+  postgres_database:  # Simulates the postgres database present in production
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data  # Establishes mapping between local data folder and the container
+    container_name: tts_postgres_c
+
+  tts_app:
+    restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
+    build:
+      context: .  # Root directory (where this file is)
+      dockerfile: timetable_solutions/Dockerfile  # Dockerfile specifies the build for the app, and is also at project root
+    volumes:
+      - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
+      - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
+    expose:
+      - 8000
+    env_file:
+      - .env  # Uncomitted env file
+    image: tts_app:timetable_scheduling
+    container_name: tts_django_c
+    command: bash -c "
+      python manage.py migrate
+      && python manage.py load_all_fixtures
+      && python manage.py collectstatic --noinput
+      && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
+      "
+    depends_on:
+      - postgres_database
+
+  nginx:
+    image: nginx:latest
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: tts_nginx_c
+    ports:
+      - 80:80
+    volumes:
+      - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
+      - media_volume:/var/www/timetable_scheduling/mediafiles  # Similarly for media files
+    depends_on:
+      - tts_app
+
+volumes:
+  static_volume:  # static_volume acts like a pivot between static files in the tts_app and nginx containers
+  media_volume:  # Similarly for media_volume

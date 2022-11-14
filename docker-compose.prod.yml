@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+
+  tts_app:
+    image: "${APP_IMAGE}"
+    restart: always  # Sometimes the app tries to connect to db before db is ready, and then exits
+    volumes:
+      - static_volume:/timetable_scheduling/static  # mirror static COLLECTION in container
+      - media_volume:/timetable_scheduling/media  # mirror media COLLECTION in container
+    ports:
+      - 8000:8000
+    env_file:
+      - .env
+    command: bash -c "
+      python manage.py migrate
+      && python manage.py load_all_fixtures
+      && python manage.py collectstatic --noinput
+      && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
+      "
+
+  tts_nginx:
+    image: "${NGINX_IMAGE}"
+    volumes:
+      - static_volume:/var/www/timetable_scheduling/staticfiles  # Mirror the static files into relevant part of nginx
+      - media_volume:/var/www/timetable_scheduling/mediafiles
+    ports:
+      - 80:80
+    depends_on:
+      - tts_app
+
+volumes:
+  static_volume:  # static_volume acts like a pivot between static files in the tts_app and nginx containers
+  media_volume:  # Similarly for media_volume

@@ -45,7 +45,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         """
         error_messages = self._run_solver_from_view(form=form)
         if len(error_messages) == 0:
-            message = "Solutions have ben found for your timetabling problem!"
+            message = "Solutions have been found for your timetabling problem!"
             messages.add_message(self.request, level=messages.SUCCESS, message=message)
             return super().form_valid(form)  # Method inherited from ModelFormMixin
         else:

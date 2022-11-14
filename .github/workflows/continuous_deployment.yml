@@ -1,0 +1,103 @@
+name: Continuous delivery to production
+
+on:
+  push:
+    # Note that 'main' is protected from pushes on github
+    # So build & deploy will only be triggered after a merged pull request
+    branches:
+      - main
+
+env:
+  APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
+  NGINX_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_nginx
+
+jobs:
+
+  build:
+    # Build the docker images from docker-compose.build.yml, and push them to docker hub
+    name: Build Docker images
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v1
+      - name: Add environment variables to .env
+        run: |
+          echo DEBUG=0 >> .env
+          echo DATABASE=postgres >> .env
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo POSTGRES_NAME=${{ secrets.POSTGRES_NAME }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
+          echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+      - name: Set environment variables
+        run: |
+          echo "APP_IMAGE=$(echo ${{env.APP_IMAGE}} )" >> $GITHUB_ENV
+          echo "NGINX_IMAGE=$(echo ${{env.NGINX_IMAGE}} )" >> $GITHUB_ENV
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Pull docker images
+        run: |
+          docker pull ${{ env.APP_IMAGE }} || true
+          docker pull ${{ env.NGINX_IMAGE }} || true
+      - name: Build docker images
+        # Note that we build using the docker-compose.build file
+        run: |
+          docker-compose -f docker-compose.build.yml build
+      - name: Push docker images
+        run: |
+          docker push ${{ env.APP_IMAGE }}
+          docker push ${{ env.NGINX_IMAGE }}
+
+  deploy:
+    # SSH into the remote server, pull the images from dockerhub and spin up some containers from them
+    name: Deploy to DigitalOcean
+    runs-on: ubuntu-20.04
+    needs: build
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v1
+      - name: Add environment variables to .env
+        # For the django settings modules, we need to export all relevant secrets as environment variables
+        # We also require other variables (e.g. dockerhub credentials) for ease of use in the remote server
+        run: |
+          echo DEBUG=0 >> .env
+          echo DATABASE=postgres >> .env
+          echo SECRET_KEY="${{ secrets.SECRET_KEY }}" >> .env
+          echo POSTGRES_NAME=${{ secrets.POSTGRES_NAME }} >> .env
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
+          echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo DIGITAL_OCEAN_IP_ADDRESS=${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} >> .env
+          echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
+          echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
+          echo DOCKERHUB_USERNAME=${{ secrets.DOCKERHUB_USERNAME }} >>.env
+          echo DOCKERHUB_TOKEN=${{ secrets.DOCKERHUB_TOKEN }} >>.env
+      - name: Add private SSH key to the ssh-agent
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          # Adding the private key to the ssh agent allows us to ssh into the remote server below
+        run: |
+          mkdir -p ~/.ssh
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Build and deploy images inside Digital Ocean droplet
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        # We SSH into the remote server, copy over the /env file and docker-compose file,
+        # Pull the docker images from dockerhub (thanks to the 'build' job), and use these to spin up the containers
+        # Note that we spin up the containers using the docker-compose.prod file
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/app
+          ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} << 'ENDSSH'
+          cd /app
+          source .env
+          docker pull $APP_IMAGE
+          docker pull $NGINX_IMAGE
+          docker-compose -f docker-compose.prod.yml up -d
+          ENDSSH
