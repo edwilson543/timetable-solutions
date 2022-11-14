@@ -1,11 +1,12 @@
-name: Continuous delivery to production
+name: Deployment to production
 
 on:
-  push:
-    # Note that 'main' is protected from pushes on github
-    # So build & deploy will only be triggered after a merged pull request
-    branches:
-      - main
+  workflow_run:
+    workflows: [CI testing]
+    # Build & deploy will only be triggered after all the tests have passed
+    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
+    types:
+      - completed
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
@@ -17,6 +18,7 @@ jobs:
     # Build the docker images from docker-compose.build.yml, and push them to docker hub
     name: Build Docker images
     runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -57,6 +59,7 @@ jobs:
     name: Deploy to DigitalOcean
     runs-on: ubuntu-20.04
     needs: build
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
