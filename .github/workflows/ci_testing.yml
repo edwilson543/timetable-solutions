@@ -1,6 +1,8 @@
 name: CI testing
 
-on: [push, pull_request]
+on:
+  # Every push (notably the push resulting from a successful merge to main) will run the test suite
+  push
 
 jobs:
   test:

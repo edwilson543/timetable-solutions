@@ -6,6 +6,12 @@ services:
     image: postgres
     volumes:
       - ./data/db:/var/lib/postgresql/data  # Establishes mapping between local data folder and the container
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=$POSTGRES_NAME
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
     container_name: tts_postgres_c
 
   tts_app:
