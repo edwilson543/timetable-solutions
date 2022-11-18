@@ -106,10 +106,16 @@ Timetable header and back button styling
     border-radius: 5px;
 }
 
-#back_button {
+#back_button_form {
     /* Display */
     width: 15%;
     margin: 5px;
+    margin-left: 2.5%; /* Margin-left*/
+}
+
+#back_button {
+    /* Display */
+    width: 100%;
     padding: 10px;
 
     /* Typography */
@@ -121,6 +127,10 @@ Timetable header and back button styling
     background-color: #c4353f;
     border-radius: 5px;
     border: 1px solid #33003d;
+}
+#back_button:hover {
+    background-color: #690007;
+    cursor: pointer;
 }
 
 /* ====================
