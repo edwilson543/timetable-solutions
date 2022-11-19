@@ -2,6 +2,12 @@
 Module containing unit tests for the views in view_timetables app.
 """
 
+# Standard library imports
+import io
+
+# Third party imports
+import pandas as pd
+
 # Django imports
 from django.db.models import QuerySet
 from django.test import TestCase
@@ -150,4 +156,44 @@ class TestViews(TestCase):
         response = self.client.get(url)
 
         # Check outcome
-        a = 1
+        headers = response.headers
+        self.assertEqual(headers["Content-Type"], "text/csv")
+        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-John-Smith.csv")
+
+        timetable_buffer = io.BytesIO(response.content)
+        timetable = pd.read_csv(timetable_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        thursday_two_pm = timetable.loc["14:00-15:00", "Thursday"]
+        self.assertEqual(thursday_two_pm, "Maths")
+
+    def test_teacher_timetable_download_as_expected(self):
+        """
+        Unit tests that the file provided by the url for teacher csv timetable downloads is as expected.
+        """
+        # Set test parameters
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse(UrlName.TEACHER_TIMETABLE_DOWNLOAD.value, kwargs={"teacher_id": 1})
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        headers = response.headers
+        self.assertEqual(headers["Content-Type"], "text/csv")
+        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-Theresa-May.csv")
+
+        timetable_buffer = io.BytesIO(response.content)
+        timetable = pd.read_csv(timetable_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        tuesday_ten_am = timetable.loc["10:00-11:00", "Tuesday"]
+        self.assertEqual(tuesday_ten_am, "French")
