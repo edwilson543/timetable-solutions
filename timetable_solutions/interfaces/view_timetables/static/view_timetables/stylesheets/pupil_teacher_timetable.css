@@ -1,3 +1,14 @@
+/* Stylesheet for the pages showing pupil / teacher timetables */
+@import url(/static/stylesheets/colour_scheme.css);
+
+:root {
+    /* Colours (just used within this page, otherwise in colour_scheme.css*/
+    --default_timetable_slot: #c9c9c9;
+    --timetable_slot_hover_blue: #0a2fa8;
+    --perimeter_grey_purple: #4d4141;
+    --period_time_grey_lilac: #876969;
+}
+
 /* ====================
 Container for the timetable (html table that goes in the center of the page)
 ==================== */
@@ -20,9 +31,9 @@ Container for the timetable (html table that goes in the center of the page)
 
     /* Background and border */
     background-color: white;
-    border: 3px solid rgba(51, 0, 61, 0.5);
+    border: 3px solid var(--content_container_border_lilac);
     border-radius: 10px;
-    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
+    box-shadow: 5px 5px var(--content_container_shadow);
 }
 
 /* ====================
@@ -42,14 +53,14 @@ Formatting of the timetable (a html table) itself, and its components
     text-align: center;
 
     /* Background and border */
-    background-color: #c9c9c9; /* default colour if subject is not found */
+    background-color: var(--default_timetable_slot); /* default colour if no subject is given */
     border: 1px solid black;
     border-collapse: collapse;
     border-radius: 3px;
 }
 .timetable_slot:hover {
   color: white;
-  background-color: #0a2fa8;
+  background-color: var(--timetable_slot_hover_blue);
 }
 
 .perimeter {
@@ -61,7 +72,7 @@ Formatting of the timetable (a html table) itself, and its components
     text-align: center;
 
     /* Background and border */
-    background-color: #4d4141;
+    background-color: var(--perimeter_grey_purple);
     border-radius: 3px;
 }
 
@@ -74,7 +85,7 @@ Formatting of the timetable (a html table) itself, and its components
     text-align: center;
 
     /* Background and border */
-    background-color: #876969;
+    background-color: var(--period_time_grey_lilac);
     border-radius: 3px;
 }
 
@@ -101,7 +112,7 @@ Timetable header and back button styling
     text-align: center;
 
     /* Background and border */
-    background-color: #11014A;
+    background-color: var(--dark_blue_banners);
     border: 1px solid black;
     border-radius: 5px;
 }
@@ -124,12 +135,12 @@ Timetable header and back button styling
     text-align: center;
 
     /* Background and border */
-    background-color: #c4353f;
+    background-color: var(--red_button);
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid var(--red_button_border);
 }
 #back_button:hover {
-    background-color: #690007;
+    background-color: var(--red_button_border);
     cursor: pointer;
 }
 
@@ -148,11 +159,11 @@ Download button
     text-align: center;
 
     /* Border and background */
-    background-color: #004000;
-    border: 1px solid #33003d;
+    background-color: var(--green_button);
+    border: 1px solid var(--green_button_border);
     border-radius: 5px;
 }
 #download_button:hover {
-    background-color: #1f1530;
+    background-color: var(--green_button_border);
     cursor: pointer;
 }

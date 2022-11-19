@@ -9,18 +9,21 @@ file, then it is not listed here.
     --dark_blue_banners: #11014A;
 
     /* Common panel colours */
-    --light_grey_background: #e0e0e0;
+    --content_container_border_lilac: rgba(51, 0, 61, 0.5);
+    --content_container_shadow: rgba(184, 184, 184, 0.8);
     --error_banner_red: #ffb0b5;
     --error_banner_red_border: #690007;
+    --light_grey_background: #e0e0e0;
 
     /* Button colours */
-    --red_button: #c4353f;
-    --red_button_border: #690007;
-    --purple_button: #1f1530;
-    --green_button: #004000;
     --blue_button: #2442ad;
     --blue_button_border: #102059;
     --dark_grey_button: #515254;
+    --green_button: #366142;
+    --green_button_border: #004000;
+    --purple_button: #1f1530;
+    --red_button: #c4353f;
+    --red_button_border: #690007;
 
     /* Text colours */
     --bright_blue_link: #0000EE;
