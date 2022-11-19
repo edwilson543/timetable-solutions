@@ -111,9 +111,15 @@ class TestTimetableConstruction(TestCase):
         pupil_id = 1
 
         # Execute test unit
-        csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
+        _, csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
 
-        # Check outcome
-        timetable = pd.read_csv(csv_buffer)
-        a = 1
-        # TODO
+        # Check outcome - basic structure
+        timetable = pd.read_csv(csv_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        thursday_two_pm = timetable.loc["14:00-15:00", "Thursday"]
+        self.assertEqual(thursday_two_pm, "Maths")
