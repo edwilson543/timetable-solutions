@@ -85,6 +85,19 @@ def get_pupil_timetable_as_csv(pupil_id: int, school_id: int) -> Tuple[models.Pu
     return pupil, csv_buffer
 
 
+def get_teacher_timetable_as_csv(teacher_id: int, school_id: int) -> Tuple[models.Teacher, io.StringIO]:
+    """
+    Function to retrieve a specific teacher's timetable as a csv.
+    :return teacher - the instance of the Teacher model in question
+    :return csv_buffer - buffer storing the csv file representing the teacher's timetable
+    """
+    teacher = models.Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+    classes = teacher.classes.all()
+    timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
+    csv_buffer = get_timetable_as_csv(classes=classes, timetable_slots=timetable_slots)
+    return teacher, csv_buffer
+
+
 # Generalised functions providing timetable for context / csv files
 def get_timetable_as_csv(classes: models.FixedClassQuerySet,
                          timetable_slots: models.TimetableSlotQuerySet) -> io.StringIO:

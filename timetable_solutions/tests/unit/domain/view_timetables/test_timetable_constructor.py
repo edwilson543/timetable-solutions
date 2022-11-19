@@ -2,6 +2,9 @@
 Module containing unit tests for data_pre_processing in the view_timetables subdirectory of the domain layer.
 """
 
+# Third party imports
+import pandas as pd
+
 # Django imports
 from django.db.models import QuerySet
 from django.test import TestCase
@@ -97,3 +100,20 @@ class TestTimetableConstruction(TestCase):
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)
+
+    # TESTS FOR CSV FILES
+    def test_get_pupil_timetable_as_csv(self):
+        """
+        Test that pupil timetables are correctly processed into csv file buffers.
+        """
+        # Set test parameters
+        school_id = 123456
+        pupil_id = 1
+
+        # Execute test unit
+        csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
+
+        # Check outcome
+        timetable = pd.read_csv(csv_buffer)
+        a = 1
+        # TODO

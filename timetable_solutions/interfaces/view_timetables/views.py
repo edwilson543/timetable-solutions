@@ -103,3 +103,19 @@ def pupil_timetable_download(request: http.HttpRequest, pupil_id: int) -> http.H
         "Content-Disposition": f"attachment; filename={filename}",
     })
     return response
+
+
+@login_required
+def teacher_timetable_download(request: http.HttpRequest, teacher_id: int) -> http.HttpResponse:
+    """
+    View used to serve an individual teacher timetable as a csv file download.
+    :return - a http response with a csv file attachment
+    """
+    school_id = request.user.profile.school.school_access_key
+    teacher, csv_buffer = view_timetables.get_teacher_timetable_as_csv(school_id=school_id, teacher_id=teacher_id)
+    filename = f"Timetable-{teacher.firstname}-{teacher.surname}.csv"
+
+    response = http.HttpResponse(csv_buffer, content_type="text/csv", headers={
+        "Content-Disposition": f"attachment; filename={filename}",
+    })
+    return response

@@ -136,3 +136,18 @@ class TestViews(TestCase):
         self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1])
         self.assertEqual(colours[TimetableColourAssigner.Colour.FREE.name], TimetableColourAssigner.Colour.FREE.value)
         self.assertEqual(colours["LUNCH"], TimetableColourAssigner.Colour.MEAL.value)
+
+    # TESTS FOR CSV FILE DOWNLOADS
+    def test_pupil_timetable_download_as_expected(self):
+        """
+        Unit tests that the file provided by the url for pupil csv timetable downloads is as expected.
+        """
+        # Set test parameters
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse(UrlName.PUPIL_TIMETABLE_DOWNLOAD.value, kwargs={"pupil_id": 1})
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        a = 1

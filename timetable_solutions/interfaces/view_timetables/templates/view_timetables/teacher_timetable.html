@@ -65,11 +65,11 @@
     </tr>
     {% endfor %}
     </table>
-
-    <button type="button" id="download_button" onclick="download_table_as_csv('timetable')">
-        Download
-    </button>
-    <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>
+    <form action="{% url 'teacher_timetable_download' teacher.teacher_id %}" method="get">
+        <button id="download_button" type="submit">
+            Download CSV
+        </button>
+    </form>
 </div>
 
 {% endblock %}
