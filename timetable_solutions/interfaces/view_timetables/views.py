@@ -2,7 +2,7 @@
 
 # Django imports
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django import http
 from django.template import loader
 
 # Local application imports
@@ -10,17 +10,17 @@ from domain import view_timetables
 
 
 @login_required
-def selection_dashboard(request) -> HttpResponse:
+def selection_dashboard(request: http.HttpRequest) -> http.HttpResponse:
     """View providing the context for the information displayed on the selection dashboard"""
     school_access_key = request.user.profile.school.school_access_key
     context = view_timetables.timetable_summary_stats.get_summary_stats_for_dashboard(
         school_access_key=school_access_key)
     template = loader.get_template("view_timetables/selection_dashboard.html")
-    return HttpResponse(template.render(context, request))
+    return http.HttpResponse(template.render(context, request))
 
 
 @login_required
-def pupil_navigator(request) -> HttpResponse:
+def pupil_navigator(request: http.HttpRequest) -> http.HttpResponse:
     """
     View to provide a list of pupils which the user can navigate to view/retrieve each of their timetables.
     This is pre-processed to be indexed by year group for display in the template.
@@ -31,11 +31,11 @@ def pupil_navigator(request) -> HttpResponse:
     context = {
         "all_pupils": year_indexed_pupils
     }
-    return HttpResponse(template.render(context, request))
+    return http.HttpResponse(template.render(context, request))
 
 
 @login_required
-def teacher_navigator(request) -> HttpResponse:
+def teacher_navigator(request: http.HttpRequest) -> http.HttpResponse:
     """
     View to provide a list of teachers which the user can navigate to view/retrieve each of their timetables.
     Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
@@ -46,11 +46,11 @@ def teacher_navigator(request) -> HttpResponse:
     context = {
         "all_teachers": all_teachers
     }
-    return HttpResponse(template.render(context, request))
+    return http.HttpResponse(template.render(context, request))
 
 
 @login_required
-def pupil_timetable(request, pupil_id: int) -> HttpResponse:
+def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
     """
     View for rendering the timetable of the individual pupil with the passed id.
     Note that the pupil_id is unique together with the school access key,
@@ -66,11 +66,11 @@ def pupil_timetable(request, pupil_id: int) -> HttpResponse:
         "timetable": timetable,
         "class_colours": timetable_colours,
     }
-    return HttpResponse(template.render(context, request))
+    return http.HttpResponse(template.render(context, request))
 
 
 @login_required
-def teacher_timetable(request, teacher_id: int) -> HttpResponse:
+def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
     Note that the teacher_id is unique together with the school access key,
@@ -86,7 +86,20 @@ def teacher_timetable(request, teacher_id: int) -> HttpResponse:
         "timetable": timetable,
         "year_group_colours": year_group_colours,
     }
-    return HttpResponse(template.render(context, request))
+    return http.HttpResponse(template.render(context, request))
 
 
+@login_required
+def pupil_timetable_download(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
+    """
+    View used to serve an individual pupil timetable as a csv file download.
+    :return - a http response with a csv file attachment
+    """
+    school_id = request.user.profile.school.school_access_key
+    pupil, csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
+    filename = f"Timetable-{pupil.firstname}-{pupil.surname}.csv"
 
+    response = http.HttpResponse(csv_buffer, content_type="text/csv", headers={
+        "Content-Disposition": f"attachment; filename={filename}",
+    })
+    return response

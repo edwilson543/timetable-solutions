@@ -12,5 +12,6 @@ urlpatterns = [
     path('teachers/', views.teacher_navigator, name=UrlName.TEACHERS_NAVIGATOR.value),
     path('teachers/<int:teacher_id>', views.teacher_timetable, name=UrlName.TEACHER_TIMETABLE.value),
     path('pupils/', views.pupil_navigator, name=UrlName.PUPILS_NAVIGATOR.value),
-    path('pupils/<int:pupil_id>', views.pupil_timetable, name=UrlName.PUPIL_TIMETABLE.value)
+    path('pupils/<int:pupil_id>', views.pupil_timetable, name=UrlName.PUPIL_TIMETABLE.value),
+    path('pupils/<int:pupil_id>/download/', views.pupil_timetable_download, name=UrlName.PUPIL_TIMETABLE_DOWNLOAD.value),
 ]
