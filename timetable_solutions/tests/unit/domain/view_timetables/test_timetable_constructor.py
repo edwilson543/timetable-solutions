@@ -123,3 +123,25 @@ class TestTimetableConstruction(TestCase):
         # Check random specific element
         thursday_two_pm = timetable.loc["14:00-15:00", "Thursday"]
         self.assertEqual(thursday_two_pm, "Maths")
+
+    def test_get_teacher_timetable_as_csv(self):
+        """
+        Test that teacher timetables are correctly processed into csv file buffers.
+        """
+        # Set test parameters
+        school_id = 123456
+        teacher_id = 1
+
+        # Execute test unit
+        _, csv_buffer = view_timetables.get_teacher_timetable_as_csv(school_id=school_id, teacher_id=teacher_id)
+
+        # Check outcome - basic structure
+        timetable = pd.read_csv(csv_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        tuesday_ten_am = timetable.loc["10:00-11:00", "Tuesday"]
+        self.assertEqual(tuesday_ten_am, "French")
