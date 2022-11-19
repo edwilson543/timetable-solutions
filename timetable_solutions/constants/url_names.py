@@ -58,6 +58,8 @@ class UrlName(StrEnum):
     # View timetables app
     PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # Note reverse also requires a pupil id
+    PUPIL_TIMETABLE_DOWNLOAD = "pupil_timetable_download"  # Note reverse also requires a pupil id
     TEACHERS_NAVIGATOR = "teachers_navigator"
     TEACHER_TIMETABLE = "teacher_timetable"  # Note reverse also requires a teacher id
+    TEACHER_TIMETABLE_DOWNLOAD = "teacher_timetable_download"  # Note reverse also requires a teacher id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
