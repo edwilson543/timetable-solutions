@@ -76,7 +76,7 @@ class TestViews(TestCase):
         """
         # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse(UrlName.PUPIL_TIMETABLE.value, kwargs={"id": 1})
+        url = reverse(UrlName.PUPIL_TIMETABLE.value, kwargs={"pupil_id": 1})
 
         # Execute test unit
         response = self.client.get(url)
@@ -111,7 +111,7 @@ class TestViews(TestCase):
         """
         # Set test parameters
         self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse(UrlName.TEACHER_TIMETABLE.value, kwargs={"id": 6})  # Timetable for Greg Thebaker
+        url = reverse(UrlName.TEACHER_TIMETABLE.value, kwargs={"teacher_id": 6})  # Timetable for Greg Thebaker
 
         # Execute test unit
         response = self.client.get(url)

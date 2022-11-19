@@ -50,10 +50,15 @@ def teacher_navigator(request) -> HttpResponse:
 
 
 @login_required
-def pupil_timetable(request, id: int) -> HttpResponse:
-    """View for rendering the timetable of the individual pupil with the passed id, with context from domain layer."""
+def pupil_timetable(request, pupil_id: int) -> HttpResponse:
+    """
+    View for rendering the timetable of the individual pupil with the passed id.
+    Note that the pupil_id is unique together with the school access key,
+    and so different users will see different content at the requested url.
+    """
     school_id = request.user.profile.school.school_access_key
-    pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(pupil_id=id, school_id=school_id)
+    pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(
+        pupil_id=pupil_id, school_id=school_id)
 
     template = loader.get_template("view_timetables/pupil_timetable.html")
     context = {
@@ -65,11 +70,15 @@ def pupil_timetable(request, id: int) -> HttpResponse:
 
 
 @login_required
-def teacher_timetable(request, id: int) -> HttpResponse:
-    """View for the timetable of the individual teacher with the passed id."""
+def teacher_timetable(request, teacher_id: int) -> HttpResponse:
+    """
+    View for the timetable of the individual teacher with the passed id.
+    Note that the teacher_id is unique together with the school access key,
+    and so different users will see different content at the requested url.
+    """
     school_id = request.user.profile.school.school_access_key
     teacher, timetable, year_group_colours = view_timetables.get_teacher_timetable_context(
-        teacher_id=id, school_id=school_id)
+        teacher_id=teacher_id, school_id=school_id)
 
     template = loader.get_template("view_timetables/teacher_timetable.html")
     context = {
@@ -78,3 +87,6 @@ def teacher_timetable(request, id: int) -> HttpResponse:
         "year_group_colours": year_group_colours,
     }
     return HttpResponse(template.render(context, request))
+
+
+
