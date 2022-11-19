@@ -28,11 +28,11 @@
                 Timetable for {{teacher.firstname}} {{teacher.surname}}
             </b>
         </div>
-        <div id="back_button">
-            <a href="{% url 'teachers_navigator' %}"><b>
+        <form id="back_button_form" action="{% url 'teachers_navigator' %}" method="get">
+            <button id="back_button" type="submit">
                 Back
-            </b></a>
-        </div>
+            </button>
+        </form>
     </div>
 
     <table id="timetable">
