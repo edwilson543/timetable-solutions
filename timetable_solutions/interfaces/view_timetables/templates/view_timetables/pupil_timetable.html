@@ -67,7 +67,7 @@
     </tr>
     {% endfor %}
     </table>
-    <form action="{% url 'pupil_timetable_download' pupil.pupil_id %}" method="get">
+    <form action="{% url 'pupil_tt_csv' pupil.pupil_id %}" method="get">
         <button id="download_button" type="submit">
             Download CSV
         </button>
