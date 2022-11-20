@@ -7,3 +7,4 @@ pandas==1.5.1
 pulp==2.6.0
 psycopg2-binary>=2.8
 python-decouple==3.6
+xhtml2pdf==0.2.8
