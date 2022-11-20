@@ -137,7 +137,7 @@ def pupil_timetable_download_pdf(request: http.HttpRequest, pupil_id: int) -> ht
     school_id = request.user.profile.school.school_access_key
     pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(
         pupil_id=pupil_id, school_id=school_id)
-    template = loader.get_template("view_timetables/pupil_timetable.html")
+    template = loader.get_template("view_timetables/pdfs/pupil_timetable.html")
     context = {"pupil": pupil, "timetable": timetable, "class_colours": timetable_colours}
     html = template.render(context)
 
