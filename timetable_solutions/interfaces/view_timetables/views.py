@@ -1,5 +1,11 @@
 """Views used to navigate users towards an individual pupil/teacher's timetable."""
 
+# Standard library imports
+import io
+
+# Third party imports
+from xhtml2pdf import pisa
+
 # Django imports
 from django.contrib.auth.decorators import login_required
 from django import http
@@ -118,4 +124,29 @@ def teacher_timetable_download_csv(request: http.HttpRequest, teacher_id: int) -
     response = http.HttpResponse(csv_buffer, content_type="text/csv", headers={
         "Content-Disposition": f"attachment; filename={filename}",
     })
+    return response
+
+
+@login_required
+def pupil_timetable_download_pdf(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
+    """
+    View used to serve an individual pupil timetable as a csv file download.
+    :return - a http response with a csv file attachment
+    """
+    # Get the html template
+    school_id = request.user.profile.school.school_access_key
+    pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(
+        pupil_id=pupil_id, school_id=school_id)
+    template = loader.get_template("view_timetables/pupil_timetable.html")
+    context = {"pupil": pupil, "timetable": timetable, "class_colours": timetable_colours}
+    html = template.render(context)
+
+    # Create the pdf and add it as a file download
+    pdf_buffer = io.BytesIO()
+    pisa.pisaDocument(src=html, dest=pdf_buffer)
+    pdf_buffer.seek(0)
+    filename = f"Timetable-{pupil.firstname}-{pupil.surname}.pdf"
+    response = http.HttpResponse(pdf_buffer, content_type="application/pdf", headers={
+        "Content-Disposition": f"attachment; filename={filename}"})
+
     return response
