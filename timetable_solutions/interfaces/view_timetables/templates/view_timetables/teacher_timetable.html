@@ -71,6 +71,11 @@
                 Download CSV
             </button>
         </form>
+        <form action="{% url 'teacher_tt_pdf' teacher.teacher_id %}" method="get">
+            <button class="download_button" type="submit">
+                Download PDF
+            </button>
+        </form>
     </div>
 </div>
 

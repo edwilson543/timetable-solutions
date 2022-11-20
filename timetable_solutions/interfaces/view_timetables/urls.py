@@ -22,5 +22,7 @@ urlpatterns = [
     path('teachers/', views.teacher_navigator, name=UrlName.TEACHERS_NAVIGATOR.value),
     path('teachers/<int:teacher_id>', views.teacher_timetable, name=UrlName.TEACHER_TIMETABLE.value),
     path('teachers/<int:teacher_id>/csv_download/', views.teacher_timetable_download_csv,
-         name=UrlName.TEACHER_TT_CSV_DOWNLOAD.value)
+         name=UrlName.TEACHER_TT_CSV_DOWNLOAD.value),
+    path('teachers/<int:teacher_id>/pdf_download/', views.teacher_timetable_download_pdf,
+         name=UrlName.TEACHER_TT_PDF_DOWNLOAD.value)
 ]
