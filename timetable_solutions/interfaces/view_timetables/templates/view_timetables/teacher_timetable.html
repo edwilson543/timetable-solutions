@@ -65,11 +65,13 @@
     </tr>
     {% endfor %}
     </table>
-    <form action="{% url 'teacher_tt_csv' teacher.teacher_id %}" method="get">
-        <button id="download_button" type="submit">
-            Download CSV
-        </button>
-    </form>
+    <div id="download_button_panel">
+        <form action="{% url 'teacher_tt_csv' teacher.teacher_id %}" method="get">
+            <button class="download_button" type="submit">
+                Download CSV
+            </button>
+        </form>
+    </div>
 </div>
 
 {% endblock %}
