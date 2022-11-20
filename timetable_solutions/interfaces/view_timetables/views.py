@@ -90,7 +90,7 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
 
 
 @login_required
-def pupil_timetable_download(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
+def pupil_timetable_download_csv(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
     """
     View used to serve an individual pupil timetable as a csv file download.
     :return - a http response with a csv file attachment
@@ -106,7 +106,7 @@ def pupil_timetable_download(request: http.HttpRequest, pupil_id: int) -> http.H
 
 
 @login_required
-def teacher_timetable_download(request: http.HttpRequest, teacher_id: int) -> http.HttpResponse:
+def teacher_timetable_download_csv(request: http.HttpRequest, teacher_id: int) -> http.HttpResponse:
     """
     View used to serve an individual teacher timetable as a csv file download.
     :return - a http response with a csv file attachment
