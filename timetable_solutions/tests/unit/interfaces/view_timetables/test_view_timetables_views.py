@@ -144,7 +144,7 @@ class TestViews(TestCase):
         self.assertEqual(colours["LUNCH"], TimetableColourAssigner.Colour.MEAL.value)
 
     # TESTS FOR CSV FILE DOWNLOADS
-    def test_pupil_timetable_download_as_expected(self):
+    def test_pupil_timetable_csv_download_as_expected(self):
         """
         Unit tests that the file provided by the url for pupil csv timetable downloads is as expected.
         """
@@ -171,7 +171,7 @@ class TestViews(TestCase):
         thursday_two_pm = timetable.loc["14:00-15:00", "Thursday"]
         self.assertEqual(thursday_two_pm, "Maths")
 
-    def test_teacher_timetable_download_as_expected(self):
+    def test_teacher_timetable_csv_download_as_expected(self):
         """
         Unit tests that the file provided by the url for teacher csv timetable downloads is as expected.
         """
@@ -197,3 +197,36 @@ class TestViews(TestCase):
         # Check random specific element
         tuesday_ten_am = timetable.loc["10:00-11:00", "Tuesday"]
         self.assertEqual(tuesday_ten_am, "French")
+
+    # TESTS FOR PDF DOWNLOADS
+    def test_pupil_timetable_pdf_download_as_expected(self):
+        """
+        Unit tests that the file provided by the url for pupil pdf timetable downloads is as expected.
+        """
+        # Set test parameters
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse(UrlName.PUPIL_TT_PDF_DOWNLOAD.value, kwargs={"pupil_id": 1})
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        headers = response.headers
+        self.assertEqual(headers["Content-Type"], "application/pdf")
+        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-John-Smith.pdf")
+
+    def test_teacher_timetable_pdf_download_as_expected(self):
+        """
+        Unit tests that the file provided by the url for teacher pdf timetable downloads is as expected.
+        """
+        # Set test parameters
+        self.client.login(username='dummy_teacher', password='dt123dt123')
+        url = reverse(UrlName.TEACHER_TT_PDF_DOWNLOAD.value, kwargs={"teacher_id": 1})
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        headers = response.headers
+        self.assertEqual(headers["Content-Type"], "application/pdf")
+        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-Theresa-May.pdf")
