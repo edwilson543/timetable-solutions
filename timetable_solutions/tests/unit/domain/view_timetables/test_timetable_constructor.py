@@ -2,6 +2,9 @@
 Module containing unit tests for data_pre_processing in the view_timetables subdirectory of the domain layer.
 """
 
+# Third party imports
+import pandas as pd
+
 # Django imports
 from django.db.models import QuerySet
 from django.test import TestCase
@@ -97,3 +100,48 @@ class TestTimetableConstruction(TestCase):
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)
+
+    # TESTS FOR CSV FILES
+    def test_get_pupil_timetable_as_csv(self):
+        """
+        Test that pupil timetables are correctly processed into csv file buffers.
+        """
+        # Set test parameters
+        school_id = 123456
+        pupil_id = 1
+
+        # Execute test unit
+        _, csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
+
+        # Check outcome - basic structure
+        timetable = pd.read_csv(csv_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        thursday_two_pm = timetable.loc["14:00-15:00", "Thursday"]
+        self.assertEqual(thursday_two_pm, "Maths")
+
+    def test_get_teacher_timetable_as_csv(self):
+        """
+        Test that teacher timetables are correctly processed into csv file buffers.
+        """
+        # Set test parameters
+        school_id = 123456
+        teacher_id = 1
+
+        # Execute test unit
+        _, csv_buffer = view_timetables.get_teacher_timetable_as_csv(school_id=school_id, teacher_id=teacher_id)
+
+        # Check outcome - basic structure
+        timetable = pd.read_csv(csv_buffer, index_col="Time")
+
+        self.assertEqual(timetable.isnull().sum().sum(), 0)
+        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(timetable.index.name, "Time")
+
+        # Check random specific element
+        tuesday_ten_am = timetable.loc["10:00-11:00", "Tuesday"]
+        self.assertEqual(tuesday_ten_am, "French")

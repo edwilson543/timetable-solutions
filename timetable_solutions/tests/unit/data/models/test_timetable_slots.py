@@ -97,3 +97,17 @@ class TestTimetableSlot(test.TestCase):
 
         # Check outcome
         assert set(slots) == {1, 6, 11, 16, 21, 26, 31}
+
+    def test_get_unique_start_times(self):
+        """
+        Test that the correct set of timeslots, and the correct ordering, is returned by get_unique_start_times
+        """
+        # Set test parameters
+        school_access_key = 123456
+        expected_times = [dt.time(hour=9 + x) for x in range(0, 7)]  # Fixture has 9:00, 10:00, ... , 15:00
+
+        # Execute test unit
+        timeslots = models.TimetableSlot.get_unique_start_times(school_id=school_access_key)
+
+        # Check outcome
+        assert timeslots == expected_times

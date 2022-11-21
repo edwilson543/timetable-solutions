@@ -29,11 +29,11 @@
                 Timetable for {{pupil.firstname}} {{pupil.surname}}
             </b>
         </div>
-        <div id="back_button">
-            <a href="{% url 'pupils_navigator' %}"><b>
+        <form id="back_button_form" action="{% url 'pupils_navigator' %}" method="get">
+            <button id="back_button" type="submit">
                 Back
-            </b></a>
-        </div>
+            </button>
+        </form>
     </div>
 
     <table id="timetable">
@@ -67,9 +67,18 @@
     </tr>
     {% endfor %}
     </table>
-    <button type="button" id="download_button" onclick="download_table_as_csv('{{teacher.firstname}}_{{teacher.surname}}_timetable')">
-        Download
-    </button>
+    <div id="download_button_panel">
+        <form action="{% url 'pupil_tt_csv' pupil.pupil_id %}" method="get">
+            <button class="download_button" type="submit">
+                Download CSV
+            </button>
+        </form>
+        <form action="{% url 'pupil_tt_pdf' pupil.pupil_id %}" method="get">
+            <button class="download_button" type="submit">
+                Download PDF
+            </button>
+        </form>
+    </div>
     <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>
 </div>
 {% endblock %}

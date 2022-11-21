@@ -1,0 +1,98 @@
+<head>
+<style>
+/* Note we need to include internal css here since xhtml2pdf does not allow external links */
+
+@page {
+    size: letter landscape;
+    margin: 2cm;
+}
+
+
+#timetable {
+    width: 100%;
+}
+
+.timetable_slot {
+    /* Display */
+    height: 50px;
+
+    /* Typography */
+    font-size: 10px;
+    text-align: center;
+    line-height: 50%;
+
+    /* Background and border */
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.perimeter {
+    /* Display */
+    height: 30px;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+    line-height: 50%;
+
+    /* Background and border */
+    background-color: #4d4141;
+    border: 1px solid black;
+}
+
+#period_time {
+    /* Display */
+    width: 10%;
+
+    /* Typography */
+    color: white;
+    text-align: center;
+    line-height: 50%;
+
+    /* Background and border */
+    background-color: #876969;
+    border: 1px solid black;
+}
+
+{% for subject, colour in class_colours.items %}
+.colour_{{ subject }} {
+  background-color: {{colour}};
+}
+{% endfor %}
+</style>
+</head>
+
+<body>
+<table id="timetable">
+
+{% for time, day_dict in timetable.items %}
+
+<tr>
+    {% if forloop.first %}
+        <th id="period_time"><i>Period time</i></th>
+    {% for day in day_dict %}
+        <th class="perimeter" style="width:18%;"><h2>{{ day|title }}</h2></th>
+    {% endfor %}
+    {% endif %}
+</tr>
+<tr>
+    <td class="perimeter"><i>{{ time }}</i></td>
+    {% for day, klass in day_dict.items %}
+        {% if klass == "FREE" %}
+          <td class="colour_{{klass}} timetable_slot"><b>{{ klass|title }}</b></td>
+        {% elif klass.subject_name == "LUNCH" %}
+          <td class="colour_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
+        {% else %}
+          <td class="colour_{{klass.subject_name}} timetable_slot">
+              <b>{{ klass.subject_name|title}}</b><br>
+              <i>{{ klass.teacher.title }} {{ klass.teacher.surname }}</i><br>
+              <i>{{ klass.classroom.building}} {{klass.classroom.room_number}}</i>
+          </td>
+        {% endif %}
+
+    {% endfor %}
+</tr>
+{% endfor %}
+</table>
+
+</body>

@@ -4,7 +4,7 @@
 
 # Environments
 .env
-.env-prod
+.env.prod
 venv/
 
 # Testing
