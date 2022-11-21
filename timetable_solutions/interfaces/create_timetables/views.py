@@ -14,9 +14,9 @@ from django.views.generic.edit import FormView
 
 # Local application imports
 from constants.url_names import UrlName
+from data import models
 from domain.data_upload_processing import UploadStatusTracker
 from domain import solver
-from domain import utils as domain_utils
 from interfaces.create_timetables import forms
 
 
@@ -85,6 +85,6 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         kwargs = super().get_form_kwargs()
         school_access_key = self.request.user.profile.school.school_access_key
 
-        timeslots = domain_utils.get_user_timetable_slots(school_access_key=school_access_key)
+        timeslots = models.TimetableSlot.get_unique_start_times(school_id=school_access_key)
         kwargs["available_time_slots"] = timeslots
         return kwargs

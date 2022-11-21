@@ -113,3 +113,14 @@ class TimetableSlot(models.Model):
         timeslots = cls.objects.get_timeslots_on_given_day(school_id=school_id, day_of_week=day_of_week)
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids
+
+    @classmethod
+    def get_unique_start_times(cls, school_id: int) -> List[dt.time]:
+        """
+        Method to find the unique period_start_at times for a givens school (ordered from first to last).
+        Note that we are only interested in the times of day, and not the days.
+        """
+        slots = cls.objects.get_all_instances_for_school(school_id=school_id)
+        times = slots.values_list("period_starts_at", flat=True)
+        sorted_times = sorted(list(set(times)))  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
+        return sorted_times
