@@ -73,7 +73,7 @@ label {
     font-size: 20px;
 }
 
-hr {
+.form_break_hr {
     color:black;
     width:90%;
     margin-bottom:15px;
