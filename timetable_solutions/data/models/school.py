@@ -1,5 +1,8 @@
 """Module defining the model for a school_id in the database, and any ancillary objects"""
 
+# Standard library imports
+from typing import Self
+
 # Django imports
 from django.db import models
 
@@ -27,8 +30,12 @@ class School(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_access_key: int, school_name: str):
-        """Method to create a new School instance."""
+    def create_new(cls, school_name: str, school_access_key: int | None = None) -> Self:
+        """
+        Method to create a new School instance. If no access key is given, then one is generated.
+        """
+        if school_access_key is None:
+            school_access_key = cls.get_new_access_key()
         school = cls.objects.create(school_access_key=school_access_key, school_name=school_name)
         school.full_clean()
         return school
