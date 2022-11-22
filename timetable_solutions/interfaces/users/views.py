@@ -16,6 +16,7 @@ from typing import Dict
 from django import http
 from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.template import loader
 from django.views import View
@@ -96,6 +97,9 @@ class SchoolRegistration(View):
 
             models.Profile.create_and_save_new(user=request.user, school_id=new_school.school_access_key,
                                                role=models.UserRole.SCHOOL_ADMIN.value, approved_by_school_admin=True)
+
+            message = "Registration successful! You can now start using the site."
+            messages.success(request, message=message)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
@@ -124,6 +128,11 @@ class ProfileRegistration(View):
             access_key = form.cleaned_data.get("school_access_key")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key,
                                                role=models.UserRole.TEACHER.value, approved_by_school_admin=False)
+
+            message = "Registration successful!\n" \
+                      "You will need to wait for your school admin to approve your account before gaining access to " \
+                      "the site."
+            messages.success(request, message=message)
             return redirect(reverse(UrlName.LOGIN.value))
         else:
             context = {

@@ -58,7 +58,7 @@ class TestRegistration(TestCase):
     # PIVOT TESTS
     def login_dummy_user(self) -> None:
         """
-        Helper method to login a user, so that they can reach the later stages of registration.
+        Helper method to login users, so that they can reach the later stages of registration.
         Side-effects - the test client's user becomes authenticated.
         """
         User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
@@ -118,6 +118,11 @@ class TestRegistration(TestCase):
         user_school_id = profile.school.school_access_key
         self.assertEqual(user_school_id, 123457)  # Since 123456 is the max access key in the fixture
         self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN.value)
+        self.assertTrue(profile.approved_by_school_admin)
+
+        # Check the flash message
+        message = response.cookies["messages"].value
+        self.assertIsInstance(message, str)
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
@@ -140,6 +145,11 @@ class TestRegistration(TestCase):
         user_school_id = profile.school.school_access_key
         self.assertEqual(user_school_id, 123456)
         self.assertEqual(profile.role, models.UserRole.TEACHER.value)
+        self.assertTrue(not profile.approved_by_school_admin)
+
+        # Check the flash message
+        message = response.cookies["messages"].value
+        self.assertIsInstance(message, str)
 
     def test_register_profile_with_existing_school_access_key_not_found(self):
         """
