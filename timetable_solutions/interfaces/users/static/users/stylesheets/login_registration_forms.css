@@ -31,11 +31,11 @@ Red, near-form-width button (e.g. 'back')
     width: 330px;
     padding-top: 5px;
     padding-bottom: 5px;
-    text-align: center;
 
     /* Typography */
     font-size: 20px;
     color: white;
+    text-align: center;
 
     /* Background and border */
     background-color: var(--red_button);
