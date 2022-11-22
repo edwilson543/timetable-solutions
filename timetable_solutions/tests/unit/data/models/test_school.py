@@ -2,9 +2,6 @@
 Unit tests for methods on the School model
 """
 
-# Third party imports
-import pytest
-
 # Django imports
 from django import test
 
