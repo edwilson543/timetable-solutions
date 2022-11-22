@@ -28,9 +28,9 @@ input[type="submit"] {background-color: #004000;}
     <form method="post">
         {% csrf_token %}
         {{form}}
-        <input type="submit" value="Register">
+        <input type="submit" value="Continue">
     </form>
-    <hr>
+    <hr class="form_break_hr">
     <a href="{% url 'login' %}" class="wide_red_button">Back to login</a>
 </div>
 {% endblock %}

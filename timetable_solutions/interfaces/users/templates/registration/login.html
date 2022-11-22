@@ -8,6 +8,24 @@
 
 <style>
 {% block style_block %}
+.errorlist {
+    /* Display */
+    padding: 3px;
+    margin: 5px;
+
+    /* Typography */
+    font-size: 12px;
+    color: var(--error_banner_red_border);
+
+    /* Background and border */
+    background-color: var(--error_banner_red);
+    border: 1px solid var(--error_banner_red_border);
+    border-radius: 4px;
+}
+ul {
+    list-style-type: none;
+}
+
 #register_button {
     /* Display */
     width: 330px;
@@ -20,21 +38,26 @@
     text-align: center;
 
     /* Background and border */
-    background-color: #004000;
+    background-color: var(--green_button);
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid var(--green_button_border);
 }
 {% endblock %}
 </style>
 
 {% block content %}
 <div id="form_container">
+    {% if unapproved_error %}
+    <div class="static_error_message">
+        {{ unapproved_error }}
+    </div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Login">
     </form>
-    <hr>
+    <hr class="form_break_hr">
     <a href="{% url 'register' %}" id="register_button">Register</a>
 </div>
 {% endblock %}

@@ -17,6 +17,45 @@ class TestRegistration(TestCase):
     """Tests for the Register view class"""
     fixtures = ["user_school_profile.json"]
 
+    # LOGIN TESTS
+    def test_login_approved_user(self):
+        """
+        Test that a user whose credentials have been approved by the school admin can login successfully.
+        """
+        # Set test parameters
+        url = reverse(UrlName.LOGIN.value)
+        form_data = {"username": "dummy_teacher", "password": "dt123dt123"}
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(response, expected_url=reverse(UrlName.DASHBOARD.value))
+
+    def test_login_unapproved_user(self):
+        """
+        Test that a user whose credentials have NOT been approved by the school admin is not allowed to login, and is
+        given the correct error message.
+        """
+        # Setup
+        user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
+        models.Profile.create_and_save_new(user=user, school_id=123456, role=models.UserRole.TEACHER.value,
+                                           approved_by_school_admin=False)  # This is the key bit
+
+        # Set test parameters
+        url = reverse(UrlName.LOGIN.value)
+        form_data = {"username": "dummy_teacher2", "password": "dt123dt123"}
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        unapproved_error = response.context.get("unapproved_error")
+        self.assertIn("not yet been approved", unapproved_error)
+        self.assertTrue(user.is_authenticated)
+        login_successful = response.wsgi_request.user.is_authenticated
+        self.assertTrue(not login_successful)
+
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
         """
@@ -58,10 +97,10 @@ class TestRegistration(TestCase):
     # PIVOT TESTS
     def login_dummy_user(self) -> None:
         """
-        Helper method to login a user, so that they can reach the later stages of registration.
+        Helper method to login users, so that they can reach the later stages of registration.
         Side-effects - the test client's user becomes authenticated.
         """
-        user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
+        User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
         self.client.login(username="dummy_teacher2", password="dt123dt123")
 
     def test_register_school_pivot_towards_profile_registration(self):
@@ -105,7 +144,7 @@ class TestRegistration(TestCase):
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 654321, "school_name": "Fake School"}
+        form_data = {"school_name": "Fake School"}
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
@@ -113,62 +152,16 @@ class TestRegistration(TestCase):
         # Check outcome
         self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
 
-        new_school = models.School.objects.get_individual_school(school_id=654321)
-        self.assertIsInstance(new_school, models.School)
+        # Check the user's profile has been correctly set
+        profile = response.wsgi_request.user.profile
+        user_school_id = profile.school.school_access_key
+        self.assertEqual(user_school_id, 123457)  # Since 123456 is the max access key in the fixture
+        self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN.value)
+        self.assertTrue(profile.approved_by_school_admin)
 
-        # Test the school has become associated with the user
-        user_school_id = response.wsgi_request.user.profile.school.school_access_key
-        self.assertEqual(user_school_id, 654321)
-
-    def test_register_new_school_access_key_not_6_digits(self):
-        """
-        Should return the same form with an error message that tells users access key is not 6 digits.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 12345, "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "Access key is not 6 digits")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
-
-    def test_register_new_school_access_key_already_taken(self):
-        """
-        Specifying an existing access key should return the same form with an error message that tells user access key
-        is already taken.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 123456, "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "School with this School access key already exists.")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
-
-    def test_register_new_school_access_key_entered_as_string(self):
-        """
-        Specifying an access key that is not a 6 digit integer should return the same form with an error message that
-        tells the user the access key is not valid, and why.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": "abcabc", "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "Enter a whole number.")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
+        # Check the flash message
+        message = response.cookies["messages"].value
+        self.assertIsInstance(message, str)
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
@@ -184,10 +177,18 @@ class TestRegistration(TestCase):
         response = self.client.post(url, data=form_data)
 
         # Check outcome
-        self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
-        existing_school = models.School.objects.get(school_access_key=123456)  # From fixture
-        new_user_school = User.objects.get(username="dummy_teacher2").profile.school
-        self.assertEqual(existing_school, new_user_school)
+        self.assertRedirects(response, reverse(UrlName.LOGIN.value))
+
+        # Check the user's profile has been correctly set
+        profile = response.wsgi_request.user.profile
+        user_school_id = profile.school.school_access_key
+        self.assertEqual(user_school_id, 123456)
+        self.assertEqual(profile.role, models.UserRole.TEACHER.value)
+        self.assertTrue(not profile.approved_by_school_admin)
+
+        # Check the flash message
+        message = response.cookies["messages"].value
+        self.assertIsInstance(message, str)
 
     def test_register_profile_with_existing_school_access_key_not_found(self):
         """

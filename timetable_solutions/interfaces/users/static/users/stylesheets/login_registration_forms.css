@@ -1,3 +1,6 @@
+/* Shared styling for all pages relating to login / registration / account management */
+@import url(/static/stylesheets/colour_scheme.css);
+
 /* ====================
 Container for all form content
 ==================== */
@@ -15,29 +18,29 @@ Container for all form content
 
     /* Background and border */
     background-color: white;
-    border: 3px solid rgba(51, 0, 61, 0.5);
+    border: 3px solid var(--content_container_border_lilac);
     border-radius: 10px;
-    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
+    box-shadow: 5px 5px var(--content_container_shadow);
 }
 
 /* ====================
-Generic styling for a red, near-form-width button (e.g. 'back')
+Red, near-form-width button (e.g. 'back')
 ==================== */
 .wide_red_button {
     /* Display */
     width: 330px;
     padding-top: 5px;
     padding-bottom: 5px;
-    text-align: center;
 
     /* Typography */
     font-size: 20px;
     color: white;
+    text-align: center;
 
     /* Background and border */
-    background-color: #c4353f;
+    background-color: var(--red_button);
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid var(--red_button_border);
 }
 
 /* ====================
@@ -55,12 +58,12 @@ input {
 
     /* Border */
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid black;
 }
 input[type="text"] {text-align: center;}
 input[type="password"] {text-align: center;}
 input[type="submit"] {
-    background-color: #1f1530;
+    background-color: var(--purple_button);
     color: white;
 }
 input[type="submit"]:hover {cursor: pointer;}
@@ -70,7 +73,7 @@ label {
     font-size: 20px;
 }
 
-hr {
+.form_break_hr {
     color:black;
     width:90%;
     margin-bottom:15px;

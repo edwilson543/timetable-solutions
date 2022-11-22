@@ -1,8 +1,13 @@
 name: CI testing
 
 on:
-  # Every push (notably the push resulting from a successful merge to main) will run the test suite
-  push
+  # A successful merge to main only will manually run the test suite
+  push:
+    branches:
+      - 'main'
+  pull_request:
+  workflow_dispatch:
+
 
 jobs:
   test:

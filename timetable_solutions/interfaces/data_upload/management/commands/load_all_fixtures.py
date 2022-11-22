@@ -1,12 +1,9 @@
 """Module containing custom management command for loading in fixtures."""
 
 # Django imports
+from django.contrib.auth.models import User
 from django.core.management import base
 from django.core.management import call_command
-
-
-# TODO move commands into their own django app (probably in a new layer)
-# TODO write tests for this command - with and without inc. fixed classes
 
 
 class Command(base.BaseCommand):
@@ -18,7 +15,7 @@ class Command(base.BaseCommand):
 
     help = "Command to load in all fixtures providing initial data for the application, and in the correct order."
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser) -> None:
         """
         Method adding arguments to the command.
         arg: --inc_fixed_classes - there is a Fixture containing a mock solver solution, which we may not always want
@@ -28,11 +25,10 @@ class Command(base.BaseCommand):
         parser.add_argument("--include_fixed_classes", action="store_true",  # store_true stores the arg as a boolean
                             help="Include this argument if you also want to pre-populate a timetable solution.")
 
-    def handle(self, *args, **kwargs):
-        """Method carrying out the processing relevant to this command"""
-
-        call_command("flush", interactive=False)  # Reset the database
-
+    def handle(self, *args, **kwargs) -> None:
+        """
+        Method carrying out the processing relevant to this command
+        """
         call_command("loaddata", "user_school_profile.json")  # All other models depend on this fixture
         call_command("loaddata", "classrooms.json")
         call_command("loaddata", "pupils.json")

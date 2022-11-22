@@ -29,7 +29,9 @@
     "pk": 1,
     "fields": {
       "user": 1,
-      "school": 123456
+      "school": 123456,
+      "role": 1,
+      "approved_by_school_admin": true
     }
   }
 ]
