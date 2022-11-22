@@ -31,6 +31,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN.value)
+    approved_by_school_admin = models.BooleanField(default=False)
 
     def __str__(self):
         """String representation of the model for the django admin site"""
@@ -42,8 +43,9 @@ class Profile(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: UserRole) -> None:
+    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> None:
         """Method to create a new Profile instance, and then save it into the database"""
-        profile = cls.objects.create(user=user, school_id=school_id, role=role)
+        profile = cls.objects.create(user=user, school_id=school_id, role=role,
+                                     approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()
         profile.save()
