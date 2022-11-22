@@ -14,6 +14,7 @@ from typing import Dict
 
 # Django imports
 from django.contrib.auth import login, logout
+from django import http
 from django.shortcuts import render, redirect
 from django.views import View
 from django.urls import reverse
@@ -28,14 +29,14 @@ from . import forms
 class Register(View):
     """View for step 1 of registering - entering basic details."""
     @staticmethod
-    def get(request, context: Dict | None = None):
+    def get(request: http.HttpRequest, context: Dict | None = None) -> http.HttpResponse:
         if context is None:
             context = {"form": forms.CustomUserCreation}
         if request.user.is_authenticated:
             logout(request)
         return render(request, "users/register.html", context)
 
-    def post(self, request):
+    def post(self, request: http.HttpRequest) -> http.HttpResponse:
         form = forms.CustomUserCreation(request.POST)
         if form.is_valid():
             user = form.save()
@@ -53,13 +54,12 @@ class SchoolRegisterPivot(View):
     """View for step 2 of registering - whether the user's school also needs registering"""
 
     @staticmethod
-    def get(request, context: Dict | None = None):
-        if context is None:
-            context = {"form": forms.SchoolRegistrationPivot}
+    def get(request: http.HttpRequest) -> http.HttpResponse:
+        context = {"form": forms.SchoolRegistrationPivot}
         return render(request, "users/register_school_pivot.html", context)
 
     @staticmethod
-    def post(request):
+    def post(request: http.HttpRequest) -> http.HttpResponse:
         form = forms.SchoolRegistrationPivot(request.POST)
         if form.is_valid():
             if form.cleaned_data.get("existing_school") == "EXISTING":
@@ -73,36 +73,41 @@ class SchoolRegisterPivot(View):
 class SchoolRegistration(View):
     """
     View for step 3a of registering - when the school is not registered.
-    In this case, the user receives the role "SCHOOL_ADMIN", giving them ownership of their school's data.
+    In this case, the user receives the role "SCHOOL_ADMIN", giving them ownership of their school's data, and since
+    they are a school admin, they are approved by the school admin...
     """
 
     @staticmethod
-    def get(request, context: Dict | None = None):
-        if context is None:
-            context = {"form": forms.SchoolRegistration}
+    def get(request: http.HttpRequest) -> http.HttpResponse:
+        context = {"form": forms.SchoolRegistration}
         return render(request, "users/register_school.html", context)
 
-    def post(self, request):
+    @staticmethod
+    def post(request: http.HttpRequest) -> http.HttpResponse:
+        """
+        A School instance is created, allowing a Profile instance (for the user) to be created.
+        """
         form = forms.SchoolRegistration(request.POST)
         if form.is_valid():
-            form.save()  # Note this is a model form, so save the School instance to the database automatically
+            school_name = form.cleaned_data.get("school_name")
+            new_school = models.School.create_new(school_name=school_name)
 
-            # We have created the school instance but not yet associated this school with the user, so we do this now
-            models.Profile.create_and_save_new(user=request.user, school_id=form.cleaned_data.get("school_access_key"),
-                                               role=models.UserRole.SCHOOL_ADMIN.value)
+            models.Profile.create_and_save_new(user=request.user, school_id=new_school.school_access_key,
+                                               role=models.UserRole.SCHOOL_ADMIN.value, approved_by_school_admin=True)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
                 "form": forms.SchoolRegistration,
-                "error_message": form.error_message,
+                "errors": form.errors
             }
-            return self.get(request, context)
+            return render(request, "users/register_school.html", context)
 
 
 class ProfileRegistration(View):
     """
     View for step 3b of registering - when the school is already registered, just need the access key.
-    In this case, the user receives the role "TEACHER", which can only be upgraded by the "SCHOOL_ADMIN"
+    In this case, the user receives the role "TEACHER", which can only be upgraded by the "SCHOOL_ADMIN", and they
+    are initially set to not be approved by the school admin.
     """
 
     @staticmethod
@@ -116,7 +121,7 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key,
-                                               role=models.UserRole.TEACHER.value)
+                                               role=models.UserRole.TEACHER.value, approved_by_school_admin=False)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {

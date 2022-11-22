@@ -32,13 +32,13 @@ p {
     <br>
     <p>
         You will then be assigned a <b>school access key</b>, which is needed to register other users for your school.
-        This is visible at the top of the site while logged in.
+        This will become visible at the top of the site while logged in.
     </p>
-    {% if error_message is not None %}
+    {% for error in errors %}
     <p class="static_error_message">
         {{error_message}}
     </p>
-    {% endif %}
+    {% endfor %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_div }}

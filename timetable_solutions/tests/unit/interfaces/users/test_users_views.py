@@ -61,7 +61,7 @@ class TestRegistration(TestCase):
         Helper method to login a user, so that they can reach the later stages of registration.
         Side-effects - the test client's user becomes authenticated.
         """
-        user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
+        User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
         self.client.login(username="dummy_teacher2", password="dt123dt123")
 
     def test_register_school_pivot_towards_profile_registration(self):
@@ -105,7 +105,7 @@ class TestRegistration(TestCase):
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 654321, "school_name": "Fake School"}
+        form_data = {"school_name": "Fake School"}
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
@@ -116,58 +116,8 @@ class TestRegistration(TestCase):
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
         user_school_id = profile.school.school_access_key
-        self.assertEqual(user_school_id, 654321)
+        self.assertEqual(user_school_id, 123457)  # Since 123456 is the max access key in the fixture
         self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN.value)
-
-    def test_register_new_school_access_key_not_6_digits(self):
-        """
-        Should return the same form with an error message that tells users access key is not 6 digits.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 12345, "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "Access key is not 6 digits")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
-
-    def test_register_new_school_access_key_already_taken(self):
-        """
-        Specifying an existing access key should return the same form with an error message that tells user access key
-        is already taken.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": 123456, "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "School with this School access key already exists.")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
-
-    def test_register_new_school_access_key_entered_as_string(self):
-        """
-        Specifying an access key that is not a 6 digit integer should return the same form with an error message that
-        tells the user the access key is not valid, and why.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_access_key": "abcabc", "school_name": "Fake School"}
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertEqual(response.context["error_message"], "Enter a whole number.")
-        self.assertEqual(response.context["form"], forms.SchoolRegistration)
 
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
