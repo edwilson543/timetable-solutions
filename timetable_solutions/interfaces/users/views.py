@@ -143,6 +143,9 @@ class ProfileRegistration(View):
 
 
 class CustomLogin(LoginView):
+    """
+    Slight customisation of the login process. See method docstrings for the customisations.
+    """
 
     def get(self, request, *args, **kwargs) -> http.HttpResponse:
         """
@@ -152,6 +155,9 @@ class CustomLogin(LoginView):
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form) -> http.HttpResponseRedirect | http.HttpResponse:
+        """
+        Method to check that a user has been given access to their school's data by the school admin.
+        """
         user = form.get_user()
         if user.profile.approved_by_school_admin:
             return super().form_valid(form)

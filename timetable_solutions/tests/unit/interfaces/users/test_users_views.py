@@ -17,6 +17,45 @@ class TestRegistration(TestCase):
     """Tests for the Register view class"""
     fixtures = ["user_school_profile.json"]
 
+    # LOGIN TESTS
+    def test_login_approved_user(self):
+        """
+        Test that a user whose credentials have been approved by the school admin can login successfully.
+        """
+        # Set test parameters
+        url = reverse(UrlName.LOGIN.value)
+        form_data = {"username": "dummy_teacher", "password": "dt123dt123"}
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(response, expected_url=reverse(UrlName.DASHBOARD.value))
+
+    def test_login_unapproved_user(self):
+        """
+        Test that a user whose credentials have NOT been approved by the school admin is not allowed to login, and is
+        given the correct error message.
+        """
+        # Setup
+        user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
+        models.Profile.create_and_save_new(user=user, school_id=123456, role=models.UserRole.TEACHER.value,
+                                           approved_by_school_admin=False)  # This is the key bit
+
+        # Set test parameters
+        url = reverse(UrlName.LOGIN.value)
+        form_data = {"username": "dummy_teacher2", "password": "dt123dt123"}
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        unapproved_error = response.context.get("unapproved_error")
+        self.assertIn("not yet been approved", unapproved_error)
+        self.assertTrue(user.is_authenticated)
+        login_successful = response.wsgi_request.user.is_authenticated
+        self.assertTrue(not login_successful)
+
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
         """
