@@ -47,6 +47,11 @@ ul {
 
 {% block content %}
 <div id="form_container">
+    {% if unapproved_error %}
+    <div class="static_error_message">
+        {{ unapproved_error }}
+    </div>
+    {% endif %}
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}

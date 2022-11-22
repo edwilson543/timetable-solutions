@@ -13,9 +13,11 @@ Step 3b - the user must provide a school access key to associate themselves with
 from typing import Dict
 
 # Django imports
-from django.contrib.auth import login, logout
 from django import http
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView
 from django.shortcuts import render, redirect
+from django.template import loader
 from django.views import View
 from django.urls import reverse
 
@@ -122,13 +124,36 @@ class ProfileRegistration(View):
             access_key = form.cleaned_data.get("school_access_key")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key,
                                                role=models.UserRole.TEACHER.value, approved_by_school_admin=False)
-            return redirect(reverse(UrlName.DASHBOARD.value))
+            return redirect(reverse(UrlName.LOGIN.value))
         else:
             context = {
                 "form": forms.ProfileRegistration,
                 "error_message": form.error_message,
             }
             return self.get(request, context=context)
+
+
+class CustomLogin(LoginView):
+
+    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+        """
+        Method to first log a user out if they visit the login page.
+        """
+        logout(request)
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form) -> http.HttpResponseRedirect | http.HttpResponse:
+        user = form.get_user()
+        if user.profile.approved_by_school_admin:
+            return super().form_valid(form)
+        else:
+            error_message = "Your account has not yet been approved by your school's admin account.\n" \
+                            "Please contact them directly to approve your account."
+
+            template = loader.get_template("registration/login.html")
+            context = super().get_context_data()
+            context["unapproved_error"] = error_message
+            return http.HttpResponse(template.render(context))
 
 
 def custom_logout(request):

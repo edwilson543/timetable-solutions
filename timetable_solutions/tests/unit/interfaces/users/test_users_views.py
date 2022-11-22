@@ -133,7 +133,7 @@ class TestRegistration(TestCase):
         response = self.client.post(url, data=form_data)
 
         # Check outcome
-        self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
+        self.assertRedirects(response, reverse(UrlName.LOGIN.value))
 
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
