@@ -17,7 +17,7 @@ class UserRole(models.IntegerChoices):
     Note there is no interaction with the default Django authentication tiers (staff / superuser), these roles only
     relate to the custom admin.
     """
-    TTS_ADMIN = 1, "Administrator"
+    SCHOOL_ADMIN = 1, "Administrator"  # Only role with access to the custom admin site
     TEACHER = 2, "Teacher"
     PUPIL = 3, "Pupil"
 
@@ -30,7 +30,7 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    role = models.IntegerField(choices=UserRole.choices, default=UserRole.TTS_ADMIN.value)
+    role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN.value)
 
     def __str__(self):
         """String representation of the model for the django admin site"""

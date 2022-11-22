@@ -71,7 +71,10 @@ class SchoolRegisterPivot(View):
 
 
 class SchoolRegistration(View):
-    """View for step 3a of registering - when the school is not registered"""
+    """
+    View for step 3a of registering - when the school is not registered.
+    In this case, the user receives the role "SCHOOL_ADMIN", giving them ownership of their school's data.
+    """
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -85,7 +88,8 @@ class SchoolRegistration(View):
             form.save()  # Note this is a model form, so save the School instance to the database automatically
 
             # We have created the school instance but not yet associated this school with the user, so we do this now
-            models.Profile.create_and_save_new(user=request.user, school_id=form.cleaned_data.get("school_access_key"))
+            models.Profile.create_and_save_new(user=request.user, school_id=form.cleaned_data.get("school_access_key"),
+                                               role=models.UserRole.SCHOOL_ADMIN.value)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {
@@ -96,7 +100,10 @@ class SchoolRegistration(View):
 
 
 class ProfileRegistration(View):
-    """View for step 3b of registering - when the school is already registered, just need the access key"""
+    """
+    View for step 3b of registering - when the school is already registered, just need the access key.
+    In this case, the user receives the role "TEACHER", which can only be upgraded by the "SCHOOL_ADMIN"
+    """
 
     @staticmethod
     def get(request, context: Dict | None = None):
@@ -108,7 +115,8 @@ class ProfileRegistration(View):
         form = forms.ProfileRegistration(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
-            models.Profile.create_and_save_new(user=request.user, school_id=access_key)
+            models.Profile.create_and_save_new(user=request.user, school_id=access_key,
+                                               role=models.UserRole.TEACHER.value)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
             context = {

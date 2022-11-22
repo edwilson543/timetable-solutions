@@ -113,12 +113,11 @@ class TestRegistration(TestCase):
         # Check outcome
         self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
 
-        new_school = models.School.objects.get_individual_school(school_id=654321)
-        self.assertIsInstance(new_school, models.School)
-
-        # Test the school has become associated with the user
-        user_school_id = response.wsgi_request.user.profile.school.school_access_key
+        # Check the user's profile has been correctly set
+        profile = response.wsgi_request.user.profile
+        user_school_id = profile.school.school_access_key
         self.assertEqual(user_school_id, 654321)
+        self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN.value)
 
     def test_register_new_school_access_key_not_6_digits(self):
         """
@@ -185,9 +184,12 @@ class TestRegistration(TestCase):
 
         # Check outcome
         self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
-        existing_school = models.School.objects.get(school_access_key=123456)  # From fixture
-        new_user_school = User.objects.get(username="dummy_teacher2").profile.school
-        self.assertEqual(existing_school, new_user_school)
+
+        # Check the user's profile has been correctly set
+        profile = response.wsgi_request.user.profile
+        user_school_id = profile.school.school_access_key
+        self.assertEqual(user_school_id, 123456)
+        self.assertEqual(profile.role, models.UserRole.TEACHER.value)
 
     def test_register_profile_with_existing_school_access_key_not_found(self):
         """
