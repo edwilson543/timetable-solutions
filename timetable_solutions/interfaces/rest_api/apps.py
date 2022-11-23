@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class ApiToSolverConfig(AppConfig):
+class RestAPIConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'interfaces.rest_api'
