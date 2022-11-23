@@ -175,7 +175,7 @@ body, html {
 }
 
 .white_link {
-    color: white;
+    color: white !important;
     text-decoration: none;
 }
 .white_link:link,
