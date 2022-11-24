@@ -4,7 +4,6 @@ Unit tests for the subclasses of the BaseModelAdmin class
 
 # Django imports
 from django import test
-from django import urls
 from django.contrib.auth.models import User
 
 # Local application imports
