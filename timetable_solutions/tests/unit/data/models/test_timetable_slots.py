@@ -111,3 +111,17 @@ class TestTimetableSlot(test.TestCase):
 
         # Check outcome
         assert timeslots == expected_times
+
+    # PROPERTIES TESTS
+    def test_period_ends_at(self):
+        """
+        Tests that the end time property for a timetable slot is working
+        """
+        # Set test parameters
+        slot = models.TimetableSlot.objects.get(pk=1)  # Starts at 9AM, lasting for 1 Hour
+
+        # Execute test unit
+        end_time = slot.period_ends_at
+
+        # Check outcome
+        assert end_time == dt.time(hour=10, minute=0, second=0)

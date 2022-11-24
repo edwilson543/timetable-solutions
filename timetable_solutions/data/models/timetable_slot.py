@@ -124,3 +124,12 @@ class TimetableSlot(models.Model):
         times = slots.values_list("period_starts_at", flat=True)
         sorted_times = sorted(list(set(times)))  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
         return sorted_times
+
+    # PROPERTIES
+    @property
+    def period_ends_at(self):
+        """
+        Property calculating the time at which a timetable slot ends.
+        """
+        end_datetime = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at) + self.period_duration
+        return end_datetime.time()
