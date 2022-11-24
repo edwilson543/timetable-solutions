@@ -96,7 +96,7 @@ jobs:
         # We SSH into the remote server, copy over the /env file and docker-compose file,
         # Pull the docker images from dockerhub (thanks to the 'build' job), and use these to spin up the containers
         # Note that we spin up the containers using the docker-compose.prod file
-        # Note also the dockerhub login seems to need its own command, otherwise bugs
+        # Note also the dockerhub login seems to need its own command, otherwise it bugs
         run: |
           scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@$DIGITAL_OCEAN_IP_ADDRESS:/app
           echo $DOCKERHUB_TOKEN | ssh -o StrictHostKeyChecking=no root@$DIGITAL_OCEAN_IP_ADDRESS docker login -u $DOCKERHUB_USERNAME --password-stdin
