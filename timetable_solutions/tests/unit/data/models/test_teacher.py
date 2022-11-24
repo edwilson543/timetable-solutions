@@ -67,6 +67,33 @@ class TestTeacher(test.TestCase):
         is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
         assert not is_busy
 
+    # QUERY METHOD TESTS
+    def test_get_lessons_per_week(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a teacher.
+        """
+        # Set test parameters
+        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
+
+        # Execute test unit
+        n_lessons = teacher.get_lessons_per_week()
+
+        # Check outcome
+        assert n_lessons == 17
+
+    def test_get_utilisation_percentage(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a teacher.
+        """
+        # Set test parameters
+        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
+
+        # Execute test unit
+        percentage = teacher.get_occupied_percentage()
+
+        # Check outcome
+        assert percentage == (17 / 35)
+
 
 class TestTeacherLessFixtures(test.TestCase):
     """

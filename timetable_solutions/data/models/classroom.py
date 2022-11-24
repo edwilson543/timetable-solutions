@@ -9,6 +9,7 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
+from data import utils
 
 
 class ClassroomQuerySet(models.QuerySet):
@@ -96,15 +97,12 @@ class Classroom(models.Model):
 
     def get_lessons_per_week(self) -> int:
         """
-        Method to get the number of lessons taught per week in a class.
+        Method to get the number of lessons taught per week in a classroom.
         """
-        return sum(klass.time_slots.count() for klass in self.classes.all())
+        return utils.get_lessons_per_week(obj=self)
 
     def get_utilisation_percentage(self) -> float:
         """
         Method to get the percentage of time a classroom is occupied (including any lunch slots)
         """
-        school_id = self.school.school_access_key
-        all_slots = TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
-        utilisation_percentage = self.get_lessons_per_week() / all_slots.count()
-        return utilisation_percentage
+        return utils.get_occupied_percentage(obj=self)

@@ -9,6 +9,7 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
+from data import utils
 
 
 class PupilQuerySet(models.QuerySet):
@@ -115,3 +116,16 @@ class Pupil(models.Model):
             return False
         else:
             raise ValueError(f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")
+
+    # QUERY METHODS
+    def get_lessons_per_week(self) -> int:
+        """
+        Method to get the number of lessons a pupil has per week.
+        """
+        return utils.get_lessons_per_week(obj=self)
+
+    def get_occupied_percentage(self) -> float:
+        """
+        Method to get the percentage of time a pupil is occupied (including any lunch slots)
+        """
+        return utils.get_occupied_percentage(obj=self)

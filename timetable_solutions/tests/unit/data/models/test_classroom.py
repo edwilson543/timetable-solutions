@@ -85,7 +85,6 @@ class TestClassroom(test.TestCase):
         # Check outcome
         assert not is_occupied
 
-    # QUERY METHOD TESTS
     def test_get_lessons_per_week(self):
         """
         Test that the correct number of lessons per week is retrieved for a classroom.
@@ -107,10 +106,10 @@ class TestClassroom(test.TestCase):
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
 
         # Execute test unit
-        n_lessons = classroom.get_utilisation_percentage()
+        percentage = classroom.get_utilisation_percentage()
 
         # Check outcome
-        assert n_lessons == (8 / 35)
+        assert percentage == (8 / 35)
 
 
 class TestClassroomLessFixtures(test.TestCase):
