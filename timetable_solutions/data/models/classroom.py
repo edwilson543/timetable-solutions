@@ -101,7 +101,7 @@ class Classroom(models.Model):
         """
         return utils.get_lessons_per_week(obj=self)
 
-    def get_utilisation_percentage(self) -> float:
+    def get_occupied_percentage(self) -> float:
         """
         Method to get the percentage of time a classroom is occupied (including any lunch slots)
         """

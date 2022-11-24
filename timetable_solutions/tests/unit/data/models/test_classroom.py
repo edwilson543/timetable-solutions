@@ -106,7 +106,7 @@ class TestClassroom(test.TestCase):
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
 
         # Execute test unit
-        percentage = classroom.get_utilisation_percentage()
+        percentage = classroom.get_occupied_percentage()
 
         # Check outcome
         assert percentage == (8 / 35)
