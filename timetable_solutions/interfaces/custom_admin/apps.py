@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RestAPIConfig(AppConfig):
+class CustomAdminConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'interfaces.rest_api'
+    name = 'interfaces.custom_admin'

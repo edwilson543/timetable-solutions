@@ -9,6 +9,7 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
+from data import utils
 
 
 class ClassroomQuerySet(models.QuerySet):
@@ -78,7 +79,7 @@ class Classroom(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # FILTER METHODS
+    # QUERY METHODS
     def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the classroom has already been assigned a fixed class at the given slot.
@@ -93,3 +94,15 @@ class Classroom(models.Model):
             return False
         else:
             raise ValueError(f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")
+
+    def get_lessons_per_week(self) -> int:
+        """
+        Method to get the number of lessons taught per week in a classroom.
+        """
+        return utils.get_lessons_per_week(obj=self)
+
+    def get_occupied_percentage(self) -> float:
+        """
+        Method to get the percentage of time a classroom is occupied (including any lunch slots)
+        """
+        return utils.get_occupied_percentage(obj=self)

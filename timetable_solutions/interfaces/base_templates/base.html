@@ -31,47 +31,21 @@
 {% include "includes/flash_messages.html" %}
 <div id="full_page_wrapper" class="background_image_container">
     <!--Add the 'head strap'-->
-    <div id="head_strap">
-        <i id="head_strap_text">Timetable Solutions</i>
-        {% if user.is_authenticated %}
-            <span id="login_info">
-                {% if user.profile %}
-                {{user.profile.school.school_name}}: {{user.profile.school.school_access_key}} |
-                {% endif %}
-                {{user.username}} | <a href="{% url 'logout' %}">Logout</a> | <a href="{% url 'password_change' %}">Change password</a>
-            </span>
-        {% endif %}
-    </div>
+    {% include "includes/head_strap.html" %}
 
     <!--Add the navigation bar-->
     {% if user.is_authenticated %}
-    <div id="navbar">
-        <p id="navbar_text">
-            <a href="{% url 'dashboard' %}">Home</a> |
-            <a href="{% url 'file_upload_page' %}">Data</a> |
-            <a href="{% url 'create_timetables' %}">Create</a> |
-            <a href="{% url 'selection_dashboard' %}">View</a>
-        </p>
-    </div>
+        {% include "includes/navigation_bar.html" %}
     {% endif %}
+
     <div id="parent_container">
         {% block content %}
         {% endblock %}
     </div>
 </div>
 
-<div id="footer_info">
-    <p>
-        <b>
-        Copyright Timetable Solutions Ltd 2022
-            <span id="footer_contact_info"> |
-                <a href="mailto:edward.e.j.wilson@gmail.com">edward.e.j.wilson@gmail.com</a> |
-                +447810804531 |
-                London | New York | Singapore
-            </span>
-        </b>
-    </p>
-</div>
+<!--Add the footer-->
+{% include "includes/footer.html" %}
 
 </body>
 </html>

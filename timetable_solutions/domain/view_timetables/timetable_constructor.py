@@ -140,11 +140,11 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
     e.g. {9AM: {MONDAY: MATHS, TUESDAY: FRENCH,...}, 10AM: {...}, ...}
     """
     class_indexed_timetable = {klass: klass.time_slots.all() for klass in classes}
-    period_start_times = {(time_slot.period_starts_at, time_slot.period_duration) for time_slot in timetable_slots}
-    sorted_period_start_times = sorted(list(period_start_times))
+    period_start_times = {(time_slot.period_starts_at, time_slot.period_ends_at) for time_slot in timetable_slots}
+    sorted_period_start_times = sorted(list(period_start_times), key=lambda tup: tup[0])  # Sort by start time
 
     timetable = {}
-    for start_time, duration in sorted_period_start_times:
+    for start_time, end_time in sorted_period_start_times:
         time_timetable = {}  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
 
         for day in models.WeekDay.values:
@@ -159,7 +159,6 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
             if day_label not in time_timetable:
                 time_timetable[day_label] = TimetableColourAssigner.Colour.FREE.name
 
-        end_time = dt.datetime.combine(date=dt.datetime.min, time=start_time) + duration
         time_string = start_time.strftime("%H:%M") + "-" + end_time.strftime("%H:%M")
         timetable[time_string] = time_timetable
     return timetable

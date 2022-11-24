@@ -11,6 +11,7 @@ from django.views.generic import RedirectView
 
 # Local application imports
 from constants.url_names import UrlName
+from interfaces.custom_admin.admin.custom_admin_site import user_admin
 
 urlpatterns = [
     path("", RedirectView.as_view(url=reverse_lazy(UrlName.LOGIN.value))),
@@ -20,5 +21,6 @@ urlpatterns = [
     path('create/', include('interfaces.create_timetables.urls')),
     path('users/', include('interfaces.users.urls')),
     path('admin/', admin.site.urls),
+    path('data/admin/', user_admin.urls),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \
               static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

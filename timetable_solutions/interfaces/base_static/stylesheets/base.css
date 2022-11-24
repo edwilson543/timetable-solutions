@@ -174,12 +174,14 @@ body, html {
     background-color: var(--lilac_background);
 }
 
-a {
-    color: white;
+.white_link {
+    color: white !important;
     text-decoration: none;
 }
-a:link,
-a:visited {text-decoration: none;}
+.white_link:link,
+.white_link:visited {
+    text-decoration: none;
+}
 
 label,
 input {display: block;}

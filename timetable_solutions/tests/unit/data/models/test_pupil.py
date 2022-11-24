@@ -74,3 +74,30 @@ class TestPupil(test.TestCase):
 
         is_busy = pup.check_if_busy_at_time_slot(slot=slot)
         assert not is_busy
+
+    # QUERY METHOD TESTS
+    def test_get_lessons_per_week(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a pupil.
+        """
+        # Set test parameters
+        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
+
+        # Execute test unit
+        percentage = pupil.get_lessons_per_week()
+
+        # Check outcome
+        assert percentage == 25
+
+    def test_get_utilisation_percentage(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a pupil.
+        """
+        # Set test parameters
+        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
+
+        # Execute test unit
+        n_lessons = pupil.get_occupied_percentage()
+
+        # Check outcome
+        assert n_lessons == (25 / 35)
