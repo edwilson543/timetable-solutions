@@ -1,13 +1,12 @@
 name: Deployment to production
 
 on:
-  push:
-#  workflow_run:
-#    workflows: [CI testing]
-#    # Build & deploy will only be triggered after all the tests have passed
-#    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
-#    types:
-#      - completed
+  workflow_run:
+    workflows: [CI testing]
+    # Build & deploy will only be triggered after all the tests have passed
+    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
+    types:
+      - completed
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
