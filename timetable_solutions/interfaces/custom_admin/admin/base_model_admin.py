@@ -11,7 +11,7 @@ from django.db.models import QuerySet
 from data import models
 
 
-class BaseModelAdmin(admin.ModelAdmin):
+class CustomModelAdminBase(admin.ModelAdmin):
     """
     Base class which the ModelAdmin for each model inherits from.
     This class provides all major functionality for the custom admin site:
@@ -19,9 +19,19 @@ class BaseModelAdmin(admin.ModelAdmin):
         - Queryset filtering
     """
 
+    exclude = ("school",)  # Since we only want users to be able to add / change data to their own school...
+
+    def save_model(self, request, obj, form, change):
+        """
+        When saving all model instances, we add the user's school to it
+        """
+        school = request.user.profile.school
+        obj.school = school
+        obj.save()
+
     def get_queryset(self, request: http.HttpRequest) -> QuerySet:
         """
-        We customise the queryset filtering, to only show the user their school's data.
+        Queryset filtering is customised, to only show the user their school's data.
         """
         school_access_key = request.user.profile.school.school_access_key
         queryset = super().get_queryset(request=request)
