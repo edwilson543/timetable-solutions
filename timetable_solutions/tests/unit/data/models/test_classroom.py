@@ -60,22 +60,57 @@ class TestClassroom(test.TestCase):
         with pytest.raises(ProtectedError):
             models.Classroom.delete_all_instances_for_school(school_id=123456)
 
-    # FILTER METHODS TESTS
+    # QUERY METHODS TESTS
     def test_check_if_occupied_at_time_slot_classroom_occupied(self):
         """Test that the check_if_occupied_at_timeslot method returns 'True' when we expect it to"""
+        # Set test parameters
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
 
+        # Execute test unit
         is_occupied = classroom.check_if_occupied_at_time_slot(slot=slot)
+
+        # Check outcome
         assert is_occupied
 
     def test_check_if_busy_at_time_slot_when_classroom_is_not_occupied(self):
         """Test that the check_if_occupied_at_timeslot method returns 'False' when we expect it to"""
+        # Set test parameters
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=5)
 
+        # Execute test unit
         is_occupied = classroom.check_if_occupied_at_time_slot(slot=slot)
+
+        # Check outcome
         assert not is_occupied
+
+    # QUERY METHOD TESTS
+    def test_get_lessons_per_week(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a classroom.
+        """
+        # Set test parameters
+        classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
+
+        # Execute test unit
+        n_lessons = classroom.get_lessons_per_week()
+
+        # Check outcome
+        assert n_lessons == 8
+
+    def test_get_utilisation_percentage(self):
+        """
+        Test that the correct number of lessons per week is retrieved for a classroom.
+        """
+        # Set test parameters
+        classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
+
+        # Execute test unit
+        n_lessons = classroom.get_utilisation_percentage()
+
+        # Check outcome
+        assert n_lessons == (8 / 35)
 
 
 class TestClassroomLessFixtures(test.TestCase):

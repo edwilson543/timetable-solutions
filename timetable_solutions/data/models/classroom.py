@@ -78,7 +78,7 @@ class Classroom(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # FILTER METHODS
+    # QUERY METHODS
     def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the classroom has already been assigned a fixed class at the given slot.
@@ -93,3 +93,18 @@ class Classroom(models.Model):
             return False
         else:
             raise ValueError(f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")
+
+    def get_lessons_per_week(self) -> int:
+        """
+        Method to get the number of lessons taught per week in a class.
+        """
+        return sum(klass.time_slots.count() for klass in self.classes.all())
+
+    def get_utilisation_percentage(self) -> float:
+        """
+        Method to get the percentage of time a classroom is occupied (including any lunch slots)
+        """
+        school_id = self.school.school_access_key
+        all_slots = TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
+        utilisation_percentage = self.get_lessons_per_week() / all_slots.count()
+        return utilisation_percentage
