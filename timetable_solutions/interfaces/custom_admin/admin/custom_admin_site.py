@@ -35,4 +35,6 @@ class CustomAdminSite(admin.AdminSite):
             return False
 
 
-user_admin = CustomAdminSite(name="User admin")
+# An instance of the CustomAdminSite is created to register all ModelAdmins to
+# Note the name given is used to namespace all attached urls when using reverse
+user_admin = CustomAdminSite(name="user_admin")

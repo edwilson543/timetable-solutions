@@ -65,3 +65,6 @@ class UrlName(StrEnum):
     TEACHER_TT_CSV_DOWNLOAD = "teacher_tt_csv"  # Note reverse also requires a teacher id
     TEACHER_TT_PDF_DOWNLOAD = "teacher_tt_pdf"  # <----------|
     VIEW_TIMETABLES_DASH = "selection_dashboard"
+
+    # Custom admin app
+    CUSTOM_ADMIN_HOME = "user_admin:index"

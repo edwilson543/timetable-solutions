@@ -86,7 +86,7 @@
             {% endfor %}
         </table>
         <div id="action_button_container">
-                <form action=#>
+                <form action="{% url 'user_admin:index' %}" method="get">
                 {% csrf_token %}
                 <button class="management_button" type="submit">
                     View and edit data
