@@ -14,8 +14,7 @@ from .base_settings import *
 
 
 # Basic django settings
-ALLOWED_HOSTS = ["0.0.0.0", "localhost",
-                 config("DIGITAL_OCEAN_IP_ADDRESS"),  # For running production environment locally with docker
+ALLOWED_HOSTS = ["0.0.0.0", "localhost",  # For running production environment locally with docker
                  ".timetable-solutions.com"]
 
 DEBUG = int(config("DEBUG"))
