@@ -16,7 +16,7 @@ class PupilAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Pupil model
     """
-    list_display = ["firstname", "surname", "year_group", "pupil_id"]
+    list_display = ["firstname", "surname", "year_group", "pupil_id", "get_lessons_per_week", "get_occupied_percentage"]
     list_display_links = ["firstname"]
 
     list_filter = ["year_group"]
@@ -30,7 +30,7 @@ class TeacherAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Teacher model
     """
-    list_display = ["title", "firstname", "surname", "teacher_id"]
+    list_display = ["title", "firstname", "surname", "teacher_id", "get_lessons_per_week", "get_occupied_percentage"]
     list_display_links = ["firstname"]
 
     search_fields = ["firstname", "surname", "teacher_id"]
@@ -42,7 +42,7 @@ class ClassroomAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Classroom model
     """
-    list_display = ["classroom_id", "building", "room_number"]
+    list_display = ["classroom_id", "building", "room_number", "get_lessons_per_week", "get_occupied_percentage"]
     list_display_links = ["classroom_id"]
 
     list_filter = ["building"]

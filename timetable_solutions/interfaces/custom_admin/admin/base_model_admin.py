@@ -9,6 +9,7 @@ from django.db.models import QuerySet
 
 # Local application imports
 from data import models
+from data import utils
 
 
 class CustomModelAdminBase(admin.ModelAdmin):
@@ -21,6 +22,23 @@ class CustomModelAdminBase(admin.ModelAdmin):
 
     exclude = ("school",)  # Since we only want users to be able to add / change data to their own school...
 
+    # Methods relating to list display - note these only get used where relevant for subclasses
+    def get_lessons_per_week(self, obj: utils.ModelSubclass) -> int:
+        """
+        Method to display the lessons per week of Pupil, Teacher and Classroom models.
+        """
+        return obj.get_lessons_per_week()
+    get_lessons_per_week.short_description = "Lessons / week"
+
+    def get_occupied_percentage(self, obj: utils.ModelSubclass) -> str:
+        """
+        Method to display the lessons per week of Pupil, Teacher and Classroom models.
+        """
+        percentage = round(obj.get_occupied_percentage(), 1) * 100
+        return f"{percentage} %"
+    get_occupied_percentage.short_description = "% time busy"
+
+    # Method ensuring users can only interact with their own school's data
     def save_model(self, request, obj, form, change):
         """
         When saving all model instances, we add the user's school to it
