@@ -5,6 +5,7 @@ Base classes relevant to the custom admin site.
 # Django imports
 from django.contrib import admin
 from django import http
+from django.db.models import QuerySet
 
 # Local application imports
 from data import models
@@ -17,6 +18,15 @@ class BaseModelAdmin(admin.ModelAdmin):
         - Permissions
         - Queryset filtering
     """
+
+    def get_queryset(self, request: http.HttpRequest) -> QuerySet:
+        """
+        We customise the queryset filtering, to only show the user their school's data.
+        """
+        school_access_key = request.user.profile.school.school_access_key
+        queryset = super().get_queryset(request=request)
+        filtered_qs = queryset.filter(school_id=school_access_key)
+        return filtered_qs
 
     # PERMISSIONS METHODS
     # ALL permissions require SCHOOL_ADMIN status, and so we just use the has_module_permission method above
