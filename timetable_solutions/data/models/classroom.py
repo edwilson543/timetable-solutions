@@ -26,8 +26,8 @@ class ClassroomQuerySet(models.QuerySet):
 
 class Classroom(models.Model):
     """
-    Model storing the classroom (location) in which a FixedClass/UnsolvedClass takes place.
-    Currently, a fixed class id must take place in exactly one classroom - a future extension could be to also optimise
+    Model storing the classroom (location) in which a Lesson takes place.
+    Currently, a lesson must take place in exactly one classroom - a future extension could be to also optimise
     based on minimising the number of distinct classrooms required.
     """
     school = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -82,18 +82,18 @@ class Classroom(models.Model):
     # QUERY METHODS
     def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:
         """
-        Method to check whether the classroom has already been assigned a fixed class at the given slot.
+        Method to check whether the classroom has already been assigned a lesson at the given slot.
         :return - True if OCCUPIED at the given timeslot.
         """
         # noinspection PyUnresolvedReferences
-        slot_classes = self.classes.filter(time_slots=slot)
+        slot_classes = self.lessons.filter(user_defined_time_slots=slot)
         n_commitments = slot_classes.count()
         if n_commitments == 1:
             return True
         elif n_commitments == 0:
             return False
         else:
-            raise ValueError(f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")
+            raise ValueError(f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 Lesson at {slot}")
 
     def get_lessons_per_week(self) -> int:
         """

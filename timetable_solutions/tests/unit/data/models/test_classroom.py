@@ -17,7 +17,7 @@ from data import models
 class TestClassroom(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "lessons_with_solution.json"]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_classroom(self):
@@ -66,6 +66,11 @@ class TestClassroom(test.TestCase):
         # Set test parameters
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+
+        # We ensure they are busy at this time
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson.classroom = classroom
+        lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
         is_occupied = classroom.check_if_occupied_at_time_slot(slot=slot)
