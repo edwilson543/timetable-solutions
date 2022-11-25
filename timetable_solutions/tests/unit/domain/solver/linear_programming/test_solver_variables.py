@@ -1,4 +1,6 @@
-"""Unit tests for the instantiation of solver variables"""
+"""
+Unit tests for the instantiation of solver variables
+"""
 
 # Standard library imports
 from functools import lru_cache
@@ -11,13 +13,14 @@ import pulp as lp
 from django import test
 
 # Local application imports
+from data import models
 from domain import solver as slvr
 
 
 class TestTimetableSolverVariables(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes_lunch.json", "unsolved_classes.json"]
+                "lessons_without_solution.json"]
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -46,7 +49,7 @@ class TestTimetableSolverVariables(test.TestCase):
 
         # Test the outcome - we expect one variable per timetable slot / unsolved class pair
         assert len(variables) == 12 * 35
-        random_var_key = slvr.var_key(class_id="YEAR_ONE_FRENCH_A", slot_id=19)
+        random_var_key = slvr.var_key(lesson_id="YEAR_ONE_FRENCH_A", slot_id=19)
         random_var = variables[random_var_key]
         assert random_var.lowBound == 0
         assert random_var.upBound == 1
@@ -57,20 +60,25 @@ class TestTimetableSolverVariables(test.TestCase):
         """
         Test for the method removing irrelevant variables from the variables dict.
         """
-        # Set parameters
+        # Set parameters - we add two user defined slots at monday at 9AM, so that this variable gets stripped
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        two_slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 2])
+        lesson.add_user_defined_time_slots(time_slots=two_slots)
+
+        to_strip_variable_key_1 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=1)
+        to_strip_variable_key_2 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)
+
         variables_maker = self.get_variables_maker()
         variables = variables_maker._get_decision_variables(strip=False)
 
-        # We add an additional variable to the variables dictionary, to be stripped out
-        variable_key = slvr.var_key(class_id="LUNCH_1", slot_id=21)
-        additional_variable = {variable_key: lp.LpVariable("Note that l_p variable is irrelevant to test")}
-        variables = variables | additional_variable
-
-        # Execute the test unit  - note that LUNCH_1 is a know fixed class so we don't need a variable for it
+        # Execute the test unit
+        assert to_strip_variable_key_1 in variables.keys()
+        assert to_strip_variable_key_2 in variables.keys()
         variables_maker._strip_decision_variables(variables=variables)
 
         # Test the outcome
-        assert variable_key not in variables.keys()
+        assert to_strip_variable_key_1 not in variables.keys()
+        assert to_strip_variable_key_2 not in variables.keys()
 
     def test_get_double_period_variables(self):
         """
@@ -84,7 +92,7 @@ class TestTimetableSolverVariables(test.TestCase):
 
         # Test the outcome - we expect one variable per consecutive period
         assert len(variables) == 12 * 6 * 5  # 12 unsolved classes, 6 consecutive periods / day, 5 days / week
-        random_var_key = slvr.doubles_var_key(class_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12)
+        random_var_key = slvr.doubles_var_key(lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12)
         random_var = variables[random_var_key]
         assert random_var.lowBound == 0
         assert random_var.upBound == 1
