@@ -158,16 +158,19 @@ class Lesson(models.Model):
     def get_all_time_slots(self) -> TimetableSlotQuerySet:
         """
         Method to provide ALL time slots when a particular lesson is known to take place.
+        The .distinct() prevents duplicates, but there should be none anyway - for some reason, there seems to be a bug
+        where duplicates are created within one of the individual query sets, at the point of combining.
         """
-        return self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()
+        return (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct()
 
     @classmethod
     def get_lessons_requiring_solving(cls, school_id: int) -> LessonQuerySet:
         """
         Method to retrieve the lessons where the total required slots is greater than the user defined slots count.
         """
-        lessons = cls.objects.filter(models.Q(school_id=school_id) &
-                                     models.Q(total_required_slots__lte=cls.get_n_solver_slots_required))
+        all_lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
+        filtered_lesson_pks = [lesson.pk for lesson in all_lessons if lesson.requires_solving()]
+        lessons = cls.objects.filter(pk__in=filtered_lesson_pks)
         return lessons
 
     def get_n_solver_slots_required(self) -> int:
@@ -205,7 +208,7 @@ class Lesson(models.Model):
 
             elif (  # Check if periods are consecutive  # TODO -> create method on TimetableSlot for this
                  slot.day_of_week == previous_slot.day_of_week and
-                 slot.periods_starts_at == previous_slot.periods_ends_at
+                 slot.period_starts_at == previous_slot.period_ends_at
             ):
                 double_period_count += 1
                 previous_slot = slot
@@ -214,6 +217,7 @@ class Lesson(models.Model):
 
     # def get_n_solver_double_periods_required(self) -> int:
     # TODO once onto solver though, as this is new.
+    # todo -> CAN JUST do the number of doubler periods required, less the count on days, and then sum.
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
