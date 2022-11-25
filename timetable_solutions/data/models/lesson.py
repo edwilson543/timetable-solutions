@@ -135,7 +135,7 @@ class Lesson(models.Model):
         return outcome
 
     @classmethod
-    def delete_solver_solution_for_school(cls, school_id: int) -> Tuple:
+    def delete_solver_solution_for_school(cls, school_id: int) -> None:
         """Method deleting all associations in the solver_defined_time_slots field, of a school's Lessons"""
         lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
         for lesson in lessons:
