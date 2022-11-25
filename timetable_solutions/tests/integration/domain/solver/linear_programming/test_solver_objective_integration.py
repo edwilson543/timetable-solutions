@@ -16,7 +16,7 @@ from domain import solver as slvr
 class TestSolverConstraints(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes_lunch.json", "unsolved_classes.json"]
+                "lessons_without_solution"]
 
     def test_add_objective_to_problem(self):
         """

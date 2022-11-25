@@ -25,7 +25,7 @@ class TestTimetableSolverObjective(test.TestCase):
     """
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes_lunch.json", "unsolved_classes.json"]
+                "lessons_without_solution"]
 
     @staticmethod
     def get_objective_maker(solution_spec: slvr.SolutionSpecification) -> slvr.TimetableSolverObjective:
