@@ -71,39 +71,6 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         # Check outcome
         assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
 
-    def test_user_defined_double_period_counts_property_one_double(self):
-        """
-        Test that the correct dictionary & structure is returned when trying to count the number of double periods
-        within the user defined data.
-        User defined data is filtered out, so we modify to ensure the double in the fixture gets found.
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 6])  # Queryset contains one double period
-        lesson.user_defined_time_slots.add(*slots)  # Manually give a user defined double
-
-        data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
-
-        # Execute test unit
-        double_period_counts = data.user_defined_double_period_counts
-
-        # Check outcome
-        assert double_period_counts == {("YEAR_ONE_MATHS_A", 1): 1}
-
-    def test_user_defined_double_period_counts_property_no_doubles(self):
-        """
-        Test that we get an empty dictionary when no Lessons contain a user-defined double period.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
-
-        # Execute test unit
-        double_period_counts = data.user_defined_double_period_counts
-
-        # Check outcome
-        assert double_period_counts == {}
-
     def test_timetable_start_property(self):
         """
         Unit test that the timetable start and finish span is correctly calculated.

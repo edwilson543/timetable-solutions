@@ -96,20 +96,6 @@ class TimetableSolverInputs:
         days_list = sorted(list(days))
         return days_list
 
-    @cached_property
-    def user_defined_double_period_counts(self) -> Dict[Tuple[str, models.WeekDay], int]:
-        """
-        Property counting the user-specified double periods, so that they can be counted where relevant in the
-        constraints.
-        :return - dict whose keys are (lesson_id, day_of_week) tuples, and values represent the
-        number of double periods that class has on that day.
-        """
-        doubles = {(lesson.lesson_id, day_of_week):
-                   lesson.get_user_defined_double_period_count_on_day(day_of_week=day_of_week) for
-                   day_of_week in self.available_days for lesson in self.lessons}
-        non_zero_doubles = {key: value for key, value in doubles.items() if value != 0}
-        return non_zero_doubles
-
     @property
     def timetable_start(self) -> float:
         """
