@@ -206,10 +206,7 @@ class Lesson(models.Model):
                 previous_slot = slot
                 continue
 
-            elif (  # Check if periods are consecutive  # TODO -> create method on TimetableSlot for this
-                 slot.day_of_week == previous_slot.day_of_week and
-                 slot.period_starts_at == previous_slot.period_ends_at
-            ):
+            elif slot.check_if_slots_are_consecutive(other_slot=previous_slot):
                 double_period_count += 1
                 previous_slot = slot
 
