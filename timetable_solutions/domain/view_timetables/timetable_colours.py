@@ -53,49 +53,49 @@ class TimetableColourAssigner:
     }
 
     @classmethod
-    def get_colours_for_pupil_timetable(cls, classes: models.FixedClassQuerySet) -> Dict[str, str]:
+    def get_colours_for_pupil_timetable(cls, lessons: models.LessonQuerySet) -> Dict[str, str]:
         """
         Method to produce a dictionary mapping a single pupil's subject name strings to hexadecimal colours.
-        :param classes - the queryset of classes that a given pupil takes
+        :param lessons - the queryset of lessons that a given pupil takes
         :return A dictionary whose keys are subject names, and values are corresponding hexadecimal colour codes
         """
-        # Create dictionary of fixed period name -> hexadecimal colour mappings
-        generic_period_colours = cls._get_generic_period_colours(classes=classes)
+        # Get dictionary of  subject_name -> hexadecimal colour mappings
+        generic_period_colours = cls._get_generic_period_colours(lessons=lessons)
 
-        # Count the instances of each subject per week, removing any that are already in class_colours
-        uncleaned_class_counts = {klass.subject_name: klass.time_slots.all().count() for klass in classes}
-        class_counts = {subject_name: count for subject_name, count in uncleaned_class_counts.items() if
-                        subject_name not in generic_period_colours.keys()}
+        # Count the instances of each subject per week, removing any that are already in lesson_colours
+        uncleaned_lesson_counts = {lesson.subject_name: lesson.total_required_slots for lesson in lessons}
+        lesson_counts = {subject_name: count for subject_name, count in uncleaned_lesson_counts.items() if
+                         subject_name not in generic_period_colours.keys()}
 
-        # Rank the classes ensuring all final ranks are in the specified colour ranking
-        counts_ser = pd.Series(class_counts)  # Series used to access the .rank() method
+        # Rank the lessons ensuring all final ranks are in the specified colour ranking
+        counts_ser = pd.Series(lesson_counts)  # Series used to access the .rank() method
         rank_ser = counts_ser.rank(method="first", ascending=False) - 1  # -1 so that ranks start at 0
         max_defined_rank = max(cls._colour_ranking.keys())
         rank_ser = rank_ser.mod(max_defined_rank)
-        class_rank_dict = rank_ser.to_dict()
+        lesson_rank_dict = rank_ser.to_dict()
 
         # Assign each subject a colour based on rank
-        ranked_colours = {subject_name: cls._colour_ranking[rank] for subject_name, rank in class_rank_dict.items()}
-        class_colours = {**generic_period_colours, **ranked_colours}
-        return class_colours
+        ranked_colours = {subject_name: cls._colour_ranking[rank] for subject_name, rank in lesson_rank_dict.items()}
+        lesson_colours = {**generic_period_colours, **ranked_colours}
+        return lesson_colours
 
     @classmethod
-    def get_colours_for_teacher_timetable(cls, classes: models.FixedClassQuerySet) -> Dict[str | int, str]:
+    def get_colours_for_teacher_timetable(cls, lessons: models.LessonQuerySet) -> Dict[str | int, str]:
         """
-        Method to produce a dictionary mapping a single teacher's year groups, and year-group-less classes (lunch /
+        Method to produce a dictionary mapping a single teacher's year groups, and year-group-less lessons (lunch /
         break) name strings to hexadecimal colours.
-        :param classes - the queryset of classes that a given teacher teaches / has
+        :param lessons - the queryset of lessons that a given teacher teaches / has
         :return A dictionary whose keys are subject names, and values are corresponding hexadecimal colour codes
         """
-        # Create dictionary of fixed period name -> hexadecimal colour mappings
-        generic_period_colours = cls._get_generic_period_colours(classes=classes)
+        # Get dictionary of  subject_name -> hexadecimal colour mappings
+        generic_period_colours = cls._get_generic_period_colours(lessons=lessons)
 
         colour_ranking = cls._colour_ranking
         year_group_colours = {}  # Dictionary that will map year group colours -> ints
-        for klass in classes:
-            all_pupils = klass.pupils.all()
+        for lesson in lessons:
+            all_pupils = lesson.pupils.all()
             if all_pupils.exists():  # Take first pupil from queryset since all have same year group
-                first_pupil = klass.pupils.all().first()
+                first_pupil = lesson.pupils.all().first()
                 year_group: int = first_pupil.year_group
                 year_group_colours[year_group] = colour_ranking[year_group]
 
@@ -104,32 +104,32 @@ class TimetableColourAssigner:
 
     # HELPER METHODS
     @classmethod
-    def _get_generic_period_colours(cls, classes: models.FixedClassQuerySet) -> Dict[str, str]:
+    def _get_generic_period_colours(cls, lessons: models.LessonQuerySet) -> Dict[str, str]:
         """
         Method getting the generic period colours relevant to an individual timetable.
-        :param classes - the queryset of classes specific to an individual pupil / teacher
+        :param lessons - the queryset of lessons specific to an individual pupil / teacher
         :return generic_period_colours -  dictionary of subject_name: hexadecimal_colour_codes, where the subject names
-        correspond to the generic period types identified in the classes parameter
+        correspond to the generic period types identified in the lessons parameter
         """
         generic_period_colours = {
-            klass.subject_name: matched_colour_code for klass in classes if
-            (matched_colour_code := cls.check_class_for_colour_in_regex(class_name=klass.subject_name)) is not None
+            lesson.subject_name: matched_colour_code for lesson in lessons if
+            (matched_colour_code := cls.check_lesson_for_colour_in_regex(lesson_name=lesson.subject_name)) is not None
         }
-        # Free periods are normally undefined (i.e. will NOT be in the classes arg), and are used to fill missing slots
+        # Free periods are normally undefined (i.e. will NOT be in the lessons arg), and are used to fill missing slots
         # So this must be added manually
         generic_period_colours[cls.Colour.FREE.name] = cls.Colour.FREE.value
         return generic_period_colours
 
     @classmethod
-    def check_class_for_colour_in_regex(cls, class_name: str) -> Colour | None:
+    def check_lesson_for_colour_in_regex(cls, lesson_name: str) -> Colour | None:
         """
-        Method to check the class_name parameter to see if it matches any of the regexes in regex dict.
+        Method to check the lesson_name parameter to see if it matches any of the regexes in regex dict.
         :return the colour code from the matched regex, if there is one, otherwise None.
 
         Note - we actually use the method to help count the subjects that aren't of generic type in the
-        timetable_summary_stats.py. Note really what it was intended for but it does a job...
+        timetable_summary_stats.py. Not really what it was intended for, but it does a job...
         """
         for regex, colour_code in cls._regex_dict.items():
-            is_match = bool(re.search(regex, string=class_name))
+            is_match = bool(re.search(regex, string=lesson_name))
             if is_match:
                 return colour_code
