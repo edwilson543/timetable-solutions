@@ -202,13 +202,9 @@ class Lesson(models.Model):
         previous_slot = None
 
         for slot in user_slots_on_day:
-            if previous_slot is None:
-                previous_slot = slot
-                continue
-
-            elif slot.check_if_slots_are_consecutive(other_slot=previous_slot):
+            if (previous_slot is not None) and slot.check_if_slots_are_consecutive(other_slot=previous_slot):
                 double_period_count += 1
-                previous_slot = slot
+            previous_slot = slot
 
         return double_period_count
 
