@@ -93,59 +93,43 @@
     }
   },
   {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 101,
     "fields": {
-      "class_id": "YEAR_ONE_MATHS_A",
+      "lesson_id": "YEAR_ONE_MATHS_A",
       "subject_name": "MATHS",
       "teacher": 101,
-      "pupils": [101],
+      "pupils": [
+        101
+      ],
       "classroom": 101,
-      "time_slots": [101],
-      "user_defined": true,
+      "user_defined_time_slots": [
+        101
+      ],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 0,
       "school": 111111
     }
   },
   {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 102,
     "fields": {
-      "class_id": "YEAR_ONE_MATHS_B",
+      "lesson_id": "YEAR_ONE_MATHS_B",
       "subject_name": "MATHS",
       "teacher": 102,
-      "pupils": [102],
+      "pupils": [
+        102
+      ],
       "classroom": 102,
-      "time_slots": [102],
-      "user_defined": true,
+      "user_defined_time_slots": [
+        102
+      ],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 0,
       "school": 111111
-    }
-  },
-  {
-    "model": "data.unsolvedclass",
-    "pk": 101,
-    "fields": {
-      "class_id": "YEAR_ONE_MATHS_A",
-      "school": 111111,
-      "subject_name": "MATHS",
-      "teacher": 101,
-      "classroom": 101,
-      "total_slots": 2,
-      "n_double_periods": 0,
-      "pupils": [101]
-    }
-  },
-  {
-    "model": "data.unsolvedclass",
-    "pk": 102,
-    "fields": {
-      "class_id": "YEAR_ONE_MATHS_B",
-      "school": 111111,
-      "subject_name": "MATHS",
-      "teacher": 102,
-      "classroom": 102,
-      "total_slots": 2,
-      "n_double_periods": 0,
-      "pupils": [102]
     }
   }
 ]
