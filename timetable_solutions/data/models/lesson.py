@@ -142,17 +142,26 @@ class Lesson(models.Model):
             lesson.solver_defined_time_slots.clear()
 
     # MUTATORS
-    def add_pupils(self, pupils: PupilQuerySet) -> None:
+    def add_pupils(self, pupils: PupilQuerySet | Pupil) -> None:
         """Method adding a queryset of pupils to the Lesson instance's many-to-many pupils field"""
-        self.pupils.add(*pupils)
+        if isinstance(pupils, PupilQuerySet):
+            self.pupils.add(*pupils)
+        elif isinstance(pupils, Pupil):
+            self.pupils.add(pupils)
 
-    def add_user_defined_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
+    def add_user_defined_time_slots(self, time_slots: TimetableSlotQuerySet | TimetableSlot) -> None:
         """Method adding a queryset of time slots to the Lesson's many-to-many user_defined_time_slot field"""
-        self.user_defined_time_slots.add(*time_slots)
+        if isinstance(time_slots, TimetableSlotQuerySet):
+            self.user_defined_time_slots.add(*time_slots)
+        elif isinstance(time_slots, TimetableSlot):
+            self.user_defined_time_slots.add(time_slots)
 
     def add_solver_defined_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
         """Method adding a queryset of time slots to the Lesson's many-to-many solver_defined_time_slot field"""
-        self.solver_defined_time_slots.add(*time_slots)
+        if isinstance(time_slots, TimetableSlotQuerySet):
+            self.solver_defined_time_slots.add(*time_slots)
+        elif isinstance(time_slots, TimetableSlot):
+            self.solver_defined_time_slots.add(time_slots)
 
     # QUERIES
     def get_all_time_slots(self) -> TimetableSlotQuerySet:
