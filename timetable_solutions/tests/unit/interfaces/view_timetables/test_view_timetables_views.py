@@ -24,7 +24,7 @@ class TestViews(TestCase):
     Test class for the view_timetables app.
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json", "fixed_classes_lunch.json"]
+                "lessons_with_solution.json"]
 
     def test_pupil_navigator_response(self):
         """
@@ -96,11 +96,11 @@ class TestViews(TestCase):
         # Test timetable context
         timetable = response.context["timetable"]
         monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
-        self.assertIsInstance(monday_period_one, models.FixedClass)
+        self.assertIsInstance(monday_period_one, models.Lesson)
         self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
         free_period = timetable["12:00-13:00"][models.WeekDay.THURSDAY.label]
-        # For free periods, the dictionary value is a string as opposed to a FixedClass instance
+        # For free periods, the dictionary value is a string as opposed to a Lesson instance
         self.assertEqual(free_period, "FREE")
 
         # Test colours context
@@ -130,7 +130,7 @@ class TestViews(TestCase):
         # Test timetable content
         timetable = response.context["timetable"]
         monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
-        self.assertIsInstance(monday_period_one, models.FixedClass)
+        self.assertIsInstance(monday_period_one, models.Lesson)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
         self.assertEqual(free_period, "FREE")

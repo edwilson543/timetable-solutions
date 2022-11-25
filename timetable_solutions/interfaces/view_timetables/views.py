@@ -1,4 +1,6 @@
-"""Views used to navigate users towards an individual pupil/teacher's timetable."""
+"""
+Views used to navigate users towards an individual pupil/teacher's timetable.
+"""
 
 # Standard library imports
 import io
