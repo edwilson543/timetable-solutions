@@ -90,9 +90,8 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     def test_solver_solution_test_scenario_1(self):
         """
         Test scenario targeted at the fulfillment constraint.
-        There are 2 pupils / teachers / timeslots / fixed classes / unsolved classes. Each fixed class occupies one of
-        the slots, and the unsolved class states 2 slots must be used, so the solution is just to occupy the remaining
-        slot, for each class.
+        There are 2 pupils / teachers / timeslots / lessons. Each lesson occupies one of the slots,
+        and states 2 slots must be used, so the solution is just to occupy the remaining slot for each lesson
         """
         # Set test parameters
         school_access_key = 111111
@@ -112,7 +111,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         Test scenario targeted at the pupil one-place-at-a-time constraint.
         Test scenario 2 represents a test of the pupil one-place-at-a-time constraint. There is one pupil, who must
-        go to 2 classes. There are 2 time slots. There are no fixed classes, or other constraints.
+        go to 2 classes. There are 2 time slots. There are no user defined time slots, or other constraints.
         """
         # Set test parameters
         school_access_key = 222222
@@ -136,8 +135,8 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     def test_solver_solution_test_scenario_3(self):
         """
         Test scenario targeted at the teacher one-place-at-a-time constraint.
-        A teacher must take 2 classes, one of which is fixed and one of which is unsolved. Both use 1 slot, and there
-        are 2 possible time slots
+        A teacher must teacher 2 lessons, one of which is user defined.
+        Both use 1 slot, and there are 2 possible time slots.
         """
         # Set test parameters
         school_access_key = 333333
@@ -149,7 +148,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert len(solver.variables.decision_variables) == 2  # Lesson's 1 slot could go in either time slot
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
 
@@ -169,7 +168,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # Unsolved class' 1 slot could go in either time slot
+        assert len(solver.variables.decision_variables) == 2  # Lesson's 1 slot could go in either time slot
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
 
@@ -196,7 +195,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 3  # 1 unsolved class must be taught in 2 / 3 time slots
+        assert len(solver.variables.decision_variables) == 3  # 1 lesson must be taught in 2 / 3 time slots
 
         # The double period is slots 2 & 3
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0
@@ -229,7 +228,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         assert lp.LpStatus[solver.problem.status] == "Optimal"
         assert len(solver.variables.decision_variables) == 3  # 4 slots, 1 class, but one variable gets stripped
 
-        # The fixed class is at slot 4, slots (1 & 2) and (3 & 4) are the consecutive pairs
+        # The user defined slot is at slot 4, slots (1 & 2) and (3 & 4) are the consecutive pairs
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 0
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 1
@@ -276,7 +275,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
             Monday: Fixed-empty-empty;
             Tuesday: empty;
             Tuesday: 1 slot
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             2 total slots;
             0 double periods.
         By the no split classes constraint, the remaining class has to be taught on Tuesday. In particular, it cannot be
@@ -309,7 +308,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         Timetable structure:
             Monday: empty-empty-empty-Fixed;
             Tuesday: empty-empty;
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             4 total slots;
             2 double period.
         By the no two doubles in a day constraint, we must have the following final structure:
@@ -336,7 +335,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 1
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 0
-        # 4 Fixed so was stripped
+        # slot_id=4 user defined so gets stripped
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=5)].varValue == 1
         assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=6)].varValue == 1
 
@@ -448,7 +447,7 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
             1 slot;
         Optimal free period time:
             MORNING;
-        Therefore we want the outcome to be that that the unsolved class' one slot takes place in the AFTERNOON.
+        Therefore we want the outcome to be that that the lesson's one slot takes place in the AFTERNOON.
         """
         # Set test parameters
         school_access_key = 222222
