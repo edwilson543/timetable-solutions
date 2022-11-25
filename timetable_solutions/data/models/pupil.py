@@ -104,18 +104,18 @@ class Pupil(models.Model):
     # FILTER METHODS
     def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
         """
-        Method to check whether the given pupil has already been assigned a fixed class at the given slot.
+        Method to check whether the given pupil has already been assigned a lesson at the given slot.
         :return - True if BUSY at the given timeslot.
         """
         # noinspection PyUnresolvedReferences
-        slot_classes = self.classes.filter(time_slots=slot)
+        slot_classes = self.lessons.filter(user_defined_time_slots=slot)
         n_commitments = slot_classes.count()
         if n_commitments == 1:
             return True
         elif n_commitments == 0:
             return False
         else:
-            raise ValueError(f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 FixedClass at {slot}")
+            raise ValueError(f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}")
 
     # QUERY METHODS
     def get_lessons_per_week(self) -> int:

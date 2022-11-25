@@ -16,7 +16,7 @@ from data import models
 class TestPupil(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "lessons_with_solution.json"]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_pupil(self):
@@ -49,7 +49,7 @@ class TestPupil(test.TestCase):
         # Check outcome
         deleted_ref = outcome[1]
         assert deleted_ref["data.Pupil"] == 6
-        assert deleted_ref["data.FixedClass_pupils"] == 18
+        assert deleted_ref["data.Lesson_pupils"] == 24
 
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         assert all_pupils.count() == 0
@@ -59,20 +59,33 @@ class TestPupil(test.TestCase):
         """
         Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to
         """
+        # Set test parameters
         pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
 
+        # We ensure they are busy at this time
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson.add_pupils(pupils=pup)
+        lesson.add_user_defined_time_slots(time_slots=slot)
+
+        # Execute test unit
         is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+
+        # Check outcome
         assert is_busy
 
     def test_check_if_busy_at_time_slot_when_pupil_is_not_busy(self):
         """
         Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to
         """
+        # Set test parameters
         pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=5)
 
+        # Execute test unit
         is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+
+        # Check outcome
         assert not is_busy
 
     # QUERY METHOD TESTS
@@ -84,20 +97,20 @@ class TestPupil(test.TestCase):
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
 
         # Execute test unit
-        percentage = pupil.get_lessons_per_week()
+        weekly_lessons = pupil.get_lessons_per_week()
 
         # Check outcome
-        assert percentage == 25
+        assert weekly_lessons == 30
 
-    def test_get_utilisation_percentage(self):
+    def test_get_occupied_percentage(self):
         """
-        Test that the correct number of lessons per week is retrieved for a pupil.
+        Test that the correct occupied percentage is retrieved for a pupil.
         """
         # Set test parameters
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
 
         # Execute test unit
-        n_lessons = pupil.get_occupied_percentage()
+        percentage = pupil.get_occupied_percentage()
 
         # Check outcome
-        assert n_lessons == (25 / 35)
+        assert percentage == (30 / 35)
