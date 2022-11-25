@@ -65,7 +65,7 @@ class TimetableSolverVariables:
     def _get_double_period_variables(self) -> Dict[doubles_var_key, lp.LpVariable]:
         """
         Method to get the pulp dependent variables used to decide when double-periods should go.
-        For each (unsolved class, double period) pair, there is a binary variable indicating whether that class has
+        For each (lesson, double period) pair, there is a binary variable indicating whether that class has
         a double period at that time
         :return - Dictionary of pulp variables, indexed by class / consecutive period tuples
         """

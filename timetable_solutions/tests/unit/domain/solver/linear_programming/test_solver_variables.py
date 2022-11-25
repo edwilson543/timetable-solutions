@@ -47,7 +47,7 @@ class TestTimetableSolverVariables(test.TestCase):
         # Execute test unit
         variables = variables_maker._get_decision_variables()
 
-        # Test the outcome - we expect one variable per timetable slot / unsolved class pair
+        # Test the outcome - we expect one variable per lesson / timetable slot pair
         assert len(variables) == 12 * 35
         random_var_key = slvr.var_key(lesson_id="YEAR_ONE_FRENCH_A", slot_id=19)
         random_var = variables[random_var_key]
@@ -91,7 +91,7 @@ class TestTimetableSolverVariables(test.TestCase):
         variables = variables_maker._get_double_period_variables()
 
         # Test the outcome - we expect one variable per consecutive period
-        assert len(variables) == 12 * 6 * 5  # 12 unsolved classes, 6 consecutive periods / day, 5 days / week
+        assert len(variables) == 12 * 6 * 5  # 12 lessons, 6 consecutive periods / day, 5 days / week
         random_var_key = slvr.doubles_var_key(lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12)
         random_var = variables[random_var_key]
         assert random_var.lowBound == 0
