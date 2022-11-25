@@ -28,7 +28,7 @@ class TestSolver(test.TestCase):
     These fixtures are not contrived to produce a specific solution, so we do not test what the solution actually is.
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes_lunch.json", "unsolved_classes.json"]
+                "lessons_without_solution.json"]
 
     def test_solver_finds_a_solution_for_default_fixtures_random_objective(self):
         """

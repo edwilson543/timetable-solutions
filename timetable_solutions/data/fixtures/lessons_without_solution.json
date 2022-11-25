@@ -33,7 +33,7 @@
       "solver_defined_time_slots": [],
       "user_defined_time_slots": [],
       "total_required_slots": 9,
-      "total_required_double_periods": 3
+      "total_required_double_periods": 4
     }
   },
   {
@@ -89,7 +89,7 @@
       "solver_defined_time_slots": [],
       "user_defined_time_slots": [],
       "total_required_slots": 9,
-      "total_required_double_periods": 3
+      "total_required_double_periods": 4
     }
   },
   {
@@ -200,7 +200,7 @@
       "solver_defined_time_slots": [],
       "user_defined_time_slots": [],
       "total_required_slots": 9,
-      "total_required_double_periods": 3
+      "total_required_double_periods": 4
     }
   },
   {
@@ -218,7 +218,7 @@
       "solver_defined_time_slots": [],
       "user_defined_time_slots": [],
       "total_required_slots": 9,
-      "total_required_double_periods": 3
+      "total_required_double_periods": 4
     }
   },
   {
