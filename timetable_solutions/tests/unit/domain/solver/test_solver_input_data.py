@@ -15,7 +15,7 @@ from domain import solver as slvr
 class TestTimetableSolverInputsLoading(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json", "unsolved_classes.json"]
+                "lessons_without_solution.json"]
 
     solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
                                                allow_triple_periods_and_above=True)
@@ -28,25 +28,11 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
 
         # Check the outcome is as expected
-        assert len(data.fixed_classes) == 12
-        for fc in data.fixed_classes:
-            assert isinstance(fc, models.FixedClass)
-
-        assert len(data.unsolved_classes) == 12
-        for uc in data.unsolved_classes:
-            assert isinstance(uc, models.UnsolvedClass)
-
-        assert len(data.timetable_slots) == 35
-        for tts in data.timetable_slots:
-            assert isinstance(tts, models.TimetableSlot)
-
-        assert len(data.teachers) == 11
-        for teacher in data.teachers:
-            assert isinstance(teacher, models.Teacher)
-
         assert len(data.pupils) == 6
-        for pupil in data.pupils:
-            assert isinstance(pupil, models.Pupil)
+        assert len(data.teachers) == 11
+        assert len(data.classrooms) == 12
+        assert len(data.timetable_slots) == 35
+        assert len(data.lessons) == 12  # Since the 12 lunch 'lessons' aren't included in the solver input data
 
     # PROPERTIES TESTS
     def test_consecutive_slots_property(self):
@@ -85,34 +71,35 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         # Check outcome
         assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
 
-    def test_fixed_class_double_period_counts_property_one_double(self):
+    def test_user_defined_double_period_counts_property_one_double(self):
         """
         Test that the correct dictionary & structure is returned when trying to count the number of double periods
         within the user defined data.
         User defined data is filtered out, so we modify to ensure the double in the fixture gets found.
         """
         # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
-        for fc in data.fixed_classes:
-            fc.user_defined = True  # To avoid creating another fixture, we just mutate here
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 6])  # Queryset contains one double period
+        lesson.user_defined_time_slots.add(*slots)  # Manually give a user defined double
+
+        data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
 
         # Execute test unit
-        double_period_counts = data.fixed_class_double_period_counts
+        double_period_counts = data.user_defined_double_period_counts
 
         # Check outcome
         assert double_period_counts == {("YEAR_ONE_MATHS_A", 1): 1}
 
-    def test_fixed_class_double_period_counts_property_no_doubles(self):
+    def test_user_defined_double_period_counts_property_no_doubles(self):
         """
-        Test that we get an empty dictionary when all FixedClass data is not user-defined
+        Test that we get an empty dictionary when no Lessons contain a user-defined double period.
         """
         # Set test parameters
         school_access_key = 123456
         data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
 
         # Execute test unit
-        double_period_counts = data.fixed_class_double_period_counts
+        double_period_counts = data.user_defined_double_period_counts
 
         # Check outcome
         assert double_period_counts == {}
@@ -146,37 +133,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert timetable_start == 16  # Correspond to 16:00
 
     # QUERIES TESTS
-    def test_get_fixed_class_corresponding_to_unsolved_class_existent_id_returns_fixed_class(self):
-        """
-        Test that a Fixed Class is returned from an UnsolvedClass with a corresponding fixed class.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
-
-        # Execute test unit
-        fixed_class = data.get_fixed_class_corresponding_to_unsolved_class(unsolved_class_id="YEAR_ONE_MATHS_A")
-
-        # Check outcome
-        assert isinstance(fixed_class, models.FixedClass)
-
-    def test_get_fixed_class_corresponding_to_unsolved_class_non_existent_id_returns_none(self):
-        """
-        Test that a None is returned from an UnsolvedClass without a corresponding fixed class.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
-
-        # Execute test unit
-        fixed_class = data.get_fixed_class_corresponding_to_unsolved_class(unsolved_class_id="NON-EXISTENT")
-
-        # Check outcome
-        assert fixed_class is None
-
     def test_get_time_period_starts_at_from_slot_id(self):
         """
-        Test that we get an empty dictionary when all FixedClass data is not user-defined
+        Test that the correct period start time is looked up from the slot id.
         """
         # Set test parameters
         school_access_key = 123456
@@ -190,7 +149,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert period_starts_at == dt.time(hour=9)
 
     # CHECKS TESTS
-    def test_check_specification_aligns_with_unsolved_class_data_no_issues(self):
+    def test_check_specification_aligns_with_input_data_no_issues(self):
         """
         Test that we retain an empty list of error messages after performing the checks, when there are no issues
         """
@@ -201,21 +160,22 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         # Check outcome - note the checks get performed at instantiation
         assert data.error_messages == []
 
-    def test_check_specification_aligns_with_unsolved_class_data_forced_issue(self):
+    def test_check_specification_aligns_with_input_data_forced_issue(self):
         """
         Test that we get the expected error message when the solution spec and input data are not compatible.
         """
         # Set test parameters
-        school_access_key = 123456
         spec = deepcopy(self.solution_spec)
+
         # Create a source of incompatibility - a spec disallowing split classes, but requiring too many (100...)
         spec.allow_split_classes_within_each_day = False
         pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        usc = models.UnsolvedClass.create_new(
-            school_id=school_access_key, class_id="TEST", subject_name="MATHS", teacher_id=1, classroom_id=1,
-            total_slots=100, n_double_periods=1, pupils=pupils)
+        models.Lesson.create_new(
+            school_id=123456, lesson_id="TEST", subject_name="MATHS", teacher_id=1, classroom_id=1,
+            total_required_slots=100, total_required_double_periods=1, pupils=pupils)
 
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        # Execute test unit and check outcome
+        data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)
 
         # Check outcome - note the checks get performed at instantiation
         assert len(data.error_messages) == 1

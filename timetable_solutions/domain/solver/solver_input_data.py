@@ -55,16 +55,15 @@ class TimetableSolverInputs:
         self.solution_specification = solution_specification
 
         # Call the data layer to get all necessary data
-        self.fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=self.school_id)
-        self.unsolved_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=self.school_id)
-        self.timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=self.school_id)
         self.pupils = models.Pupil.objects.get_all_instances_for_school(school_id=self.school_id)
         self.teachers = models.Teacher.objects.get_all_instances_for_school(school_id=self.school_id)
+        self.timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=self.school_id)
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=self.school_id)
+        self.lessons = models.Lesson.get_lessons_requiring_solving(school_id=self.school_id)
 
         # Check that solution spec and data are compatible (data that's individually invalid has already been checked)
         self.error_messages = []
-        self._check_specification_aligns_with_unsolved_class_data()
+        self._check_specification_aligns_with_input_data()
 
     # PROPERTIES
     @property
@@ -80,9 +79,8 @@ class TimetableSolverInputs:
         previous_slot = None
         # A key thing to note here is that the Meta class on TimetableSlot pre-orders the slots by week and by day.
         for current_slot in self.timetable_slots:
-            if (previous_slot is not None) and (current_slot.day_of_week == previous_slot.day_of_week):
+            if (previous_slot is not None) and current_slot.check_if_slots_are_consecutive(other_slot=previous_slot):
                 consecutive_slots.append((previous_slot, current_slot))
-
             previous_slot = current_slot
 
         return consecutive_slots
@@ -99,16 +97,16 @@ class TimetableSolverInputs:
         return days_list
 
     @cached_property
-    def fixed_class_double_period_counts(self) -> Dict[Tuple[str, models.WeekDay], int]:
+    def user_defined_double_period_counts(self) -> Dict[Tuple[str, models.WeekDay], int]:
         """
         Property counting the user-specified double periods, so that they can be counted where relevant in the
         constraints.
-        :return - dict whose keys are the class id (Unsolved or Fixed) and day of the week, and values represent the
+        :return - dict whose keys are (lesson_id, day_of_week) tuples, and values represent the
         number of double periods that class has on that day.
         """
-        doubles = {(fixed_class.class_id, day_of_week):
-                   fixed_class.get_double_period_count_on_day(day_of_week=day_of_week) for
-                   day_of_week in self.available_days for fixed_class in self.fixed_classes if fixed_class.user_defined}
+        doubles = {(lesson.lesson_id, day_of_week):
+                   lesson.get_user_defined_double_period_count_on_day(day_of_week=day_of_week) for
+                   day_of_week in self.available_days for lesson in self.lessons}
         non_zero_doubles = {key: value for key, value in doubles.items() if value != 0}
         return non_zero_doubles
 
@@ -116,7 +114,7 @@ class TimetableSolverInputs:
     def timetable_start(self) -> float:
         """
         Property finding the earliest time of day that the timetable starts, as a float on the 24-hour clock
-        :return: e.g. if the timetable starts at 9 AM, 9.0 will be returned. Similarly 2:30 PM -> 14.5
+        :return: e.g. if the timetable starts at 9 AM, 9.0 will be returned. Similarly, 2:30 PM -> 14.5
         """
         start = min(slot.period_starts_at.hour for slot in self.timetable_slots)
         return start
@@ -125,7 +123,7 @@ class TimetableSolverInputs:
     def timetable_finish(self) -> float:
         """
         Property finding the latest time of day that the timetable finishes, as a float on the 24-hour clock
-        :return: e.g. if the timetable ends at 5 PM, 17.0 will be returned. Similarly 12:30AM -> 0.5
+        :return: e.g. if the timetable ends at 5 PM, 17.0 will be returned. Similarly, 12:30AM -> 0.5
         Note: the returned time is the time the last periods ends (as opposed to the time the last periods starts
         """
         finish = max(slot.period_starts_at.hour + (slot.period_duration.total_seconds() / 3600) for
@@ -133,20 +131,6 @@ class TimetableSolverInputs:
         return finish
 
     # QUERIES
-    def get_fixed_class_corresponding_to_unsolved_class(self, unsolved_class_id: str) -> models.FixedClass | None:
-        """
-        Method to retrieve the FixedClass instance corresponding to an UnsolvedClass id
-        :return either the FixedClass instance, or None if there is not a corresponding instance.
-
-        Note - this could be defined on the FixedClass itself (and is, via the .get_fixed_class...), but is define here
-        since it only is used by the solver, and relates to filtering specifically the solver's querysets.
-        """
-        corresponding_fixed_class = self.fixed_classes.filter(class_id=unsolved_class_id)
-        if corresponding_fixed_class.count() == 1:
-            return corresponding_fixed_class.first()
-        else:
-            return None
-
     def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """
         Method to find the time of day that a period starts at.
@@ -158,16 +142,23 @@ class TimetableSolverInputs:
         return period_starts_at
 
     # CHECKS
-    def _check_specification_aligns_with_unsolved_class_data(self) -> None:
+    def _check_specification_aligns_with_input_data(self) -> None:
         """
         Method to check whether it's possible to find a solution which disallows split classes within each day, before
         formulating the lp problem, since we know it would be infeasible.
-        Side-effects: Store a user-targeted error message, specifying the options for resolution. Clearly we could just
+        Side effects: Store a user-targeted error message, specifying the options for resolution. Clearly we could just
         resolve directly within this method, but given the different options, the choice is left to the user.
         """
         if not self.solution_specification.allow_split_classes_within_each_day:
-            max_required_distinct_days = max(usc.total_slots - usc.n_double_periods for usc in self.unsolved_classes)
+            max_required_distinct_days = max(lesson.total_required_slots - lesson.total_required_double_periods for
+                                             lesson in self.lessons)
             available_distinct_days = len(self.available_days)
             if max_required_distinct_days > available_distinct_days:
                 self.error_messages.append("Classes require too many distinct slots to all be on separate days. "
-                                           "Please allow this in your solution, or ammend your data!")
+                                           "Please allow this in your solution, or amend your data!")
+
+        # Check no existing solution
+        for lesson in self.lessons:
+            if lesson.solver_defined_time_slots.count() > 0:
+                self.error_messages.append(f"{lesson.__repr__} with solver defined time slot(s) was passed as "
+                                           f"solver input data!")
