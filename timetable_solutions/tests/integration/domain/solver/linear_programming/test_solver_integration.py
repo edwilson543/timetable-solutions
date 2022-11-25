@@ -237,13 +237,13 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     def test_solver_solution_test_scenario_7(self):
         """
         Test scenario targeted at the component of the double period dependency constraint which states that adding an
-        unsolved class next to a fixed class results in a double period.
+        solver defined lesson next to a user defined lesson results in a double period.
         We have the following setup:
-        FixedClass / Timetable structure:
+        Timetable structure:
             Monday: Fixed-Fixed-empty-empty-Fixed;
             Tuesday: empty;
             Tuesday: 1 slot
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             4 total slots;
             1 double period.
         Since there is already a double on Monday, and adding a single in either of the available slots would create
@@ -272,7 +272,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         Test scenario targeted at the no split classes constraints.
         We have the following setup:
-        FixedClass / Timetable structure:
+        Timetable structure:
             Monday: Fixed-empty-empty;
             Tuesday: empty;
             Tuesday: 1 slot
@@ -306,16 +306,16 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         Test scenario targeted at the no two doubles in a day constraint (which is effectively also a no triples+
         constraint)
         We have the following setup:
-        Fixed Class / Timetable structure:
+        Timetable structure:
             Monday: empty-empty-empty-Fixed;
             Tuesday: empty-empty;
         1 Unsolved Class, requiring:
             4 total slots;
             2 double period.
         By the no two doubles in a day constraint, we must have the following final structure:
-            Monday: A - Unsolved-Unsolved-empty-Fixed; OR B - Unsolved-empty-Unsolved-Fixed - but we make the pupil /
+            Monday: A - Solver-Solver-empty-User; OR B - Solver-empty-Solver-User - but we make the pupil /
             classroom / teacher incompatible with option B, so we always get option A
-            Tuesday: Unsolved-Unsolved
+            Tuesday: Solver-Solver
         """
         # Set test parameters
         school_access_key = 999999
@@ -345,14 +345,14 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         Test scenario targeted at using the no two doubles in a day constraint in combination with the no split classes
         constraint, as well as testing that the no split classes constraint isn't broken by a user-defined split
         We have the following setup:
-        Fixed Class / Timetable structure:
+        Timetable structure:
             Monday: empty-empty-empty-empty;
             Tuesday: empty-empty-empty-empty;
             Wednesday: empty
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             6 total slots;
             2 double period.
-        Therefore we expect a double at some point on Monday, a double at some point on Tuesday, and a single on
+        Therefore, we expect a double at some point on Monday, a double at some point on Tuesday, and a single on
         Wednesday.
         """
         # Set test parameters
