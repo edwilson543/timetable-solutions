@@ -130,7 +130,22 @@ class TestLesson(test.TestCase):
         n_slots = lesson.get_n_solver_slots_required()
 
         # Check outcome
-        assert 5  # = 8 - 3, since we added 3 in the setup
+        assert n_slots == 5  # = 8 - 3, since we added 3 in the setup
+
+    def test_get_n_solver_double_periods_required(self):
+        """
+        Method to check that the correct number of solver double periods is calculated for a lesson
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 6])  # Add a double, to reduce count
+        lesson.user_defined_time_slots.add(*additional_slots)
+
+        # Execute test unit
+        n_doubles = lesson.get_n_solver_double_periods_required()
+
+        # Check outcome
+        assert n_doubles == 2
 
     def test_requires_solving_true(self):
         """

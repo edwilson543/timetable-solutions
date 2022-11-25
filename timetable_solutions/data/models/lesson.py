@@ -164,14 +164,6 @@ class Lesson(models.Model):
             self.solver_defined_time_slots.add(time_slots)
 
     # QUERIES
-    def get_all_time_slots(self) -> TimetableSlotQuerySet:
-        """
-        Method to provide ALL time slots when a particular lesson is known to take place.
-        The .distinct() prevents duplicates, but there should be none anyway - for some reason, there seems to be a bug
-        where duplicates are created within one of the individual query sets, at the point of combining.
-        """
-        return (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct()
-
     @classmethod
     def get_lessons_requiring_solving(cls, school_id: int) -> LessonQuerySet:
         """
@@ -182,11 +174,27 @@ class Lesson(models.Model):
         lessons = cls.objects.filter(pk__in=filtered_lesson_pks)
         return lessons
 
+    def get_all_time_slots(self) -> TimetableSlotQuerySet:
+        """
+        Method to provide ALL time slots when a particular lesson is known to take place.
+        The .distinct() prevents duplicates, but there should be none anyway - for some reason, there seems to be a bug
+        where duplicates are created within one of the individual query sets, at the point of combining.
+        """
+        return (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct()
+
     def get_n_solver_slots_required(self) -> int:
         """
         Method to calculate the total additional number of slots that the solver must produce.
         """
         return self.total_required_slots - self.user_defined_time_slots.all().count()
+
+    def get_n_solver_double_periods_required(self) -> int:
+        """
+        Method to calculate the total additional number of double periods that the solver must produce.
+        """
+        total_user_defined = sum(self.get_user_defined_double_period_count_on_day(day_of_week=day) for
+                                 day in WeekDay.values)
+        return self.total_required_double_periods - total_user_defined
 
     def requires_solving(self) -> bool:
         """
