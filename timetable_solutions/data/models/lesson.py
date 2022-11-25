@@ -19,10 +19,10 @@ from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet, Wee
 
 class LessonQuerySet(models.QuerySet):
     """
-    Custom queryset manager for the FixedClass model
+    Custom queryset manager for the Lesson model
     """
     def get_all_instances_for_school(self, school_id: int) -> Self:
-        """Method to return the full queryset of fixed classes for a given school"""
+        """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
 
     def get_individual_lesson(self, school_id: int, lesson_id: int) -> Self:
@@ -47,8 +47,8 @@ class Lesson(models.Model):
                                   related_name="lessons", blank=True, null=True)  # Null for e.g. sport
 
     # Fulfillment fields
-    user_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="user_classes")
-    solver_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="solver_classes")
+    user_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="user_lessons")
+    solver_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="solver_lessons")
 
     # Fulfillment requirement fields
     total_required_slots = models.PositiveSmallIntegerField()  # Count of user slots + solver slots, once fulfilled
@@ -87,7 +87,7 @@ class Lesson(models.Model):
     @classmethod
     def create_new(cls,
                    school_id: int, lesson_id: str, subject_name: str,
-                   total_required_slots: int, total_required_double_period_slots: int,
+                   total_required_slots: int, total_required_double_periods: int,
                    teacher_id: int | None = None, classroom_id: int | None = None,  # IDs since it's a foreign key
                    pupils: PupilQuerySet | None = None,
                    user_defined_time_slots: TimetableSlotQuerySet | None = None,
@@ -113,7 +113,7 @@ class Lesson(models.Model):
         lesson = cls.objects.create(
             school_id=school_id, lesson_id=lesson_id, subject_name=subject_name,
             total_required_slots=total_required_slots,
-            total_required_double_period_slots=total_required_double_period_slots,
+            total_required_double_periods=total_required_double_periods,
             teacher=teacher, classroom=classroom)
         lesson.full_clean()
         lesson.save()
@@ -139,11 +139,11 @@ class Lesson(models.Model):
         """Method deleting all associations in the solver_defined_time_slots field, of a school's Lessons"""
         lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
         for lesson in lessons:
-            lesson.solver_defined_time_slots_set.clear()
+            lesson.solver_defined_time_slots.clear()
 
     # MUTATORS
     def add_pupils(self, pupils: PupilQuerySet) -> None:
-        """Method adding a queryset of pupils to the FixedClass instance's many-to-many pupils field"""
+        """Method adding a queryset of pupils to the Lesson instance's many-to-many pupils field"""
         self.pupils.add(*pupils)
 
     def add_user_defined_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
@@ -191,14 +191,14 @@ class Lesson(models.Model):
         """
 
         # Note that slots will be ordered in time, using the TimetableSlot Meta class
-        fixed_class_slots = self.user_defined_time_slots.all().get_timeslots_on_given_day(
+        user_slots_on_day = self.user_defined_time_slots.all().get_timeslots_on_given_day(
             school_id=self.school.school_access_key, day_of_week=day_of_week)
 
         # Set initial parameters affected by the for loop
         double_period_count = 0
         previous_slot = None
 
-        for slot in fixed_class_slots:
+        for slot in user_slots_on_day:
             if previous_slot is None:
                 previous_slot = slot
                 continue
@@ -221,9 +221,9 @@ class Lesson(models.Model):
         Additional validation on Lesson instances. Note that we cannot imply a number of double periods that
         would exceed the total number of slots.
         """
-        if self.total_required_double_periods > (self.total_required_slots / 2):
-            raise ValidationError(f"{self.__repr__} with only {self.total_required_slots} total slots cannot have "
-                                  f"{self.total_required_double_periods} double periods.")
-
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
             raise ValidationError(f"User has defined more slots for {self.__repr__()} than the total requirement")
+
+        for slot in self.solver_defined_time_slots.all():
+            if slot in self.user_defined_time_slots:
+                raise ValidationError(f"{self.__repr__} appears in both user and solver slots for {self.__repr__}")
