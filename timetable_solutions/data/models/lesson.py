@@ -225,10 +225,6 @@ class Lesson(models.Model):
 
         return double_period_count
 
-    # def get_n_solver_double_periods_required(self) -> int:
-    # TODO once onto solver though, as this is new.
-    # todo -> CAN JUST do the number of doubler periods required, less the count on days, and then sum.
-
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
