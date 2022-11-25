@@ -28,13 +28,15 @@ class TestTimetableSolverOutcome(test.TestCase):
         solver.solve()
 
         # Execute test unit
-        outcome = slvr.TimetableSolverOutcome(timetable_solver=solver)
+        slvr.TimetableSolverOutcome(timetable_solver=solver)
 
         # Check the outcome
         expected_slots = models.TimetableSlot.objects.get_specific_timeslots(school_id=111111, slot_ids=[1, 2])
-        fc_maths_a = models.FixedClass.objects.get_individual_fixed_class(
-            school_id=111111, class_id="YEAR_ONE_MATHS_A")
-        fc_maths_b = models.FixedClass.objects.get_individual_fixed_class(
-            school_id=111111, class_id="YEAR_ONE_MATHS_B")
-        self.assertQuerysetEqual(expected_slots, fc_maths_a.time_slots.all(), ordered=False)
-        self.assertQuerysetEqual(expected_slots, fc_maths_b.time_slots.all(), ordered=False)
+
+        maths_a = models.Lesson.objects.get_individual_lesson(
+            school_id=111111, lesson_id="YEAR_ONE_MATHS_A")
+        maths_b = models.Lesson.objects.get_individual_lesson(
+            school_id=111111, lesson_id="YEAR_ONE_MATHS_B")
+
+        self.assertQuerysetEqual(expected_slots, maths_a.get_all_time_slots(), ordered=False)
+        self.assertQuerysetEqual(expected_slots, maths_b.get_all_time_slots(), ordered=False)
