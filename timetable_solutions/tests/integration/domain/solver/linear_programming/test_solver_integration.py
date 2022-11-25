@@ -406,9 +406,9 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         """
         Test scenario targeted at using the optimal free period objective component, with a specific time of day.
         We have the following setup:
-        Fixed Class / Timetable structure:
+        Timetable structure:
             Monday: empty-empty-empty-empty;
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             1 slot;
         Optimal free period time:
             Slot 1;
@@ -442,9 +442,9 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         """
         Test scenario targeted at using the optimal free period objective component, with the morning specified.
         We have the following setup:
-        Fixed Class / Timetable structure:
+        Timetable structure:
             Monday: MORNING: empty; AFTERNOON: empty;
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             1 slot;
         Optimal free period time:
             MORNING;
@@ -475,13 +475,13 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         """
         Test scenario targeted at using the optimal free period objective component, with the afternoon specified.
         We have the following setup:
-        Fixed Class / Timetable structure:
+        Timetable structure:
             Monday: MORNING: empty; AFTERNOON: empty;
-        1 Unsolved Class, requiring:
+        1 Lesson, requiring:
             1 slot;
         Optimal free period time:
             AFTERNOON;
-        Therefore we want the outcome to be that that the unsolved class' one slot takes place in the MORNING.
+        Therefore we want the outcome to be that that the lesson's one slot takes place in the MORNING.
         """
         # Set test parameters
         school_access_key = 222222

@@ -83,16 +83,18 @@
     }
   },
   {
-    "model": "data.unsolvedclass",
+    "model": "data.lesson",
     "pk": 101,
     "fields": {
-      "class_id": "ENGLISH",
+      "lesson_id": "ENGLISH",
       "school": 111111,
       "subject_name": "ENGLISH",
       "teacher": 101,
       "classroom": 101,
-      "total_slots": 1,
-      "n_double_periods": 0,
+      "user_defined_time_slots": [],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
       "pupils": [
         101
       ]
