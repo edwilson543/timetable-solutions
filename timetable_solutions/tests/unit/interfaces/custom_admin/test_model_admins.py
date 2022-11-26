@@ -14,7 +14,7 @@ from interfaces.custom_admin import admin
 class TestBaseModelAdmin(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json", "fixed_classes_lunch.json",
+                "lessons_with_solution.json",
                 "test_scenario_1.json"]  # Included since we need some data not corresponding to access key 6
 
     # GET FORM TEST

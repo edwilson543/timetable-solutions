@@ -51,7 +51,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_teachers), 11)
+        self.assertEqual(all_teachers.count(), 11)
         greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
@@ -67,7 +67,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
             file_field_name=forms.TeacherListUpload.Meta.file_field_name)
 
         # Check outcome
-        self.assertEqual(len(models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)), 0)
+        self.assertEqual(models.Lesson.objects.get_all_instances_for_school(school_id=123456).count(), 0)
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
@@ -81,7 +81,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_pupils), 6)
+        self.assertEqual(all_pupils.count(), 6)
         teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
         self.assertEqual(teemu.surname, "Pukki")
@@ -96,7 +96,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
                                          file_field_name=forms.PupilListUpload.Meta.file_field_name)
 
         # Assert that nothing has happened
-        self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
+        self.assertEqual(models.Pupil.objects.get_all_instances_for_school(school_id=123456).count(), 0)
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
@@ -109,7 +109,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_classrooms), 12)
+        self.assertEqual(all_classrooms.count(), 12)
         room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
         self.assertEqual(room.room_number, 40)
 
@@ -123,7 +123,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_slots), 35)
+        self.assertEqual(all_slots.count(), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
         self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, time(hour=9))

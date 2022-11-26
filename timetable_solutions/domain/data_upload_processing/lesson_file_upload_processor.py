@@ -55,7 +55,7 @@ class LessonFileUploadProcessor(FileUploadProcessor):
 
         if Header.PUPIL_IDS in create_new_dict.keys():
             raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
-            create_new_dict[models.UnsolvedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
+            create_new_dict[models.Lesson.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
                 pupil_ids_raw=raw_pupil_ids, row_number=row_number)
 
         if Header.USER_DEFINED_SLOTS in create_new_dict.keys():

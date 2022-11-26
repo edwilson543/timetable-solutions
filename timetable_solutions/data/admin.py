@@ -24,7 +24,6 @@ class UserAdmin(BaseUserAdmin):
 # Register all models to the admin site
 # Models not customised for now
 admin.site.register(models.Profile)
-admin.site.register(models.UnsolvedClass)
 
 
 # Customised models
@@ -64,14 +63,14 @@ class TimetableSlotAdmin(admin.ModelAdmin):
     search_help_text = "Search by school access key"
 
 
-@admin.register(models.FixedClass)
-class FixedClassAdmin(admin.ModelAdmin):
-    list_display = ["school", "class_id", "teacher", "get_number_slots_per_week"]
-    list_filter = ["school"]
-    search_fields = ["teacher__school__school_access_key", ]
-    search_help_text = "Search by school access key"
-
-    def get_number_slots_per_week(self, obj):
-        slot_count = obj.number_slots_per_week
-        return html.format_html(f"<b><i>{slot_count}<i><b>")
-    get_number_slots_per_week.short_description = "Slots per week"
+# @admin.register(models.FixedClass)
+# class FixedClassAdmin(admin.ModelAdmin):
+#     list_display = ["school", "class_id", "teacher", "get_number_slots_per_week"]
+#     list_filter = ["school"]
+#     search_fields = ["teacher__school__school_access_key", ]
+#     search_help_text = "Search by school access key"
+#
+#     def get_number_slots_per_week(self, obj):
+#         slot_count = obj.number_slots_per_week
+#         return html.format_html(f"<b><i>{slot_count}<i><b>")
+#     get_number_slots_per_week.short_description = "Slots per week"
