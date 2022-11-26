@@ -8,8 +8,6 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    replaces = [('data', '0001_squashed'), ('data', '0003_lesson')]
-
     initial = True
 
     dependencies = [
