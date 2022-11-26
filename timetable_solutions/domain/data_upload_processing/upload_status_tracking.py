@@ -42,21 +42,19 @@ class UploadStatusTracker:
                  teachers: bool,
                  classrooms: bool,
                  timetable: bool,
-                 unsolved_classes: bool,
-                 fixed_classes: bool):
+                 lessons: bool):
         self.pupils = UploadStatus.get_upload_status_from_bool(upload_status=pupils)
         self.teachers = UploadStatus.get_upload_status_from_bool(upload_status=teachers)
         self.classrooms = UploadStatus.get_upload_status_from_bool(upload_status=classrooms)
         self.timetable = UploadStatus.get_upload_status_from_bool(upload_status=timetable)
 
-        self.unsolved_classes = self._get_upload_status_and_check_if_allowed(class_upload_status=unsolved_classes)
-        self.fixed_classes = self._get_upload_status_and_check_if_allowed(class_upload_status=fixed_classes)
+        self.lessons = self._check_if_upload_allowed_then_get_status(class_upload_status=lessons)
 
-    def _get_upload_status_and_check_if_allowed(self, class_upload_status: bool) -> UploadStatus:
+    def _check_if_upload_allowed_then_get_status(self, class_upload_status: bool) -> UploadStatus:
         """
-        Method to get the upload status of the fixed / unsolved class uploads. If the user hasn't uploaded all of the
+        Method to get the upload status of the  uploads. If the user hasn't uploaded all of the
         required tables that these tables reference, then we disallow these uploads until they have done.
-        :return the uploads status of fixed / unsolved classes, given an initial screening
+        :return the uploads status of lessons, given an initial screening
         """
         able_to_add_class_data = (
                 self.pupils == UploadStatus.COMPLETE.value and
@@ -80,20 +78,19 @@ class UploadStatusTracker:
         teacher_upload_status = school.has_teacher_data
         classroom_upload_status = school.has_classroom_data
         timetable_upload_status = school.has_timetable_structure_data
-        unsolved_class_upload_status = school.has_unsolved_class_data
-        fixed_class_upload_status = school.has_user_defined_fixed_class_data
+        lesson_upload_status = school.has_lesson_data
 
         upload_status = cls(
             pupils=pupil_upload_status, teachers=teacher_upload_status, classrooms=classroom_upload_status,
-            timetable=timetable_upload_status, unsolved_classes=unsolved_class_upload_status,
-            fixed_classes=fixed_class_upload_status)
+            timetable=timetable_upload_status, lessons=lesson_upload_status
+        )
 
         return upload_status
 
     @property
     def all_uploads_complete(self) -> bool:
         """
-        Property that indicates whether a school has uploaded all of the necessary files.
+        Property that indicates whether a school has uploaded all the necessary files.
         This is used, for example, in the create timetables page, when deciding whether to render the full
         create_timetables page to users.
         """
@@ -102,7 +99,6 @@ class UploadStatusTracker:
                 self.teachers == UploadStatus.COMPLETE.value and
                 self.classrooms == UploadStatus.COMPLETE.value and
                 self.timetable == UploadStatus.COMPLETE.value and
-                self.unsolved_classes == UploadStatus.COMPLETE.value and
-                self.fixed_classes == UploadStatus.COMPLETE.value
+                self.lessons == UploadStatus.COMPLETE.value
         )
         return all_complete
