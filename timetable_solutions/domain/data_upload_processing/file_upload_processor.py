@@ -207,4 +207,4 @@ class FileUploadProcessor:
 
 
 # Type hint for the FileUploadProcessor and its subclasses
-Processor = TypeVar(bound=FileUploadProcessor)
+Processor = TypeVar("Processor", bound=FileUploadProcessor)
