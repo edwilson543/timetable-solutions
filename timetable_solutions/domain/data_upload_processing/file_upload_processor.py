@@ -4,7 +4,7 @@ Module containing utility class used to do the processing of the uploaded csv fi
 
 # Standard library imports
 from io import StringIO
-from typing import Dict, List, Type
+from typing import Dict, List, Type, TypeVar
 
 # Third party imports
 import pandas as pd
@@ -204,3 +204,7 @@ class FileUploadProcessor:
         Note that n_model_instances_created is only set as the very last step of a successful upload.
         """
         return self.n_model_instances_created > 0
+
+
+# Type hint for the FileUploadProcessor and its subclasses
+Processor = TypeVar(bound=FileUploadProcessor)
