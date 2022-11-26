@@ -36,15 +36,8 @@ class TimetableDownload(ExampleDownloadBase):
     example_filepath = ExampleFile.TIMETABLE.filepath
 
 
-class UnsolvedClassDownload(ExampleDownloadBase):
+class LessonDownload(ExampleDownloadBase):
     """
-    Class used to download the example unsolved class file.
+    Class used to download the example lessons file.
     """
-    example_filepath = ExampleFile.UNSOLVED_CLASS.filepath
-
-
-class FixedClassDownload(ExampleDownloadBase):
-    """
-    Class used to download the example pupils file.
-    """
-    example_filepath = ExampleFile.FIXED_CLASS.filepath
+    example_filepath = ExampleFile.LESSON.filepath
