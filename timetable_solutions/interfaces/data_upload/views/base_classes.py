@@ -35,15 +35,13 @@ class DataUploadBase(LoginRequiredMixin, View):
     :param file_structure - the column headers and id column of the uploaded file
     :param model - the model the uploaded file is seeking to create instances of
     :param form - the form that the view receives input from
-    :param is_unsolved_class_upload_view & is_fixed_class_upload_view - boolean values handling special cases
-    requiring different processing of the user uploaded file
+    :param processor - the class that will be used to process the user's uploaded file into the database.
     """
 
     file_structure: data_upload_processing.FileStructure
     model: Type[ModelSubclass]
     form: Type[forms.FormSubclass]
-    is_fixed_class_upload_view: bool = False
-    is_unsolved_class_upload_view: bool = False
+    processor: Type[data_upload_processing.Processor]
 
     @staticmethod
     def get() -> http.HttpResponseRedirect:
@@ -61,11 +59,9 @@ class DataUploadBase(LoginRequiredMixin, View):
         school_access_key = request.user.profile.school.school_access_key
         if form.is_valid():
             file = request.FILES[self.form.Meta.file_field_name]
-            upload_processor = data_upload_processing.FileUploadProcessor(
+            upload_processor = self.processor(
+                school_access_key=school_access_key, model=self.model,
                 csv_file=file, csv_headers=self.file_structure.headers, id_column_name=self.file_structure.id_column,
-                model=self.model, school_access_key=school_access_key,
-                is_fixed_class_upload=self.is_fixed_class_upload_view,
-                is_unsolved_class_upload=self.is_unsolved_class_upload_view
             )
 
             # Create a flash message
@@ -93,8 +89,7 @@ class DataResetBase(LoginRequiredMixin, View):
     teachers: bool = False
     classrooms: bool = False
     timetable: bool = False
-    unsolved_classes: bool = False
-    fixed_classes: bool = False
+    lessons: bool = False
 
     @staticmethod
     def get() -> http.HttpResponseRedirect:
@@ -114,7 +109,7 @@ class DataResetBase(LoginRequiredMixin, View):
         data_upload_processing.ResetUploads(
             school_access_key=school_access_key,
             pupils=self.pupils, teachers=self.teachers, classrooms=self.classrooms, timetable=self.timetable,
-            unsolved_classes=self.unsolved_classes, fixed_classes=self.fixed_classes
+            lessons=self.lessons
         )
 
         return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
