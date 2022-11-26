@@ -23,7 +23,7 @@ class TestCreateTimetableFormView(test.TestCase):
     'Integration' since all tests involve fully running the solver.
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution"]
+                "lessons_without_solution.json"]
 
     # GET request tests
     def test_get_method_returns_empty_solution_specification_form(self):
@@ -75,7 +75,7 @@ class TestCreateTimetableFormView(test.TestCase):
         assert response.status_code == 302  # Redirection
 
         # Check that a solution has been produced
-        lessons = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
+        lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
         for lesson in lessons:
             if lesson.requires_solving():
                 assert lesson.solver_defined_time_slots.count() in [8, 9]  # per requirements
