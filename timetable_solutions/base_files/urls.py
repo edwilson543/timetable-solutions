@@ -15,7 +15,6 @@ from interfaces.custom_admin.admin.custom_admin_site import user_admin
 
 urlpatterns = [
     path("", RedirectView.as_view(url=reverse_lazy(UrlName.LOGIN.value))),
-    path('api/', include('interfaces.rest_api.urls')),
     path('view/', include('interfaces.view_timetables.urls')),
     path('data/', include('interfaces.data_upload.urls')),
     path('create/', include('interfaces.create_timetables.urls')),

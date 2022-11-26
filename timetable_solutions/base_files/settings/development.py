@@ -26,6 +26,3 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-# Custom settings
-ENABLE_REST_API = True
