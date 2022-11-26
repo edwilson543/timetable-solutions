@@ -14,7 +14,7 @@ class TestTimetableSummaryStats(TestCase):
     Test class for the timetable_summary_stats_module, which does include some pre-populated timetable solutions.
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]  # Final fixture contains the timetable solutions to be summarised
+                "lessons_with_solution"]  # Final fixture contains the timetable solutions to be summarised
 
     def test_get_summary_stats_for_dashboard_correct(self):
         """
@@ -24,7 +24,7 @@ class TestTimetableSummaryStats(TestCase):
         stats = get_summary_stats_for_dashboard(school_access_key=123456)
 
         # Check outcome - see fixtures for info on specific values
-        self.assertEqual(stats["total_classes"], 12)
+        self.assertEqual(stats["total_classes"], 24)
         self.assertEqual(stats["total_lessons"], 100)
         self.assertEqual(stats["total_pupils"], 6)
         self.assertEqual(stats["total_teachers"], 11)

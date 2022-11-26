@@ -17,6 +17,7 @@ class PupilListUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.PUPILS
     model = models.Pupil
     form = forms.PupilListUpload
+    processor = data_upload_processing.FileUploadProcessor
 
 
 class TeacherListUpload(DataUploadBase):
@@ -27,6 +28,7 @@ class TeacherListUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.TEACHERS
     model = models.Teacher
     form = forms.TeacherListUpload
+    processor = data_upload_processing.FileUploadProcessor
 
 
 class ClassroomListUpload(DataUploadBase):
@@ -37,6 +39,7 @@ class ClassroomListUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.CLASSROOMS
     model = models.Classroom
     form = forms.ClassroomListUpload
+    processor = data_upload_processing.FileUploadProcessor
 
 
 class TimetableStructureUpload(DataUploadBase):
@@ -47,25 +50,15 @@ class TimetableStructureUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.TIMETABLE
     model = models.TimetableSlot
     form = forms.TimetableStructureUpload
+    processor = data_upload_processing.FileUploadProcessor
 
 
-class UnsolvedClassUpload(DataUploadBase):
+class LessonsUpload(DataUploadBase):
     """
     View class to control the uploading of the requirements for classes that must take place by the user
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.UNSOLVED_CLASSES
-    model = models.UnsolvedClass
-    form = forms.UnsolvedClassUpload
-    is_unsolved_class_upload_view = True
-
-
-class FixedClassUpload(DataUploadBase):
-    """
-    View class to control the uploading of the list of classes that must occur at a certain time by the user
-    """
-
-    file_structure = data_upload_processing.constants.UploadFileStructure.FIXED_CLASSES
-    model = models.FixedClass
-    form = forms.FixedClassUpload
-    is_fixed_class_upload_view = True
+    file_structure = data_upload_processing.constants.UploadFileStructure.LESSON
+    model = models.Lesson
+    form = forms.LessonUpload
+    processor = data_upload_processing.LessonFileUploadProcessor

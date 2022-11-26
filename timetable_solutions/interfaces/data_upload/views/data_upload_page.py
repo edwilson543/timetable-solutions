@@ -83,18 +83,11 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                                                 upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
                                                 reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value,
                                                 example_download_url_name=UrlName.TIMETABLE_DOWNLOAD.value),
-                    "unsolved_classes": RequiredUpload(
-                        form_name="Class requirements", upload_status=upload_status.unsolved_classes,
-                        empty_form=forms.UnsolvedClassUpload(),
-                        upload_url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
-                        reset_url_name=UrlName.UNSOLVED_CLASSES_RESET.value,
-                        example_download_url_name=UrlName.UNSOLVED_CLASSES_DOWNLOAD.value),
-                    "fixed_classes": RequiredUpload(
-                        form_name="Fixed classes", upload_status=upload_status.fixed_classes,
-                        empty_form=forms.FixedClassUpload(),
-                        upload_url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
-                        reset_url_name=UrlName.FIXED_CLASSES_RESET.value,
-                        example_download_url_name=UrlName.FIXED_CLASSES_DOWNLOAD.value)
+                    "lessons": RequiredUpload(form_name="Lessons", upload_status=upload_status.lessons,
+                                              empty_form=forms.LessonUpload(),
+                                              upload_url_name=UrlName.LESSONS_UPLOAD.value,
+                                              reset_url_name=UrlName.LESSONS_RESET.value,
+                                              example_download_url_name=UrlName.LESSONS_DOWNLOAD.value)
                     }
             }
         return context

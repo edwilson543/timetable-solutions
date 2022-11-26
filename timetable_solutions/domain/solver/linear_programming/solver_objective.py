@@ -59,7 +59,6 @@ class TimetableSolverObjective:
         for key, variable in self._decision_variables.items():
             # Get the time of the slot corresponding to the variable
             slot_time = self._inputs.get_time_period_starts_at_from_slot_id(slot_id=key.slot_id)
-            slot_time_as_delta = dt.timedelta(hours=slot_time.hour)
 
             repulsive_time = self._get_optimal_free_period_time()
             difference_hours = abs(repulsive_time - slot_time.hour)

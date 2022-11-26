@@ -17,16 +17,14 @@ urlpatterns = [
     path('teacher_upload/', views.TeacherListUpload.as_view(), name=UrlName.TEACHER_LIST_UPLOAD.value),
     path('classroom_upload/', views.ClassroomListUpload.as_view(), name=UrlName.CLASSROOM_LIST_UPLOAD.value),
     path('timetable_upload/', views.TimetableStructureUpload.as_view(), name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value),
-    path('unsolved_class_upload/', views.UnsolvedClassUpload.as_view(), name=UrlName.UNSOLVED_CLASSES_UPLOAD.value),
-    path('fixed_class_upload/', views.FixedClassUpload.as_view(), name=UrlName.FIXED_CLASSES_UPLOAD.value),
+    path('lesson_upload/', views.LessonsUpload.as_view(), name=UrlName.LESSONS_UPLOAD.value),
 
     # Data RESET endpoints
     path('pupil_reset/', views.PupilListReset.as_view(), name=UrlName.PUPIL_LIST_RESET.value),
     path('teacher_reset/', views.TeacherListReset.as_view(), name=UrlName.TEACHER_LIST_RESET.value),
     path('classroom_reset/', views.ClassroomListReset.as_view(), name=UrlName.CLASSROOM_LIST_RESET.value),
     path('timetable_reset/', views.TimetableStructureReset.as_view(), name=UrlName.TIMETABLE_STRUCTURE_RESET.value),
-    path('unsolved_class_reset/', views.UnsolvedClassReset.as_view(), name=UrlName.UNSOLVED_CLASSES_RESET.value),
-    path('fixed_class_reset/', views.FixedClassReset.as_view(), name=UrlName.FIXED_CLASSES_RESET.value),
+    path('lesson_reset/', views.LessonReset.as_view(), name=UrlName.LESSONS_RESET.value),
     path('all_data_reset/', views.AllSchoolDataReset.as_view(), name=UrlName.ALL_DATA_RESET.value),
 
     # Data example DOWNLOAD endpoints
@@ -34,6 +32,5 @@ urlpatterns = [
     path('teacher_download/', views.TeacherDownload.as_view(), name=UrlName.TEACHER_DOWNLOAD.value),
     path('classroom_download/', views.ClassroomDownload.as_view(), name=UrlName.CLASSROOM_DOWNLOAD.value),
     path('timetable_download/', views.TimetableDownload.as_view(), name=UrlName.TIMETABLE_DOWNLOAD.value),
-    path('uns_class_download/', views.UnsolvedClassDownload.as_view(), name=UrlName.UNSOLVED_CLASSES_DOWNLOAD.value),
-    path('fixed_class_download/', views.FixedClassDownload.as_view(), name=UrlName.FIXED_CLASSES_DOWNLOAD.value),
+    path('lesson_download/', views.LessonDownload.as_view(), name=UrlName.LESSONS_DOWNLOAD.value),
 ]

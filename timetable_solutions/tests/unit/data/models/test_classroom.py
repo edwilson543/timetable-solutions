@@ -17,7 +17,7 @@ from data import models
 class TestClassroom(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "lessons_with_solution.json"]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_classroom(self):
@@ -49,11 +49,11 @@ class TestClassroom(test.TestCase):
         # Execute test unit
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(school_id=123456, classroom_id=100,  # Note that id 100 is available
-                                        building="MB", room_number=47)  #  MB47 however is not available
+                                        building="MB", room_number=47)  # MB47 however is not available
 
-    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_fixed_classes(self):
+    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_lesson(self):
         """
-        Test that we cannot delete all classrooms associated with a school, when there is at least one FixedClass
+        Test that we cannot delete all classrooms associated with a school, when there is at least one Lesson
         referencing the classrooms we are trying to delete.
         """
         # Execute test unit
@@ -66,6 +66,11 @@ class TestClassroom(test.TestCase):
         # Set test parameters
         classroom = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+
+        # We ensure they are busy at this time
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson.classroom = classroom
+        lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
         is_occupied = classroom.check_if_occupied_at_time_slot(slot=slot)
@@ -121,7 +126,7 @@ class TestClassroomLessFixtures(test.TestCase):
 
     def test_delete_all_instances_for_school_successful(self):
         """
-        Test that we can successfully delete all classrooms associated with a school, when there are no FixedClass
+        Test that we can successfully delete all classrooms associated with a school, when there are no Lesson
         instances referencing the classrooms as foreign keys.
         """
         # Execute test unit

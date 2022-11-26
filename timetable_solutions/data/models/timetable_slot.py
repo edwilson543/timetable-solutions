@@ -125,6 +125,15 @@ class TimetableSlot(models.Model):
         sorted_times = sorted(list(set(times)))  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
         return sorted_times
 
+    def check_if_slots_are_consecutive(self, other_slot: Self) -> bool:
+        """
+        Method to check if a slot is consecutive with the passed 'other_slot'
+        """
+        same_day = self.day_of_week == other_slot.day_of_week
+        contiguous_time = ((self.period_starts_at == other_slot.period_ends_at) or
+                           (self.period_ends_at == other_slot.period_starts_at))
+        return same_day and contiguous_time
+
     # PROPERTIES
     @property
     def period_ends_at(self):

@@ -1,7 +1,8 @@
-"""Module containing custom management command for loading in fixtures."""
+"""
+Module containing custom management command for loading in fixtures, so there is some data available to use.
+"""
 
 # Django imports
-from django.contrib.auth.models import User
 from django.core.management import base
 from django.core.management import call_command
 
@@ -18,12 +19,10 @@ class Command(base.BaseCommand):
     def add_arguments(self, parser) -> None:
         """
         Method adding arguments to the command.
-        arg: --inc_fixed_classes - there is a Fixture containing a mock solver solution, which we may not always want
-        to load in by default
-        :arg: --runserver - whether or not to immediately run the django server after loading in the fixtures
+        arg: --include_solution - whether to load in the Lesson
         """
-        parser.add_argument("--include_fixed_classes", action="store_true",  # store_true stores the arg as a boolean
-                            help="Include this argument if you also want to pre-populate a timetable solution.")
+        parser.add_argument("--include_solution", action="store_true",  # store_true stores the arg as a boolean
+                            help="Include if you also want to pre-populate a solution for the test dataset.")
 
     def handle(self, *args, **kwargs) -> None:
         """
@@ -34,10 +33,10 @@ class Command(base.BaseCommand):
         call_command("loaddata", "pupils.json")
         call_command("loaddata", "teachers.json")
         call_command("loaddata", "timetable.json")
-        call_command("loaddata", "unsolved_classes.json")
-        call_command("loaddata", "fixed_classes_lunch.json")  # These are not solver-produced so always include
 
-        if kwargs["include_fixed_classes"]:  # store_true ensures this is always present
-            call_command("loaddata", "fixed_classes.json")
+        if kwargs["include_solution"]:  # store_true ensures this is always present
+            call_command("loaddata", "lessons_with_solution.json")
+        else:
+            call_command("loaddata", "lessons_without_solution.json")
 
         self.stdout.write(self.style.SUCCESS(f"Successfully loaded in all fixtures!"))

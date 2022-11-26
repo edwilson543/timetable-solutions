@@ -73,33 +73,19 @@ class TestExampleFileDownloads(test.TestCase):
         assert response.headers["Content-Type"] == "text/csv"
         assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.TIMETABLE.value}"'
 
-    def test_download_unsolved_class_file_successful(self):
+    def test_download_lesson_file_successful(self):
         """
         Tests for downloading the example unsolved class file
         """
         # Set test parameters
-        url = urls.reverse(UrlName.UNSOLVED_CLASSES_DOWNLOAD.value)
+        url = urls.reverse(UrlName.LESSONS_DOWNLOAD.value)
 
         # Execute test unit
         response = self.client.get(url)
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.UNSOLVED_CLASS.value}"'
-
-    def test_download_fixed_classes_file_successful(self):
-        """
-        Tests for downloading the example fixed classes file
-        """
-        # Set test parameters
-        url = urls.reverse(UrlName.FIXED_CLASSES_DOWNLOAD.value)
-
-        # Execute test unit
-        response = self.client.get(url)
-
-        # Check outcome
-        assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.FIXED_CLASS.value}"'
+        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.LESSON.value}"'
 
     def test_download_pupil_file_successful_via_post_request(self):
         """

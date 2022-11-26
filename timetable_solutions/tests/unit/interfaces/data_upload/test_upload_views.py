@@ -51,7 +51,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_teachers), 11)
+        self.assertEqual(all_teachers.count(), 11)
         greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
@@ -63,11 +63,11 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         """
         # Try uploading the wrong file (pupils.csv)
         response = self.upload_test_file(
-            filename="class_requirements.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            filename="lessons.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
             file_field_name=forms.TeacherListUpload.Meta.file_field_name)
 
         # Check outcome
-        self.assertEqual(len(models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)), 0)
+        self.assertEqual(models.Lesson.objects.get_all_instances_for_school(school_id=123456).count(), 0)
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
@@ -81,7 +81,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_pupils), 6)
+        self.assertEqual(all_pupils.count(), 6)
         teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
         self.assertEqual(teemu.firstname, "Teemu")
         self.assertEqual(teemu.surname, "Pukki")
@@ -96,7 +96,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
                                          file_field_name=forms.PupilListUpload.Meta.file_field_name)
 
         # Assert that nothing has happened
-        self.assertEqual(len(models.Pupil.objects.get_all_instances_for_school(school_id=123456)), 0)
+        self.assertEqual(models.Pupil.objects.get_all_instances_for_school(school_id=123456).count(), 0)
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
@@ -109,7 +109,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_classrooms), 12)
+        self.assertEqual(all_classrooms.count(), 12)
         room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
         self.assertEqual(room.room_number, 40)
 
@@ -123,7 +123,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
 
         # Test that the database is as expected
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_slots), 35)
+        self.assertEqual(all_slots.count(), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
         self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, time(hour=9))
@@ -144,41 +144,26 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         self.assertIn("users/accounts/login", response.url)
 
 
-class TestDependentFileUploadViews(TestCaseWithUpload):
-    """Unit tests for the views controlling the upload of files which depend on the prior success of earlier uploads"""
+class TestLessonFileUpload(TestCaseWithUpload):
+    """
+    Unit tests for the view controlling the upload of the lesson file,
+    which depends on the prior completiong of all other files.
+    """
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
 
-    def test_unsolved_classes_list_upload_view_file_uploads_successfully(self):
+    def test_lesson_upload_view_file_uploads_successfully(self):
         """
-        Unit test for the UnsolvedClassUpload View, that simulating a csv file upload of unsolved classes successfully
-        populates the database.
+        Unit test for the Lesson View, that simulating a csv file upload of lessons successfully populates the database.
         """
-        self.upload_test_file(filename="class_requirements.csv", url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.UnsolvedClassUpload.Meta.file_field_name)
+        self.upload_test_file(filename="lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
+                              file_field_name=forms.LessonUpload.Meta.file_field_name)
 
         # Test the database is as expected
-        all_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
-        assert len(all_classes) == 12
-        klass = models.UnsolvedClass.objects.get_individual_unsolved_class(school_id=123456,
-                                                                           class_id="YEAR_ONE_MATHS_A")
-        self.assertQuerysetEqual(klass.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
-        self.assertEqual(klass.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        assert all_lessons.count() == 24
 
-    def test_fixed_classes_list_upload_view_file_uploads_successfully(self):
-        """
-        Unit test for the FixedClassUploadView, that simulating a csv file upload of fixed classes successfully
-        populates the database.
-        """
-        self.upload_test_file(filename="fixed_classes.csv", url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.FixedClassUpload.Meta.file_field_name)
-
-        # Test the database is as expected
-        all_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
-        assert len(all_classes) == 12
-        pup_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_PUPILS")
-        self.assertQuerysetEqual(pup_lunch.pupils.all(),
-                                 models.Pupil.objects.get_all_instances_for_school(school_id=123456), ordered=False)
-        teach_ten_lunch = models.FixedClass.objects.get_individual_fixed_class(school_id=123456, class_id="LUNCH_10")
-        self.assertEqual(teach_ten_lunch.teacher,
-                         models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=10))
+        # Check a random specific class
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        self.assertQuerysetEqual(lesson.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
+        self.assertEqual(lesson.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))

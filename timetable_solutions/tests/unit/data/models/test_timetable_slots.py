@@ -112,6 +112,51 @@ class TestTimetableSlot(test.TestCase):
         # Check outcome
         assert timeslots == expected_times
 
+    def test_if_slots_are_consecutive_true(self):
+        """
+        Tests that consecutive time slots are correctly identified.
+        """
+        # Set test parameters
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        ten_til_eleven_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=6)
+
+        # Execute test unit
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=ten_til_eleven_mon)
+        consecutive_2 = ten_til_eleven_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+
+        # Check outcome
+        assert consecutive_1 and consecutive_2
+
+    def test_if_slots_are_consecutive_false_different_days(self):
+        """
+        Tests that slots on different days are not called consecutive
+        """
+        # Set test parameters
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        nine_til_ten_tue = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=2)
+
+        # Execute test unit
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_tue)
+        consecutive_2 = nine_til_ten_tue.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+
+        # Check outcome
+        assert (not consecutive_1) and (not consecutive_2)
+
+    def test_if_slots_are_consecutive_false_not_contiguous_times(self):
+        """
+        Tests that slots not starting / ending at the same time are not called consecutive
+        """
+        # Set test parameters
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        eleven_til_twelve_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=11)
+
+        # Execute test unit
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=eleven_til_twelve_mon)
+        consecutive_2 = eleven_til_twelve_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+
+        # Check outcome
+        assert (not consecutive_1) and (not consecutive_2)
+
     # PROPERTIES TESTS
     def test_period_ends_at(self):
         """

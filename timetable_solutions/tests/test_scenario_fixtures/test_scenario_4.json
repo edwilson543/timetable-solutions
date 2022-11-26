@@ -83,31 +83,41 @@
     }
   },
   {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 401,
     "fields": {
-      "class_id": "MATHS",
+      "lesson_id": "MATHS",
       "subject_name": "MATHS",
       "teacher": 401,
-      "pupils": [401],
+      "pupils": [
+        401
+      ],
       "classroom": 401,
-      "time_slots": [401],
-      "user_defined": true,
+      "user_defined_time_slots": [
+        401
+      ],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
       "school": 444444
     }
   },
   {
-    "model": "data.unsolvedclass",
-    "pk": 401,
+    "model": "data.lesson",
+    "pk": 402,
     "fields": {
-      "class_id": "ENGLISH",
-      "school": 444444,
+      "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 402,
+      "pupils": [
+        402
+      ],
       "classroom": 401,
-      "total_slots": 1,
-      "n_double_periods": 0,
-      "pupils": [401]
+      "user_defined_time_slots": [],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
+      "school": 444444
     }
   }
 ]

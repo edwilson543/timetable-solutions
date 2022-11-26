@@ -4,7 +4,6 @@ format for a view to render in the template.
 """
 
 # Standard library imports
-import datetime as dt
 import io
 from string import ascii_uppercase
 from typing import Dict, Tuple
@@ -47,13 +46,13 @@ def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.P
     Function bundling together the data for populating the context dictionary in the pupil_timetable_view
     :return - pupil - an instance of the Pupil model
     :return - timetable - see get_timetable_slot_indexed_timetable
-    :return - class_colours - see get_colours_for_pupil_timetable on the TimetableColourAssigner Enum
+    :return - timetable_colours - see get_colours_for_pupil_timetable on the TimetableColourAssigner Enum
     """
     pupil = models.Pupil.objects.get_individual_pupil(school_id=school_id, pupil_id=pupil_id)
-    classes = pupil.classes.all()
+    lessons = pupil.lessons.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
-    timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
-    timetable_colours = TimetableColourAssigner.get_colours_for_pupil_timetable(classes=classes)
+    timetable = get_timetable_slot_indexed_timetable(lessons=lessons, timetable_slots=timetable_slots)
+    timetable_colours = TimetableColourAssigner.get_colours_for_pupil_timetable(lessons=lessons)
     return pupil, timetable, timetable_colours
 
 
@@ -62,13 +61,13 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
     Function bundling together the data for populating the context dictionary in the teacher_timetable_view
     :return - pupil - an instance of the Teacher model
     :return - timetable - see get_timetable_slot_indexed_timetable
-    :return - class_colours - see get_colours_for_teacher_timetable on the TimetableColourAssigner Enum
+    :return - timetable_colours - see get_colours_for_teacher_timetable on the TimetableColourAssigner Enum
     """
     teacher = models.Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
-    classes = teacher.classes.all()
+    lessons = teacher.lessons.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
-    timetable = get_timetable_slot_indexed_timetable(classes=classes, timetable_slots=timetable_slots)
-    timetable_colours = TimetableColourAssigner.get_colours_for_teacher_timetable(classes=classes)
+    timetable = get_timetable_slot_indexed_timetable(lessons=lessons, timetable_slots=timetable_slots)
+    timetable_colours = TimetableColourAssigner.get_colours_for_teacher_timetable(lessons=lessons)
     return teacher, timetable, timetable_colours
 
 
@@ -79,9 +78,9 @@ def get_pupil_timetable_as_csv(pupil_id: int, school_id: int) -> Tuple[models.Pu
     :return csv_buffer - buffer storing the csv file representing the pupil's timetable
     """
     pupil = models.Pupil.objects.get_individual_pupil(school_id=school_id, pupil_id=pupil_id)
-    classes = pupil.classes.all()
+    lessons = pupil.lessons.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
-    csv_buffer = get_timetable_as_csv(classes=classes, timetable_slots=timetable_slots)
+    csv_buffer = get_timetable_as_csv(lessons=lessons, timetable_slots=timetable_slots)
     return pupil, csv_buffer
 
 
@@ -92,21 +91,21 @@ def get_teacher_timetable_as_csv(teacher_id: int, school_id: int) -> Tuple[model
     :return csv_buffer - buffer storing the csv file representing the teacher's timetable
     """
     teacher = models.Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
-    classes = teacher.classes.all()
+    lessons = teacher.lessons.all()
     timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=school_id)
-    csv_buffer = get_timetable_as_csv(classes=classes, timetable_slots=timetable_slots)
+    csv_buffer = get_timetable_as_csv(lessons=lessons, timetable_slots=timetable_slots)
     return teacher, csv_buffer
 
 
 # Generalised functions providing timetable for context / csv files
-def get_timetable_as_csv(classes: models.FixedClassQuerySet,
+def get_timetable_as_csv(lessons: models.LessonQuerySet,
                          timetable_slots: models.TimetableSlotQuerySet) -> io.StringIO:
     """
     Function to create a pupil / teacher timetable as a csv file.
     We just call the get_timetable_slot_indexed_timetable, and process the dictionary into a DataFrame.
     """
     timetable_dict = get_timetable_slot_indexed_timetable(
-        classes=classes, timetable_slots=timetable_slots, get_subject_name=True)
+        lessons=lessons, timetable_slots=timetable_slots, get_subject_name=True)
 
     # Process timetable into DataFrame
     timetable_df = pd.DataFrame.from_dict(timetable_dict)
@@ -121,7 +120,7 @@ def get_timetable_as_csv(classes: models.FixedClassQuerySet,
     return csv_buffer
 
 
-def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
+def get_timetable_slot_indexed_timetable(lessons: models.LessonQuerySet,
                                          timetable_slots: models.TimetableSlotQuerySet,
                                          get_subject_name: bool = False) -> Dict:
     """
@@ -129,17 +128,17 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
     template to create a html table.
 
     Parameters:
-        classes - this is a filtered QuerySet from the FixedClass model, for exactly 1 teacher/pupil
+        lessons - this is a filtered QuerySet from the Lesson model, for exactly 1 teacher/pupil
         timetable_slots - filtered QuerySet from the TimetableSlot model, specific to the teacher/pupil's school
-        get_subject_name - whether to return the FixedClass instances, or just the subject name. Default to returning
-                            the full fixed class instance
+        get_subject_name - whether to return the Lessons instances, or just the subject name. Defaults to returning
+                            the full lessons instances
 
     Returns: timetable - a nested dictionary where the outermost key is the time/period (9am/10am/...), the
     innermost key is the day of the week, and the values are the subject objects at each relevant timeslot, with the
     exception that a free period is just a string 'FREE'.
     e.g. {9AM: {MONDAY: MATHS, TUESDAY: FRENCH,...}, 10AM: {...}, ...}
     """
-    class_indexed_timetable = {klass: klass.time_slots.all() for klass in classes}
+    lesson_indexed_timetable = {lesson: lesson.get_all_time_slots() for lesson in lessons}
     period_start_times = {(time_slot.period_starts_at, time_slot.period_ends_at) for time_slot in timetable_slots}
     sorted_period_start_times = sorted(list(period_start_times), key=lambda tup: tup[0])  # Sort by start time
 
@@ -149,9 +148,9 @@ def get_timetable_slot_indexed_timetable(classes: models.FixedClassQuerySet,
 
         for day in models.WeekDay.values:
             day_label = models.WeekDay(day).label
-            for klass, time_slots in class_indexed_timetable.items():
+            for klass, time_slots in lesson_indexed_timetable.items():
                 queryset = time_slots.filter(day_of_week=day, period_starts_at=start_time)
-                if queryset.exists():  # Pupil / teacher has a class at this time
+                if queryset.exists():  # Pupil / teacher has a lesson at this time
                     if get_subject_name:
                         time_timetable[day_label] = klass.subject_name
                     else:

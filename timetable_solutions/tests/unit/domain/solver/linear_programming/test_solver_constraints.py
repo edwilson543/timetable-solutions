@@ -16,7 +16,7 @@ from domain import solver as slvr
 class TestSolverConstraints(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes_lunch.json", "unsolved_classes.json"]
+                "lessons_without_solution"]
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -36,8 +36,8 @@ class TestSolverConstraints(test.TestCase):
 
     def test_get_all_fulfillment_constraints(self):
         """
-        Test that the correct set of fulfillment constraints is returned for all the unsolved classes.
-        We expect one constraint oer unsolved class.
+        Test that the correct set of fulfillment constraints is returned for all the lessons.
+        We expect one constraint per lesson.
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
@@ -49,7 +49,7 @@ class TestSolverConstraints(test.TestCase):
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
             assert len(constraint) == 35  # Since each decision variable is included in the sum
-            assert constraint.constant < 0  # Even if fixed classes occupy the slots, should still be some free vars
+            assert constraint.constant < 0  # Even if fixed lessons occupy the slots, should still be some free vars
             constraint_count += 1
         assert constraint_count == 12
 
@@ -125,7 +125,7 @@ class TestSolverConstraints(test.TestCase):
     def test_get_all_double_period_fulfillment_constraints(self):
         """
         Test that the correct set of constraints on the number of double periods is returned.
-        We expect one constraint per unsolved class.
+        We expect one constraint per lesson class.
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
@@ -156,7 +156,7 @@ class TestSolverConstraints(test.TestCase):
             assert isinstance(constraint, LpConstraint)
             assert len(constraint) == 2
             constraint_count += 1
-        # Note that we haveL 12 unsolved classes; 6 double options / day / class; 5 days; 2 related decision variables
+        # Note that we haveL 12 lessons; 6 double options / day / class; 5 days; 2 related decision variables
         assert constraint_count == 12 * 6 * 5 * 2
 
     def test_get_all_no_split_classes_within_day_constraints_constraints(self):
@@ -175,7 +175,7 @@ class TestSolverConstraints(test.TestCase):
             assert len(constraint) == 13  # Since we have 7 decision variables and 6 double period variables in the mix
             assert constraint.constant == - 1  # 1 Double period per day
             constraint_count += 1
-        assert constraint_count == 5 * 12  # number days * number unsolved classes
+        assert constraint_count == 5 * 12  # number days * number lessons
 
     def test_get_all_no_triple_periods_and_above_constraints(self):
         """
@@ -194,4 +194,4 @@ class TestSolverConstraints(test.TestCase):
             assert len(constraint) == 6  # Since there are 6 double periods that can happen in each day
             assert constraint.constant == - 1  # 1 Double period per day
             constraint_count += 1
-        assert constraint_count == 5 * 12  # number days * number unsolved classes
+        assert constraint_count == 5 * 12  # number days * number lessons

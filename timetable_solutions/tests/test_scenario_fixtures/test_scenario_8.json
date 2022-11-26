@@ -83,37 +83,21 @@
     }
   },
   {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 801,
     "fields": {
-      "class_id": "ENGLISH",
+      "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 801,
       "pupils": [
         801
       ],
       "classroom": 801,
-      "time_slots": [
-        801
-      ],
-      "user_defined": true,
+      "user_defined_time_slots": [801],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 0,
       "school": 888888
-    }
-  },
-  {
-    "model": "data.unsolvedclass",
-    "pk": 801,
-    "fields": {
-      "class_id": "ENGLISH",
-      "school": 888888,
-      "subject_name": "ENGLISH",
-      "teacher": 801,
-      "classroom": 801,
-      "total_slots": 2,
-      "n_double_periods": 0,
-      "pupils": [
-        801
-      ]
     }
   }
 ]

@@ -50,10 +50,8 @@ class TestFileUploadIntegration(test.TestCase):
                               file_field_name=forms.ClassroomListUpload.Meta.file_field_name)
         self.upload_test_file(filename="timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
                               file_field_name=forms.TimetableStructureUpload.Meta.file_field_name)
-        self.upload_test_file(filename="class_requirements.csv", url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.UnsolvedClassUpload.Meta.file_field_name)
-        self.upload_test_file(filename="fixed_classes.csv", url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.FixedClassUpload.Meta.file_field_name)
+        self.upload_test_file(filename="lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
+                              file_field_name=forms.LessonUpload.Meta.file_field_name)
 
     def reset_all_files(self):
         """
@@ -69,15 +67,13 @@ class TestFileUploadIntegration(test.TestCase):
         all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        all_unsolved_classes = models.UnsolvedClass.objects.get_all_instances_for_school(school_id=123456)
-        all_fixed_classes = models.FixedClass.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
 
         assert all_pupils.count() == 6 * should_be_populated
         assert all_teachers.count() == 11 * should_be_populated
         assert all_classrooms.count() == 12 * should_be_populated
         assert all_slots.count() == 35 * should_be_populated
-        assert all_unsolved_classes.count() == 12 * should_be_populated
-        assert all_fixed_classes.count() == 12 * should_be_populated
+        assert all_lessons.count() == 24 * should_be_populated
 
     def test_upload_reset_upload_all_school_data(self):
         """
@@ -114,10 +110,8 @@ class TestFileUploadIntegration(test.TestCase):
                               file_field_name=forms.ClassroomListUpload.Meta.file_field_name, base_path=base_path)
         self.upload_test_file(filename="example_timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
                               file_field_name=forms.TimetableStructureUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_class_requirements.csv", url_name=UrlName.UNSOLVED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.UnsolvedClassUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_fixed_classes.csv", url_name=UrlName.FIXED_CLASSES_UPLOAD.value,
-                              file_field_name=forms.FixedClassUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(filename="example_lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
+                              file_field_name=forms.LessonUpload.Meta.file_field_name, base_path=base_path)
 
         # Check outcome
         self.check_database_status(should_be_populated=True)

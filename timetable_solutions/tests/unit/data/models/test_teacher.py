@@ -17,7 +17,7 @@ from data import models
 class TestTeacher(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "fixed_classes.json"]
+                "lessons_with_solution.json"]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_teacher(self):
@@ -41,9 +41,9 @@ class TestTeacher(test.TestCase):
             models.Teacher.create_new(school_id=123456, teacher_id=1,  # Note that id 1 is unavailable
                                       firstname="test", surname="test", title="mr")
 
-    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_fixed_classes(self):
+    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_lessons(self):
         """
-        Test that we cannot delete all teachers associated with a school, when there is at least one FixedClass
+        Test that we cannot delete all teachers associated with a school, when there is at least one Lesson
         referencing the teachers we are trying to delete.
         """
         # Execute test unit
@@ -53,18 +53,31 @@ class TestTeacher(test.TestCase):
     # FILTER METHOD TESTS
     def test_check_if_busy_at_time_slot_when_teacher_is_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to"""
+        # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
 
+        # Ensure they are busy at this time
+        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson.teacher = teacher
+        lesson.add_user_defined_time_slots(time_slots=slot)
+
+        # Execute test unit
         is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+
+        # Check outcome
         assert is_busy
 
     def test_check_if_busy_at_time_slot_when_teacher_is_not_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to"""
+        # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
         slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=5)
 
+        # Execute test unit
         is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+
+        # Check outcome
         assert not is_busy
 
     # QUERY METHOD TESTS
@@ -79,7 +92,7 @@ class TestTeacher(test.TestCase):
         n_lessons = teacher.get_lessons_per_week()
 
         # Check outcome
-        assert n_lessons == 17
+        assert n_lessons == 22  # Since it includes lunch
 
     def test_get_utilisation_percentage(self):
         """
@@ -92,7 +105,7 @@ class TestTeacher(test.TestCase):
         percentage = teacher.get_occupied_percentage()
 
         # Check outcome
-        assert percentage == (17 / 35)
+        assert percentage == (22 / 35)  # Since it includes lunch
 
 
 class TestTeacherLessFixtures(test.TestCase):
@@ -104,7 +117,7 @@ class TestTeacherLessFixtures(test.TestCase):
 
     def test_delete_all_instances_for_school_successful(self):
         """
-        Test that we can successfully delete all teachers associated with a school, when there are no FixedClass
+        Test that we can successfully delete all teachers associated with a school, when there are no Lessons
         instances referencing the teachers as foreign keys.
         """
         # Execute test unit

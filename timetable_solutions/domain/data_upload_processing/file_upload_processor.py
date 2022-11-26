@@ -1,10 +1,10 @@
-"""Module containing utility class used to do the processing of the uploaded csv files into the database."""
+"""
+Module containing utility class used to do the processing of the uploaded csv files into the database.
+"""
 
 # Standard library imports
-import ast
 from io import StringIO
-import re
-from typing import Dict, List, Set, Type
+from typing import Dict, List, Type, TypeVar
 
 # Third party imports
 import pandas as pd
@@ -16,7 +16,6 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
 
 # Local application imports
-from data import models
 from data.utils import ModelSubclass
 from .constants import Header
 
@@ -25,28 +24,24 @@ class FileUploadProcessor:
     """
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
+    This processor conducts the upload for the following models:
+        - Pupil, Teacher, Classroom, TimetableSlot
+    The class is subclased to defined the processing of uploaded 'Lesson' files.
     """
     __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
 
     def __init__(self,
+                 school_access_key: int,
                  csv_file: UploadedFile,
                  csv_headers: List[str],
-                 school_access_key: int,  # Unique identifier for the school_id which the data corresponds to
                  id_column_name: str,
                  model: Type[ModelSubclass],
-                 is_unsolved_class_upload: bool = False,
-                 is_fixed_class_upload: bool = False,
                  attempt_upload: bool = True):
         """
         :param csv_file: the file as received from the user upload
         :param csv_headers: the column headers from the csv file, which will correspond to the model fields
         :param id_column_name: string depending on whether the input file contains an id column
         :param model: the model that the file is used to create instances of
-
-        :param is_unsolved_class_upload/is_fixed_class_upload - these represent special cases of the file upload
-        process since the models the data are being uploaded to contain many-to-many relationships, and thus require
-        their own methods (see _create_model_instance_from_row variations below)
-
         :param attempt_upload - whether to try to process the file's contents into the database.
         """
         # Instance attributes used internally
@@ -54,8 +49,6 @@ class FileUploadProcessor:
         self._school_access_key = school_access_key
         self._id_column_name = id_column_name
         self._model = model
-        self._is_unsolved_class_upload = is_unsolved_class_upload
-        self._is_fixed_class_upload = is_fixed_class_upload
 
         # Instance attributes that get set during upload, providing info on the level of success
         self.n_model_instances_created = 0
@@ -140,17 +133,7 @@ class FileUploadProcessor:
         row_number = 1  # row_number is only used for user-targeted error messages, so count from 1 not 0
 
         for _, data_ser in upload_df.iterrows():
-
-            # Get the dict
-            if self._is_unsolved_class_upload:
-                create_new_dict = self._get_data_dict_from_row_for_create_new_unsolved_class(
-                    row=data_ser, row_number=row_number)
-            elif self._is_fixed_class_upload:
-                create_new_dict = self._get_data_dict_from_row_for_create_new_fixed_class(
-                    row=data_ser, row_number=row_number)
-            else:
-                create_new_dict = self._get_data_dict_from_row_for_create_new_default(
-                    row=data_ser, row_number=row_number)
+            create_new_dict = self._get_data_dict_from_row_for_create_new(row=data_ser, row_number=row_number)
 
             # dict-getting methods will set errors, so if there is / isn't one set, proceed as appropriate
             if self.upload_error_message is None:
@@ -162,8 +145,7 @@ class FileUploadProcessor:
 
         return create_new_dict_list
 
-    # METHODS CREATING DICTIONARIES TO BE PASSED TO self._model.create_new()
-    def _get_data_dict_from_row_for_create_new_default(self, row: pd.Series, row_number: int) -> Dict[str, str | int]:
+    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> Dict[str, str | int]:
         """
         Method to take an individual row from the csv file, and convert it into a dictionary which can be passed
         directly to self._model.create_new(**create_new_dict) to initialise a model instance
@@ -175,150 +157,6 @@ class FileUploadProcessor:
 
         return create_new_dict
 
-    def _get_data_dict_from_row_for_create_new_unsolved_class(self, row: pd.Series, row_number: int) -> Dict | None:
-        """
-        Method to process a single row of the unsolved class csv file upload (already converted to a Series).
-
-        :param row - a single row from the uploaded file, indexed by the file headers. Note we already check the file
-        has the correct headers, so don't need to worry about KeyErrors when indexing 'row'.
-        :param row_number - the (1-based) number of the row we are processing. Only used for error messages.
-        :return mapping of self._model.create_new method kwargs: kwarg values
-        """
-        create_new_dict = self._get_data_dict_from_row_for_create_new_default(row=row, row_number=row_number)
-
-        if Header.TEACHER_ID in create_new_dict.keys():
-            raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
-            create_new_dict[Header.TEACHER_ID] = self._get_clean_id_from_file_field_value(
-                user_input_id=raw_teacher_id, row_number=row_number, field_name="teachers")
-
-        if Header.CLASSROOM_ID in create_new_dict.keys():
-            raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
-            create_new_dict[Header.CLASSROOM_ID] = self._get_clean_id_from_file_field_value(
-                user_input_id=raw_classroom_id, row_number=row_number, field_name="classrooms")
-
-        if Header.PUPIL_IDS in create_new_dict.keys():
-            raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
-            create_new_dict[models.UnsolvedClass.Constant.pupils] = self._get_pupils_from_raw_pupil_ids_string(
-                pupil_ids_raw=raw_pupil_ids, row_number=row_number)
-
-        return create_new_dict
-
-    def _get_data_dict_from_row_for_create_new_fixed_class(self, row: pd.Series, row_number: int) -> Dict:
-        """
-        Method to process a single row of the fixed class csv file upload (already converted to a Series).
-
-        :param row - a single row from the uploaded file, indexed by the file headers. Note we already check the file
-        has the correct headers, so don't need to worry about KeyErrors when indexing 'row'.
-        :param row_number - the (1-based) number of the row we are processing. Only used for error messages.
-        :return mapping of self._model.create_new method kwargs: kwarg values
-        """
-        create_new_dict = self._get_data_dict_from_row_for_create_new_unsolved_class(
-            row=row, row_number=row_number)
-        create_new_dict[models.FixedClass.Constant.user_defined] = True  # Not present in file, so manually add
-
-        if Header.SLOT_IDS in create_new_dict.keys():
-            raw_slot_ids = create_new_dict.pop(Header.SLOT_IDS)
-            create_new_dict[models.FixedClass.Constant.time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
-                slot_ids_raw=raw_slot_ids, row_number=row_number)
-
-        return create_new_dict
-
-    # METHODS TO GET QUERY SETS FROM RAW STRINGS
-    def _get_pupils_from_raw_pupil_ids_string(self, pupil_ids_raw: str,
-                                              row_number: int) -> models.PupilQuerySet | None:
-        """
-        Method to retrieve a queryset of Pupils from a raw user-upload string.
-        :return either a queryset of Pupils if pupil_ids_raw is in the correct format; otherwise None
-        Note that nans / self.__nan_handler will NOT be passed to this method.
-        """
-        pupil_ids = self._get_integer_set_from_string(raw_string_of_ids=pupil_ids_raw, row_number=row_number)
-        if pupil_ids is not None:
-            pupils = models.Pupil.objects.get_specific_pupils(
-                school_id=self._school_access_key, pupil_ids=pupil_ids)
-            if pupils.count() < len(pupil_ids):
-                missing_slots = set(pupil_ids) - {pupil.pupil_id for pupil in pupils}
-                self.upload_error_message = f"No pupil(s) with ids: {missing_slots} were found!"
-                return None
-            else:
-                return pupils
-
-    def _get_timetable_slots_from_raw_slot_ids_string(self, slot_ids_raw: str,
-                                                      row_number: int) -> models.TimetableSlotQuerySet | None:
-        """
-        Method to retrieve a queryset of TimetableSlots from a raw user-upload string.
-        :return either a queryset of TimetableSlot if slot_ids_raw is in the correct format; otherwise None
-        Note that nans / self.__nan_handler will NOT be passed to this method.
-        """
-        slot_ids = self._get_integer_set_from_string(raw_string_of_ids=slot_ids_raw, row_number=row_number)
-        if slot_ids is not None:
-            slots = models.TimetableSlot.objects.get_specific_timeslots(
-                school_id=self._school_access_key, slot_ids=slot_ids)
-            if slots.count() < len(slot_ids):
-                missing_slots = set(slot_ids) - {slot.slot_id for slot in slots}
-                self.upload_error_message = f"No timetable slot(s) with ids: {missing_slots} were found!"
-                return None
-            else:
-                return slots
-
-    # STRING CLEANING METHODS
-    def _get_clean_id_from_file_field_value(self, user_input_id: str | int | float | None, row_number: int,
-                                            field_name: str) -> int | None:
-        """
-        Method to clean a string the user has entered which should just be a single number (or None).
-        We use _get_integer_set_from_string, and then return the single integer or None, in the case where the user
-        has not given a valid value (which may not be an issue, since some id fields are nullable).
-        """
-        if user_input_id is not None:
-            user_input_id = str(user_input_id)
-            user_input_id_no_floats = re.sub(r"[.].+", "", user_input_id)  # User's id may be read-in as '10.0'
-            id_set = self._get_integer_set_from_string(raw_string_of_ids=user_input_id_no_floats, row_number=row_number)
-            if id_set is not None:
-                if len(id_set) > 1:
-                    self.upload_error_message = f"Cannot currently have multiple {field_name} for a single class!\n" \
-                                                f"Multiple ids were given in row: {row_number} - {user_input_id}"
-                    return None
-                else:
-                    cleaned_id = next(iter(id_set))
-                    return cleaned_id
-
-    def _get_integer_set_from_string(self, raw_string_of_ids: str, row_number: int) -> Set[int] | None:
-        """
-        Method to do some basic checks on a raw string that need to be evaluated as a python list, and try to evaluate
-        it literally. The raw strings originate from user upload files.
-
-        :return - a set of integers, or None in the case where there is an error.
-        :side effects - to set the upload_error_message instance attribute, if an error is encountered.
-        """
-        # Clean up the string and make it into a list
-        raw_string_of_ids = re.sub(r"[:;&-]", ",", raw_string_of_ids)  # standardise allowed join characters
-
-        valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        raw_string_of_ids = "".join([character for character in raw_string_of_ids if character in valid_chars])
-        raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
-        if len(raw_string_of_ids) == 0 or raw_string_of_ids == ",":
-            # This isn't an issue directly, so just return None here
-            return None
-
-        if raw_string_of_ids[0] == ",":
-            raw_string_of_ids = raw_string_of_ids[1:]
-        raw_string_of_ids = "[" + raw_string_of_ids
-        raw_string_of_ids = raw_string_of_ids + "]"
-
-        # Try to convert the string into a set of integers
-        try:
-            id_list = ast.literal_eval(raw_string_of_ids)
-            unique_id_set = {int(value) for value in id_list}
-            return unique_id_set
-
-        except SyntaxError:
-            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '1; 2; 3'"
-            self.upload_error_message = error
-
-        except ValueError:
-            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
-            self.upload_error_message = error
-
-    # CHECKS ON UPLOAD FILE STRUCTURE
     def _check_upload_df_structure_and_content(self, upload_df: pd.DataFrame) -> bool:
         """
         Method to do an initial screening whether the user has uploaded a file with the correct headers.
@@ -359,7 +197,6 @@ class FileUploadProcessor:
             upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(upload_df[Header.PERIOD_STARTS_AT])
         return upload_df
 
-    # PROPERTIES
     @property
     def upload_successful(self) -> bool:
         """
@@ -367,3 +204,7 @@ class FileUploadProcessor:
         Note that n_model_instances_created is only set as the very last step of a successful upload.
         """
         return self.n_model_instances_created > 0
+
+
+# Type hint for the FileUploadProcessor and its subclasses
+Processor = TypeVar("Processor", bound=FileUploadProcessor)

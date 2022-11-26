@@ -20,7 +20,7 @@ def get_lessons_per_week(obj: ModelSubclass) -> int:
     Function to get the number of lessons associated with obj per week.
     :param obj - Pupil, Teacher or Classroom instance.
     """
-    return sum(klass.time_slots.count() for klass in obj.classes.all())
+    return sum(lesson.total_required_slots for lesson in obj.lessons.all())
 
 
 def get_occupied_percentage(obj: ModelSubclass) -> float:

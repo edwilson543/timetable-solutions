@@ -47,11 +47,11 @@ class TestUploadPageView(test.TestCase):
         assert isinstance(classrooms.empty_form, forms.ClassroomListUpload)
         assert classrooms.upload_url_name == UrlName.CLASSROOM_LIST_UPLOAD.value
 
-        unsolved_classes = required_forms["unsolved_classes"]
-        assert unsolved_classes.form_name == "Class requirements"
-        assert unsolved_classes.upload_status == UploadStatus.DISALLOWED.value
-        assert isinstance(unsolved_classes.empty_form, forms.UnsolvedClassUpload)
-        assert unsolved_classes.upload_url_name == UrlName.UNSOLVED_CLASSES_UPLOAD.value
+        lessons = required_forms["lessons"]
+        assert lessons.form_name == "Lessons"
+        assert lessons.upload_status == UploadStatus.DISALLOWED.value
+        assert isinstance(lessons.empty_form, forms.LessonUpload)
+        assert lessons.upload_url_name == UrlName.LESSONS_UPLOAD.value
 
     def test_get_request_returns_correct_context(self):
         """
@@ -66,7 +66,7 @@ class TestUploadPageView(test.TestCase):
 
         # Check the outcome - that all forms are currently incomplete
         required_forms = response.context["required_forms"]
-        disallowed_forms = ["unsolved_classes", "fixed_classes"]  # Will have status 'disallowed', not 'incomplete'
+        disallowed_forms = ["lessons"]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
             self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
@@ -89,7 +89,7 @@ class TestUploadPageView(test.TestCase):
 
         # Check the outcome
         required_forms = response.context["required_forms"]
-        disallowed_forms = ["unsolved_classes", "fixed_classes"]  # Will have status 'disallowed', not 'incomplete'
+        disallowed_forms = ["lessons"]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
             self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
@@ -142,5 +142,4 @@ class TestUploadPageViewExistingUploads(test.TestCase):
         self.assertEqual(required_forms["teachers"].upload_status, UploadStatus.COMPLETE.value)
         self.assertEqual(required_forms["classrooms"].upload_status, UploadStatus.INCOMPLETE.value)
         self.assertEqual(required_forms["timetable"].upload_status, UploadStatus.INCOMPLETE.value)
-        self.assertEqual(required_forms["fixed_classes"].upload_status, UploadStatus.DISALLOWED.value)
-        self.assertEqual(required_forms["unsolved_classes"].upload_status, UploadStatus.DISALLOWED.value)
+        self.assertEqual(required_forms["lessons"].upload_status, UploadStatus.DISALLOWED.value)

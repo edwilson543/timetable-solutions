@@ -35,6 +35,3 @@ DATABASES = {
         "PORT": int(config("POSTGRES_PORT")),
     }
 }
-
-# Custom settings
-ENABLE_REST_API = False

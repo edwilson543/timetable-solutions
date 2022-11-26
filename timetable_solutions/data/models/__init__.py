@@ -9,5 +9,4 @@ from .pupil import Pupil, PupilQuerySet
 from .teacher import Teacher, TeacherQuerySet
 from .classroom import Classroom
 from .timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
-from .fixed_class import FixedClass, FixedClassQuerySet
-from .unsolved_class import UnsolvedClass
+from .lesson import Lesson, LessonQuerySet

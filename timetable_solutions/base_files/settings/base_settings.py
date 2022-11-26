@@ -17,20 +17,21 @@ BASE_DIR = Path(__file__).resolve().parents[2]
 
 # Application definition
 INSTALLED_APPS = [
+    # Local application apps
     'data',
     'interfaces.users',
     'interfaces.view_timetables',
     'interfaces.data_upload',
     'interfaces.create_timetables',
     'interfaces.custom_admin',
-    'interfaces.rest_api',
+
+    # Standard django apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
 ]
 
 MIDDLEWARE = [

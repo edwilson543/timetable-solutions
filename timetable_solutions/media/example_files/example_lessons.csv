@@ -1,0 +1,25 @@
+lesson_id,subject_name,teacher_id,pupil_ids,classroom_id,total_required_slots,total_required_double_periods,user_defined_slot_ids
+YEAR_ONE_MATHS_A,Maths,1,1;2,1,8,3,
+YEAR_ONE_MATHS_B,Maths,2,3,2,8,3,
+YEAR_ONE_ENGLISH_A,English,3,1;2,3,8,3,
+YEAR_ONE_ENGLISH_B,English,4,3,4,8,3,
+YEAR_ONE_FRENCH_A,French,5,1;2,5,8,3,
+YEAR_ONE_FRENCH_B,French,6,3,6,8,3,
+YEAR_TWO_MATHS_A,Maths,7,4;6,7,8,3,
+YEAR_TWO_MATHS_B,Maths,8,5,8,8,3,
+YEAR_TWO_ENGLISH_A,English,9,4;6,9,8,3,
+YEAR_TWO_ENGLISH_B,English,10,5,10,8,3,
+YEAR_TWO_FRENCH_A,French,11,4;6,11,8,3,
+YEAR_TWO_FRENCH_B,French,1,5,12,8,3,
+Lunch_pupils,Lunch,None,1; 2; 3; 4; 5; 6,,5,0,21; 22; 23; 24; 25
+Lunch_1,Lunch,1,None,None,5,0,21; 22; 23; 24; 25
+Lunch_2,Lunch,2,None,None,5,0,21; 22; 23; 24; 25
+Lunch_3,Lunch,3,None,None,5,0,21; 22; 23; 24; 25
+Lunch_4,Lunch,4,None,None,5,0,21; 22; 23; 24; 25
+Lunch_5,Lunch,5,None,None,5,0,21; 22; 23; 24; 25
+Lunch_6,Lunch,6,None,None,5,0,21; 22; 23; 24; 25
+Lunch_7,Lunch,7,None,None,5,0,21; 22; 23; 24; 25
+Lunch_8,Lunch,8,None,None,5,0,21; 22; 23; 24; 25
+Lunch_9,Lunch,9,None,None,5,0,21; 22; 23; 24; 25
+Lunch_10,Lunch,10,None,None,5,0,21; 22; 23; 24; 25
+Lunch_11,Lunch,11,None,None,5,0,21; 22; 23; 24; 25

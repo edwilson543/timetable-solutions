@@ -35,18 +35,11 @@ class TimetableStructureReset(DataResetBase):
     timetable = True
 
 
-class UnsolvedClassReset(DataResetBase):
+class LessonReset(DataResetBase):
     """
-    Class used to handle the resetting of fixed class data.
+    Class used to handle the resetting of lesson data.
     """
-    unsolved_classes = True
-
-
-class FixedClassReset(DataResetBase):
-    """
-    Class used to handle the resetting of unsolved data.
-    """
-    fixed_classes = True
+    lessons = True
 
 
 class AllSchoolDataReset(DataResetBase):
@@ -57,5 +50,4 @@ class AllSchoolDataReset(DataResetBase):
     teachers = True
     classrooms = True
     timetable = True
-    unsolved_classes = True
-    fixed_classes = True
+    lessons = True

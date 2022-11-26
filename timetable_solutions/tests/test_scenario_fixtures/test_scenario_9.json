@@ -105,47 +105,35 @@
     }
   },
   {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 901,
     "fields": {
-      "class_id": "ENGLISH",
+      "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 901,
       "pupils": [901],
       "classroom": 901,
-      "time_slots": [904],
-      "user_defined": true,
+      "user_defined_time_slots": [904],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 5,
+      "total_required_double_periods": 2,
       "school": 999999
     }
   },
     {
-    "model": "data.fixedclass",
+    "model": "data.lesson",
     "pk": 902,
     "fields": {
-      "class_id": "MATHS",
+      "lesson_id": "MATHS",
       "subject_name": "MATHS",
       "teacher": 901,
       "pupils": [901],
       "classroom": 901,
-      "time_slots": [903],
-      "user_defined": true,
+      "user_defined_time_slots": [903],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
       "school": 999999
-    }
-  },
-  {
-    "model": "data.unsolvedclass",
-    "pk": 901,
-    "fields": {
-      "class_id": "ENGLISH",
-      "school": 999999,
-      "subject_name": "ENGLISH",
-      "teacher": 901,
-      "classroom": 901,
-      "total_slots": 5,
-      "n_double_periods": 2,
-      "pupils": [
-        901
-      ]
     }
   }
 ]

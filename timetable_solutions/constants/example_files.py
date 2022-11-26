@@ -18,8 +18,7 @@ class ExampleFile(StrEnum):
     TEACHERS = "example_teachers.csv"
     CLASSROOMS = "example_classrooms.csv"
     TIMETABLE = "example_timetable.csv"
-    UNSOLVED_CLASS = "example_class_requirements.csv"
-    FIXED_CLASS = "example_fixed_classes.csv"
+    LESSON = "example_lessons.csv"
 
     @property
     def filepath(self) -> Path:
