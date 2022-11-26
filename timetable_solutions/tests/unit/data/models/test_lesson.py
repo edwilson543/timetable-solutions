@@ -1,5 +1,5 @@
 """
-Unit tests for the FixedClassQuerySet (custom manager of the FixedClass model), as well as FixedClass itself.
+Unit tests for the Lesson model and its manager, LessonQuerySet.
 """
 
 # Third party imports
@@ -15,13 +15,13 @@ from data import models
 
 class TestLesson(test.TestCase):
     """
-    Unit tests for the FixedClass model
+    Unit tests for the Lesson model
     """
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "lessons_with_solution.json"]
 
     # FACTORY METHOD TESTS
-    def test_create_new_valid_fixed_class(self):
+    def test_create_new_valid_lesson(self):
         """
         Tests that we can create and save a Lesson via the create_new method
         """

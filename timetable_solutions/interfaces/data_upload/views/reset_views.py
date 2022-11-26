@@ -42,13 +42,6 @@ class LessonReset(DataResetBase):
     lessons = True
 
 
-class FixedClassReset(DataResetBase):
-    """
-    Class used to handle the resetting of unsolved data.
-    """
-    fixed_classes = True
-
-
 class AllSchoolDataReset(DataResetBase):
     """
     Class used to reset ALL the data relevant to a given school (accept users / the school itself)

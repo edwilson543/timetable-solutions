@@ -21,8 +21,8 @@ class TestDataResetViews(test.TestCase):
 
     def test_pupil_reset_resets_pupils_and_lessons(self):
         """
-        Test that attempting to reset the pupil data for a school will do this, and as well as reset the FixedClass
-        and UnsolvedClass models for the school.
+        Test that attempting to reset the pupil data for a school will do this, and also reset the school's data in
+        the Lesson model
         """
         # Set test parameters
         url = urls.reverse(UrlName.PUPIL_LIST_RESET.value)
@@ -101,7 +101,7 @@ class TestDataResetViews(test.TestCase):
 
     def test_lesson_reset_resets_just_lessons(self):
         """
-        Test that attempting to reset the FixedClass data for a school is successful
+        Test that attempting to reset the Lesson data for a school is successful
         """
         # Set test parameters
         url = urls.reverse(UrlName.LESSONS_RESET.value)

@@ -49,11 +49,11 @@ class TestClassroom(test.TestCase):
         # Execute test unit
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(school_id=123456, classroom_id=100,  # Note that id 100 is available
-                                        building="MB", room_number=47)  #  MB47 however is not available
+                                        building="MB", room_number=47)  # MB47 however is not available
 
-    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_fixed_classes(self):
+    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_lesson(self):
         """
-        Test that we cannot delete all classrooms associated with a school, when there is at least one FixedClass
+        Test that we cannot delete all classrooms associated with a school, when there is at least one Lesson
         referencing the classrooms we are trying to delete.
         """
         # Execute test unit
@@ -126,7 +126,7 @@ class TestClassroomLessFixtures(test.TestCase):
 
     def test_delete_all_instances_for_school_successful(self):
         """
-        Test that we can successfully delete all classrooms associated with a school, when there are no FixedClass
+        Test that we can successfully delete all classrooms associated with a school, when there are no Lesson
         instances referencing the classrooms as foreign keys.
         """
         # Execute test unit
