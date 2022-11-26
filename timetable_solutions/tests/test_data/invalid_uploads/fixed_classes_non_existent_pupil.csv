@@ -1,3 +1,0 @@
-class_id,subject_name,teacher_id,pupil_ids,classroom_id,slot_ids
-LUNCH_PUPILS,LUNCH,,1; 2; 3; 4; 5; 6,,21; 22; 23; 24; 25
-Maths,LUNCH,1,1; 2; 3; 4; 5; 6; 7 (note this pupil doesn't exist),,21; 22; 23; 24; 25

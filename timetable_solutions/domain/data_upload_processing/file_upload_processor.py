@@ -31,9 +31,9 @@ class FileUploadProcessor:
     __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
 
     def __init__(self,
+                 school_access_key: int,
                  csv_file: UploadedFile,
                  csv_headers: List[str],
-                 school_access_key: int,
                  id_column_name: str,
                  model: Type[ModelSubclass],
                  attempt_upload: bool = True):

@@ -13,7 +13,7 @@ import pandas as pd
 from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
-from .constants import Header
+from .constants import Header, UploadFileStructure
 from .file_upload_processor import FileUploadProcessor
 from data import models
 from data.utils import ModelSubclass
@@ -27,13 +27,13 @@ class LessonFileUploadProcessor(FileUploadProcessor):
     """
 
     def __init__(self,
-                 csv_file: UploadedFile,
-                 csv_headers: List[str],
                  school_access_key: int,
-                 id_column_name: str,
-                 model: Type[ModelSubclass],
+                 csv_file: UploadedFile,
+                 csv_headers: List[str] = UploadFileStructure.LESSON.headers,
+                 id_column_name: str = UploadFileStructure.LESSON.id_column,
+                 model: Type[ModelSubclass] = models.Lesson,
                  attempt_upload: bool = True):
-        super().__init__(csv_file=csv_file, csv_headers=csv_headers, school_access_key=school_access_key,
+        super().__init__(school_access_key=school_access_key, csv_file=csv_file, csv_headers=csv_headers,
                          id_column_name=id_column_name, model=model, attempt_upload=attempt_upload)
 
     def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> Dict:
