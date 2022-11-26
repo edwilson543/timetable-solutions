@@ -42,22 +42,13 @@ class TimetableStructureUpload(Form):
         file_field_name = "timetable_structure"
 
 
-class UnsolvedClassUpload(Form):
-    """Form containing an individual upload slot for the classes that must be taught, and associated details."""
-    unsolved_classes = FileField(allow_empty_file=False, label="")
+class LessonUpload(Form):
+    """Form containing an individual upload slot for the lessons that must be taught, and associated details."""
+    lessons = FileField(allow_empty_file=False, label="")
 
     class Meta:
-        file_field_name = "unsolved_classes"
+        file_field_name = "lessons"
 
 
-class FixedClassUpload(Form):
-    """Form containing an individual upload slot for 'fixed classes' i.e. classes which must occur at certain times."""
-    fixed_classes = FileField(allow_empty_file=False, label="")
-
-    class Meta:
-        file_field_name = "fixed_classes"
-
-
-# Type hint to use when generically referencing the above collection of forms
-FormSubclass = Union[TeacherListUpload, PupilListUpload, ClassroomListUpload, TimetableStructureUpload,
-                     UnsolvedClassUpload, FixedClassUpload]
+# Type hint to use when referencing one of the above collection of forms
+FormSubclass = Union[TeacherListUpload, PupilListUpload, ClassroomListUpload, TimetableStructureUpload, LessonUpload]
