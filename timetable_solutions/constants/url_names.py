@@ -28,29 +28,26 @@ class UrlName(StrEnum):
     FILE_UPLOAD_PAGE = "file_upload_page"
 
     # File upload urls
-    CLASSROOM_LIST_UPLOAD = "classroom_upload"
-    FIXED_CLASSES_UPLOAD = "fixed_class_upload"
     PUPIL_LIST_UPLOAD = "pupil_upload"
     TEACHER_LIST_UPLOAD = "teacher_upload"
+    CLASSROOM_LIST_UPLOAD = "classroom_upload"
     TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
-    UNSOLVED_CLASSES_UPLOAD = "unsolved_class_upload"
+    LESSONS_UPLOAD = "lessons_upload"
 
     # File upload reset urls
-    CLASSROOM_LIST_RESET = "classroom_reset"
-    FIXED_CLASSES_RESET = "fixed_class_reset"
     PUPIL_LIST_RESET = "pupil_reset"
     TEACHER_LIST_RESET = "teacher_reset"
+    CLASSROOM_LIST_RESET = "classroom_reset"
     TIMETABLE_STRUCTURE_RESET = "timetable_reset"
-    UNSOLVED_CLASSES_RESET = "unsolved_class_reset"
+    LESSONS_RESET = "lessons_reset"
     ALL_DATA_RESET = "all_data_reset"
 
     # Example file download urls
-    CLASSROOM_DOWNLOAD = "classroom_download"
-    FIXED_CLASSES_DOWNLOAD = "fixed_class_download"
     PUPIL_DOWNLOAD = "pupil_download"
     TEACHER_DOWNLOAD = "teacher_download"
+    CLASSROOM_DOWNLOAD = "classroom_download"
     TIMETABLE_DOWNLOAD = "timetable_download"
-    UNSOLVED_CLASSES_DOWNLOAD = "unsolved_class_download"
+    LESSONS_DOWNLOAD = "lessons_download"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
