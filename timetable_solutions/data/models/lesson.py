@@ -50,9 +50,9 @@ class Lesson(models.Model):
     user_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="user_lessons")
     solver_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="solver_lessons")
 
-    # Fulfillment requirement fields
-    total_required_slots = models.PositiveSmallIntegerField()  # Count of user slots + solver slots, once fulfilled
-    total_required_double_periods = models.PositiveSmallIntegerField()  # Count includes any user defined doubles
+    # Fulfillment requirement fields - note that both counts include any user defined instances
+    total_required_slots = models.PositiveSmallIntegerField()
+    total_required_double_periods = models.PositiveSmallIntegerField()
 
     # Introduce a custom manager
     objects = LessonQuerySet.as_manager()
