@@ -1,6 +1,7 @@
 """
 Module declaring the ModelAdmin for each model registered to the custom admin site
 """
+# Standard library imports
 
 # Django imports
 from django.contrib import admin

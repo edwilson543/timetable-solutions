@@ -3,9 +3,10 @@ Base classes relevant to the custom admin site.
 """
 
 # Django imports
-from django.contrib import admin
 from django import http
+from django.contrib import admin
 from django.db.models import QuerySet
+from django.utils import html
 
 # Local application imports
 from data import models
@@ -27,7 +28,8 @@ class CustomModelAdminBase(admin.ModelAdmin):
         """
         Method to display the lessons per week of Pupil, Teacher and Classroom models.
         """
-        return obj.get_lessons_per_week()
+        lessons_per_week = obj.get_lessons_per_week()
+        return html.format_html(f"<b><i>{lessons_per_week}</i></b>")
     get_lessons_per_week.short_description = "Lessons / week"
 
     def get_occupied_percentage(self, obj: utils.ModelSubclass) -> str:
@@ -35,7 +37,7 @@ class CustomModelAdminBase(admin.ModelAdmin):
         Method to display the lessons per week of Pupil, Teacher and Classroom models.
         """
         percentage = round(obj.get_occupied_percentage(), 1) * 100
-        return f"{percentage} %"
+        return html.format_html(f"<b><i>{percentage} %</i></b>")
     get_occupied_percentage.short_description = "% time busy"
 
     # Method ensuring users can only interact with their own school's data

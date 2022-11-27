@@ -6,3 +6,4 @@ from .custom_admin_site import CustomAdminSite, user_admin
 
 # Model admins
 from .model_admins import PupilAdmin, TeacherAdmin, ClassroomAdmin, TimetableSlotAdmin
+from .lesson_model_admin import LessonAdmin
