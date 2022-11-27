@@ -58,4 +58,4 @@ class TestCustomAdminSite(test.TestCase):
         assert app_names == ["Data"]
 
         model_names = {model["object_name"] for app in app_list for model in app["models"]}
-        assert model_names == {"Pupil", "Teacher", "Classroom", "TimetableSlot"}
+        assert model_names == {"Pupil", "Teacher", "Classroom", "TimetableSlot", "Lesson"}
