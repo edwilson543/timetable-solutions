@@ -65,15 +65,7 @@ class TimetableSlotAdmin(admin.ModelAdmin):
 
 @admin.register(models.Lesson)
 class LessonAdmin(admin.ModelAdmin):
-    list_display = ["school", "lesson_id", "teacher", "get_number_slots_per_week"]
+    list_display = ["school", "lesson_id", "teacher"]
     list_filter = ["school"]
     search_fields = ["school__school_access_key", ]
     search_help_text = "Search by school access key"
-
-    def get_number_slots_per_week(self, obj):
-        """
-        Method so the number of slots a lesson is taught for per week can be displayed in the admin.
-        """
-        slot_count = obj.number_slots_per_week
-        return html.format_html(f"<b><i>{slot_count}<i><b>")
-    get_number_slots_per_week.short_description = "Slots per week"
