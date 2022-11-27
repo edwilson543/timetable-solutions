@@ -25,7 +25,7 @@ class SubjectNameFilter(admin.SimpleListFilter):
     title = "Subject"
     parameter_name = "subject_name"
 
-    def lookups(self, request: http.HttpRequest, model_admin) -> List:
+    def lookups(self, request: http.HttpRequest, model_admin: admin.ModelAdmin) -> List:
         """
         Returns a list of tuples, whose first entry is the subject name as stored in the database, and the second
         subject name to show to the user. Subject names are used as the filters.
@@ -65,8 +65,17 @@ class LessonAdmin(CustomModelAdminBase):
     list_display = ["format_lesson_id", "format_subject_name", "format_teacher",
                     "number_pupils", "format_total_required_slots"]
     list_filter = [SubjectNameFilter]
-    search_fields = ["lesson_id", "subject_name", "teacher", "pupils"]
-    search_help_text = "Search for lessons by id, subject name, teacher or pupils"
+    search_fields = ["lesson_id", "subject_name", "teacher__firstname", "teacher__surname",
+                     "pupils__firstname", "pupils__surname"]
+    search_help_text = "Search for lessons by id, subject name, teacher, or pupil"
+
+    def has_add_permission(self, request: http.HttpRequest) -> bool:
+        # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
+        return False
+
+    def has_change_permission(self, request: http.HttpRequest, obj=None) -> bool:
+        # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
+        return False
 
     # List display fields
     def format_lesson_id(self, obj: models.Lesson) -> str:
@@ -113,7 +122,7 @@ class LessonAdmin(CustomModelAdminBase):
 
 def clean_string(string: str) -> str:
     """
-    Method to convert underscores to spaces and capitalise only the first letter of a string
+    Utility function to convert underscores to spaces and capitalise only the first letter of a string
     """
     string = string.replace("_", " ")
     string = string.title()
