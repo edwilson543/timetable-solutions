@@ -70,7 +70,7 @@ class Lesson(models.Model):
         human_string_singular = "lesson"
         human_string_plural = "lessons"
 
-        # Field names  # todo -> CHECK which are actually needed
+        # Field names
         pupils = "pupils"
         user_defined_time_slots = "user_defined_time_slots"
         solver_defined_time_slots = "solver_defined_time_slots"
