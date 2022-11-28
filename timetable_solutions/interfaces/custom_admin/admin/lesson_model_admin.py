@@ -7,6 +7,7 @@ This gets its own module since the Lesson model itself is more complex, passing 
 from typing import List
 
 # Django imports
+from django import forms
 from django import http
 from django.contrib import admin
 from django.utils import html
@@ -57,11 +58,27 @@ class SubjectNameFilter(admin.SimpleListFilter):
         return models.Lesson.objects.get_all_instances_for_school(school_id=school_access_key)
 
 
+class LessonChangeForm(forms.ModelForm):
+    """
+    Change form for the Lesson model on the custom admin site.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["pupils"].required = False
+
+    class Meta:
+        model = models.Lesson
+        fields = ["lesson_id", "subject_name", "total_required_slots", "total_required_double_periods",
+                  "teacher", "classroom", "pupils", "user_defined_time_slots"]
+
+
 @admin.register(models.Lesson, site=user_admin)
 class LessonAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Lesson model
     """
+    form = LessonChangeForm
+
     list_display = ["format_lesson_id", "format_subject_name", "format_teacher",
                     "number_pupils", "format_total_required_slots"]
     list_filter = [SubjectNameFilter]
@@ -73,9 +90,12 @@ class LessonAdmin(CustomModelAdminBase):
         # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
         return False
 
-    def has_change_permission(self, request: http.HttpRequest, obj=None) -> bool:
-        # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
-        return False
+    def save_model(self, request, obj: models.Lesson, form, change):
+        # todo -> CLEAR ALL SOLUTION FOR SCHOOL
+        school = request.user.profile.school
+        obj.school = school
+        obj.solver_defined_time_slots.clear()  # Since solution will no longer be valid
+        obj.save()
 
     # List display fields
     def format_lesson_id(self, obj: models.Lesson) -> str:
