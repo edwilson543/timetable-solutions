@@ -235,5 +235,5 @@ class Lesson(models.Model):
             raise ValidationError(f"User has defined more slots for {self.__repr__()} than the total requirement")
 
         for slot in self.solver_defined_time_slots.all():
-            if slot in self.user_defined_time_slots:
-                raise ValidationError(f"{self.__repr__} appears in both user and solver slots for {self.__repr__}")
+            if slot in self.user_defined_time_slots.all():
+                raise ValidationError(f"{slot} appears in both user and solver slots for {self.__repr__}")
