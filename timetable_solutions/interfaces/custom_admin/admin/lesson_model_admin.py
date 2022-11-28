@@ -67,6 +67,9 @@ class LessonChangeForm(forms.ModelForm):
         self.fields["pupils"].required = False
 
     class Meta:
+        """
+        Exclude school / solver_defined_time_slots from the fields since users should not have access to these.
+        """
         model = models.Lesson
         fields = ["lesson_id", "subject_name", "total_required_slots", "total_required_double_periods",
                   "teacher", "classroom", "pupils", "user_defined_time_slots"]
@@ -90,11 +93,15 @@ class LessonAdmin(CustomModelAdminBase):
         # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
         return False
 
-    def save_model(self, request, obj: models.Lesson, form, change):
-        # todo -> CLEAR ALL SOLUTION FOR SCHOOL
+    def save_model(self, request, obj: models.Lesson, form, change) -> None:
+        """
+        The school is automatically added to the lesson instance from the request, and any existing SOLUTION is also
+        cleared for ALL lessons, since e.g. adding a pupil to this lesson may be invalid if the pupil is bust at one
+        of the user_defined_time_slots
+        """
         school = request.user.profile.school
         obj.school = school
-        obj.solver_defined_time_slots.clear()  # Since solution will no longer be valid
+        models.Lesson.delete_solver_solution_for_school(school_id=school.school_access_key)
         obj.save()
 
     # List display fields
