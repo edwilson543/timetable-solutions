@@ -80,14 +80,17 @@ class LessonAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Lesson model
     """
-    form = LessonChangeForm
-
+    # Index page
     list_display = ["format_lesson_id", "format_subject_name", "format_teacher",
                     "number_pupils", "format_total_required_slots"]
     list_filter = [SubjectNameFilter]
     search_fields = ["lesson_id", "subject_name", "teacher__firstname", "teacher__surname",
                      "pupils__firstname", "pupils__surname"]
     search_help_text = "Search for lessons by id, subject name, teacher, or pupil"
+
+    # Change page
+    form = LessonChangeForm
+    change_form_template = "admin/lesson_change_form.html"
 
     def has_add_permission(self, request: http.HttpRequest) -> bool:
         # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
