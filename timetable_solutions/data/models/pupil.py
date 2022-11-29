@@ -76,11 +76,11 @@ class Pupil(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.surname}, {self.firstname}"
+        return f"{self.surname}, {self.firstname}"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"Pupil {self.school}: {self.pupil_id}"
+        return f"{self.surname}, {self.firstname}"
 
     # FACTORY METHODS
     @classmethod

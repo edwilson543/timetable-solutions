@@ -72,11 +72,15 @@ class TimetableSlot(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
+        day_of_week = WeekDay(self.day_of_week).label
+        start_time = self.period_starts_at.strftime("%H:%M")
+        return f"{day_of_week}, {start_time}"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"TimetableSlot {self.school}: {self.day_of_week}, {self.period_starts_at}"
+        day_of_week = WeekDay(self.day_of_week).label
+        start_time = self.period_starts_at.strftime("%H:%M")
+        return f"{day_of_week}, {start_time}"
 
     # FACTORIES
     @classmethod
