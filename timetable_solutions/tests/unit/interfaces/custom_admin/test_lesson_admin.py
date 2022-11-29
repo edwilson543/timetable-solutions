@@ -15,7 +15,7 @@ class TestLessonModelAdmin(test.TestCase):
 
     fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
                 "lessons_with_solution.json",
-                "test_scenario_1.json"]  # Included since we need some data not corresponding to access key 6
+                "test_scenario_1.json"]  # Included since some data not corresponding to access key 123456 is needed
 
     lesson_url = "/data/admin/data/lesson/"
 
