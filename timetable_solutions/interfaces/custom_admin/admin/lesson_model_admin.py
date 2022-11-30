@@ -72,7 +72,8 @@ class LessonAdmin(CustomModelAdminBase):
 
     # Change / add behaviour & templates
     exclude = ("school", "solver_defined_time_slots")
-    change_form_template = "admin/lesson_change_form.html"
+    change_form_template = "admin/lesson_change_add_form.html"
+    add_form_template = "admin/lesson_change_add_form.html"
 
     def get_form(self, request, obj=None, change=False, **kwargs):
         """
