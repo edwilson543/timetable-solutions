@@ -7,7 +7,6 @@ This gets its own module since the Lesson model itself is more complex, passing 
 from typing import List
 
 # Django imports
-from django import forms
 from django import http
 from django.contrib import admin
 from django.utils import html
@@ -17,6 +16,7 @@ from django.utils.safestring import SafeString
 from data import models
 from interfaces.custom_admin.admin import user_admin
 from interfaces.custom_admin.admin.base_model_admin import CustomModelAdminBase
+from interfaces.custom_admin.lesson_forms import LessonChangeForm
 
 
 class SubjectNameFilter(admin.SimpleListFilter):
@@ -56,23 +56,6 @@ class SubjectNameFilter(admin.SimpleListFilter):
         """
         school_access_key = request.user.profile.school.school_access_key
         return models.Lesson.objects.get_all_instances_for_school(school_id=school_access_key)
-
-
-class LessonChangeForm(forms.ModelForm):
-    """
-    Change form for the Lesson model on the custom admin site.
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["pupils"].required = False
-
-    class Meta:
-        """
-        Exclude school / solver_defined_time_slots from the fields since users should not have access to these.
-        """
-        model = models.Lesson
-        fields = ["lesson_id", "subject_name", "total_required_slots", "total_required_double_periods",
-                  "teacher", "classroom", "pupils", "user_defined_time_slots"]
 
 
 @admin.register(models.Lesson, site=user_admin)
