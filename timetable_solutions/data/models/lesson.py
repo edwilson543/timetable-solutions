@@ -231,6 +231,13 @@ class Lesson(models.Model):
         Additional validation on Lesson instances. Note that we cannot imply a number of double periods that
         would exceed the total number of slots.
         """
+        if not hasattr(self, "school"):
+            # When a Lesson instance is created from the django-admin, the full_clean method is called before saving
+            # the instance. Since the additional cleaning performed by the clean method includes checks on the m2m
+            # fields, an error is thrown, because the m2m fields require the instance to be saved before they can be
+            # used. This if condition therefore bypasses the custom cleaning when calling full_clean from a ModelForm
+            return
+
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
             raise ValidationError(f"User has defined more slots for {self.__repr__()} than the total requirement")
 
