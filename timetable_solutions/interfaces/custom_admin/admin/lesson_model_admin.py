@@ -16,7 +16,6 @@ from django.utils.safestring import SafeString
 from data import models
 from interfaces.custom_admin.admin import user_admin
 from interfaces.custom_admin.admin.base_model_admin import CustomModelAdminBase
-from interfaces.custom_admin.lesson_forms import LessonChangeForm
 
 
 class SubjectNameFilter(admin.SimpleListFilter):
@@ -61,9 +60,9 @@ class SubjectNameFilter(admin.SimpleListFilter):
 @admin.register(models.Lesson, site=user_admin)
 class LessonAdmin(CustomModelAdminBase):
     """
-    ModelAdmin for the Lesson model
+    ModelAdmin for the Lesson model.
     """
-    # Index page
+    # Index page display
     list_display = ["format_lesson_id", "format_subject_name", "format_teacher",
                     "number_pupils", "format_total_required_slots"]
     list_filter = [SubjectNameFilter]
@@ -71,13 +70,19 @@ class LessonAdmin(CustomModelAdminBase):
                      "pupils__firstname", "pupils__surname"]
     search_help_text = "Search for lessons by id, subject name, teacher, or pupil"
 
-    # Change page
-    form = LessonChangeForm
+    # Change / add behaviour & templates
+    exclude = ("school", "solver_defined_time_slots")
     change_form_template = "admin/lesson_change_form.html"
 
-    def has_add_permission(self, request: http.HttpRequest) -> bool:
-        # TODO - disabled since adding / changing due to many-to-many relationships have been throwing errors
-        return False
+    def get_form(self, request, obj=None, change=False, **kwargs):
+        """
+        Allow the M2M field to be optional for the user, since they may not want to add pupils / user defined time slots
+        to a given lesson.
+        """
+        form = super().get_form(request, obj, change, **kwargs)
+        form.base_fields["pupils"].required = False
+        form.base_fields["user_defined_time_slots"].required = False
+        return form
 
     def save_model(self, request, obj: models.Lesson, form, change) -> None:
         """
