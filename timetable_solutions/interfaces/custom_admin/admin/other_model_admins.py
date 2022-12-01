@@ -1,5 +1,8 @@
 """
-Module declaring the ModelAdmin for each model registered to the custom admin site
+Module defining the 'other' ModelAdmins (i.e. not for the Lesson or User model).
+These are:
+    - PupilAdmin, TeacherAdmin, ClassroomAdmin, TimetableSlotAdmin
+And all require minimal customisation beyond that provided by CustomModelAdminBase.
 """
 # Standard library imports
 
