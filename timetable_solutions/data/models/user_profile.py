@@ -3,6 +3,9 @@ Module defining the model for a user profile in the database, and any ancillary 
 Each Profile instance is used to add information relating to exactly one user.
 """
 
+# Standard library imports
+from typing import Self
+
 # Django imports
 from django.contrib.auth.models import User
 from django.db import models
@@ -43,9 +46,10 @@ class Profile(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> None:
+    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> Self:
         """Method to create a new Profile instance, and then save it into the database"""
         profile = cls.objects.create(user=user, school_id=school_id, role=role,
                                      approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()
         profile.save()
+        return profile
