@@ -14,6 +14,14 @@ from django.db import models
 from data.models.school import School
 
 
+class ProfileQuerySet(models.QuerySet):
+    """Custom queryset manager for the Profile model"""
+
+    def get_all_instances_for_school(self, school_id: int) -> Self:
+        """Method returning the queryset of profiles registered at the given school"""
+        return self.filter(school_id=school_id)
+
+
 class UserRole(models.IntegerChoices):
     """
     Choices for the different roles that users can have with respect to the site.
@@ -35,6 +43,9 @@ class Profile(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN.value)
     approved_by_school_admin = models.BooleanField(default=False)
+
+    # Introduce a custom admin
+    objects = ProfileQuerySet.as_manager()
 
     def __str__(self):
         """String representation of the model for the django admin site"""
