@@ -24,6 +24,8 @@ class ProfileAdmin(CustomModelAdminBase):
     search_fields = ["user__username", "user__first_name", "user__last_name"]
     search_help_text = "Search for users by username, firstname or surname"
 
+    exclude = ("school", "user")
+
     class Meta:
         """
         Include the Profile model as if it's in its own 'users' app.
