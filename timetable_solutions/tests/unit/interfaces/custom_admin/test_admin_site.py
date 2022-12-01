@@ -41,10 +41,9 @@ class TestCustomAdminSite(test.TestCase):
         # Check outcome
         assert has_permission
 
-    def test_get_app_list(self):
+    def test_get_app_list_correct(self):
         """
-        Tests that the 'data' app which contains all project models is listed in the custom admin
-        site app list
+        Tests that the override of _build_app_dict results in the correct app_list for the site
         """
         # Set test parameters
         request = self.get_request_from_school_admin()
@@ -59,3 +58,14 @@ class TestCustomAdminSite(test.TestCase):
 
         model_names = {model["object_name"] for app in app_list for model in app["models"]}
         assert model_names == {"Pupil", "Teacher", "Classroom", "TimetableSlot", "Lesson", "Profile"}
+
+        # Url checks
+        base_url = "/data/admin/data/"
+        for app in app_list:
+            assert app["app_url"] == base_url
+            for model_data in app["models"]:
+                assert base_url in model_data["admin_url"]
+                if app["name"] == "data":
+                    assert base_url in model_data["add_url"]
+                elif app["name"] == "users":
+                    assert model_data["add_url"] is None

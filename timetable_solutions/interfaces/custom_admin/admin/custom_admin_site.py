@@ -4,7 +4,6 @@ Module for the AdminSite instance used to implement the custom AdminSite.
 
 # Django imports
 from django import http
-from django.apps import apps
 from django.contrib import admin
 from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
@@ -39,8 +38,9 @@ class CustomAdminSite(admin.AdminSite):
 
     def _build_app_dict(self, request, label=None):
         """
-        Build the app dictionary. The optional `label` parameter filters models
-        of a specific app.
+        Custom override of the base model's method.
+        Purpose is to use the CustomModelAdminBase's Meta class' attribute 'custom_app_label', to create custom
+        groupings of the models, while maintaining all other properties of the base method (including url conf).
         """
         app_dict = {}
 
@@ -54,7 +54,7 @@ class CustomAdminSite(admin.AdminSite):
             models = self._registry
 
         for model, model_admin in models.items():
-            app_label = model_admin.Meta.custom_app_label or model._meta.app_label
+            app_grouping_label = model_admin.Meta.custom_app_label or model._meta.app_label
             app_config_label = model._meta.app_label
 
             has_module_perms = model_admin.has_module_permission(request)
@@ -93,12 +93,12 @@ class CustomAdminSite(admin.AdminSite):
                 except NoReverseMatch:
                     pass
 
-            if app_label in app_dict:
-                app_dict[app_label]["models"].append(model_dict)
+            if app_grouping_label in app_dict:
+                app_dict[app_grouping_label]["models"].append(model_dict)
             else:
-                app_dict[app_label] = {
-                    "name": app_label,
-                    "app_label": app_label,
+                app_dict[app_grouping_label] = {
+                    "name": app_grouping_label,
+                    "app_label": app_grouping_label,
                     "app_url": reverse(
                         "admin:app_list",
                         kwargs={"app_label": app_config_label},
