@@ -38,11 +38,11 @@ class Profile(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"Profile of: {self.user}"
+        return f"{self.user} profile"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"Profile of: {self.user}"
+        return f"{self.user} profile"
 
     # FACTORY METHODS
     @classmethod
@@ -51,5 +51,4 @@ class Profile(models.Model):
         profile = cls.objects.create(user=user, school_id=school_id, role=role,
                                      approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()
-        profile.save()
         return profile
