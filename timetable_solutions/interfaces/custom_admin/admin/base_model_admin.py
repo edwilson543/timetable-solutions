@@ -21,6 +21,12 @@ class CustomModelAdminBase(admin.ModelAdmin):
         - Queryset filtering
     """
 
+    class Meta:
+        """
+        Allow the option to customise the grouping of models on the django-admin sidebar.
+        """
+        custom_app_label: str = None
+
     exclude = ("school",)  # Since we only want users to be able to add / change data to their own school...
 
     # Methods relating to list display - note these only get used where relevant for subclasses
@@ -57,6 +63,11 @@ class CustomModelAdminBase(admin.ModelAdmin):
         queryset = super().get_queryset(request=request)
         filtered_qs = queryset.filter(school_id=school_access_key)
         return filtered_qs
+
+    # PROPERTIES
+    @property
+    def meta(self):
+        return self.Meta
 
     # PERMISSIONS METHODS
     # ALL permissions require SCHOOL_ADMIN status, and so we just use the has_module_permission method above
