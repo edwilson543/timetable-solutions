@@ -2,7 +2,9 @@
 
 # Django imports
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib import auth
+from django.contrib.auth.admin import UserAdmin as _UserAdmin
+from django.contrib.auth.models import User
 from django.utils import html
 
 # Local application imports
@@ -17,9 +19,12 @@ class ProfileInline(admin.StackedInline):
 
 
 # Define a new User admin
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(auth.admin.UserAdmin):
     inlines = (ProfileInline,)
 
+
+admin.site.unregister(auth.models.User)
+admin.site.register(auth.models.User, UserAdmin)
 
 # Register all models to the admin site
 # Models not customised for now
