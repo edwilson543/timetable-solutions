@@ -4,7 +4,7 @@ Each Profile instance is used to add information relating to exactly one user.
 """
 
 # Standard library imports
-from typing import Self
+from typing import Optional, Self
 
 # Django imports
 from django.contrib.auth.models import User
@@ -18,8 +18,26 @@ class ProfileQuerySet(models.QuerySet):
     """Custom queryset manager for the Profile model"""
 
     def get_all_instances_for_school(self, school_id: int) -> Self:
-        """Method returning the queryset of profiles registered at the given school"""
+        """
+        Method returning the queryset of profiles registered at the given school
+        """
         return self.filter(school_id=school_id)
+
+    def get_individual_profile(self, username: str) -> Optional["Profile"]:
+        """
+        Method returning a Profile instance when looked up by username
+        """
+        users = self.filter(user__username=username)
+        if users.exists():
+            return users.first()
+        else:
+            return None
+
+    def mark_selected_users_as_approved(self) -> None:
+        """
+        Method updating each Profile in a queryset to be approved by the school admin.
+        """
+        self.update(approved_by_school_admin=True)
 
 
 class UserRole(models.IntegerChoices):
