@@ -4,11 +4,13 @@ Module for the AdminSite instance used to implement the custom AdminSite.
 
 # Django imports
 from django import http
+from django import urls
 from django.contrib import admin
 from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
 
 # Local application imports
+from constants.url_names import UrlName
 from data import models
 
 
@@ -36,9 +38,25 @@ class CustomAdminSite(admin.AdminSite):
         else:
             return False
 
-    def _build_app_dict(self, request, label=None):
+    def get_urls(self) -> list[urls.URLPattern | urls.URLResolver]:
         """
-        Custom override of the base model's method.
+        Override base class's method, removing the url patterns we don't want to include.
+        In particular, we don't need an additional login and password change endpoint for the user admin site
+        """
+        url_list = super().get_urls()
+        patterns_to_remove = [
+            UrlName.LOGIN.value, UrlName.LOGOUT.value,
+            UrlName.PASSWORD_CHANGE.value, UrlName.PASSWORD_CHANGE_DONE.value
+        ]
+        final_urls = [
+            url for url in url_list if not
+            (isinstance(url, urls.URLPattern) and url.name in patterns_to_remove)
+        ]
+        return final_urls
+
+    def _build_app_dict(self, request: http.HttpRequest, label=None) -> dict[str, dict[str, str | list]]:
+        """
+        Custom override of the base class's method.
         Purpose is to use the CustomModelAdminBase's Meta class' attribute 'custom_app_label', to create custom
         groupings of the models, while maintaining all other properties of the base method (including url conf).
         """

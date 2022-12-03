@@ -2,6 +2,9 @@
 Unit tests for the user-orientated custom admin site
 """
 
+# Third party imports
+import pytest
+
 # Django imports
 from django import http
 from django import test
@@ -40,6 +43,26 @@ class TestCustomAdminSite(test.TestCase):
 
         # Check outcome
         assert has_permission
+
+    def test_get_urls(self):
+        # Set test parameters
+        admin_site = admin.user_admin  # This has the ModelAdmins registered to it
+
+        # Execute test unit
+        url_list = admin_site.get_urls()
+
+        # Check outcome
+        assert len(url_list) == 12
+
+        url_namespace = "user_admin"
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.LOGIN.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.LOGOUT.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.PASSWORD_CHANGE.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.PASSWORD_CHANGE_DONE.value}")
 
     def test_get_app_list_correct(self):
         """
