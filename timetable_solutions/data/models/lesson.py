@@ -77,7 +77,7 @@ class Lesson(models.Model):
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.lesson_id}"
+        return f"{self.lesson_id}".title().replace("_", " ")
 
     def __repr__(self):
         """String representation of the model for debugging"""
