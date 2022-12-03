@@ -44,7 +44,11 @@ class TestCustomAdminSite(test.TestCase):
         # Check outcome
         assert has_permission
 
-    def test_get_urls(self):
+    def test_get_urls_omit_login_logout_password_change(self):
+        """
+        Tests that the urls exposed by the custom admin site to not include urls
+        relating to user account processes (login etc.)
+        """
         # Set test parameters
         admin_site = admin.user_admin  # This has the ModelAdmins registered to it
 
