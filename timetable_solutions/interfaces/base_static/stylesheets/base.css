@@ -184,9 +184,6 @@ body, html {
     text-decoration: none;
 }
 
-label,
-input {display: block;}
-
 span.helptext {
     display: none;
 }
