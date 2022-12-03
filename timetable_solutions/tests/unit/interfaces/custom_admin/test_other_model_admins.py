@@ -1,5 +1,5 @@
 """
-Unit tests for the subclasses of the BaseModelAdmin class
+Unit tests for the subclasses of the BaseModelAdmin class defined in other_model_admins.py
 """
 
 # Django imports
@@ -20,7 +20,7 @@ class TestBaseModelAdmin(test.TestCase):
     # GET FORM TEST
     def test_get_form_excludes_school(self):
         """
-        Test that when getting the add / change form for the Pupil model, the 'school' is not rpesented to the user.
+        Test that when getting the add / change form for the Pupil model, the 'school' field is not shown to the user.
         """
         # Set test parameters
         factory = test.RequestFactory()

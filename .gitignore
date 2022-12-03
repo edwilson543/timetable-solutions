@@ -1,3 +1,9 @@
+# Specific files
+*TODO.txt
+
+# MacOS
+*.DS_STORE
+
 .vscode
 
 ### Basic Pycharm gitignore

@@ -50,9 +50,9 @@ class Lesson(models.Model):
     user_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="user_lessons")
     solver_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="solver_lessons")
 
-    # Fulfillment requirement fields
-    total_required_slots = models.PositiveSmallIntegerField()  # Count of user slots + solver slots, once fulfilled
-    total_required_double_periods = models.PositiveSmallIntegerField()  # Count includes any user defined doubles
+    # Fulfillment requirement fields - note that both counts include any user defined instances
+    total_required_slots = models.PositiveSmallIntegerField()
+    total_required_double_periods = models.PositiveSmallIntegerField()
 
     # Introduce a custom manager
     objects = LessonQuerySet.as_manager()
@@ -70,14 +70,14 @@ class Lesson(models.Model):
         human_string_singular = "lesson"
         human_string_plural = "lessons"
 
-        # Field names  # todo -> CHECK which are actually needed
+        # Field names
         pupils = "pupils"
         user_defined_time_slots = "user_defined_time_slots"
         solver_defined_time_slots = "solver_defined_time_slots"
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.lesson_id}"
+        return f"{self.lesson_id}".title().replace("_", " ")
 
     def __repr__(self):
         """String representation of the model for debugging"""
@@ -231,9 +231,16 @@ class Lesson(models.Model):
         Additional validation on Lesson instances. Note that we cannot imply a number of double periods that
         would exceed the total number of slots.
         """
+        if not hasattr(self, "school"):
+            # When a Lesson instance is created from the django-admin, the full_clean method is called before saving
+            # the instance. Since the additional cleaning performed by the clean method includes checks on the m2m
+            # fields, an error is thrown, because the m2m fields require the instance to be saved before they can be
+            # used. This if condition therefore bypasses the custom cleaning when calling full_clean from a ModelForm
+            return
+
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
             raise ValidationError(f"User has defined more slots for {self.__repr__()} than the total requirement")
 
         for slot in self.solver_defined_time_slots.all():
-            if slot in self.user_defined_time_slots:
-                raise ValidationError(f"{self.__repr__} appears in both user and solver slots for {self.__repr__}")
+            if slot in self.user_defined_time_slots.all():
+                raise ValidationError(f"{slot} appears in both user and solver slots for {self.__repr__}")

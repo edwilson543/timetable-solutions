@@ -48,6 +48,7 @@ Set generic styling for form elements
 ==================== */
 input {
     /* Display */
+    display: block;
     width: 330px;
     margin-bottom: 5%;
     padding-top: 5px;
@@ -69,6 +70,10 @@ input[type="submit"] {
 input[type="submit"]:hover {cursor: pointer;}
 
 label {
+    /* Display */
+    display: block;
+
+    /* Typography */
     font-weight: bold;
     font-size: 20px;
 }

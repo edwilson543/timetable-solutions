@@ -166,12 +166,12 @@ class TestRegistration(TestCase):
     # PROFILE REGISTRATION TESTS
     def test_register_profile_with_existing_school(self):
         """
-        Test that a user can register themselves to an existing school_id
+        Test that a teacher can register themselves to an existing school_id
         """
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {"school_access_key": 123456}
+        form_data = {"school_access_key": 123456, "position": models.UserRole.TEACHER.value}
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
@@ -181,8 +181,7 @@ class TestRegistration(TestCase):
 
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
-        user_school_id = profile.school.school_access_key
-        self.assertEqual(user_school_id, 123456)
+        self.assertEqual(profile.school.school_access_key, 123456)
         self.assertEqual(profile.role, models.UserRole.TEACHER.value)
         self.assertTrue(not profile.approved_by_school_admin)
 
@@ -197,7 +196,7 @@ class TestRegistration(TestCase):
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {"school_access_key": 765432}
+        form_data = {"school_access_key": 765432, "position": models.UserRole.PUPIL.value}
 
         # Execute test unit
         response = self.client.post(url, data=form_data)

@@ -3,13 +3,6 @@
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
 <head>
 
-<!--CUSTOMISED HEAD COMPONENTS-->
-<title>Timetable solutions admin</title>
-{% load static %}
-<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
-<link rel="stylesheet" href="{% static 'stylesheets/base.css' %}">
-<!--END OF CUSTOMISED HEAD COMPONENTS-->
-
 <!--  DEFAULT DJANGO ADMIN BASE HEAD COMPONENTS -->
 <link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
 {% block dark-mode-vars %}
@@ -19,7 +12,7 @@
   <link rel="stylesheet" href="{% static "admin/css/nav_sidebar.css" %}">
   <script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
 {% endif %}
-{% block extrastyle %}{% endblock %}
+
 {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
 {% block extrahead %}{% endblock %}
 {% block responsive %}
@@ -29,6 +22,21 @@
 {% endblock %}
 {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
 <!-- END OF DEFAULT DJANGO ADMIN BASE HEAD COMPONENTS -->
+
+<!--CUSTOMISED HEAD COMPONENTS-->
+<title>Timetable solutions admin</title>
+{% load static %}
+<link rel="icon" type="image/x-icon" href="{% static 'img/favicon.png' %}">
+<link rel="stylesheet" href="{% static 'stylesheets/base.css' %}">
+<link rel="stylesheet" href="{% static 'custom_admin/stylesheets/custom_colour_scheme.css' %}">
+{% block extrastyle %}
+<style>
+body, html {
+    background-color: white;
+}
+</style>
+{% endblock %}
+<!--END OF CUSTOMISED HEAD COMPONENTS-->
 
 </head>
 

@@ -22,6 +22,7 @@ Head strap styling
 #head_strap {
     /* Positioning */
     position: relative;
+    z-index: 100;
 
     /* Display */
     width: 100%;
@@ -123,7 +124,7 @@ Footer styling
 #footer_info {
     /* Positioning */
     position: relative;
-    z-index: 1;
+    z-index: 100;
 
     /* Display */
     width: 100%;
@@ -182,9 +183,6 @@ body, html {
 .white_link:visited {
     text-decoration: none;
 }
-
-label,
-input {display: block;}
 
 span.helptext {
     display: none;

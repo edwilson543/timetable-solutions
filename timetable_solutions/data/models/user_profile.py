@@ -3,12 +3,41 @@ Module defining the model for a user profile in the database, and any ancillary 
 Each Profile instance is used to add information relating to exactly one user.
 """
 
+# Standard library imports
+from typing import Optional, Self
+
 # Django imports
 from django.contrib.auth.models import User
 from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
+
+
+class ProfileQuerySet(models.QuerySet):
+    """Custom queryset manager for the Profile model"""
+
+    def get_all_instances_for_school(self, school_id: int) -> Self:
+        """
+        Method returning the queryset of profiles registered at the given school
+        """
+        return self.filter(school_id=school_id)
+
+    def get_individual_profile(self, username: str) -> Optional["Profile"]:
+        """
+        Method returning a Profile instance when looked up by username
+        """
+        users = self.filter(user__username=username)
+        if users.exists():
+            return users.first()
+        else:
+            return None
+
+    def mark_selected_users_as_approved(self) -> None:
+        """
+        Method updating each Profile in a queryset to be approved by the school admin.
+        """
+        self.update(approved_by_school_admin=True)
 
 
 class UserRole(models.IntegerChoices):
@@ -33,19 +62,22 @@ class Profile(models.Model):
     role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN.value)
     approved_by_school_admin = models.BooleanField(default=False)
 
+    # Introduce a custom admin
+    objects = ProfileQuerySet.as_manager()
+
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"Profile of: {self.user}"
+        return f"{self.user} profile"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"Profile of: {self.user}"
+        return f"{self.user} profile"
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> None:
+    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> Self:
         """Method to create a new Profile instance, and then save it into the database"""
         profile = cls.objects.create(user=user, school_id=school_id, role=role,
                                      approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()
-        profile.save()
+        return profile

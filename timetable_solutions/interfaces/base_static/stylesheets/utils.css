@@ -1,8 +1,9 @@
 /* ====================
 Styling for components present in multiple html templates.
 This file is linked in base.html, and thereafter the classes are available in all child templates.
-ThE difference between this and base.css is that these classes are intended to be used in any template.
+The difference between this and base.css is that these classes are intended to be used in any template.
 ==================== */
+@import url(/static/stylesheets/colour_scheme.css);
 
 /* ====================
 Error message banners
@@ -11,7 +12,7 @@ Error message banners
 .static_error_message {
     /* Display */
     padding: 3px;
-    width: 300 px;
+    width: auto;
     margin: 5px;
 
     /* Typography */

@@ -53,11 +53,11 @@ class Classroom(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.building},  {self.room_number}"
+        return f"{self.building},  {self.room_number}"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"Classroom: {self.school}: {self.classroom_id}"
+        return f"{self.building},  {self.room_number}"
 
     # FACTORY METHODS
     @classmethod

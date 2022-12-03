@@ -60,11 +60,11 @@ class Teacher(models.Model):
 
     def __str__(self):
         """String representation of the model for the django admin site"""
-        return f"{self.school}: {self.title} {self.surname}, {self.firstname}"
+        return f"{self.title} {self.surname}, {self.firstname}"
 
     def __repr__(self):
         """String representation of the model for debugging"""
-        return f"Teacher {self.school}: {self.teacher_id}"
+        return f"{self.title} {self.surname}, {self.firstname}"
 
     # FACTORY METHODS
     @classmethod

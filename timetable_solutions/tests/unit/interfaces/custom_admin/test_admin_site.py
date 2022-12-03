@@ -2,6 +2,9 @@
 Unit tests for the user-orientated custom admin site
 """
 
+# Third party imports
+import pytest
+
 # Django imports
 from django import http
 from django import test
@@ -41,10 +44,33 @@ class TestCustomAdminSite(test.TestCase):
         # Check outcome
         assert has_permission
 
-    def test_get_app_list(self):
+    def test_get_urls_omit_login_logout_password_change(self):
         """
-        Tests that the 'data' app which contains all project models is listed in the custom admin
-        site app list
+        Tests that the urls exposed by the custom admin site to not include urls
+        relating to user account processes (login etc.)
+        """
+        # Set test parameters
+        admin_site = admin.user_admin  # This has the ModelAdmins registered to it
+
+        # Execute test unit
+        url_list = admin_site.get_urls()
+
+        # Check outcome
+        assert len(url_list) == 12
+
+        url_namespace = "user_admin"
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.LOGIN.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.LOGOUT.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.PASSWORD_CHANGE.value}")
+        with pytest.raises(urls.NoReverseMatch):
+            urls.reverse(f"{url_namespace}:{UrlName.PASSWORD_CHANGE_DONE.value}")
+
+    def test_get_app_list_correct(self):
+        """
+        Tests that the override of _build_app_dict results in the correct app_list for the site
         """
         # Set test parameters
         request = self.get_request_from_school_admin()
@@ -55,7 +81,17 @@ class TestCustomAdminSite(test.TestCase):
 
         # Check outcome
         app_names = [app["name"] for app in app_list]
-        assert app_names == ["Data"]
+        assert app_names == ["data", "users"]
 
         model_names = {model["object_name"] for app in app_list for model in app["models"]}
-        assert model_names == {"Pupil", "Teacher", "Classroom", "TimetableSlot"}
+        assert model_names == {"Pupil", "Teacher", "Classroom", "TimetableSlot", "Lesson", "Profile"}
+
+        # Url checks
+        base_url = "/data/admin/data/"
+        for app in app_list:
+            for model_data in app["models"]:
+                assert base_url in model_data["admin_url"]
+                if app["name"] == "data":
+                    assert base_url in model_data["add_url"]
+                elif app["name"] == "users":
+                    assert model_data["add_url"] is None

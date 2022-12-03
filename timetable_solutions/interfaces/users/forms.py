@@ -18,8 +18,11 @@ class SchoolRegistrationPivot(forms.Form):
     Pivot to decide whether the 2nd stage of user sign-up also requires them to register their school_id, or if
     they just need to enter their school_id access key.
     """
-    CHOICES = [("EXISTING", "I have an existing school access key"),
-               ("NEW", "I am registering my school for the first time")]
+    CHOICES = [
+        ("EXISTING", "I have an existing school access key"),
+        ("NEW", "I am registering my school for the first time")
+    ]
+
     existing_school = forms.ChoiceField(choices=CHOICES, widget=forms.RadioSelect, label="")
 
 
@@ -35,7 +38,14 @@ class ProfileRegistration(forms.Form):
     """
     Form to fill in at registration, if the user's schools is already registered.
     """
+    ROLE_CHOICES = [
+        (models.UserRole.TEACHER.value, models.UserRole.TEACHER.label),
+        (models.UserRole.PUPIL.value, models.UserRole.PUPIL.label)
+    ]
+
     school_access_key = forms.IntegerField()
+    position = forms.ChoiceField(choices=ROLE_CHOICES)
+
     error_message = None
 
     def is_valid(self) -> bool:
