@@ -151,7 +151,8 @@ class CustomLogin(LoginView):
         """
         Method to first log a user out if they visit the login page.
         """
-        logout(request)
+        if request.user.is_authenticated:
+            logout(request)
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form) -> http.HttpResponseRedirect | http.HttpResponse:
