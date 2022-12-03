@@ -60,17 +60,18 @@ class TimetableSlotAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the TimetableSlot model
     """
-    list_display = ["day_of_week", "_get_slot_time_string", "slot_id"]
-    list_display_links = ["slot_id"]
+    list_display = ["_get_slot_time_string", "slot_id"]
+    list_display_links = ["_get_slot_time_string"]
 
     list_filter = ["day_of_week", "period_starts_at"]
 
     search_fields = ["day_of_week", "period_starts_at", "slot_id"]
     search_help_text = "Search for a slot by day, time, or id"
 
+    @admin.display(description="Time")
     def _get_slot_time_string(self, obj: models.TimetableSlot) -> str:
         """
         Method to provide a string combining the time slot start and end time
         """
-        return obj.period_starts_at.strftime("%H:%M") + "-" + obj.period_ends_at.strftime("%H:%M")
-    _get_slot_time_string.short_description = "Time"
+        time = obj.period_starts_at.strftime("%H:%M") + "-" + obj.period_ends_at.strftime("%H:%M")
+        return models.WeekDay(obj.day_of_week).label + ", " + time
