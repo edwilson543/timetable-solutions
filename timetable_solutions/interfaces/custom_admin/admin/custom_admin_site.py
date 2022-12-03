@@ -19,14 +19,8 @@ class CustomAdminSite(admin.AdminSite):
     Implementation of the custom AdminSite that users will have access to, to manage their data.
     """
 
-    # Text to put at the end of each page's <title>.
-    site_title = "Timetable solutions site admin"
-
-    # Text to put in each page's <h1>.
-    site_header = "Timetable solutions administration"
-
     # Text to put at the top of the admin index page.
-    index_title = ""
+    index_title = "View and edit your data below"
 
     def has_permission(self, request: http.HttpRequest) -> bool:
         """
@@ -117,11 +111,11 @@ class CustomAdminSite(admin.AdminSite):
                 app_dict[app_grouping_label] = {
                     "name": app_grouping_label,
                     "app_label": app_grouping_label,
-                    "app_url": reverse(
-                        "admin:app_list",
-                        kwargs={"app_label": app_config_label},
-                        current_app=self.name,
-                    ),
+                    # "app_url": reverse(
+                    #     "admin:app_list",
+                    #     kwargs={"app_label": app_config_label},
+                    #     current_app=self.name,
+                    # ),
                     "has_module_perms": has_module_perms,
                     "models": [model_dict],
                 }

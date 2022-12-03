@@ -89,7 +89,6 @@ class TestCustomAdminSite(test.TestCase):
         # Url checks
         base_url = "/data/admin/data/"
         for app in app_list:
-            assert app["app_url"] == base_url
             for model_data in app["models"]:
                 assert base_url in model_data["admin_url"]
                 if app["name"] == "data":
