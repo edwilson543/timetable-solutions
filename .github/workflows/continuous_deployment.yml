@@ -15,10 +15,10 @@ env:
 jobs:
 
   build:
-    # Build the docker images from docker-compose.build.yml, and push them to docker hub
+    # Build the docker images and push them to docker hub
     name: Build Docker images
     runs-on: ubuntu-20.04
-    if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.event.pull_request.merged == true }}
+    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -46,9 +46,8 @@ jobs:
           docker pull ${{ env.APP_IMAGE }} || true
           docker pull ${{ env.NGINX_IMAGE }} || true
       - name: Build docker images
-        # Note that we build using the docker-compose.build file
         run: |
-          docker-compose -f docker-compose.build.yml build
+          docker-compose -f docker-compose.prod.yml build
       - name: Push docker images
         run: |
           docker push ${{ env.APP_IMAGE }}
@@ -94,8 +93,8 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         # We SSH into the remote server, copy over the /env file and docker-compose file,
         # Pull the docker images from dockerhub (thanks to the 'build' job), and use these to spin up the containers
-        # Note that we spin up the containers using the docker-compose.prod file
-        # Note also the dockerhub login seems to need its own command, otherwise it bugs
+        # Note that the dockerhub login seems to need its own command, otherwise it bugs
+        # Include the --no-build flag to ensure the 'deploy' phase uses the pulled containers
         run: |
           scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/app
           echo ${{ secrets.DOCKERHUB_TOKEN }} | ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} docker login -u ${{ secrets.DOCKERHUB_USERNAME}} --password-stdin
@@ -104,5 +103,5 @@ jobs:
           source .env
           docker pull $APP_IMAGE
           docker pull $NGINX_IMAGE
-          docker-compose -f docker-compose.prod.yml up -d
+          docker-compose -f docker-compose.prod.yml up -d --no-build
           ENDSSH
