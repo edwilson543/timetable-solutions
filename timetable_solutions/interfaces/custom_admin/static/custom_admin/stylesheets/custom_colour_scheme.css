@@ -1,0 +1,57 @@
+/* ====================
+Define custom colour variables to the django-admin styling
+==================== */
+@import url('/static/stylesheets/colour_scheme.css');
+
+/* VARIABLE DEFINITIONS */
+:root {
+  --primary: var(--dark_blue_banners);
+  --secondary: var(--green_button);
+  --accent: white;
+  --primary-fg: #fff;
+
+  --body-fg: #333;
+  --body-bg: white;
+  --body-quiet-color: #666;
+  --body-loud-color: #000;
+
+  --header-color: white;
+  --header-branding-color: var(--accent);
+  --header-bg: var(--secondary);
+  --header-link-color: var(--primary-fg);
+
+  --breadcrumbs-fg: #c4dce8;
+  --breadcrumbs-link-fg: var(--body-bg);
+  --breadcrumbs-bg: var(--primary);
+
+  --link-fg: #447e9b;
+  --link-hover-color: #036;
+  --link-selected-fg: #5b80b2;
+
+  --hairline-color: #e8e8e8;
+  --border-color: #ccc;
+
+  --error-fg: var(--error_banner_red_border);
+
+  --message-success-bg: #dfd;
+  --message-warning-bg: #ffc;
+  --message-error-bg: var(--error_banner_red);
+
+  --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+  --selected-bg: var(--lilac_background);
+  --selected-row: var(--lilac_background);
+
+  --button-fg: white;
+  --button-bg: var(--purple_button);
+  --button-hover-bg: var(--purple_button_border);
+  --default-button-bg: var(--green_button);
+  --default-button-hover-bg: var(--green_button_border);
+  --close-button-bg: #888; /* Previously #bbb, contrast 1.92 */
+  --close-button-hover-bg: #747474;
+  --delete-button-bg: var(red_button);
+  --delete-button-hover-bg: var(red_button_border);
+
+  --object-tools-fg: var(--button-fg);
+  --object-tools-bg: var(--close-button-bg);
+  --object-tools-hover-bg: var(--close-button-hover-bg);
+}
