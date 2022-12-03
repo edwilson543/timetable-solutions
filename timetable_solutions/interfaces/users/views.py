@@ -126,8 +126,9 @@ class ProfileRegistration(View):
         form = forms.ProfileRegistration(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
+            role = form.cleaned_data.get("position")
             models.Profile.create_and_save_new(user=request.user, school_id=access_key,
-                                               role=models.UserRole.TEACHER.value, approved_by_school_admin=False)
+                                               role=role, approved_by_school_admin=False)
 
             message = "Registration successful!\n" \
                       "You will need to wait for your school admin to approve your account before gaining access to " \
