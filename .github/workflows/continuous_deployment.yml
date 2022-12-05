@@ -18,7 +18,7 @@ jobs:
     # Build the docker images and push them to docker hub
     name: Build Docker images
     runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+    if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -58,7 +58,6 @@ jobs:
     name: Deploy to DigitalOcean
     runs-on: ubuntu-20.04
     needs: build
-    if: ${{ github.ref == 'refs/heads/main' }} && ${{ github.event.pull_request.merged == true }}
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
