@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 
+{% load static %}
+{% load form_tags %}
+
 <head>
 {% block head_content %}
 
-{% load static %}
 <link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
 <title>Register</title>
 {% endblock %}
@@ -25,11 +27,30 @@ input[type="submit"] {background-color: #004000;}
     {% for error_message in error_messages.values %}
     <p class="static_error_message">{{error_message}}</p>
     {% endfor %}
+
     <form method="post">
         {% csrf_token %}
-        {{form}}
+<!--        Manually render the form elements, to allow easier use of htmx-->
+        {{ form.non_field_errors }}
+
+        <div>
+            {{ form.username.label_tag }}
+            <div class="helptext">
+                {{ form.username.help_text }}
+            </div>
+            {{ form.username.errors }}
+            {{ form.username }}
+        </div>
+
+        {% field_div form.email %}
+        {% field_div form.first_name %}
+        {% field_div form.last_name %}
+        {% field_div form.password1 %}
+        {% field_div form.password2 %}
+
         <input type="submit" value="Continue">
     </form>
+
     <hr class="form_break_hr">
     <a href="{% url 'login' %}" class="wide_red_button white_link">Back to login</a>
 </div>
