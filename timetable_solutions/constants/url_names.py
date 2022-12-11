@@ -67,3 +67,8 @@ class UrlName(StrEnum):
 
     # Custom admin app
     CUSTOM_ADMIN_HOME = "user_admin:index"
+
+    # HTMX #
+
+    # Users app
+    USERNAME_FIELD_REGISTRATION = "username-field-registration"

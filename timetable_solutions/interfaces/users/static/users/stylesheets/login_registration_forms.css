@@ -63,6 +63,7 @@ input {
 }
 input[type="text"] {text-align: center;}
 input[type="password"] {text-align: center;}
+input[type="email"] {text-align: center;}
 input[type="submit"] {
     background-color: var(--purple_button);
     color: white;

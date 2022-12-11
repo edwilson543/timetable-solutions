@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'interfaces.data_upload',
     'interfaces.create_timetables',
     'interfaces.custom_admin',
+    'interfaces.utils',
 
     # Standard django apps
     'django.contrib.admin',

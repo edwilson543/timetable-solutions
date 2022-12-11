@@ -91,7 +91,7 @@ class TestRegistration(TestCase):
 
         # Check outcome
         self.assertEqual(response_form, forms.CustomUserCreation)
-        response_error_message = response.context["error_messages"]["password_mismatch"]
+        response_error_message = response.context["error_messages"][0]
         self.assertIn("password", response_error_message)
 
     # PIVOT TESTS
