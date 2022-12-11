@@ -17,7 +17,7 @@ class FieldStatus(enum.StrEnum):
     Enumeration of the icons displayed to users for inline field validation.
     """
     VALID = "✅"
-    INVALID = "❌"
+    INVALID = "🚫"
     EMPTY = ""
 
 
