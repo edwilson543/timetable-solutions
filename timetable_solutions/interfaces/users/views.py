@@ -47,7 +47,7 @@ class Register(View):
             return redirect(reverse(UrlName.REGISTER_PIVOT.value))
         else:
             context = {
-                "error_messages": form.error_messages,
+                "error_messages": [error for error_list in form.errors.values() for error in error_list],
                 "form": forms.CustomUserCreation
             }
             return self.get(request, context=context)

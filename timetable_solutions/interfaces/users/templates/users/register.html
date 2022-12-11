@@ -25,14 +25,15 @@ input[type="submit"] {background-color: #004000;}
 
 {% block content %}
 <div id="form_container">
-    {% for error_message in error_messages.values %}
-    <p class="static_error_message">{{error_message}}</p>
-    {% endfor %}
+    {% if error_messages %}
+        {% for error_message in error_messages %}
+            <p class="static_error_message">{{ error_message }}</p>
+        {% endfor %}
+    {% endif %}
 
     <form method="post">
         {% csrf_token %}
 <!--        Manually render the form elements, to allow easier use of htmx-->
-        {{ form.non_field_errors }}
 
         {% include 'partials/username_field.html' %}
         {% field_div form.email %}
