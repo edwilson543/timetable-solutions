@@ -8,6 +8,7 @@
 
 <link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
 <title>Register</title>
+
 {% endblock %}
 
 <style>
@@ -33,15 +34,7 @@ input[type="submit"] {background-color: #004000;}
 <!--        Manually render the form elements, to allow easier use of htmx-->
         {{ form.non_field_errors }}
 
-        <div>
-            {{ form.username.label_tag }}
-            <div class="helptext">
-                {{ form.username.help_text }}
-            </div>
-            {{ form.username.errors }}
-            {{ form.username }}
-        </div>
-
+        {% include 'partials/username_field.html' %}
         {% field_div form.email %}
         {% field_div form.first_name %}
         {% field_div form.last_name %}

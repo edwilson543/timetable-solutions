@@ -1,0 +1,37 @@
+<style>
+#username-container span {
+    /* Positioning */
+    position: absolute;
+
+    /* Display */
+    margin-top: 2px;
+    margin-left: 300px;
+
+    /* Typography */
+    font-size: 25px;
+}
+
+#username-field {
+    text-align: center;
+}
+</style>
+
+<div id="username-container">
+    <label for="{{ form.username.id_for_username }}">Username:</label>
+    <span id="validation">{{ USERNAME_VALID }}</span>
+    <input
+        hx-post="{% url 'username-field-registration' %}"
+        hx-target="#validation"
+        hx-trigger="keyup changed delay:1s"
+        hx-swap="outerHTML"
+        hx-select="#validation"
+        type="text"
+        value="{{ current }}"
+        name="{{ form.username.name }}"
+        id="{{ form.username.id_for_label }}"
+        maxlength=25
+        autocomplete="{{ form.username.name }}"
+        autofocus
+        required
+    >
+</div>
