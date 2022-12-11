@@ -1,5 +1,17 @@
 <style>
-#username-container span {
+@keyframes fade_in {
+    0% {
+        opacity: 0;
+        font-size: 0;
+        transform: rotate(270deg);
+    }
+    100% {
+        opacity: 1;
+        font-size: 25px;
+    }
+}
+
+#username-container #validation-icon {
     /* Positioning */
     position: absolute;
 
@@ -11,6 +23,14 @@
     font-size: 25px;
 }
 
+#validation-icon {
+    /* Animation */
+    animation-name: fade_in;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
 #username-field {
     text-align: center;
 }
@@ -18,13 +38,13 @@
 
 <div id="username-container">
     <label for="{{ form.username.id_for_username }}">Username:</label>
-    <span id="validation">{{ USERNAME_VALID }}</span>
+    <span id="validation-icon">{{ USERNAME_VALID }}</span>
     <input
         hx-post="{% url 'username-field-registration' %}"
-        hx-target="#validation"
+        hx-target="#validation-icon"
         hx-trigger="keyup changed delay:1s"
         hx-swap="outerHTML"
-        hx-select="#validation"
+        hx-select="#validation-icon"
         type="text"
         value="{{ current }}"
         name="{{ form.username.name }}"
