@@ -63,6 +63,11 @@ Formatting of the timetable (a html table) itself, and its components
   background-color: var(--timetable_slot_hover_blue);
 }
 
+.timetable_slot_lesson:hover {
+    /* Slots which are lessons, and not lunch / free */
+    cursor: pointer;
+}
+
 .perimeter {
     /* Display */
     height: 30px;

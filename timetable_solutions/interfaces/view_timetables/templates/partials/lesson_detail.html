@@ -18,7 +18,7 @@ HTMX - centric styling
     }
 }
 
-#htmx-handle {
+#modal-htmx-handle {
     position: absolute;
     top: 0;
     left: 0;
@@ -153,28 +153,38 @@ Styling of the modal containers + panels
 
 </style>
 
-<div id="htmx-handle">
+<div id="modal-htmx-handle">
 
     {% if modal_is_active %}
         <div
-            hx-delete="{% url 'lesson-detail' %}"
-            hx-target="this"
+            hx-get="{% url 'close-lesson-detail' %}"
             hx-trigger="click"
+            hx-target="#modal-htmx-handle"
+            hx-swap="innerHTML"
 
             id="modal_container"
         >
             <div id="modal">
                 <div id="modal_title">
-                    Showing details for: xxx lesson
+                    {{ lesson_title }}
                 </div>
                 <div id="modal_content">
-                    Text
+                    Lesson id: {{ lesson.lesson_id }}
+                    Teacher: {{ lesson.teacher }}
+                    etc. - finish
                 </div>
                 <div id="modal_button_panel">
                     <div id="amend_button" class="modal_button">
                         Amend
                     </div>
-                    <div id="close_button" class="modal_button">
+                    <div
+                         hx-get="{% url 'close-lesson-detail' %}"
+                         hx-trigger="click"
+                         hx-target="#modal-htmx-handle"
+                         hx-swap="innerHTML"
+
+                         id="close_button"
+                         class="modal_button">
                         Close
                     </div>
                 </div>

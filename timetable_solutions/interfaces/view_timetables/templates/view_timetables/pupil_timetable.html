@@ -57,7 +57,14 @@
             {% elif klass.subject_name == "LUNCH" %}
               <td class="colour_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
             {% else %}
-              <td class="colour_{{klass.subject_name}} timetable_slot">
+              <td
+                  hx-get="{% url 'lesson-detail' klass.pk %}"
+                  hx-trigger="click"
+                  hx-target="#modal-htmx-handle"
+                  hx-swap="innerHTML"
+
+                  class="colour_{{klass.subject_name}} timetable_slot timetable_slot_lesson"
+              >
                   <b>{{ klass.subject_name|title}}</b><br>
                   <i>{{ klass.teacher.title }} {{ klass.teacher.surname }}</i><br>
                   <i>{{ klass.classroom.building}} {{klass.classroom.room_number}}</i>
@@ -80,7 +87,6 @@
             </button>
         </form>
     </div>
-    <script src="{% static 'view_timetables/javascript/table_to_csv.js' %}"></script>
 </div>
 {% endblock %}
 </body>

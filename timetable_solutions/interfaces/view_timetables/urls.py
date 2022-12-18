@@ -28,5 +28,6 @@ urlpatterns = [
          name=UrlName.TEACHER_TT_PDF_DOWNLOAD.value),
 
     # HTMX URLs
-    path('pupils/<int:lesson_pk>', htmx_views.lesson_detail_modal, name=UrlName.LESSON_DETAIL.value)
+    path('lesson-detail-modal/<int:lesson_pk>', htmx_views.lesson_detail_modal, name=UrlName.LESSON_DETAIL.value),
+    path('close-lesson-detail-modal/', htmx_views.close_lesson_detail_modal, name=UrlName.CLOSE_LESSON_DETAIL.value)
 ]

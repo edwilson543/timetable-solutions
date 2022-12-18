@@ -22,10 +22,18 @@ def lesson_detail_modal(request: http.HttpRequest, lesson_pk: int) -> http.HttpR
         lesson = models.Lesson.objects.get(pk=lesson_pk)
         context = {
             "modal_is_active": True,
-            "lesson": lesson
+            "lesson": lesson,
+            "lesson_title": lesson.lesson_id.replace("_", " ").title()
         }
-        return template.render(context=context, request=request)
+        return http.HttpResponse(template.render(context=context, request=request))
 
-    if request.method == "DELETE":
+
+@login_required
+def close_lesson_detail_modal(request: http.HttpRequest) -> http.HttpResponse:
+    """
+    View to close the less detail modal
+    """
+    template = loader.get_template("partials/lesson_detail.html")
+    if request.method == "GET":
         context = {"modal_is_active": False}
-        return template.render(context=context, request=request)
+        return http.HttpResponse(template.render(context=context, request=request))

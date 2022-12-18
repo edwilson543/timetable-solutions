@@ -75,3 +75,4 @@ class UrlName(StrEnum):
 
     # View timetables app
     LESSON_DETAIL = "lesson-detail"
+    CLOSE_LESSON_DETAIL = "close-lesson-detail"
