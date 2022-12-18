@@ -1,0 +1,158 @@
+<style>
+:root {
+    --modal-height: 300px;
+    --modal-width: 500px;
+    --border-radius: 10px;
+}
+
+@keyframes fade_in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#modal_container {
+    /* Positioning */
+    position: fixed;
+    z-index: 1000;
+
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    /* Background and border */
+    background-color: rgba(0, 0, 0, 0.6);
+
+    /* Animation */
+    animation-name: fade_in;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#modal {
+    /* Positioning */
+    z-index: 10001;
+
+    /* Display */
+    display: flex;
+    flex-direction: column;
+    width: var(--modal-width);
+    height: var(--modal-height);
+
+    /* Typography */
+    text-align: left;
+
+    /* Background and border */
+    border-radius: var(--border-radius);
+    background-color: white;
+
+    /* Animation */
+    animation-name: fade_in;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#modal_title {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--modal-width);
+    height: 15%;
+
+    /* Typography */
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+
+    /* Background and border */
+    background-color: var(--dark_blue_banners);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+#modal_content {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--modal-width);
+    height: 70%;
+
+    /* Typography */
+    font-size: 20px;
+    color: black;
+
+    /* Background and border */
+    background-color: var(--lilac_background);
+}
+
+#modal_button_panel {
+    /* Display */
+    display: flex;
+    flex-direction: row;
+    width: var(--modal-width);
+    height: 15%;
+}
+
+.modal_button {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--modal-width) / 2);
+    height: 100%;
+
+    /* Typography */
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+}
+.modal_button:hover {
+    cursor: pointer;
+}
+
+#amend_button {
+    background-color: var(--green_button);
+    border-bottom-left-radius: var(--border-radius);
+}
+#amend_button:hover {
+    background-color: var(--green_button_border);
+}
+
+#close_button {
+    background-color: var(--red_button);
+    border-bottom-right-radius: var(--border-radius);
+}
+#close_button:hover {
+    background-color: var(--red_button_border);
+}
+
+</style>
+
+<div id="modal_container">
+    <div id="modal">
+        <div id="modal_title">
+            Showing details for: xxx lesson
+        </div>
+        <div id="modal_content">
+            Text
+        </div>
+        <div id="modal_button_panel">
+            <div id="amend_button" class="modal_button">
+                Amend
+            </div>
+            <div id="close_button" class="modal_button">
+                Close
+            </div>
+        </div>
+    </div>
+</div>
