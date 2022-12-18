@@ -5,6 +5,10 @@
     --border-radius: 10px;
 }
 
+/* ====================
+HTMX - centric styling
+==================== */
+
 @keyframes fade_in {
     0% {
         opacity: 0;
@@ -13,6 +17,17 @@
         opacity: 1;
     }
 }
+
+#htmx-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+/* ====================
+Styling of the modal containers + panels
+==================== */
 
 #modal_container {
     /* Positioning */
@@ -138,21 +153,33 @@
 
 </style>
 
-<div id="modal_container">
-    <div id="modal">
-        <div id="modal_title">
-            Showing details for: xxx lesson
-        </div>
-        <div id="modal_content">
-            Text
-        </div>
-        <div id="modal_button_panel">
-            <div id="amend_button" class="modal_button">
-                Amend
+<div id="htmx-handle">
+
+    {% if modal_is_active %}
+        <div
+            hx-delete="{% url 'lesson-detail' %}"
+            hx-target="this"
+            hx-trigger="click"
+
+            id="modal_container"
+        >
+            <div id="modal">
+                <div id="modal_title">
+                    Showing details for: xxx lesson
+                </div>
+                <div id="modal_content">
+                    Text
+                </div>
+                <div id="modal_button_panel">
+                    <div id="amend_button" class="modal_button">
+                        Amend
+                    </div>
+                    <div id="close_button" class="modal_button">
+                        Close
+                    </div>
+                </div>
             </div>
-            <div id="close_button" class="modal_button">
-                Close
-            </div>
         </div>
-    </div>
+    {% endif %}
+
 </div>

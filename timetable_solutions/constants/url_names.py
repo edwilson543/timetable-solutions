@@ -72,3 +72,6 @@ class UrlName(StrEnum):
 
     # Users app
     USERNAME_FIELD_REGISTRATION = "username-field-registration"
+
+    # View timetables app
+    LESSON_DETAIL = "lesson-detail"
