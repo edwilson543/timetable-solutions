@@ -19,7 +19,7 @@ def lesson_detail_modal(request: http.HttpRequest, lesson_pk: int) -> http.HttpR
     template = loader.get_template("partials/lesson_detail.html")
 
     if request.method == "GET":
-        lesson = models.Lesson.objects.get(pk=lesson_pk)
+        lesson = models.Lesson.get_lesson_by_pk(pk=lesson_pk)
         context = {
             "modal_is_active": True,
             "lesson": lesson,

@@ -227,11 +227,12 @@ class Lesson(models.Model):
 
         return double_period_count
 
-    def get_lesson_by_pk(self, pk: int) -> Self:
+    @classmethod
+    def get_lesson_by_pk(cls, pk: int) -> Self:
         """
         Look up a Lesson instance by primary key.
         """
-        return self.objects.get(pk=pk)
+        return cls.objects.get(pk=pk)
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
