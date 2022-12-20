@@ -96,11 +96,10 @@ Styling of the modal containers + panels
 
 #modal_content {
     /* Display */
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: var(--modal-width);
     height: 70%;
+    box-sizing: border-box;
+    padding: 10px;
 
     /* Typography */
     font-size: 20px;
@@ -165,14 +164,33 @@ Styling of the modal containers + panels
             id="modal_container"
         >
             <div id="modal">
+
                 <div id="modal_title">
                     {{ lesson_title }}
                 </div>
+
                 <div id="modal_content">
-                    Lesson id: {{ lesson.lesson_id }}
-                    Teacher: {{ lesson.teacher }}
-                    etc. - finish
+                    <b>Teacher:</b> {{ lesson.teacher }}<br>
+                    <b>Building:</b> {{ lesson.classroom.building }}<br>
+                    <b>Room number:</b> {{ lesson.classroom.room_number }}<br>
+                    <b>Slots:</b>
+                    {% for slot in lesson.get_all_time_slots %}
+                        {% if forloop.last %}
+                            {{ slot }}
+                        {% else %}
+                            {{ slot }};
+                        {% endif %}
+                    {% endfor %}<br>
+                    <b>Pupils:</b>
+                    {% for pupil in lesson.pupils.all %}
+                        {% if forloop.last %}
+                            {{ pupil }}
+                        {% else %}
+                            {{ pupil }};
+                        {% endif %}
+                    {% endfor %}
                 </div>
+
                 <div id="modal_button_panel">
                     <div id="amend_button" class="modal_button">
                         Amend
@@ -188,6 +206,7 @@ Styling of the modal containers + panels
                         Close
                     </div>
                 </div>
+
             </div>
         </div>
     {% endif %}
