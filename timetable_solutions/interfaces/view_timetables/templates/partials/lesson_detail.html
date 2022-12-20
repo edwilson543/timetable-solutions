@@ -179,7 +179,7 @@ Styling of the modal containers + panels
                     <b>Teacher:</b> {{ lesson.teacher }}<hr>
                     <b>Building:</b> {{ lesson.classroom.building }}<hr>
                     <b>Room number:</b> {{ lesson.classroom.room_number }}<hr>
-                    <b>Slots:</b>
+                    <b>Slots ({{ lesson.total_required_slots }}):</b>
                     {% for slot in lesson.get_all_time_slots %}
                         {% if forloop.last %}
                             {{ slot }}
@@ -187,7 +187,7 @@ Styling of the modal containers + panels
                             {{ slot }};
                         {% endif %}
                     {% endfor %}<hr>
-                    <b>Pupils:</b>
+                    <b>Pupils ({{ lesson.pupils.count }}):</b>
                     {% for pupil in lesson.pupils.all %}
                         {% if forloop.last %}
                             {{ pupil }}
