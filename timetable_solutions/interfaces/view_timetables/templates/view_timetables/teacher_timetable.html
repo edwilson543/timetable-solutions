@@ -21,6 +21,7 @@
 
 <body>
 {% block content %}
+{% include 'partials/lesson_Detail.html' %}
 <div id="content_container">
     <div id="heading_back_wrapper">
         <div id="heading">
@@ -55,7 +56,13 @@
           {% elif klass.subject_name == "LUNCH" %}
             <td class="color_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
           {% else %}
-            <td class="color_{{klass.pupils.all.0.year_group}} timetable_slot">
+            <td
+                hx-get="{% url 'lesson-detail' klass.pk %}"
+                hx-trigger="click"
+                hx-target="#modal-htmx-handle"
+                hx-swap="innerHTML"
+
+                class="color_{{klass.pupils.all.0.year_group}} timetable_slot timetable_slot_lesson">
                 <b>{{ klass.subject_name|title}}</b><br>
               <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
               <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
