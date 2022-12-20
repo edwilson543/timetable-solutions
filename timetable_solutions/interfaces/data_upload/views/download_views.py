@@ -5,7 +5,7 @@ All views just return a FileResponse, containing the requested file.
 
 # Local application imports
 from .base_classes import ExampleDownloadBase
-from constants.example_files import ExampleFile
+from domain.data_upload_processing.constants import ExampleFile
 
 
 class PupilDownload(ExampleDownloadBase):
