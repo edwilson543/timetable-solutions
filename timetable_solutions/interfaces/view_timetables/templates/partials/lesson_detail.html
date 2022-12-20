@@ -137,6 +137,7 @@ Styling of the modal containers + panels
 #amend_button {
     background-color: var(--green_button);
     border-bottom-left-radius: var(--border-radius);
+    text-decoration: none;
 }
 #amend_button:hover {
     background-color: var(--green_button_border);
@@ -192,9 +193,9 @@ Styling of the modal containers + panels
                 </div>
 
                 <div id="modal_button_panel">
-                    <div id="amend_button" class="modal_button">
+                    <a id="amend_button" class="modal_button" href="{% url 'user_admin:data_lesson_change' lesson.pk %}">
                         Amend
-                    </div>
+                    </a>
                     <div
                          hx-get="{% url 'close-lesson-detail' %}"
                          hx-trigger="click"
