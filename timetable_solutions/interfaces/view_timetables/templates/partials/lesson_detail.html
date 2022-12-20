@@ -100,6 +100,7 @@ Styling of the modal containers + panels
     height: 70%;
     box-sizing: border-box;
     padding: 10px;
+    overflow: scroll;
 
     /* Typography */
     font-size: 20px;
@@ -107,6 +108,10 @@ Styling of the modal containers + panels
 
     /* Background and border */
     background-color: var(--lilac_background);
+}
+#modal_content hr {
+    width: 90%;
+    margin: 5px;
 }
 
 #modal_button_panel {
@@ -171,9 +176,9 @@ Styling of the modal containers + panels
                 </div>
 
                 <div id="modal_content">
-                    <b>Teacher:</b> {{ lesson.teacher }}<br>
-                    <b>Building:</b> {{ lesson.classroom.building }}<br>
-                    <b>Room number:</b> {{ lesson.classroom.room_number }}<br>
+                    <b>Teacher:</b> {{ lesson.teacher }}<hr>
+                    <b>Building:</b> {{ lesson.classroom.building }}<hr>
+                    <b>Room number:</b> {{ lesson.classroom.room_number }}<hr>
                     <b>Slots:</b>
                     {% for slot in lesson.get_all_time_slots %}
                         {% if forloop.last %}
@@ -181,7 +186,7 @@ Styling of the modal containers + panels
                         {% else %}
                             {{ slot }};
                         {% endif %}
-                    {% endfor %}<br>
+                    {% endfor %}<hr>
                     <b>Pupils:</b>
                     {% for pupil in lesson.pupils.all %}
                         {% if forloop.last %}
