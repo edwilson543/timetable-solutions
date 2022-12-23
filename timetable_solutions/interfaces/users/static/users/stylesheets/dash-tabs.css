@@ -1,4 +1,31 @@
 /* ====================
+Core information container
+==================== */
+#info-container {
+    /* Positioning */
+    position: relative;
+    top: -50px;
+
+    /* Display */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 70%;
+    height: auto;
+
+    /* Background and border */
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+}
+
+#info-container hr {
+    width: 98%;
+    margin-left: 1%;
+    color: black;
+}
+
+/* ====================
 Tabs of the information container
 ==================== */
 #tab-panel {
