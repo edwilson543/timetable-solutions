@@ -41,7 +41,7 @@ Tabs of the information container
     border-radius: 5px;
 }
 .tab:hover {
-    background-color: var(--purple_button);
+    background-color: var(--dark_grey_background);
     cursor: pointer;
 }
 
@@ -63,9 +63,6 @@ Tab button link
     font-size: 20px;
     font-weight: bold;
     text-decoration: none;
-}
-.tab-button-text:hover {
-    color: white;
 }
 
 /* ====================
