@@ -9,10 +9,11 @@ from django.contrib.auth.decorators import login_required
 
 # Local application imports
 from data import models
+from interfaces import typing_utils
 
 
 @login_required
-def lesson_detail_modal(request: http.HttpRequest, lesson_pk: int) -> http.HttpResponse:
+def lesson_detail_modal(request: typing_utils.HtmxHttpRequest, lesson_pk: int) -> http.HttpResponse:
     """
     View populating a modal with the details for a specific Lesson instance.
     """
@@ -29,7 +30,7 @@ def lesson_detail_modal(request: http.HttpRequest, lesson_pk: int) -> http.HttpR
 
 
 @login_required
-def close_lesson_detail_modal(request: http.HttpRequest) -> http.HttpResponse:
+def close_lesson_detail_modal(request: typing_utils.HtmxHttpRequest) -> http.HttpResponse:
     """
     View to close the less detail modal
     """
