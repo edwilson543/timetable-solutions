@@ -1,0 +1,40 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'users/stylesheets/dash-tabs.css' %}">
+</head>
+
+<div id="info-container">
+    <div id="tab-panel">
+        <div
+            hx-get="{% url 'data-upload-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab"
+        >
+            <p class="tab-button-text">Upload data</p>
+        </div>
+        <div
+            hx-get="{% url 'create-timetable-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab tab-selected"
+        >
+            <p class="tab-button-text">Create timetables</p>
+        </div>
+        <div
+            hx-get="{% url 'view-timetable-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab"
+        >
+            <p class="tab-button-text">View timetables</p>
+        </div>
+    </div>
+    <div id="tab-text-body">
+        Create tab<br>
+        Create tab<br>
+    </div>
+</div>

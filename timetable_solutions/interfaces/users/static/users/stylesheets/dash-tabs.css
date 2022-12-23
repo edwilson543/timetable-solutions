@@ -1,0 +1,55 @@
+/* ====================
+Tabs of the information container
+==================== */
+#tab-panel {
+    /* Display */
+    display: flex;
+    flex-direction: row;
+    float: left;
+}
+
+.tab {
+    margin: 5px;
+    background-color: var(--light_grey_background);
+    border-radius: 5px;
+}
+.tab:hover {
+    background-color: var(--purple_button);
+    cursor: pointer;
+}
+
+.tab-selected {
+    border-bottom: 5px solid black;
+}
+
+/* ====================
+Tab button link
+==================== */
+.tab-button-text {
+    /* Display */
+    display: block;
+    color: black;
+    text-align: center;
+    padding: 16px;
+
+    /* Typography */
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+.tab-button-text:hover {
+    color: white;
+}
+
+/* ====================
+Tab body text
+==================== */
+#tab-text-body {
+    /* Display */
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+
+    /* Typography */
+    font-size: 20px;
+}
