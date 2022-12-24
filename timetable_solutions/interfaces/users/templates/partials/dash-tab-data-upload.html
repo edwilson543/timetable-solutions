@@ -35,13 +35,21 @@
     </div>
     <hr>
     <div id="tab-text-body">
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
-        Data upload tab<br>
+        <ul>
+            <li>
+                To use the site you will need to upload data on your pupils, teachers, timetable structure,
+                classrooms, and the lessons that need to take place.
+            </li>
+            <li>
+                This can be done in bulk via the
+                <a href="{% url 'file_upload_page' %}">data upload page</a>, which has more details on the exact
+                requirements for doing this.
+            </li>
+            <li>
+                You can also create data entries individually via the
+                <a href="{% url 'user_admin:index' %}">admin site</a>. Note that the admin can also be used to view
+                and edit your data at any point.
+            </li>
+        </ul>
     </div>
 </div>

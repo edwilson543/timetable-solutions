@@ -35,7 +35,20 @@
     </div>
     <hr>
     <div id="tab-text-body">
-        Create tab<br>
-        Create tab<br>
+        <ul>
+            <li>
+                Once you have uploaded all the necessary data, the
+                <a href="{% url 'create_timetables' %}">create</a>
+                page allows you to start generating timetable solutions.
+            </li>
+            <li>
+                You can specify your preferences and any restrictions (from the given options) on how the
+                timetables should be generated.
+            </li>
+            <li>
+                Note that you can keep generating new sets of timetables as necessary until you are happy
+                with them, but each time you generate a new set, the existing ones will be lost.
+            </li>
+        </ul>
     </div>
 </div>

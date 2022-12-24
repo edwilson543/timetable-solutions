@@ -70,10 +70,21 @@ Tab body text
 ==================== */
 #tab-text-body {
     /* Display */
-    width: 100%;
+    width: 90%;
     min-height: 100px;
-    padding: 10px;
+    padding: 30px;
 
     /* Typography */
     font-size: 20px;
+}
+#tab-text-body li {
+    margin-bottom: 10px;
+}
+#tab-text-body a {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+}
+#tab-text-body a:hover {
+    text-decoration: underline;
 }
