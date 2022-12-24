@@ -7,6 +7,7 @@ on:
     # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
     types:
       - completed
+  workflow_dispatch:
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
@@ -19,7 +20,7 @@ jobs:
     name: Build Docker images
     runs-on: ubuntu-20.04
     # Only run build (and therefore deploy) if we have just merged into main
-    if: github.ref == 'refs/heads/main' && github.event.pull_request.merged == true
+    if: github.base_ref == 'refs/heads/main' && github.event.pull_request.merged == true
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
