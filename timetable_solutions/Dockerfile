@@ -22,8 +22,9 @@ RUN pip install -r app-requirements.txt
 # Copy over the full django project
 COPY ./timetable_solutions $APP_HOME
 
-# Add a non-root app user
-RUN useradd app
+# Add a non-root 'app' user to group 'app'
+RUN groupadd app
+RUN useradd app -g app
 
 # Chown all files to the non-root app user (transfer ownership)
 RUN chown -R app:app $APP_HOME
