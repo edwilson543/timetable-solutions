@@ -46,8 +46,8 @@ services:
     ports:
       - 80:80
     volumes:
-      - static_volume:/home/app/web/staticfiles  # Mirror the static files into relevant part of nginx
-      - media_volume:/home/app/web/mediafiles  # Similarly for media files
+      - static_volume:/home/app/web/static  # Mirror the static files into relevant part of nginx
+      - media_volume:/home/app/web/media  # Similarly for media files
     depends_on:
       - tts_app
 
