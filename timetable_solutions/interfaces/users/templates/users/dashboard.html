@@ -12,8 +12,8 @@
 }
 #background_image {
     /* Positioning */
-    position: absolute;
-    top: 60px;
+    position: relative;
+    top: -60px;
 
     /* Display */
     height: 60vh;
@@ -25,54 +25,7 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
-.grid-container {
-    /* Positioning */
-    position: absolute;
-    top: 75vh;
-    z-index: 1;
 
-    /* Display */
-    display: grid;
-    width: 70%;
-    grid-auto-flow: column;
-    grid-template-columns: 3;
-    grid-template-rows: 1;
-    column-gap: 5%;
-    padding: 25px;
-    margin: 1%;
-
-    /* Background and border */
-    background-color: rgba(255, 255, 255, 0.6);
-    border: 1px solid black;
-    border-radius: 100px;
-}
-.grid-item {
-    /* Display */
-    display: flex;
-    height: 50px;
-    width: 80%;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-
-    /* Typography */
-    font-size: 25px;
-    color: white;
-
-    /* Background and border */
-    background-color: #003b45;
-    border: 2px solid black;
-    border-radius: 5px;
-}
-.grid-item:hover {
-    background-color: #1f1530;
-    color: white;
-}
-.a_option:link, .a_option:visited {
-  background-color: transparent;
-  color: black;
-  text-decoration: none;
-}
 {% endblock %}
 </style>
 </head>
@@ -86,26 +39,6 @@
 </div>
 <hr>
 
-<div class="grid-container">
-    <div></div>
-    <a class="a_option" href="{% url 'file_upload_page' %}">
-        <div class="grid-item" style="vertical-align:middle;">
-            <h4>Upload data</h4><br>
-        </div>
-    </a>
-
-    <a class="a_option" href="{% url 'create_timetables' %}">
-        <div class="grid-item">
-            <b>Create timetables</b>
-        </div>
-    </a>
-
-    <a class="a_option" href="{% url 'selection_dashboard' %}">
-        <div class="grid-item">
-            <b>View timetables</b>
-        </div>
-    </a>
-    <div></div>
-</div>
+{% include 'partials/dash-tab-data-upload.html' %}
 
 {% endblock %}

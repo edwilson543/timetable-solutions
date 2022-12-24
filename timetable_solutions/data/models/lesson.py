@@ -180,7 +180,9 @@ class Lesson(models.Model):
         The .distinct() prevents duplicates, but there should be none anyway - for some reason, there seems to be a bug
         where duplicates are created within one of the individual query sets, at the point of combining.
         """
-        return (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct()
+        return (
+            self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct(
+        ).order_by("day_of_week", "period_starts_at")
 
     def get_n_solver_slots_required(self) -> int:
         """
@@ -224,6 +226,13 @@ class Lesson(models.Model):
             previous_slot = slot
 
         return double_period_count
+
+    @classmethod
+    def get_lesson_by_pk(cls, pk: int) -> Self:
+        """
+        Look up a Lesson instance by primary key.
+        """
+        return cls.objects.get(pk=pk)
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:

@@ -1,0 +1,85 @@
+{% load static %}
+
+<style>
+#submit-panel {
+    /* Display */
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.submit-button {
+    /* Display */
+    width: 400px;
+    padding: 5px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Border and background */
+    border-radius: 5px;
+    border: 1px solid black;
+    background-color: var(--green_button);
+}
+#submit-button:hover {
+    background-color: var(--green_button_border);
+    cursor: pointer;
+}
+
+.svg-loader {
+    display: none;
+}
+
+.htmx-request .svg-loader {
+    /* Display */
+    display: inline-block;
+    width: 40px;
+    height: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.htmx-request #submit-button {
+    display: none;
+}
+
+#submit-button-loading {
+    display: none;
+}
+.htmx-request #submit-button-loading {
+    display: inline-block;
+}
+
+
+</style>
+
+
+<form
+    hx-post="{% url 'create_timetables' %}"
+    hx-target="this"
+    hx-swap="none"
+    hx-select="#create-form"
+    hx-indicator="#submit-panel"
+
+    id="create-form"
+    enctype="multipart/form-data"
+>
+    {% csrf_token %}
+    <table id="create_form_table">
+        {{ form.as_table }}
+    </table>
+
+    <div id="submit-panel">
+        <img src="{% static 'create_timetables/svg/loading-bars.svg' %}" class="svg-loader">
+        <button type="submit" id="submit-button" class="submit-button">
+            Get solutions
+        </button>
+        <button id="submit-button-loading" class="submit-button">
+            Solving... Please wait...
+        </button>
+        <img src="{% static 'create_timetables/svg/loading-bars.svg' %}" class="svg-loader">
+    </div>
+</form>

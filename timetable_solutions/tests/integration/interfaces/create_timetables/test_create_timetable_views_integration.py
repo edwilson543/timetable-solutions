@@ -71,8 +71,7 @@ class TestCreateTimetableFormView(test.TestCase):
         response = self.client.post(url, data=form_data)
 
         # Check outcome
-        self.assertRedirects(response=response, expected_url=expected_url_redirect)
-        assert response.status_code == 302  # Redirection
+        assert response.headers["HX-Redirect"] == urls.reverse(UrlName.VIEW_TIMETABLES_DASH.value)
 
         # Check that a solution has been produced
         lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)

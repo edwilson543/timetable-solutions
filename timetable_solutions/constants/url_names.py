@@ -71,4 +71,11 @@ class UrlName(StrEnum):
     # HTMX #
 
     # Users app
+    DATA_UPLOAD_DASH_TAB = "data-upload-dash-tab"
+    CREATE_TIMETABLE_DASH_TAB = "create-timetable-dash-tab"
+    VIEW_TIMETABLE_DASH_TAB = "view-timetable-dash-tab"
     USERNAME_FIELD_REGISTRATION = "username-field-registration"
+
+    # View timetables app
+    LESSON_DETAIL = "lesson-detail"
+    CLOSE_LESSON_DETAIL = "close-lesson-detail"

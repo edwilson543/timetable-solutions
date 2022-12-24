@@ -68,7 +68,13 @@
                 </td>
                 {% elif required_form.upload_status == "complete" %}
                 <td class="table_cell">
-                    <form action="{% url required_form.reset_url_name %}" method="post">
+                    <form
+                        hx-post="{% url required_form.reset_url_name %}"
+                        hx-confirm="You will lose all {{ required_form.form_name | lower }} data, are you sure?"
+                        hx-target="#form_container"
+                        hx-select="#form_container"
+                        hx-swap="outerHTML"
+                    >
                         {% csrf_token %}
                         <button class="specific_reset_button" type="submit">
                             Reset
@@ -92,7 +98,13 @@
                     View and edit data
                 </button>
             </form>
-            <form action="{% url 'all_data_reset' %}" method="post">
+            <form
+                hx-post="{% url 'all_data_reset' %}"
+                hx-confirm="You will lose all you data, are you sure?"
+                hx-target="#form_container"
+                hx-select="#form_container"
+                hx-swap="outerHTML"
+            >
                 {% csrf_token %}
                 <button class="management_button" type="submit">
                     Reset all

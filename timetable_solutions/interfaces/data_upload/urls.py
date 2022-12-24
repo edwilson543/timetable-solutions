@@ -4,7 +4,7 @@
 from django.urls import path
 
 # Local application imports
-from constants.example_files import ExampleFile
+from domain.data_upload_processing.constants import ExampleFile
 from constants.url_names import UrlName
 from . import views
 

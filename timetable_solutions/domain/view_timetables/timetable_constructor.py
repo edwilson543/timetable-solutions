@@ -148,13 +148,13 @@ def get_timetable_slot_indexed_timetable(lessons: models.LessonQuerySet,
 
         for day in models.WeekDay.values:
             day_label = models.WeekDay(day).label
-            for klass, time_slots in lesson_indexed_timetable.items():
+            for lesson, time_slots in lesson_indexed_timetable.items():
                 queryset = time_slots.filter(day_of_week=day, period_starts_at=start_time)
                 if queryset.exists():  # Pupil / teacher has a lesson at this time
                     if get_subject_name:
-                        time_timetable[day_label] = klass.subject_name
+                        time_timetable[day_label] = lesson.subject_name
                     else:
-                        time_timetable[day_label] = klass
+                        time_timetable[day_label] = lesson
             if day_label not in time_timetable:
                 time_timetable[day_label] = TimetableColourAssigner.Colour.FREE.name
 

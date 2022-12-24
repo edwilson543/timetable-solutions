@@ -36,30 +36,6 @@ Styling for the table that we render the form in
 }
 
 /* ====================
-Submit buttons used to initiate timetable creation
-==================== */
-#submit_button {
-    /* Display */
-    width: 100%;
-    padding: 5px;
-    margin-top: 20px;
-
-    /* Typography */
-    font-size: 20px;
-    color: white;
-    text-align: center;
-
-    /* Border and background */
-    border-radius: 5px;
-    border: 1px solid black;
-    background-color: var(--green_button);
-}
-#submit_button:hover {
-    background-color: var(--purple_button);
-    cursor: pointer;
-}
-
-/* ====================
 Styling for individual form widgets / labels
 ==================== */
 label {font-size: 16px;}

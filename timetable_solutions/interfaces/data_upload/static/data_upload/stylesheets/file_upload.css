@@ -91,7 +91,7 @@ File upload table, rows & cells
 .disallowed_row {
     /* Typography */
     font-size: 12px;
-    font-color: var(--disallowed_row_font);
+    color: var(--disallowed_row_font);
 
     /* Background */
     background-color: var(--disallowed_row_passive);

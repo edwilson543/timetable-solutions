@@ -9,9 +9,9 @@ from . import views
 urlpatterns = [
     # Views relating to authentication
     re_path(r"^accounts/login", views.CustomLogin.as_view(), name=UrlName.LOGIN.value),
-    re_path(r"^accounts/logout", views.custom_logout, name=UrlName.LOGOUT.value),
-    re_path(r"^accounts/", include("django.contrib.auth.urls")),
-    re_path(r"^dashboard/", views.dashboard, name=UrlName.DASHBOARD.value),
+    re_path("^accounts/logout", views.custom_logout, name=UrlName.LOGOUT.value),
+    re_path("^accounts/", include("django.contrib.auth.urls")),
+    path("dashboard/", views.dashboard, name=UrlName.DASHBOARD.value),
 
     # Views at each step of registration
     path("register/", views.Register.as_view(), name=UrlName.REGISTER.value),
@@ -20,5 +20,12 @@ urlpatterns = [
     path("register/pivot/profile/", views.ProfileRegistration.as_view(), name=UrlName.PROFILE_REGISTRATION.value),
 
     # HTMX views - registration
-    path("register/username/", htmx_views.username_field_view, name=UrlName.USERNAME_FIELD_REGISTRATION.value)
+    path("register/username/", htmx_views.username_field_view, name=UrlName.USERNAME_FIELD_REGISTRATION.value),
+
+    # HTMX views - dashboard
+    path("dashboard/data-upload-tab/", htmx_views.DataUploadDashTab.as_view(), name=UrlName.DATA_UPLOAD_DASH_TAB.value),
+    path("dashboard/create-timetable-tab/", htmx_views.CreateTimetableDashTab.as_view(),
+         name=UrlName.CREATE_TIMETABLE_DASH_TAB.value),
+    path("dashboard/view-timetable-tab/", htmx_views.ViewTimetableDashTab.as_view(),
+         name=UrlName.VIEW_TIMETABLE_DASH_TAB.value)
 ]

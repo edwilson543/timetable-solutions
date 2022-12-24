@@ -77,16 +77,16 @@
     </tr>
     <tr>
         <td class="perimeter">{{time}}</td>
-        {% for day, klass in day_dict.items %}
-          {% if klass == "FREE" %}
-            <td class="color_{{klass}} timetable_slot"><b>{{ klass|title }}</b></td>
-          {% elif klass.subject_name == "LUNCH" %}
-            <td class="color_{{klass.subject_name}} timetable_slot"><b>{{ klass.subject_name|title}}</b></td>
+        {% for day, lesson in day_dict.items %}
+          {% if lesson == "FREE" %}
+            <td class="color_{{lesson}} timetable_slot"><b>{{ lesson|title }}</b></td>
+          {% elif lesson.subject_name == "LUNCH" %}
+            <td class="color_{{lesson.subject_name}} timetable_slot"><b>{{ lesson.subject_name|title}}</b></td>
           {% else %}
-            <td class="color_{{klass.pupils.all.0.year_group}} timetable_slot">
-                <b>{{ klass.subject_name|title}}</b><br>
-              <i>Year {{ klass.pupils.all.0.year_group }}</i><br>
-              <i>{{ klass.classroom.building }} {{ klass.classroom.room_number }}</i>
+            <td class="color_{{lesson.pupils.all.0.year_group}} timetable_slot">
+                <b>{{ lesson.subject_name|title}}</b><br>
+              <i>Year {{ lesson.pupils.all.0.year_group }}</i><br>
+              <i>{{ lesson.classroom.building }} {{ lesson.classroom.room_number }}</i>
             </td>
           {% endif %}
         {% endfor %}

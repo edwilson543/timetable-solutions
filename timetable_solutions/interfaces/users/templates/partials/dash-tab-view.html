@@ -1,0 +1,52 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'users/stylesheets/dash-tabs.css' %}">
+</head>
+
+<div id="info-container">
+    <div id="tab-panel">
+        <div
+            hx-get="{% url 'data-upload-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab"
+        >
+            <p class="tab-button-text">Upload data</p>
+        </div>
+        <div
+            hx-get="{% url 'create-timetable-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab"
+        >
+            <p class="tab-button-text">Create timetables</p>
+        </div>
+        <div
+            hx-get="{% url 'view-timetable-dash-tab' %}"
+            hx-trigger="click"
+            hx-target="#info-container"
+            hx-swap="outerHTML"
+            class="tab tab-selected"
+        >
+            <p class="tab-button-text">View timetables</p>
+        </div>
+    </div>
+    <hr>
+    <div id="tab-text-body">
+        <ul>
+            <li>
+                To view your timetable solutions, visit the
+                <a href="{% url 'create_timetables' %}">view section</a>
+                of the site.
+            </li>
+            <li>
+                This shows the timetables that have been generated for all your pupils and teachers.
+            </li>
+            <li>
+                Timetables can be downloaded as pdf or csv files.
+            </li>
+        </ul>
+    </div>
+</div>

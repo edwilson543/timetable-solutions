@@ -5,6 +5,7 @@ from django.urls import path
 
 # Local application imports
 from constants.url_names import UrlName
+from . import htmx_views
 from . import views
 
 urlpatterns = [
@@ -24,5 +25,9 @@ urlpatterns = [
     path('teachers/<int:teacher_id>/csv_download/', views.teacher_timetable_download_csv,
          name=UrlName.TEACHER_TT_CSV_DOWNLOAD.value),
     path('teachers/<int:teacher_id>/pdf_download/', views.teacher_timetable_download_pdf,
-         name=UrlName.TEACHER_TT_PDF_DOWNLOAD.value)
+         name=UrlName.TEACHER_TT_PDF_DOWNLOAD.value),
+
+    # HTMX URLs
+    path('lesson-detail-modal/<int:lesson_pk>', htmx_views.lesson_detail_modal, name=UrlName.LESSON_DETAIL.value),
+    path('close-lesson-detail-modal/', htmx_views.close_lesson_detail_modal, name=UrlName.CLOSE_LESSON_DETAIL.value)
 ]

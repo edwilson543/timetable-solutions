@@ -1,0 +1,220 @@
+<style>
+:root {
+    --modal-height: 300px;
+    --modal-width: 500px;
+    --border-radius: 10px;
+}
+
+/* ====================
+HTMX - centric styling
+==================== */
+
+@keyframes fade_in {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+#modal-htmx-handle {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+/* ====================
+Styling of the modal containers + panels
+==================== */
+
+#modal_container {
+    /* Positioning */
+    position: fixed;
+    z-index: 1000;
+
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+
+    /* Background and border */
+    background-color: rgba(0, 0, 0, 0.6);
+
+    /* Animation */
+    animation-name: fade_in;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#modal {
+    /* Positioning */
+    z-index: 10001;
+
+    /* Display */
+    display: flex;
+    flex-direction: column;
+    width: var(--modal-width);
+    height: var(--modal-height);
+
+    /* Typography */
+    text-align: left;
+
+    /* Background and border */
+    border-radius: var(--border-radius);
+    background-color: white;
+
+    /* Animation */
+    animation-name: fade_in;
+    animation-duration: 300ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#modal_title {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--modal-width);
+    height: 15%;
+
+    /* Typography */
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+
+    /* Background and border */
+    background-color: var(--dark_blue_banners);
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+}
+
+#modal_content {
+    /* Display */
+    width: var(--modal-width);
+    height: 70%;
+    box-sizing: border-box;
+    padding: 10px;
+    overflow: scroll;
+
+    /* Typography */
+    font-size: 20px;
+    color: black;
+
+    /* Background and border */
+    background-color: var(--lilac_background);
+}
+#modal_content hr {
+    width: 90%;
+    margin: 5px;
+}
+
+#modal_button_panel {
+    /* Display */
+    display: flex;
+    flex-direction: row;
+    width: var(--modal-width);
+    height: 15%;
+}
+
+.modal_button {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(var(--modal-width) / 2);
+    height: 100%;
+
+    /* Typography */
+    font-size: 25px;
+    font-weight: bold;
+    color: white;
+}
+.modal_button:hover {
+    cursor: pointer;
+}
+
+#amend_button {
+    background-color: var(--green_button);
+    border-bottom-left-radius: var(--border-radius);
+    text-decoration: none;
+}
+#amend_button:hover {
+    background-color: var(--green_button_border);
+}
+
+#close_button {
+    background-color: var(--red_button);
+    border-bottom-right-radius: var(--border-radius);
+}
+#close_button:hover {
+    background-color: var(--red_button_border);
+}
+
+</style>
+
+<div id="modal-htmx-handle">
+
+    {% if modal_is_active %}
+        <div
+            hx-get="{% url 'close-lesson-detail' %}"
+            hx-trigger="click"
+            hx-target="#modal-htmx-handle"
+            hx-swap="innerHTML"
+
+            id="modal_container"
+        >
+            <div id="modal">
+
+                <div id="modal_title">
+                    {{ lesson_title }}
+                </div>
+
+                <div id="modal_content">
+                    <b>Teacher:</b> {{ lesson.teacher }}<hr>
+                    <b>Building:</b> {{ lesson.classroom.building }}<hr>
+                    <b>Room number:</b> {{ lesson.classroom.room_number }}<hr>
+                    <b>Slots ({{ lesson.total_required_slots }}):</b>
+                    {% for slot in lesson.get_all_time_slots %}
+                        {% if forloop.last %}
+                            {{ slot }}
+                        {% else %}
+                            {{ slot }};
+                        {% endif %}
+                    {% endfor %}<hr>
+                    <b>Pupils ({{ lesson.pupils.count }}):</b>
+                    {% for pupil in lesson.pupils.all %}
+                        {% if forloop.last %}
+                            {{ pupil }}
+                        {% else %}
+                            {{ pupil }};
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div id="modal_button_panel">
+                    <a id="amend_button" class="modal_button" href="{% url 'user_admin:data_lesson_change' lesson.pk %}">
+                        Amend
+                    </a>
+                    <div
+                         hx-get="{% url 'close-lesson-detail' %}"
+                         hx-trigger="click"
+                         hx-target="#modal-htmx-handle"
+                         hx-swap="innerHTML"
+
+                         id="close_button"
+                         class="modal_button">
+                        Close
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    {% endif %}
+
+</div>

@@ -4,7 +4,12 @@ Module listing constants related to the processing of uploaded user files.
 
 # Standard library imports
 from dataclasses import dataclass
+from enum import StrEnum
+from pathlib import Path
 from typing import List
+
+# Django imports
+from django.conf import settings
 
 
 class Header:
@@ -66,3 +71,22 @@ class UploadFileStructure:
     LESSON = FileStructure(
         headers=[Header.LESSON_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS, Header.CLASSROOM_ID,
                  Header.TOTAL_SLOTS, Header.TOTAL_DOUBLES, Header.USER_DEFINED_SLOTS], id_column=Header.LESSON_ID)
+
+
+class ExampleFile(StrEnum):
+    """
+    Enumeration of all the example files that can be downloaded by users, and construction of their respective urls.
+    """
+    PUPILS = "example_pupils.csv"
+    TEACHERS = "example_teachers.csv"
+    CLASSROOMS = "example_classrooms.csv"
+    TIMETABLE = "example_timetable.csv"
+    LESSON = "example_lessons.csv"
+
+    @property
+    def filepath(self) -> Path:
+        """
+        Property indicating the absolute path the example file is stored at on the local file system.
+        """
+        path = settings.BASE_DIR / settings.MEDIA_ROOT / "example_files" / self.value
+        return path

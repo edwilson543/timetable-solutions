@@ -6,6 +6,7 @@ Module containing the view class for the timetable creation page.
 from typing import List, Dict
 
 # Django imports
+from django import http
 from django import urls
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -47,7 +48,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         if len(error_messages) == 0:
             message = "Solutions have been found for your timetabling problem!"
             messages.add_message(self.request, level=messages.SUCCESS, message=message)
-            return super().form_valid(form)  # Method inherited from ModelFormMixin
+            return http.HttpResponse(headers={"HX-Redirect": self.success_url})
         else:
             for message in error_messages:
                 messages.add_message(self.request, level=messages.ERROR, message=message)
@@ -65,7 +66,6 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             school_access_key=school_access_key, solution_specification=solution_spec)
         return error_messages
 
-    # METHODS OVERRIDING SUPERCLASS METHODS
     def get_context_data(self, **kwargs) -> Dict:
         """
         Method adding additional context to the context dictionary provided by super class.

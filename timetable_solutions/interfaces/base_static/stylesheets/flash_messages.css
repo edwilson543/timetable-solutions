@@ -8,11 +8,11 @@ CSS file to pair with django's flash messages framework
     --banner_z_index: 1000;
 
     /* Display */
-    --start_height: 0;
-    --end_height: 50vh;
+    --start_height: -30px;
+    --end_height: 30px;
 
-    --banner_width: 40vw;
-    --banner_left_indent: 30vw;
+    --banner_width: 100vw;
+    --banner_left_indent: 0vw;
 
     --close_button_total_width: 30px;
 
@@ -52,35 +52,30 @@ Animations
 ==================== */
 @keyframes error_drop_in {
     0% {
-        position: fixed;
-        top: var(--start_height);
-        left: var(--banner_left_indent);
+        position: static;
         z-index: var(--banner_z_index);
         opacity: 0;
+        max-height: 0;
     }
 
-    8% {
-        position: absolute;
-        top: var(--end_height);
-        left: var(--banner_left_indent);
+    10% {
+        position: static;
         z-index: var(--banner_z_index);
         opacity: var(--banner_opacity);
     }
 
     90% {
-        position: fixed;
-        top: var(--end_height);
-        left: var(--banner_left_indent);
+        position: static;
         z-index: var(--banner_z_index);
         opacity: var(--banner_opacity);
+        max-height: 5000px;
     }
 
     100% {
-        position: fixed;
-        top: var(--end_height);
-        left: var(--banner_left_indent);
+        position: static;
         z-index: var(--banner_z_index);
         opacity: var(--banner_opacity);
+        max-height: 5000px;
     }
 }
 
@@ -108,8 +103,7 @@ Components of the flash messages
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 30px;
-    margin: 2px;
+    min-height: var(--end_height);
     padding: 5px;
 
     /* Typography */
@@ -119,7 +113,6 @@ Components of the flash messages
     vertical-align: middle;
 
     /* Border */
-    border-radius: 10px;
     border-weight: 1px;
     border-style: solid;
 }
