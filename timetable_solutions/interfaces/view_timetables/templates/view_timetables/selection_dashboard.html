@@ -54,11 +54,13 @@
     color: white;
 
     /* Background and border */
-    background-color: #004000;
+    background-color: var(--green_button);
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid var(--green_button_border);
 }
-.view_link_button:hover {background-color: #1f1530;}
+.view_link_button:hover {
+    background-color: var(--green_button_border);
+}
 
 .email_link_button {
     /* Display */
@@ -71,11 +73,13 @@
     color: white;
 
     /* Background and border */
-    background-color: #c4353f;
+    background-color: var(--red_button);
     border-radius: 5px;
-    border: 1px solid #33003d;
+    border: 1px solid var(--red_button_border);
 }
-.email_link_button:hover {background-color: #1f1530;}
+.email_link_button:hover {
+    background-color: var(--red_button_border);
+}
 
 /* Text content of information panels styling */
 ul {padding: 10px;}
