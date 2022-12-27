@@ -19,7 +19,6 @@ services:
       - .env
     command: bash -c "
       python manage.py migrate
-      && python manage.py load_all_fixtures
       && python manage.py collectstatic --noinput
       && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
       "
