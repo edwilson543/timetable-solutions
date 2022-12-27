@@ -19,24 +19,49 @@ services:
       - .env
     command: bash -c "
       python manage.py migrate
-      && python manage.py load_all_fixtures
       && python manage.py collectstatic --noinput
       && gunicorn base_files.wsgi:application --bind 0.0.0.0:8000
       "
 
-  tts_nginx:
+  nginx-proxy:
+    container_name: nginx-proxy
     image: "${NGINX_IMAGE}"
+    restart: always
     build:
       context: ./nginx
       dockerfile: Dockerfile
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - static_volume:/home/app/web/static  # Mirror the static files into relevant part of nginx
       - media_volume:/home/app/web/media
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     depends_on:
       - tts_app
 
+  nginx-proxy-letsencrypt:
+    # Service to handle the creation, renewal, and use of Let's Encrypt certificates
+    # for proxied Docker containers.
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    env_file:
+      - .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - certs:/etc/nginx/certs
+      - html:/usr/share/nginx/html
+      - vhost:/etc/nginx/vhost.d
+      - acme:/etc/acme.sh
+    depends_on:
+      - nginx-proxy
+
 volumes:
-  static_volume:  # static_volume acts like a pivot between static files in the tts_app and nginx containers
+  static_volume:  # Acts as a pivot between static files in the tts_app and nginx containers
   media_volume:  # Similarly for media_volume
+  certs:  # Stores certificates, private keys and ACME account keys
+  html:  # Writes http-01 challenge files
+  vhost:  # Changes the configuration of vhosts
+  acme:

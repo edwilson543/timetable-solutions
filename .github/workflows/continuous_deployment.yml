@@ -3,10 +3,12 @@ name: Deployment to production
 on:
   workflow_run:
     workflows: [CI testing]
-    # Build & deploy will only be triggered after all the tests have passed
-    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
+    # Build & deploy will only be triggered after all the tests have passed ...
     types:
       - completed
+    # ... and when we are running tests on main (i.e. after merging a PR)
+    branches:
+      - main
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
@@ -19,7 +21,6 @@ jobs:
     name: Build Docker images
     runs-on: ubuntu-20.04
     # Only run build (and therefore deploy) if we have just merged into main
-    if: ${{github.base_ref == 'refs/heads/main'}} && ${{github.event.pull_request.merged == true}}
     steps:
       - name: Checkout main
         uses: actions/checkout@v1
@@ -33,6 +34,11 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
           echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo VIRTUAL_HOST=timetable-solutions.com >> .env
+          echo VIRTUAL_PORT=8000 >> .env
+          echo LETSENCRYPT_HOST=timetable-solutions.com >> .env
+          echo DEFAULT_EMAIL=edward.e.j.wilson@gmail.com >> .env
+          echo NGINX_PROXY_CONTAINER=nginx-proxy >> .env
       - name: Set environment variables
         run: |
           echo "APP_IMAGE=$(echo ${{env.APP_IMAGE}})" >> $GITHUB_ENV
@@ -74,6 +80,11 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
           echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo VIRTUAL_HOST="timetable-solutions.com" >> .env
+          echo VIRTUAL_PORT=8000 >> .env
+          echo LETSENCRYPT_HOST="timetable-solutions.com" >> .env
+          echo DEFAULT_EMAIL=edward.e.j.wilson@gmail.com >> .env
+          echo NGINX_PROXY_CONTAINER=nginx-proxy >> .env
           echo DIGITAL_OCEAN_IP_ADDRESS=${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} >> .env
           echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env

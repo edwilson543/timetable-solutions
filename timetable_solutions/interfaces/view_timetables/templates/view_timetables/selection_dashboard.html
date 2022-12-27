@@ -93,7 +93,8 @@ li {
 .horizontal_break {
     width:80%;
     color: black;
-    margin-bottom: 15px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 {% endblock %}
@@ -146,7 +147,6 @@ li {
             <ul>
                 <li>Timetables have been generated for all {{total_pupils}} pupils</li>
             </ul>
-            <hr class="horizontal_break">
             <a href="{% url 'pupils_navigator' %}" class="view_link_button white_link">
                 View pupil timetables
             </a>
@@ -160,7 +160,6 @@ li {
             <ul>
                 <li>Timetables have been generated for all {{total_teachers}} teachers</li>
             </ul>
-            <hr class="horizontal_break">
             <a href="{% url 'teachers_navigator' %}" class="view_link_button white_link">
                 View teacher timetables
             </a>

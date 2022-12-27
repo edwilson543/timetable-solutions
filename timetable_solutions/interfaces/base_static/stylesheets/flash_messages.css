@@ -21,7 +21,7 @@ CSS file to pair with django's flash messages framework
     --banner_opacity_hover: 1;
 
     /* Animations */
-    --message_duration: 20s;
+    --message_duration: 30s;
 
     /* COLOURS - one set per django flash message level */
     --close_button_background: #d1cfcf;
@@ -64,7 +64,7 @@ Animations
         opacity: var(--banner_opacity);
     }
 
-    90% {
+    95% {
         position: static;
         z-index: var(--banner_z_index);
         opacity: var(--banner_opacity);
@@ -74,8 +74,8 @@ Animations
     100% {
         position: static;
         z-index: var(--banner_z_index);
-        opacity: var(--banner_opacity);
-        max-height: 5000px;
+        opacity: 0;
+        max-height: 0;
     }
 }
 
