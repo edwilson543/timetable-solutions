@@ -1,0 +1,14 @@
+# Requests matching any of the below patterns will be served from static or media folders.
+# They won't be proxied to other containers.
+
+# Define the static url, and it's alias in the nginx container file system
+location /static/ {
+    alias /home/app/web/static/;
+    add_header Access-Control-Allow-Origin *;
+}
+
+# Define the media url, and it's alias in the nginx container file system
+location /media/ {
+    alias /home/app/web/media/;
+    add_header Access-Control-Allow-Origin *;
+}

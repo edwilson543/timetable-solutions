@@ -1,12 +1,14 @@
 name: Deployment to production
 
 on:
-  workflow_run:
-    workflows: [CI testing]
-    # Build & deploy will only be triggered after all the tests have passed
-    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
-    types:
-      - completed
+  push
+#on:
+#  workflow_run:
+#    workflows: [CI testing]
+#    # Build & deploy will only be triggered after all the tests have passed
+#    # Note each individual job (build, deploy) is also conditional on a merge event into the main branch
+#    types:
+#      - completed
 
 env:
   APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/tts_app
@@ -33,6 +35,12 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
           echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo VIRTUAL_HOST=timetable-solutions.com >> .env
+          echo VIRTUAL_PORT=8000 >> .env
+          echo LETSENCRYPT_HOST=timetable-solutions.com >> .env
+          echo DEFAULT_EMAIL=edward.e.j.wilson@gmail.com >> .env
+          echo ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory >> .env
+          echo NGINX_PROXY_CONTAINER=nginx-proxy >> .env
       - name: Set environment variables
         run: |
           echo "APP_IMAGE=$(echo ${{env.APP_IMAGE}})" >> $GITHUB_ENV
@@ -48,7 +56,7 @@ jobs:
           docker pull ${{ env.NGINX_IMAGE }} || true
       - name: Build docker images
         run: |
-          docker-compose -f docker-compose.prod.yml build
+          docker-compose -f docker-compose.staging.yml build
       - name: Push docker images
         run: |
           docker push ${{ env.APP_IMAGE }}
@@ -74,6 +82,12 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo POSTGRES_HOST=${{ secrets.POSTGRES_HOST }} >> .env
           echo POSTGRES_PORT=${{ secrets.POSTGRES_PORT }} >> .env
+          echo VIRTUAL_HOST="timetable-solutions.com" >> .env
+          echo VIRTUAL_PORT=8000 >> .env
+          echo LETSENCRYPT_HOST="timetable-solutions.com" >> .env
+          echo DEFAULT_EMAIL=edward.e.j.wilson@gmail.com >> .env
+          echo ACME_CA_URI=https://acme-staging-v02.api.letsencrypt.org/directory >> .env
+          echo NGINX_PROXY_CONTAINER=nginx-proxy >> .env
           echo DIGITAL_OCEAN_IP_ADDRESS=${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} >> .env
           echo APP_IMAGE=${{ env.APP_IMAGE }} >> .env
           echo NGINX_IMAGE=${{ env.NGINX_IMAGE }} >> .env
@@ -96,12 +110,13 @@ jobs:
         # Note that the dockerhub login seems to need its own command, otherwise it bugs
         # Include the --no-build flag to ensure the 'deploy' phase uses the pulled containers
         run: |
-          scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.prod.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/app
+          scp -o StrictHostKeyChecking=no -r ./.env ./docker-compose.staging.yml root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }}:/app
           echo ${{ secrets.DOCKERHUB_TOKEN }} | ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS }} docker login -u ${{ secrets.DOCKERHUB_USERNAME}} --password-stdin
           ssh -o StrictHostKeyChecking=no root@${{ secrets.DIGITAL_OCEAN_IP_ADDRESS}} << 'ENDSSH'
           cd /app
           source .env
           docker pull $APP_IMAGE
           docker pull $NGINX_IMAGE
-          docker-compose -f docker-compose.prod.yml up -d --no-build
+          docker-compose -f docker-compose.staging.yml down -v
+          docker-compose -f docker-compose.staging.yml up -d --no-build
           ENDSSH
