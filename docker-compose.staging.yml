@@ -34,8 +34,6 @@ services:
     ports:
       - "80:80"
       - "443:443"
-    env_file:
-      - .env
     volumes:
       - static_volume:/home/app/web/static  # Mirror the static files into relevant part of nginx
       - media_volume:/home/app/web/media
@@ -50,6 +48,8 @@ services:
     # Service to handle the creation, renewal, and use of Let's Encrypt certificates
     # for proxied Docker containers.
     image: jrcs/letsencrypt-nginx-proxy-companion
+    env_file:
+      - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - certs:/etc/nginx/certs
