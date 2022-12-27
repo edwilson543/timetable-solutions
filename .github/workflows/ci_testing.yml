@@ -1,7 +1,7 @@
 name: CI testing
 
 on:
-  # A successful merge to main only will manually run the test suite
+  # Pull requests, pushes to main, or manual execution can all run the test suite
   push:
     branches:
       - 'main'
