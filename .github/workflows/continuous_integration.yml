@@ -1,4 +1,4 @@
-name: CI testing
+name: Continuous integration
 
 on:
   # Pull requests, pushes to main, or manual execution can all run the test suite
@@ -26,3 +26,19 @@ jobs:
       run: |
         cd timetable_solutions
         pytest
+
+  mypy-type-checking:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install Python 3.11
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.11"
+    - name: Install project dependencies
+      run: |
+        pip install mypy==0.991
+    - name: Run mypy in project layers
+      run: |
+        cd timetable_solutions
+        mypy -p domain --ignore-missing-imports --follow-imports=skip --disallow-untyped-defs        
