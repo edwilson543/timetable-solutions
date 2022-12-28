@@ -3,14 +3,38 @@ Module providing summary stats for the view timetable app's dashboard
 """
 
 # Standard library imports
-from typing import Dict
+from typing import TypedDict, Literal
 
 # Local application imports
 from data import models
 from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
 
-def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
+class StatsSummary(TypedDict):
+    """
+    Summary dict provided when the user has existing timetable solutions.
+    """
+    has_solutions: Literal[True]
+    total_classes: int
+    total_lessons: int
+    total_pupils: int
+    total_teachers: int
+    busiest_days: str
+    busiest_days_pct: float
+    quietest_days: str
+    quietest_days_pct: float
+    busiest_time: str
+    busiest_time_pct: float
+
+
+class NoStatsSummary(TypedDict):
+    """
+    Summary dict provided when the user DOES NOT have existing timetable solutions.
+    """
+    has_solutions: Literal[False]
+
+
+def get_summary_stats_for_dashboard(school_access_key: int) -> StatsSummary | NoStatsSummary:
     """
     Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
     the selection_dashboard.
@@ -34,29 +58,31 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
 
     # Check whether there are in fact any summary stats to calculate
     if total_lessons_taught == 0:
-        stats = {
+        no_stats: NoStatsSummary = {
             "has_solutions": False
         }
-        return stats
+        return no_stats
 
     # Stats relating to days of the week
-    day_of_week_counts = {day.label: sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
-                                         slot.day_of_week == day.value) for day in models.WeekDay}
-    busiest_day = max(day_of_week_counts, key=day_of_week_counts.get)
-    busiest_day_pct = round(day_of_week_counts.get(busiest_day) / total_lessons_taught, 2) * 100
-    quietest_day = min(day_of_week_counts, key=day_of_week_counts.get)
-    quietest_day_pct = round(day_of_week_counts.get(quietest_day) / total_lessons_taught, 2) * 100
+    day_of_week_counts: dict[str, int] = {
+        day.label: sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
+                       slot.day_of_week == day.value) for day in models.WeekDay}
+    busiest_days = _get_dict_key_with_max_or_min_value(dictionary=day_of_week_counts, max_=True)
+    busiest_days_pct = round(day_of_week_counts[busiest_days[0]] / total_lessons_taught, 2) * 100
+    quietest_days = _get_dict_key_with_max_or_min_value(dictionary=day_of_week_counts, max_=False)
+    quietest_days_pct = round(day_of_week_counts[quietest_days[0]] / total_lessons_taught, 2) * 100
 
     # Stats relating to times of day
     distinct_times = {slot.period_starts_at for slot in slot_lesson_count}
     time_of_day_counts = {time_of_day.strftime("%H:%M"):
-                          sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
-                          slot.period_starts_at == time_of_day) for time_of_day in distinct_times}
-    busiest_time = max(time_of_day_counts, key=time_of_day_counts.get)
-    busiest_time_pct = round(time_of_day_counts.get(busiest_time) / total_lessons_taught, 2) * 100
+                              sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
+                                  slot.period_starts_at == time_of_day) for time_of_day in distinct_times
+                          }
+    busiest_time = _get_dict_key_with_max_or_min_value(dictionary=time_of_day_counts, max_=True)
+    busiest_time_pct = round(time_of_day_counts[busiest_time[0]] / total_lessons_taught, 2) * 100
 
     # Summary dict
-    stats = {
+    stats: StatsSummary = {
         "has_solutions": True,  # We only reach this line if there are solutions
 
         "total_classes": distinct_lessons,
@@ -64,12 +90,23 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> Dict:
         "total_pupils": len(all_pupils),
         "total_teachers": len(all_teachers),
 
-        "busiest_day": busiest_day,
-        "busiest_day_pct": busiest_day_pct,
-        "quietest_day": quietest_day,
-        "quietest_day_pct": quietest_day_pct,
+        "busiest_days": busiest_days,
+        "busiest_days_pct": busiest_days_pct,
+        "quietest_days": quietest_days,
+        "quietest_days_pct": quietest_days_pct,
 
         "busiest_time": busiest_time,
         "busiest_time_pct": busiest_time_pct,
     }
     return stats
+
+
+def _get_dict_key_with_max_or_min_value(dictionary: dict[str, int], max_: bool) -> list[str]:
+    """
+    Retrieve the key(s) in a dictionary that correspond to the maximum value.
+    """
+    if max_:
+        value = max(dictionary.values())
+    else:
+        value = min(dictionary.values())
+    return [key for key, val in dictionary.items() if value == val]
