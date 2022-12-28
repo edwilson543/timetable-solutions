@@ -109,7 +109,7 @@ class TimetableSolverObjective:
         optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
         return optimal_free_period_time
 
-    def _get_optimal_free_period_time_specified_time(self):
+    def _get_optimal_free_period_time_specified_time(self) -> float:
         """
         Method that ideal_proportion % of the time will just return the user-specified optimal free period time (the
         repulsive hour), and the 1 - this % of times, return a random float between timetable_start / timetable_finish
@@ -122,7 +122,8 @@ class TimetableSolverObjective:
         if generate_random_optimal_free_period_time:
             optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
         else:
-            optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day.hour
+            optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day.\
+                hour  # type: ignore
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_morning_specified(self) -> float:

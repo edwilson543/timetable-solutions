@@ -5,7 +5,7 @@ Implementation for the special case of handling the Lesson file upload
 # Standard library imports
 import ast
 import re
-from typing import Dict, List, Set, Type
+from typing import Type
 
 
 import pandas as pd
@@ -29,14 +29,14 @@ class LessonFileUploadProcessor(FileUploadProcessor):
     def __init__(self,
                  school_access_key: int,
                  csv_file: UploadedFile,
-                 csv_headers: List[str] = UploadFileStructure.LESSON.headers,
+                 csv_headers: list[str] = UploadFileStructure.LESSON.headers,
                  id_column_name: str = UploadFileStructure.LESSON.id_column,
                  model: Type[ModelSubclass] = models.Lesson,
                  attempt_upload: bool = True):
         super().__init__(school_access_key=school_access_key, csv_file=csv_file, csv_headers=csv_headers,
                          id_column_name=id_column_name, model=model, attempt_upload=attempt_upload)
 
-    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> Dict:
+    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> dict:
         """
         Customisation of the base class' method fore extracting data from the row.
         The output is a dictionary which can be passed directly to the Lesson model's create_new method.
@@ -64,6 +64,7 @@ class LessonFileUploadProcessor(FileUploadProcessor):
                 models.Lesson.Constant.user_defined_time_slots] = self._get_timetable_slots_from_raw_slot_ids_string(
                 slot_ids_raw=raw_slot_ids, row_number=row_number)
 
+        create_new_dict_ = {key: value for key, value in create_new_dict.items() if value is not None}
         return create_new_dict
 
     # METHODS TO GET QUERY SETS FROM RAW STRINGS
@@ -84,6 +85,7 @@ class LessonFileUploadProcessor(FileUploadProcessor):
                 return None
             else:
                 return pupils
+        return None
 
     def _get_timetable_slots_from_raw_slot_ids_string(self, slot_ids_raw: str,
                                                       row_number: int) -> models.TimetableSlotQuerySet | None:
@@ -102,6 +104,7 @@ class LessonFileUploadProcessor(FileUploadProcessor):
                 return None
             else:
                 return slots
+        return None
 
     # STRING CLEANING METHODS
     def _get_clean_id_from_file_field_value(self, user_input_id: str | int | float | None, row_number: int,
@@ -124,8 +127,9 @@ class LessonFileUploadProcessor(FileUploadProcessor):
                 else:
                     cleaned_id = next(iter(id_set))
                     return cleaned_id
+        return None
 
-    def _get_integer_set_from_string(self, raw_string_of_ids: str, row_number: int) -> Set[int] | None:
+    def _get_integer_set_from_string(self, raw_string_of_ids: str, row_number: int) -> set[int] | None:
         """
         Method to do some basic checks on a raw string that need to be evaluated as a python list, and try to evaluate
         it literally. The raw strings originate from user upload files.
@@ -161,3 +165,5 @@ class LessonFileUploadProcessor(FileUploadProcessor):
         except ValueError:
             error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
             self.upload_error_message = error
+
+        return None

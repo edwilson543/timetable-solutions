@@ -4,7 +4,7 @@ Module containing utility class used to do the processing of the uploaded csv fi
 
 # Standard library imports
 from io import StringIO
-from typing import Dict, List, Type, TypeVar
+from typing import Type, TypeVar
 
 # Third party imports
 import pandas as pd
@@ -33,7 +33,7 @@ class FileUploadProcessor:
     def __init__(self,
                  school_access_key: int,
                  csv_file: UploadedFile,
-                 csv_headers: List[str],
+                 csv_headers: list[str],
                  id_column_name: str,
                  model: Type[ModelSubclass],
                  attempt_upload: bool = True):
@@ -52,7 +52,7 @@ class FileUploadProcessor:
 
         # Instance attributes that get set during upload, providing info on the level of success
         self.n_model_instances_created = 0
-        self.upload_error_message = None  # Provides details on why the upload has failed
+        self.upload_error_message: str | None = None  # Provides details on why the upload has failed
 
         # Try uploading the file to the database
         if attempt_upload:
@@ -95,7 +95,7 @@ class FileUploadProcessor:
 
         # Process each file row into a dictionary to pass to create_new
         create_new_dict_list = self._get_data_dict_list_for_create_new(upload_df=upload_df)
-        if self.upload_error_message is None:
+        if create_new_dict_list is not None:
             try:
                 with transaction.atomic():
                     for n, create_new_dict in enumerate(create_new_dict_list):
@@ -105,26 +105,26 @@ class FileUploadProcessor:
                 self.n_model_instances_created = len(create_new_dict_list)
 
             except (ValidationError,  # Model does not pass the full_clean checks
-                    TypeError,  # Model was missing a required field (via its the create_new method)
+                    TypeError,  # Model was missing a required field (via the create_new method)
                     ValueError) as debug_only_message:  # A string was passed to int(id_field)
 
                 error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
                             f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
                 self.upload_error_message = error
                 if settings.DEBUG:
-                    self.upload_error_message = debug_only_message
+                    self.upload_error_message = str(debug_only_message)
             except IntegrityError as debug_only_message:
                 error = f"ID given for {self._model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
                 if settings.DEBUG:
-                    self.upload_error_message = debug_only_message
+                    self.upload_error_message = str(debug_only_message)
             except ObjectDoesNotExist as debug_only_message:
                 self.upload_error_message = f"Row {n + 1} of your file referenced a pupil / teacher / classroom / " \
                                             f"timetable slot id which does not exist!\n Please check this!"
                 if settings.DEBUG:
-                    self.upload_error_message = debug_only_message
+                    self.upload_error_message = str(debug_only_message)
 
-    def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> List[Dict] | None:
+    def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> list[dict] | None:
         """
         Method to iterate through the rows of the dataframe, and create a list of dictionaries that can be passed to
         self._model.create_new(**create_new_dict).
@@ -145,7 +145,7 @@ class FileUploadProcessor:
 
         return create_new_dict_list
 
-    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> Dict[str, str | int]:
+    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> dict:
         """
         Method to take an individual row from the csv file, and convert it into a dictionary which can be passed
         directly to self._model.create_new(**create_new_dict) to initialise a model instance
