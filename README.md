@@ -51,7 +51,7 @@ Core functionality:
 <ol>
     <li>Fork and clone repository</li>
     <li>Setup virtual environment at project root (or alternatively, within /timetable_solutions)</li>
-    <li><b>pip install</b> the dependencies from app-requirements.txt and test-requirements.txt</li>
+    <li><b>pip install</b> the dependencies from app-requirements.txt and dev-requirements.txt</li>
     <li>
         Check the tests are passing; with /timetable_solutions as the working directory:<br>
         <code>pytest</code>

@@ -21,7 +21,7 @@ jobs:
     - name: Install project dependencies
       run: |
         pip install -r timetable_solutions/app-requirements.txt
-        pip install -r timetable_solutions/test-requirements.txt
+        pip install -r timetable_solutions/dev-requirements.txt
     - name: Run test suite with pytest
       run: |
         cd timetable_solutions
