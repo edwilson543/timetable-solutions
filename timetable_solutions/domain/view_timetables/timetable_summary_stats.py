@@ -19,12 +19,12 @@ class StatsSummary(TypedDict):
     total_lessons: int
     total_pupils: int
     total_teachers: int
-    busiest_days: str
+    busiest_days: list[str]
     busiest_days_pct: float
-    quietest_days: str
+    quietest_days: list[str]
     quietest_days_pct: float
-    busiest_time: str
-    busiest_time_pct: float
+    busiest_times: list[str]
+    busiest_times_pct: float
 
 
 class NoStatsSummary(TypedDict):
@@ -78,8 +78,8 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> StatsSummary | No
                               sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
                                   slot.period_starts_at == time_of_day) for time_of_day in distinct_times
                           }
-    busiest_time = _get_dict_key_with_max_or_min_value(dictionary=time_of_day_counts, max_=True)
-    busiest_time_pct = round(time_of_day_counts[busiest_time[0]] / total_lessons_taught, 2) * 100
+    busiest_times = _get_dict_key_with_max_or_min_value(dictionary=time_of_day_counts, max_=True)
+    busiest_times_pct = round(time_of_day_counts[busiest_times[0]] / total_lessons_taught, 2) * 100
 
     # Summary dict
     stats: StatsSummary = {
@@ -95,8 +95,8 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> StatsSummary | No
         "quietest_days": quietest_days,
         "quietest_days_pct": quietest_days_pct,
 
-        "busiest_time": busiest_time,
-        "busiest_time_pct": busiest_time_pct,
+        "busiest_times": busiest_times,
+        "busiest_times_pct": busiest_times_pct,
     }
     return stats
 

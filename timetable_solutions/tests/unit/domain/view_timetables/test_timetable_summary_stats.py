@@ -29,13 +29,13 @@ class TestTimetableSummaryStats(TestCase):
         self.assertEqual(stats["total_pupils"], 6)
         self.assertEqual(stats["total_teachers"], 11)
 
-        self.assertEqual(stats["busiest_day"], "Monday")
-        self.assertEqual(stats["busiest_day_pct"], 20.0)
-        self.assertEqual(stats["quietest_day"], "Monday")
-        self.assertEqual(stats["quietest_day_pct"], 20.0)
+        self.assertEqual(stats["busiest_days"], ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(stats["busiest_days_pct"], 20.0)
+        self.assertEqual(stats["quietest_days"], ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(stats["quietest_days_pct"], 20.0)
 
-        self.assertEqual(stats["busiest_time"], "10:00")
-        self.assertEqual(stats["busiest_time_pct"], 20.0)
+        self.assertEqual(stats["busiest_times"], ["10:00"])
+        self.assertEqual(stats["busiest_times_pct"], 20.0)
 
 
 class TestTimetableSummaryStatsNoTimetablesLoaded(TestCase):
@@ -46,7 +46,7 @@ class TestTimetableSummaryStatsNoTimetablesLoaded(TestCase):
 
     def test_get_summary_stats_for_dashboard_no_timetable_solutions(self):
         """
-        Test that the a singleton dictionary is returned, when the user does not have any timetable solutions to view.
+        Test that a singleton dictionary is returned when the user does not have any timetable solutions to view.
         """
         # Set test parameters
         expected_dict = {"has_solutions": False}
