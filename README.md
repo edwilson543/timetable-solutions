@@ -53,8 +53,12 @@ Core functionality:
     <li>Setup virtual environment at project root (or alternatively, within /timetable_solutions)</li>
     <li><b>pip install</b> the dependencies from app-requirements.txt and dev-requirements.txt</li>
     <li>
-        Check the tests are passing; with /timetable_solutions as the working directory:<br>
+        Check the tests are passing; wit``h /t``imetable_solutions as the working directory:<br>
         <code>pytest</code>
+    </li>
+    <li>
+        Install the pre-commit hooks, from project root:<br>
+        <code>pre-commit install</code>
     </li>
 </ol>
 
