@@ -41,4 +41,5 @@ jobs:
     - name: Run mypy in project layers
       run: |
         cd timetable_solutions
-        mypy -p domain -p interfaces
+        mypy -p domain
+        mypy -p interfaces

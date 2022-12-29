@@ -4,5 +4,5 @@ repos:
     rev: 'v0.991'
     hooks:
     -   id: mypy
-        args: [--ignore-missing-imports, --follow-imports=skip, --disallow-untyped-defs]
+        args: [--ignore-missing-imports, --disallow-untyped-defs]
         exclude: 'test_.*py'
