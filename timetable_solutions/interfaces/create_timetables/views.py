@@ -3,7 +3,7 @@ Module containing the view class for the timetable creation page.
 """
 
 # Standard library imports
-from typing import List, Dict
+from typing import Any
 
 # Django imports
 from django import http
@@ -39,7 +39,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
     template_name = "create_timetables.html"
     success_url = urls.reverse_lazy(UrlName.VIEW_TIMETABLES_DASH.value)
 
-    def form_valid(self, form) -> HttpResponse:
+    def form_valid(self, form: forms.SolutionSpecification) -> HttpResponse:
         """
         Method to take the user's requirements as per the form, and then use them to run the solver.
         This will either redirect the user to the viewing dashboard, or it will flash the error messages.
@@ -55,7 +55,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             context_data = self.get_context_data()
             return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
 
-    def _run_solver_from_view(self, form) -> List[str]:
+    def _run_solver_from_view(self, form: forms.SolutionSpecification) -> list[str]:
         """
         Method to run the solver at the point when the user submits their form.
         :return - error_messages - the list of error messages encountered by the solver (hopefully will have length 0).
@@ -66,7 +66,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             school_access_key=school_access_key, solution_specification=solution_spec)
         return error_messages
 
-    def get_context_data(self, **kwargs) -> Dict:
+    def get_context_data(self, **kwargs: Any) -> dict:
         """
         Method adding additional context to the context dictionary provided by super class.
         In particular, we need to carry a boolean that's True if the user has uploaded all data and can start creating
@@ -77,7 +77,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         context_data["ready_to_create"] = upload_status.all_uploads_complete
         return context_data
 
-    def get_form_kwargs(self) -> Dict:
+    def get_form_kwargs(self) -> dict:
         """
         Method used to add kwargs during the form's initialisation.
         Specifically we add available_time_slots, which get added to the choices for one of the form fields in __init__

@@ -4,7 +4,7 @@ Module defining the data upload page, its context, and required ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Dict
+from typing import Any
 
 # Django imports
 from django import urls, forms, http
@@ -45,7 +45,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(self, *args, **kwargs) -> Dict[str, Dict[str, RequiredUpload]]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, dict[str, RequiredUpload]]:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -92,7 +92,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             }
         return context
 
-    def post(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
+    def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """

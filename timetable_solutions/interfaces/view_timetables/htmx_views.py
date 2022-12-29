@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 # Local application imports
 from data import models
-from interfaces import typing_utils
+from interfaces.utils import typing_utils
 
 
 @login_required
@@ -20,7 +20,7 @@ def lesson_detail_modal(request: typing_utils.HtmxHttpRequest, lesson_pk: int) -
     template = loader.get_template("partials/lesson_detail.html")
 
     if request.method == "GET":
-        lesson = models.Lesson.get_lesson_by_pk(pk=lesson_pk)
+        lesson: models.Lesson = models.Lesson.get_lesson_by_pk(pk=lesson_pk)
         context = {
             "modal_is_active": True,
             "lesson": lesson,

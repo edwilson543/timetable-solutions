@@ -3,11 +3,10 @@ Module containing custom management command for loading in fixtures, so there is
 """
 
 # Django imports
-from django.core.management import base
-from django.core.management import call_command
+from django.core import management
 
 
-class Command(base.BaseCommand):
+class Command(management.base.BaseCommand):
     """
     Command used to load in all initial fixtures to the database.
     Note that we build this command using existing django management commands.
@@ -16,7 +15,7 @@ class Command(base.BaseCommand):
 
     help = "Command to load in all fixtures providing initial data for the application, and in the correct order."
 
-    def add_arguments(self, parser) -> None:
+    def add_arguments(self, parser: management.CommandParser) -> None:
         """
         Method adding arguments to the command.
         arg: --include_solution - whether to load in the Lesson
@@ -24,19 +23,19 @@ class Command(base.BaseCommand):
         parser.add_argument("--include_solution", action="store_true",  # store_true stores the arg as a boolean
                             help="Include if you also want to pre-populate a solution for the test dataset.")
 
-    def handle(self, *args, **kwargs) -> None:
+    def handle(self, *args: str, **kwargs: str) -> None:
         """
         Method carrying out the processing relevant to this command
         """
-        call_command("loaddata", "user_school_profile.json")  # All other models depend on this fixture
-        call_command("loaddata", "classrooms.json")
-        call_command("loaddata", "pupils.json")
-        call_command("loaddata", "teachers.json")
-        call_command("loaddata", "timetable.json")
+        management.call_command("loaddata", "user_school_profile.json")  # All other models depend on this fixture
+        management.call_command("loaddata", "classrooms.json")
+        management.call_command("loaddata", "pupils.json")
+        management.call_command("loaddata", "teachers.json")
+        management.call_command("loaddata", "timetable.json")
 
         if kwargs["include_solution"]:  # store_true ensures this is always present
-            call_command("loaddata", "lessons_with_solution.json")
+            management.call_command("loaddata", "lessons_with_solution.json")
         else:
-            call_command("loaddata", "lessons_without_solution.json")
+            management.call_command("loaddata", "lessons_without_solution.json")
 
         self.stdout.write(self.style.SUCCESS(f"Successfully loaded in all fixtures!"))
