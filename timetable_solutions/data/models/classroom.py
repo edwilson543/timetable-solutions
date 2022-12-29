@@ -1,8 +1,5 @@
 """Module defining the model for a school_id classroom and any ancillary objects."""
 
-# Standard library imports
-from typing import Self, Tuple
-
 # Django imports
 from django.db import models
 
@@ -15,11 +12,11 @@ from data import utils
 class ClassroomQuerySet(models.QuerySet):
     """Custom queryset manager for the Classroom model"""
 
-    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> "ClassroomQuerySet":
         """Method to return the full queryset of classrooms for a given school"""
         return self.filter(school_id=school_id)
 
-    def get_individual_classroom(self, school_id: int, classroom_id: int) -> models.QuerySet:
+    def get_individual_classroom(self, school_id: int, classroom_id: int) -> "ClassroomQuerySet":
         """Method to return an individual classroom instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(classroom_id=classroom_id))
 
@@ -51,17 +48,17 @@ class Classroom(models.Model):
         human_string_singular = "classroom"
         human_string_plural = "classrooms"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.building},  {self.room_number}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the model for debugging"""
         return f"{self.building},  {self.room_number}"
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int) -> Self:
+    def create_new(cls, school_id: int, classroom_id: int, building: str, room_number: int) -> "Classroom":
         """
         Method to create a new Classroom instance.
         """
@@ -71,7 +68,7 @@ class Classroom(models.Model):
         return classroom
 
     @classmethod
-    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+    def delete_all_instances_for_school(cls, school_id: int) -> tuple:
         """
         Method to delete all the Classroom instances associated with a particular school
         """

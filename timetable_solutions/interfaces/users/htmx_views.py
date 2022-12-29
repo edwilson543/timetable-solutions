@@ -13,7 +13,7 @@ from django.core import exceptions
 from django.views import generic
 
 # Local application imports
-from interfaces import typing_utils
+from interfaces.utils import typing_utils
 
 
 class FieldStatus(enum.StrEnum):

@@ -1,3 +1,6 @@
+# Standard library imports
+from typing import Any
+
 # Third party imports
 import pulp as lp
 
@@ -21,7 +24,7 @@ class TimetableSolver:
         """
         # Create a new problem instance - maximise since objective components are formulated such that bigger is better
         self.problem = lp.LpProblem(f"TTS_problem_for_{input_data.school_id}", sense=lp.LpMaximize)
-        self.error_messages = []
+        self.error_messages: list[str] = []
 
         # Formulate the linear programming problem
         self.input_data = input_data
@@ -36,12 +39,11 @@ class TimetableSolver:
         objective_maker = TimetableSolverObjective(inputs=input_data, variables=self.variables)
         objective_maker.add_objective_to_problem(problem=self.problem)
 
-    def solve(self, *args, **kwargs) -> None:
+    def solve(self, *args: Any, **kwargs: Any) -> None:
         """
         Method calling the default PuLP solver (COIN API), and recording the error message if unsuccessful.
         """
         try:
             self.problem.solve(*args, **kwargs)
         except lp.PulpSolverError as e:
-            # TODO - improve this so that we create some human readable error messages.
             self.error_messages += [e]

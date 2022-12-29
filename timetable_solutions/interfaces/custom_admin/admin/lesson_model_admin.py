@@ -4,9 +4,10 @@ This gets its own module since the Lesson model itself is more complex, passing 
 """
 
 # Standard library imports
-from typing import List
+from typing import Any
 
 # Django imports
+from django import forms
 from django import http
 from django.contrib import admin
 from django.utils import html
@@ -25,7 +26,7 @@ class SubjectNameFilter(admin.SimpleListFilter):
     title = "Subject"
     parameter_name = "subject_name"
 
-    def lookups(self, request: http.HttpRequest, model_admin: admin.ModelAdmin) -> List:
+    def lookups(self, request: http.HttpRequest, model_admin: admin.ModelAdmin) -> list:
         """
         Returns a list of tuples, whose first entry is the subject name as stored in the database, and the second
         subject name to show to the user. Subject names are used as the filters.
@@ -75,7 +76,8 @@ class LessonAdmin(CustomModelAdminBase):
     change_form_template = "admin/lesson_change_add_form.html"
     add_form_template = "admin/lesson_change_add_form.html"
 
-    def get_form(self, request, obj=None, change=False, **kwargs):
+    def get_form(self, request: http.HttpRequest, obj: models.Lesson | None = None, change: bool = False,
+                 **kwargs: Any) -> forms.ModelForm:
         """
         Allow the M2M field to be optional for the user, since they may not want to add pupils / user defined time slots
         to a given lesson.
@@ -85,7 +87,8 @@ class LessonAdmin(CustomModelAdminBase):
         form.base_fields["user_defined_time_slots"].required = False
         return form
 
-    def save_model(self, request, obj: models.Lesson, form, change) -> None:
+    def save_model(self, request: http.HttpRequest, obj: models.Lesson, form: forms.ModelForm,
+                   change: bool) -> None:
         """
         The school is automatically added to the lesson instance from the request, and any existing SOLUTION is also
         cleared for ALL lessons, since e.g. adding a pupil to this lesson may be invalid if the pupil is bust at one
@@ -97,46 +100,44 @@ class LessonAdmin(CustomModelAdminBase):
         obj.save()
 
     # List display fields
+    @admin.display(description="Lesson ID")
     def format_lesson_id(self, obj: models.Lesson) -> str:
         """
         Method to format the lesson id more nicely for the user.
         """
         return clean_string(string=obj.lesson_id)
-    format_lesson_id.short_description = "Lesson ID"
 
+    @admin.display(description="Subject")
     def format_subject_name(self, obj: models.Lesson) -> str:
         """
         Method to format the subject_name more nicely for the user.
         """
         return clean_string(string=obj.subject_name)
-    format_subject_name.short_description = "Subject"
 
-    def format_teacher(self, obj: models.Lesson) -> str:
+    @admin.display(description="Teacher", empty_value="N/A")
+    def format_teacher(self, obj: models.Lesson) -> str | None:
         """
         Method to format the teacher's string representation different to the Teacher model's __str__ method
         """
-        if obj.teacher is not None:
-            teacher = obj.teacher
+        if teacher := obj.teacher:
             return f"{teacher.title} {teacher.surname}, {teacher.firstname}"
-        else:
-            return "N/A"
-    format_teacher.short_description = "Teacher"
+        return None
 
+    @admin.display(description="Number pupils")
     def number_pupils(self, obj: models.Lesson) -> SafeString:
         """
         Method to retrieve the number of pupils in a Lesson, for the admin.
         """
-        pupil_count = obj.pupils.all().count()
+        pupil_count = obj.get_number_pupils()
         return html.format_html(f"<b><i>{pupil_count}</i></b>")
-    number_pupils.short_description = "Number pupils"
 
+    @admin.display(description="Lessons per week")
     def format_total_required_slots(self, obj: models.Lesson) -> str:
         """
         Method formatting the number of lessons a Lesson is taught for each week, to be displayed in the admin.
         """
         slot_count = obj.total_required_slots
         return html.format_html(f"<b><i>{slot_count}<i><b>")
-    format_total_required_slots.short_description = "Lessons per week"
 
 
 def clean_string(string: str) -> str:

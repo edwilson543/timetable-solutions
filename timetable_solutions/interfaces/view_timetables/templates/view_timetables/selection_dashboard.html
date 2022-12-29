@@ -128,19 +128,74 @@ li {
             <ul>
                 <li>Timetable solutions for a total of {{total_classes}} classes have been found -
                 {{total_lessons}} lessons will be taught each week</li>
-
-                {% if busiest_day == quietest_day %}
-                    <li>Every day of the week has {{ busiest_day_pct | floatformat:1 }} % of lessons in it</li>
+                {% if busiest_days == quietest_days %}
+                    <li>Every day of the week has {{ busiest_days_pct | floatformat:1 }} % of lessons in it</li>
                 {% else %}
-                    <li>The busiest day of the week is {{ busiest_day }},
-                        which has {{ busiest_day_pct | floatformat:1 }}% of lessons</li>
-                    <li>The quietest day of the week is {{quietest_day}},
-                        with only {{ quietest_day_pct | floatformat:1 }}% of lessons</li>
+                    {% with bd_length=busiest_days|length %}
+                        {% if bd_length == 1 %}
+                            <li>
+                                The busiest day of the week is {{ busiest_days | first }},
+                                which has {{ busiest_days_pct | floatformat:1 }}% of lessons
+                            </li>
+                        {% else %}
+                            <li>
+                                The busiest days of the week are
+                                {% for day in busiest_days %}
+                                    {% if forloop.last %}
+                                        and {{ day }},
+                                    {% else %}
+                                        {{ day }},
+                                    {% endif %}
+                                {% endfor %}
+                                which each have {{ busiest_days_pct | floatformat:1 }}% of lessons
+                            </li>
+                        {% endif %}
+                    {% endwith %}
+
+                    {% with qd_length=quietest_days|length %}
+                        {% if qd_length == 1 %}
+                            <li>
+                                The quietest day of the week is {{ quietest_days | first}},
+                                with only {{ quietest_days_pct | floatformat:1 }}% of lessons
+                            </li>
+                        {% else %}
+                            <li>
+                                The quietest days of the week are
+                                {% for day in quietest_days %}
+                                    {% if forloop.last %}
+                                        and {{ day }},
+                                    {% else %}
+                                        {{ day }},
+                                    {% endif %}
+                                {% endfor %}
+                                which each have {{ quietest_days_pct | floatformat:1 }}% of lessons
+                            </li>
+                        {% endif %}
+                    {% endwith %}
                 {% endif %}
 
-                <li>The busiest time on average is {{ busiest_time }},
-                    which has {{ busiest_time_pct | floatformat:1 }}% of lessons</li>
+                {% with bt_length=busiest_times|length %}
+                    {% if bt_length == 1 %}
+                        <li>
+                            The busiest time on average is {{ busiest_times | first }},
+                            which has {{ busiest_times_pct | floatformat:1 }}% of lessons
+                        </li>
+                    {% else %}
+                        <li>
+                            The times of the day are
+                            {% for time in busiest_times %}
+                                {% if forloop.last %}
+                                    and {{ time }},
+                                {% else %}
+                                    {{ time }},
+                                {% endif %}
+                            {% endfor %}
+                            which each have {{ busiest_times_pct | floatformat:1 }}% of lessons
+                        </li>
+                    {% endif %}
+                {% endwith %}
             </ul>
+
         </div>
 
         <div id ="pupil_info" class="pup_teach_info info_frame">

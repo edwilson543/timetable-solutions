@@ -2,6 +2,9 @@
 Module for the AdminSite instance used to implement the custom AdminSite.
 """
 
+# Standard library imports
+from typing import Type, TypedDict
+
 # Django imports
 from django import http
 from django import urls
@@ -12,6 +15,32 @@ from django.utils.text import capfirst
 # Local application imports
 from constants.url_names import UrlName
 from data import models
+
+
+# TYPE HINTS
+class ModelDict(TypedDict):
+    """
+    Dictionary structure listed by the key 'models' in the app dict.
+    e.g. app_dict = {'data': {..., 'models': [d1: AppDictModel = {...}, d2: AppDictModel = {...}, ... ]}}
+    """
+    model: Type[models.ModelSubclass]
+    name: str
+    object_name: str
+    perms: dict[str, bool]
+    admin_url: str | None
+    add_url: str | None
+    view_only: bool
+
+
+class AppDict(TypedDict):
+    """
+    Dictionary structure of the values of the dict returned by the _build_app_dict method of CustomAdminSite.
+    e.g. app_dict = {'data': AppDict()...}
+    """
+    name: str
+    app_label: str
+    has_module_perms: bool
+    models: list[ModelDict]
 
 
 class CustomAdminSite(admin.AdminSite):
@@ -28,7 +57,8 @@ class CustomAdminSite(admin.AdminSite):
         school for the first time, and this user can give the same privilege to other users.
         """
         if hasattr(request.user, "profile"):
-            return request.user.is_active and (request.user.profile.role == models.UserRole.SCHOOL_ADMIN.value)
+            return request.user.is_active and (
+                    request.user.profile.role == models.UserRole.SCHOOL_ADMIN)
         else:
             return False
 
@@ -48,25 +78,25 @@ class CustomAdminSite(admin.AdminSite):
         ]
         return final_urls
 
-    def _build_app_dict(self, request: http.HttpRequest, label=None) -> dict[str, dict[str, str | list]]:
+    def _build_app_dict(self, request: http.HttpRequest, label: str | None = None) -> dict[str, AppDict]:
         """
         Custom override of the base class's method.
         Purpose is to use the CustomModelAdminBase's Meta class' attribute 'custom_app_label', to create custom
         groupings of the models, while maintaining all other properties of the base method (including url conf).
         """
-        app_dict = {}
+        app_dict: dict[str, AppDict] = {}
 
         if label:
-            models = {
-                m: m_a
-                for m, m_a in self._registry.items()
-                if m._meta.app_label == label
+            models_ = {
+                model: model_app
+                for model, model_app in self._registry.items()
+                if model._meta.app_label == label
             }
         else:
-            models = self._registry
+            models_ = self._registry
 
-        for model, model_admin in models.items():
-            app_grouping_label = model_admin.Meta.custom_app_label or model._meta.app_label
+        for model, model_admin in models_.items():
+            app_grouping_label = model_admin.meta.custom_app_label or model._meta.app_label
             app_config_label = model._meta.app_label
 
             has_module_perms = model_admin.has_module_permission(request)
@@ -81,13 +111,14 @@ class CustomAdminSite(admin.AdminSite):
                 continue
 
             info_for_urls = (app_config_label, model._meta.model_name)
-            model_dict = {
+            model_dict: ModelDict = {
                 "model": model,
                 "name": capfirst(model._meta.verbose_name_plural),
                 "object_name": model._meta.object_name,
                 "perms": perms,
                 "admin_url": None,
                 "add_url": None,
+                "view_only": True,
             }
             if perms.get("change") or perms.get("view"):
                 model_dict["view_only"] = not perms.get("change")
@@ -111,11 +142,6 @@ class CustomAdminSite(admin.AdminSite):
                 app_dict[app_grouping_label] = {
                     "name": app_grouping_label,
                     "app_label": app_grouping_label,
-                    # "app_url": reverse(
-                    #     "admin:app_list",
-                    #     kwargs={"app_label": app_config_label},
-                    #     current_app=self.name,
-                    # ),
                     "has_module_perms": has_module_perms,
                     "models": [model_dict],
                 }

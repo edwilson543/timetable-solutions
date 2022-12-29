@@ -31,14 +31,14 @@ class TimetableColourAssigner:
     # Dictionary with compiled regex patterns as keys (matched against user input strings), and values are colour codes
     _regex_dict: Dict[Pattern, Colour] = {
         re.compile("(.*breakfast.*)|(.*lunch.*)|(.*tea.*)|(.*dinner.*)|(.*supper.*)",
-                   flags=re.IGNORECASE): Colour.MEAL.value,
-        re.compile("(.*break.*)|(.*recreation.*)|(.*play.*time.*)", flags=re.IGNORECASE): Colour.BREAK.value,
-        re.compile("(.*free.*)|(.*empty.*)|(.*spare.*)", flags=re.IGNORECASE): Colour.FREE.value,
+                   flags=re.IGNORECASE): Colour.MEAL,
+        re.compile("(.*break.*)|(.*recreation.*)|(.*play.*time.*)", flags=re.IGNORECASE): Colour.BREAK,
+        re.compile("(.*free.*)|(.*empty.*)|(.*spare.*)", flags=re.IGNORECASE): Colour.FREE,
     }
 
     # Colours to be assigned to subjects, based on weekly frequency in pupil timetables,
     # or in the case of teacher timetables, the numbers represent year groups.
-    _colour_ranking: Dict[int, Colour] = {
+    _colour_ranking: Dict[int, str] = {
         0: "#ffbfd6",  # Pale red
         1: "#c8d4e3",  # Pale blue
         2: "#b3f2b3",  # Pale green
@@ -99,7 +99,7 @@ class TimetableColourAssigner:
                 year_group: int = first_pupil.year_group
                 year_group_colours[year_group] = colour_ranking[year_group]
 
-        all_colours = {**generic_period_colours, **year_group_colours}
+        all_colours = generic_period_colours | year_group_colours
         return all_colours
 
     # HELPER METHODS
@@ -112,8 +112,9 @@ class TimetableColourAssigner:
         correspond to the generic period types identified in the lessons parameter
         """
         generic_period_colours = {
-            lesson.subject_name: matched_colour_code for lesson in lessons if
-            (matched_colour_code := cls.check_lesson_for_colour_in_regex(lesson_name=lesson.subject_name)) is not None
+            lesson.subject_name: matched_colour_code.value for lesson in lessons if
+            (matched_colour_code := cls.check_lesson_for_colour_in_regex(
+                lesson_name=lesson.subject_name)) is not None
         }
         # Free periods are normally undefined (i.e. will NOT be in the lessons arg), and are used to fill missing slots
         # So this must be added manually
@@ -133,3 +134,4 @@ class TimetableColourAssigner:
             is_match = bool(re.search(regex, string=lesson_name))
             if is_match:
                 return colour_code
+        return None

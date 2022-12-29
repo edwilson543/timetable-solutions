@@ -10,11 +10,12 @@ Step 3b - the user must provide a school access key to associate themselves with
 """
 
 # Standard library imports
-from typing import Dict
+from typing import Any
 
 # Django imports
 from django import http
 from django.contrib.auth import login, logout
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.contrib import messages
 from django.shortcuts import render, redirect
@@ -32,7 +33,7 @@ from . import forms
 class Register(View):
     """View for step 1 of registering - entering basic details."""
     @staticmethod
-    def get(request: http.HttpRequest, context: Dict | None = None) -> http.HttpResponse:
+    def get(request: http.HttpRequest, context: dict | None = None) -> http.HttpResponse:
         if context is None:
             context = {"form": forms.CustomUserCreation}
         if request.user.is_authenticated:
@@ -95,8 +96,11 @@ class SchoolRegistration(View):
             school_name = form.cleaned_data.get("school_name")
             new_school = models.School.create_new(school_name=school_name)
 
-            models.Profile.create_and_save_new(user=request.user, school_id=new_school.school_access_key,
-                                               role=models.UserRole.SCHOOL_ADMIN.value, approved_by_school_admin=True)
+            models.Profile.create_and_save_new(
+                user=request.user, school_id=new_school.school_access_key,
+                role=models.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
+                approved_by_school_admin=True
+            )
 
             message = "Registration successful! You can now start using the site."
             messages.success(request, message=message)
@@ -117,12 +121,12 @@ class ProfileRegistration(View):
     """
 
     @staticmethod
-    def get(request, context: Dict | None = None):
+    def get(request: http.HttpRequest, context: dict | None = None) -> http.HttpResponse:
         if context is None:
             context = {"form": forms.ProfileRegistration}
         return render(request, "users/register_profile_existing_school.html", context)
 
-    def post(self, request):
+    def post(self, request: http.HttpRequest) -> http.HttpResponse:
         form = forms.ProfileRegistration(request.POST)
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
@@ -148,7 +152,7 @@ class CustomLogin(LoginView):
     Slight customisation of the login process. See method docstrings for the customisations.
     """
 
-    def get(self, request, *args, **kwargs) -> http.HttpResponse:
+    def get(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         """
         Method to first log a user out if they visit the login page.
         """
@@ -156,7 +160,7 @@ class CustomLogin(LoginView):
             logout(request)
         return super().get(request, *args, **kwargs)
 
-    def form_valid(self, form) -> http.HttpResponseRedirect | http.HttpResponse:
+    def form_valid(self, form: AuthenticationForm) -> http.HttpResponseRedirect | http.HttpResponse:
         """
         Method to check that a user has been given access to their school's data by the school admin.
         """
@@ -173,7 +177,7 @@ class CustomLogin(LoginView):
             return http.HttpResponse(template.render(context))
 
 
-def custom_logout(request):
+def custom_logout(request: http.HttpResponse) -> http.HttpResponseRedirect:
     """
     View redirecting users to the login page when they logout rather than the dashboard, since there is no
     application unless the user is logged in.
@@ -182,7 +186,7 @@ def custom_logout(request):
     return redirect(reverse(UrlName.LOGIN.value))
 
 
-def dashboard(request):
+def dashboard(request: http.HttpRequest) -> http.HttpResponse:
     """
     Method to add some context to the dashboard view, for rendering in the template.
     This is to restrict the list of options available to users.

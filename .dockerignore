@@ -12,6 +12,7 @@ venv/
 */tests/
 */pytest.ini
 */test-requirements.txt
+*/dev-requirements.txt
 
 # Django stuff:
 */static/

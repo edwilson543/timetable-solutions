@@ -20,7 +20,7 @@ from django import urls
 
 # Local application imports
 from constants.url_names import UrlName
-from data.utils import ModelSubclass
+from data import models
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 
@@ -39,7 +39,7 @@ class DataUploadBase(LoginRequiredMixin, View):
     """
 
     file_structure: data_upload_processing.FileStructure
-    model: Type[ModelSubclass]
+    model: Type[models.ModelSubclass]
     form: Type[forms.FormSubclass]
     processor: Type[data_upload_processing.Processor]
 

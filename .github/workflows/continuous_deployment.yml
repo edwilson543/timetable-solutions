@@ -2,7 +2,7 @@ name: Deployment to production
 
 on:
   workflow_run:
-    workflows: [CI testing]
+    workflows: [Continuous integration]
     # Build & deploy will only be triggered after all the tests have passed ...
     types:
       - completed

@@ -4,7 +4,7 @@ Forms related to allowing users to specify their requirements for how the timeta
 
 # Standard library imports
 import datetime as dt
-from typing import Dict
+from typing import Any
 
 # Django imports
 from django import forms
@@ -34,7 +34,7 @@ class SolutionSpecification(forms.Form):
         label="Ideal proportion of free periods at this time", label_suffix="", choices=IDEAL_PROPORTION_CHOICES,
         required=True, coerce=float)
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         """
         Customise the init method to provide dynamic choices as relevant
         :kwargs available_time_slots - the times of day which the user who is being shown this form has timetable slots
@@ -46,7 +46,7 @@ class SolutionSpecification(forms.Form):
         time_choices = [(slot, slot.strftime("%H:%M")) for slot in available_time_slots]
         self.fields["optimal_free_period_time_of_day"].choices += time_choices
 
-    def clean(self) -> Dict:
+    def clean(self) -> dict[str, Any]:
         """
         Method adding some additional cleaning to the submitted form. This is needed since we have mixed types in our
         free period choice field, and so in particular need to produce a dt.time instance from the time strings.

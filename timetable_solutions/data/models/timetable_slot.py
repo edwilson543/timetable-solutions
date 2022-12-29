@@ -3,7 +3,6 @@
 # Standard library imports
 import datetime as dt
 from functools import lru_cache
-from typing import List, Self, Set, Tuple
 
 # Django imports
 from django.db import models
@@ -27,19 +26,21 @@ class TimetableSlotQuerySet(models.QuerySet):
     Note that this manager intentionally only includes filtration methods that return QuerySets
     """
 
-    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> "TimetableSlotQuerySet":
         """Method returning the queryset of all timetable slots at the given school"""
         return self.filter(school_id=school_id)
 
-    def get_individual_timeslot(self, school_id: int, slot_id: int):
+    def get_individual_timeslot(self, school_id: int, slot_id: int) -> "TimetableSlot":
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(slot_id=slot_id))
 
-    def get_specific_timeslots(self, school_id: int, slot_ids: Set[int]) -> models.QuerySet:
+    def get_specific_timeslots(self, school_id: int,
+                               slot_ids: set[int]) -> "TimetableSlotQuerySet":
         """Method returning the slots at the given school, with the corresponding slot_ids"""
         return self.filter(models.Q(school_id=school_id) & models.Q(slot_id__in=slot_ids))
 
-    def get_timeslots_on_given_day(self, school_id: int, day_of_week: WeekDay) -> models.QuerySet:
+    def get_timeslots_on_given_day(self, school_id: int,
+                                   day_of_week: WeekDay) -> "TimetableSlotQuerySet":
         """Method returning the timetable slots for the school on the given day of the week"""
         return self.filter(models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week))
 
@@ -70,13 +71,13 @@ class TimetableSlot(models.Model):
         human_string_singular = "timetable slot"
         human_string_plural = "timetable slots"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         day_of_week = WeekDay(self.day_of_week).label
         start_time = self.period_starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the model for debugging"""
         day_of_week = WeekDay(self.day_of_week).label
         start_time = self.period_starts_at.strftime("%H:%M")
@@ -85,7 +86,7 @@ class TimetableSlot(models.Model):
     # FACTORIES
     @classmethod
     def create_new(cls, school_id: int, slot_id: int, day_of_week: WeekDay, period_starts_at: dt.time,
-                   period_duration: dt.timedelta) -> Self:
+                   period_duration: dt.timedelta) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
             day_of_week = WeekDay(day_of_week).value
@@ -98,7 +99,7 @@ class TimetableSlot(models.Model):
         return slot
 
     @classmethod
-    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+    def delete_all_instances_for_school(cls, school_id: int) -> tuple:
         """
         Method to delete all the TimetableSlot instances associated with a particular school
         """
@@ -109,7 +110,7 @@ class TimetableSlot(models.Model):
     # QUERIES
     @classmethod
     @lru_cache(maxsize=8)
-    def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> List[int]:
+    def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
         Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
@@ -119,7 +120,7 @@ class TimetableSlot(models.Model):
         return timeslot_ids
 
     @classmethod
-    def get_unique_start_times(cls, school_id: int) -> List[dt.time]:
+    def get_unique_start_times(cls, school_id: int) -> list[dt.time]:
         """
         Method to find the unique period_start_at times for a givens school (ordered from first to last).
         Note that we are only interested in the times of day, and not the days.
@@ -129,7 +130,7 @@ class TimetableSlot(models.Model):
         sorted_times = sorted(list(set(times)))  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
         return sorted_times
 
-    def check_if_slots_are_consecutive(self, other_slot: Self) -> bool:
+    def check_if_slots_are_consecutive(self, other_slot: "TimetableSlot") -> bool:
         """
         Method to check if a slot is consecutive with the passed 'other_slot'
         """
@@ -140,7 +141,7 @@ class TimetableSlot(models.Model):
 
     # PROPERTIES
     @property
-    def period_ends_at(self):
+    def period_ends_at(self) -> dt.time:
         """
         Property calculating the time at which a timetable slot ends.
         """

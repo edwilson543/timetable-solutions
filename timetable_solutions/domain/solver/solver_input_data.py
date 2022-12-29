@@ -5,7 +5,6 @@ Module defining the data used by the solver, and how this data is accessed from 
 from dataclasses import dataclass
 import datetime as dt
 from functools import cached_property
-from typing import List, Tuple, Dict
 
 # Local application imports
 from data import models
@@ -62,12 +61,12 @@ class TimetableSolverInputs:
         self.lessons = models.Lesson.get_lessons_requiring_solving(school_id=self.school_id)
 
         # Check that solution spec and data are compatible (data that's individually invalid has already been checked)
-        self.error_messages = []
+        self.error_messages: list[str] = []
         self._check_specification_aligns_with_input_data()
 
     # PROPERTIES
     @property
-    def consecutive_slots(self) -> List[Tuple[models.TimetableSlot, models.TimetableSlot]]:
+    def consecutive_slots(self) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
         """
         Method to find which of the timetable slots on the class instance are consecutive.
         Not cached since it's only accessed once.
@@ -75,7 +74,7 @@ class TimetableSolverInputs:
         :return - as a list, the tuples of consecutive slots. The PURPOSE of these are to understand where are the
         candidates for double periods.
         """
-        consecutive_slots = []
+        consecutive_slots: list[tuple[models.TimetableSlot, models.TimetableSlot]] = []
         previous_slot = None
         # A key thing to note here is that the Meta class on TimetableSlot pre-orders the slots by week and by day.
         for current_slot in self.timetable_slots:
@@ -86,7 +85,7 @@ class TimetableSolverInputs:
         return consecutive_slots
 
     @cached_property
-    def available_days(self) -> List[models.WeekDay]:
+    def available_days(self) -> list[models.WeekDay]:
         """
         Property method to get the weekdays that the user has specified in their timetable structure. Cached since this
         is called from two of the different constraint on TimetableSolverConstraints.

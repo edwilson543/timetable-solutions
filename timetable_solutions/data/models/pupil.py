@@ -1,8 +1,5 @@
 """Module defining the model for a pupil and any ancillary objects."""
 
-# Standard library imports
-from typing import Self, Set, Tuple
-
 # Django imports
 from django.db import models
 
@@ -15,21 +12,21 @@ from data import utils
 class PupilQuerySet(models.QuerySet):
     """Custom queryset manager for the Pupil model"""
 
-    def get_all_instances_for_school(self, school_id: int) -> models.QuerySet:
+    def get_all_instances_for_school(self, school_id: int) -> "PupilQuerySet":
         """Method returning the queryset of pupils registered at the given school"""
         return self.filter(school_id=school_id)
 
-    def get_school_year_group(self, school_id: int, year_group: int) -> models.QuerySet:
+    def get_school_year_group(self, school_id: int, year_group: int) -> "PupilQuerySet":
         """method returning the queryset of pupils belonging to a specific school and year group"""
         query_set = self.filter(models.Q(school_id=school_id) & models.Q(year_group=year_group))
         query_set.order_by("surname")
         return query_set
 
-    def get_specific_pupils(self, school_id: int, pupil_ids: Set[int]) -> models.QuerySet:
+    def get_specific_pupils(self, school_id: int, pupil_ids: set[int]) -> "PupilQuerySet":
         """Method returning a queryset of pupils with the passed set of ids"""
         return self.filter(models.Q(school_id=school_id) & models.Q(pupil_id__in=pupil_ids))
 
-    def get_individual_pupil(self, school_id: int, pupil_id: int):
+    def get_individual_pupil(self, school_id: int, pupil_id: int) -> "Pupil":
         """Method returning an individual Pupil"""
         return self.get(models.Q(school_id=school_id) & models.Q(pupil_id=pupil_id))
 
@@ -74,17 +71,19 @@ class Pupil(models.Model):
         human_string_singular = "pupil"
         human_string_plural = "pupils"
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.surname}, {self.firstname}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the model for debugging"""
         return f"{self.surname}, {self.firstname}"
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int) -> Self:
+    def create_new(
+            cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int
+    ) -> "Pupil":
         """Method to create a new Pupil instance."""
         year_group = cls.YearGroup(year_group).value
         pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
@@ -93,7 +92,7 @@ class Pupil(models.Model):
         return pupil
 
     @classmethod
-    def delete_all_instances_for_school(cls, school_id: int) -> Tuple:
+    def delete_all_instances_for_school(cls, school_id: int) -> tuple:
         """
         Method to delete all the Pupil instances associated with a particular school
         """

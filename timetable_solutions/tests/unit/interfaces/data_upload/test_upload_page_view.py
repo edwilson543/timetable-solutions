@@ -43,15 +43,15 @@ class TestUploadPageView(test.TestCase):
 
         classrooms = required_forms["classrooms"]
         assert classrooms.form_name == "Classrooms"
-        assert classrooms.upload_status == UploadStatus.INCOMPLETE.value
+        assert classrooms.upload_status == UploadStatus.INCOMPLETE
         assert isinstance(classrooms.empty_form, forms.ClassroomListUpload)
-        assert classrooms.upload_url_name == UrlName.CLASSROOM_LIST_UPLOAD.value
+        assert classrooms.upload_url_name == UrlName.CLASSROOM_LIST_UPLOAD
 
         lessons = required_forms["lessons"]
         assert lessons.form_name == "Lessons"
-        assert lessons.upload_status == UploadStatus.DISALLOWED.value
+        assert lessons.upload_status == UploadStatus.DISALLOWED
         assert isinstance(lessons.empty_form, forms.LessonUpload)
-        assert lessons.upload_url_name == UrlName.LESSONS_UPLOAD.value
+        assert lessons.upload_url_name == UrlName.LESSONS_UPLOAD
 
     def test_get_request_returns_correct_context(self):
         """

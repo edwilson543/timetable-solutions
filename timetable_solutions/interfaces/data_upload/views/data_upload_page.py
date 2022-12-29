@@ -4,7 +4,7 @@ Module defining the data upload page, its context, and required ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Dict
+from typing import Any
 
 # Django imports
 from django import urls, forms, http
@@ -45,7 +45,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(self, *args, **kwargs) -> Dict[str, Dict[str, RequiredUpload]]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, dict[str, RequiredUpload]]:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -65,34 +65,34 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             "required_forms": {
                     "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
                                              empty_form=forms.PupilListUpload(),
-                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                                             reset_url_name=UrlName.PUPIL_LIST_RESET.value,
-                                             example_download_url_name=UrlName.PUPIL_DOWNLOAD.value),
+                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
+                                             reset_url_name=UrlName.PUPIL_LIST_RESET,
+                                             example_download_url_name=UrlName.PUPIL_DOWNLOAD),
                     "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
                                                empty_form=forms.TeacherListUpload(),
-                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-                                               reset_url_name=UrlName.TEACHER_LIST_RESET.value,
-                                               example_download_url_name=UrlName.TEACHER_DOWNLOAD.value),
+                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD,
+                                               reset_url_name=UrlName.TEACHER_LIST_RESET,
+                                               example_download_url_name=UrlName.TEACHER_DOWNLOAD),
                     "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
                                                  empty_form=forms.ClassroomListUpload(),
-                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
-                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET.value,
-                                                 example_download_url_name=UrlName.CLASSROOM_DOWNLOAD.value),
+                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,
+                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET,
+                                                 example_download_url_name=UrlName.CLASSROOM_DOWNLOAD),
                     "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
                                                 empty_form=forms.TimetableStructureUpload(),
-                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
-                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET.value,
-                                                example_download_url_name=UrlName.TIMETABLE_DOWNLOAD.value),
+                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
+                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET,
+                                                example_download_url_name=UrlName.TIMETABLE_DOWNLOAD),
                     "lessons": RequiredUpload(form_name="Lessons", upload_status=upload_status.lessons,
                                               empty_form=forms.LessonUpload(),
-                                              upload_url_name=UrlName.LESSONS_UPLOAD.value,
-                                              reset_url_name=UrlName.LESSONS_RESET.value,
-                                              example_download_url_name=UrlName.LESSONS_DOWNLOAD.value)
+                                              upload_url_name=UrlName.LESSONS_UPLOAD,
+                                              reset_url_name=UrlName.LESSONS_RESET,
+                                              example_download_url_name=UrlName.LESSONS_DOWNLOAD)
                     }
             }
         return context
 
-    def post(self, request: http.HttpRequest, *args, **kwargs) -> http.HttpResponse:
+    def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """

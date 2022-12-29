@@ -156,7 +156,7 @@ class TestRegistration(TestCase):
         profile = response.wsgi_request.user.profile
         user_school_id = profile.school.school_access_key
         self.assertEqual(user_school_id, 123457)  # Since 123456 is the max access key in the fixture
-        self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN.value)
+        self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN)
         self.assertTrue(profile.approved_by_school_admin)
 
         # Check the flash message
@@ -182,7 +182,7 @@ class TestRegistration(TestCase):
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
         self.assertEqual(profile.school.school_access_key, 123456)
-        self.assertEqual(profile.role, models.UserRole.TEACHER.value)
+        self.assertEqual(profile.role, models.UserRole.TEACHER)
         self.assertTrue(not profile.approved_by_school_admin)
 
         # Check the flash message
