@@ -123,7 +123,7 @@ class TimetableSolverObjective:
             optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
         else:
             optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day.\
-                hour  # type: ignore
+                hour  # type: ignore  # mypy doesn't realise this method only gets called when opt time is a dt.time
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_morning_specified(self) -> float:
