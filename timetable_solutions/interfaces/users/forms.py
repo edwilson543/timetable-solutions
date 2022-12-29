@@ -39,8 +39,9 @@ class ProfileRegistration(forms.Form):
     Form to fill in at registration, if the user's schools is already registered.
     """
     ROLE_CHOICES = [
-        (models.UserRole.TEACHER.value, models.UserRole.TEACHER.label),
-        (models.UserRole.PUPIL.value, models.UserRole.PUPIL.label)
+        # mypy doesn't recognise the value / label attributes of UserRole(IntegerChoices)
+        (models.UserRole.TEACHER.value, models.UserRole.TEACHER.label),  # type: ignore
+        (models.UserRole.PUPIL.value, models.UserRole.PUPIL.label)  # type: ignore
     ]
 
     school_access_key = forms.IntegerField()

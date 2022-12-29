@@ -16,8 +16,8 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
 
 # Local application imports
-from data.utils import ModelSubclass
 from .constants import Header
+from data import models
 
 
 class FileUploadProcessor:
@@ -35,7 +35,7 @@ class FileUploadProcessor:
                  csv_file: UploadedFile,
                  csv_headers: list[str],
                  id_column_name: str,
-                 model: Type[ModelSubclass],
+                 model: Type[models.ModelSubclass],
                  attempt_upload: bool = True):
         """
         :param csv_file: the file as received from the user upload
@@ -204,7 +204,3 @@ class FileUploadProcessor:
         Note that n_model_instances_created is only set as the very last step of a successful upload.
         """
         return self.n_model_instances_created > 0
-
-
-# Type hint for the FileUploadProcessor and its subclasses
-Processor = TypeVar("Processor", bound=FileUploadProcessor)

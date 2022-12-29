@@ -75,10 +75,11 @@ class Profile(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: int | str,
+    def create_and_save_new(cls, user: User, school_id: int, role: str | UserRole,
                             approved_by_school_admin: bool) -> "Profile":
         """Method to create a new Profile instance, and then save it into the database"""
-        role = int(role)
+        if isinstance(role, str):
+            role = UserRole(int(role))
         profile = cls.objects.create(user=user, school_id=school_id, role=role,
                                      approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()

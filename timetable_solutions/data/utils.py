@@ -4,18 +4,18 @@
 from typing import TypeVar
 
 # Django imports
-from django.db.models import Model
+from django.db import models
 
 # Local application imports
 from .models.timetable_slot import TimetableSlot
 
 
-# TYPE HINTS
-ModelSubclass = TypeVar("ModelSubclass", bound=Model)  # Typehint when referring to specific django Model subclasses
+# Type hint for generic models (cannot be referenced directly due to circular import issues)
+_ModelSubclass = TypeVar("_ModelSubclass", bound=models.Model)
 
 
 # QUERY METHODS
-def get_lessons_per_week(obj: ModelSubclass) -> int:
+def get_lessons_per_week(obj: _ModelSubclass) -> int:
     """
     Function to get the number of lessons associated with obj per week.
     :param obj - Pupil, Teacher or Classroom instance.
@@ -23,7 +23,7 @@ def get_lessons_per_week(obj: ModelSubclass) -> int:
     return sum(lesson.total_required_slots for lesson in obj.lessons.all())
 
 
-def get_occupied_percentage(obj: ModelSubclass) -> float:
+def get_occupied_percentage(obj: _ModelSubclass) -> float:
     """
     Function to get the percentage of time obj is occupied per week (including any lunch slots).
     :param obj - Pupil, Teacher or Classroom instance.

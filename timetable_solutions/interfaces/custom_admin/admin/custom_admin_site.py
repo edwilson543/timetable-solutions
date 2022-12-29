@@ -3,7 +3,7 @@ Module for the AdminSite instance used to implement the custom AdminSite.
 """
 
 # Standard library imports
-from typing import TypedDict
+from typing import Type, TypedDict
 
 # Django imports
 from django import http
@@ -15,7 +15,6 @@ from django.utils.text import capfirst
 # Local application imports
 from constants.url_names import UrlName
 from data import models
-from data.utils import ModelSubclass
 
 
 # TYPE HINTS
@@ -24,7 +23,7 @@ class ModelDict(TypedDict):
     Dictionary structure listed by the key 'models' in the app dict.
     e.g. app_dict = {'data': {..., 'models': [d1: AppDictModel = {...}, d2: AppDictModel = {...}, ... ]}}
     """
-    model: ModelSubclass
+    model: Type[models.ModelSubclass]
     name: str
     object_name: str
     perms: dict[str, bool]
@@ -58,7 +57,8 @@ class CustomAdminSite(admin.AdminSite):
         school for the first time, and this user can give the same privilege to other users.
         """
         if hasattr(request.user, "profile"):
-            return request.user.is_active and (request.user.profile.role == models.UserRole.SCHOOL_ADMIN.value)
+            return request.user.is_active and (
+                    request.user.profile.role == models.UserRole.SCHOOL_ADMIN)
         else:
             return False
 

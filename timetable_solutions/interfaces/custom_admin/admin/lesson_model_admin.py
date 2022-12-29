@@ -76,7 +76,7 @@ class LessonAdmin(CustomModelAdminBase):
     change_form_template = "admin/lesson_change_add_form.html"
     add_form_template = "admin/lesson_change_add_form.html"
 
-    def get_form(self, request: http.HttpRequest, obj: models.Lesson = None, change: bool = False,
+    def get_form(self, request: http.HttpRequest, obj: models.Lesson | None = None, change: bool = False,
                  **kwargs: Any) -> forms.ModelForm:
         """
         Allow the M2M field to be optional for the user, since they may not want to add pupils / user defined time slots

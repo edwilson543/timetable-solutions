@@ -10,7 +10,6 @@ from django.utils import html
 
 # Local application imports
 from data import models
-from data import utils
 from interfaces.utils import typing_utils
 
 
@@ -32,7 +31,7 @@ class CustomModelAdminBase(admin.ModelAdmin):
 
     # Methods relating to list display - note these only get used where relevant for subclasses
     @admin.display(description="Lessons / week")
-    def get_lessons_per_week(self, obj: utils.ModelSubclass) -> int:
+    def get_lessons_per_week(self, obj: models.ModelSubclass) -> int:
         """
         Method to display the lessons per week of Pupil, Teacher and Classroom models.
         """
@@ -40,7 +39,7 @@ class CustomModelAdminBase(admin.ModelAdmin):
         return html.format_html(f"<b><i>{lessons_per_week}</i></b>")
 
     @admin.display(description="% time busy")
-    def get_occupied_percentage(self, obj: utils.ModelSubclass) -> str:
+    def get_occupied_percentage(self, obj: models.ModelSubclass) -> str:
         """
         Method to display the lessons per week of Pupil, Teacher and Classroom models.
         """
@@ -48,7 +47,7 @@ class CustomModelAdminBase(admin.ModelAdmin):
         return html.format_html(f"<b><i>{percentage} %</i></b>")
 
     # Method ensuring users can only interact with their own school's data
-    def save_model(self, request: http.HttpRequest, obj: utils.ModelSubclass,
+    def save_model(self, request: http.HttpRequest, obj: models.ModelSubclass,
                    form: typing_utils.FormSubclass, change: bool) -> None:
         """
         When saving all model instances, we add the user's school to it
@@ -78,18 +77,19 @@ class CustomModelAdminBase(admin.ModelAdmin):
         Users with the role SCHOOL_ADMIN have module permissions
         """
         if hasattr(request.user, "profile"):
-            return request.user.is_active and (request.user.profile.role == models.UserRole.SCHOOL_ADMIN.value)
+            return request.user.is_active and (
+                    request.user.profile.role == models.UserRole.SCHOOL_ADMIN)
         else:
             return False
 
     def has_add_permission(self, request: http.HttpRequest) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_view_permission(self, request: http.HttpRequest, obj: utils.ModelSubclass = None) -> bool:
+    def has_view_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_change_permission(self, request: http.HttpRequest, obj: utils.ModelSubclass = None) -> bool:
+    def has_change_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_delete_permission(self, request: http.HttpRequest, obj: utils.ModelSubclass = None) -> bool:
+    def has_delete_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
         return self.has_module_permission(request=request)

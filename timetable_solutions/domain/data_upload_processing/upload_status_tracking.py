@@ -5,7 +5,6 @@ uploads cannot yet be uploaded.
 
 # Standard library imports
 from enum import StrEnum
-from typing import Self
 
 # Local application imports
 from data import models
@@ -20,7 +19,7 @@ class UploadStatus(StrEnum):
     DISALLOWED = "disallowed"  # i.e. dependent on another file's completion status being complete, which is incomplete
 
     @classmethod
-    def get_upload_status_from_bool(cls, upload_status: bool) -> Self:  # type: ignore
+    def get_upload_status_from_bool(cls, upload_status: bool) -> "UploadStatus":
         """
         Method receiving an upload status as a boolean and returning it as an UploadStatus member value, to avoid
         doing the if/else chain below more than once
@@ -43,12 +42,12 @@ class UploadStatusTracker:
                  classrooms: bool,
                  timetable: bool,
                  lessons: bool):
-        self.pupils = UploadStatus.get_upload_status_from_bool(upload_status=pupils).value  # type: ignore
-        self.teachers = UploadStatus.get_upload_status_from_bool(upload_status=teachers).value  # type: ignore
-        self.classrooms = UploadStatus.get_upload_status_from_bool(upload_status=classrooms).value  # type: ignore
-        self.timetable = UploadStatus.get_upload_status_from_bool(upload_status=timetable).value  # type: ignore
+        self.pupils = UploadStatus.get_upload_status_from_bool(upload_status=pupils)
+        self.teachers = UploadStatus.get_upload_status_from_bool(upload_status=teachers)
+        self.classrooms = UploadStatus.get_upload_status_from_bool(upload_status=classrooms)
+        self.timetable = UploadStatus.get_upload_status_from_bool(upload_status=timetable)
 
-        self.lessons = self._check_if_upload_allowed_then_get_status(class_upload_status=lessons).value
+        self.lessons = self._check_if_upload_allowed_then_get_status(class_upload_status=lessons)
 
     def _check_if_upload_allowed_then_get_status(self, class_upload_status: bool) -> UploadStatus:
         """
@@ -68,7 +67,7 @@ class UploadStatusTracker:
             return UploadStatus.get_upload_status_from_bool(upload_status=class_upload_status)
 
     @classmethod
-    def get_upload_status(cls, school: models.School) -> Self:  # type: ignore
+    def get_upload_status(cls, school: models.School) -> "UploadStatusTracker":
         """
         Function querying the database to find out which files the user has uploaded,
         and return an UploadStatusTracker instance.

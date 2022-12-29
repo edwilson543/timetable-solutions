@@ -96,8 +96,11 @@ class SchoolRegistration(View):
             school_name = form.cleaned_data.get("school_name")
             new_school = models.School.create_new(school_name=school_name)
 
-            models.Profile.create_and_save_new(user=request.user, school_id=new_school.school_access_key,
-                                               role=models.UserRole.SCHOOL_ADMIN.value, approved_by_school_admin=True)
+            models.Profile.create_and_save_new(
+                user=request.user, school_id=new_school.school_access_key,
+                role=models.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
+                approved_by_school_admin=True
+            )
 
             message = "Registration successful! You can now start using the site."
             messages.success(request, message=message)
