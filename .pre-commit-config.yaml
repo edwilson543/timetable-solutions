@@ -4,4 +4,4 @@ repos:
     rev: 'v0.991'
     hooks:
     -   id: mypy
-        exclude: 'test_.*py'
+        args: [--config-file=mypy.ini]
