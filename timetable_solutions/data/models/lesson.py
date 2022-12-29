@@ -2,9 +2,6 @@
 Module defining the model for a SchoolClass, and its manager.
 """
 
-# Standard library imports
-from typing import Self, Tuple
-
 # Django imports
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -21,11 +18,11 @@ class LessonQuerySet(models.QuerySet):
     """
     Custom queryset manager for the Lesson model
     """
-    def get_all_instances_for_school(self, school_id: int) -> Self:
+    def get_all_instances_for_school(self, school_id: int) -> "LessonQuerySet":
         """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
 
-    def get_individual_lesson(self, school_id: int, lesson_id: int) -> Self:
+    def get_individual_lesson(self, school_id: int, lesson_id: int) -> "LessonQuerySet":
         """Method to return an individual Lesson instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(lesson_id=lesson_id))
 
@@ -79,7 +76,7 @@ class Lesson(models.Model):
         """String representation of the model for the django admin site"""
         return f"{self.lesson_id}".title().replace("_", " ")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the model for debugging"""
         return f"{self.school}: {self.lesson_id}"
 
@@ -92,7 +89,7 @@ class Lesson(models.Model):
                    pupils: PupilQuerySet | None = None,
                    user_defined_time_slots: TimetableSlotQuerySet | None = None,
                    solver_defined_time_slots: TimetableSlotQuerySet | None = None,
-                   ) -> Self:
+                   ) -> "Lesson":
         """
         Method to create a new Lesson instance.
         Note that pupils and timetable slots get added separately, since they have a many-to-many relationship to the
@@ -128,7 +125,7 @@ class Lesson(models.Model):
         return lesson
 
     @classmethod
-    def delete_all_lessons_for_school(cls, school_id: int) -> Tuple:
+    def delete_all_lessons_for_school(cls, school_id: int) -> tuple:
         """Method deleting all entries for a school in the Lesson table"""
         lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = lessons.delete()
@@ -173,6 +170,13 @@ class Lesson(models.Model):
         filtered_lesson_pks = [lesson.pk for lesson in all_lessons if lesson.requires_solving()]
         lessons = cls.objects.filter(pk__in=filtered_lesson_pks)
         return lessons
+
+    @classmethod
+    def get_lesson_by_pk(cls, pk: int) -> "Lesson":
+        """
+        Look up a Lesson instance by primary key.
+        """
+        return cls.objects.get(pk=pk)
 
     def get_all_time_slots(self) -> TimetableSlotQuerySet:
         """
@@ -227,12 +231,11 @@ class Lesson(models.Model):
 
         return double_period_count
 
-    @classmethod
-    def get_lesson_by_pk(cls, pk: int) -> Self:
+    def get_number_pupils(self) -> int:
         """
-        Look up a Lesson instance by primary key.
+        Method returning the number of pupils associated with this Lesson instance.
         """
-        return cls.objects.get(pk=pk)
+        return self.pupils.all().count()
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:

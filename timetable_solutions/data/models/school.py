@@ -1,15 +1,12 @@
 """Module defining the model for a school_id in the database, and any ancillary objects"""
 
-# Standard library imports
-from typing import Self
-
 # Django imports
 from django.db import models
 
 
 class SchoolQuerySet(models.QuerySet):
     """Custom queryset manager for the School model"""
-    def get_individual_school(self, school_id):
+    def get_individual_school(self, school_id: int) -> "School":
         """Method returning a specific School instance"""
         return self.get(school_access_key=school_id)
 
@@ -24,13 +21,13 @@ class School(models.Model):
     # Introduce a custom manager
     objects = SchoolQuerySet.as_manager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        return self.school_name
+        return str(self.school_name)
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_name: str, school_access_key: int | None = None) -> Self:
+    def create_new(cls, school_name: str, school_access_key: int | None = None) -> "School":
         """
         Method to create a new School instance. If no access key is given, then one is generated.
         """

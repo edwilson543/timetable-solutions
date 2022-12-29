@@ -4,7 +4,7 @@ Each Profile instance is used to add information relating to exactly one user.
 """
 
 # Standard library imports
-from typing import Optional, Self
+from typing import Optional
 
 # Django imports
 from django.contrib.auth.models import User
@@ -17,7 +17,7 @@ from data.models.school import School
 class ProfileQuerySet(models.QuerySet):
     """Custom queryset manager for the Profile model"""
 
-    def get_all_instances_for_school(self, school_id: int) -> Self:
+    def get_all_instances_for_school(self, school_id: int) -> "ProfileQuerySet":
         """
         Method returning the queryset of profiles registered at the given school
         """
@@ -59,24 +59,26 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN.value)
+    role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN)
     approved_by_school_admin = models.BooleanField(default=False)
 
     # Introduce a custom admin
     objects = ProfileQuerySet.as_manager()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         return f"{self.user} profile"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """String representation of the model for debugging"""
         return f"{self.user} profile"
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: UserRole, approved_by_school_admin: bool) -> Self:
+    def create_and_save_new(cls, user: User, school_id: int, role: int | str,
+                            approved_by_school_admin: bool) -> "Profile":
         """Method to create a new Profile instance, and then save it into the database"""
+        role = int(role)
         profile = cls.objects.create(user=user, school_id=school_id, role=role,
                                      approved_by_school_admin=approved_by_school_admin)
         profile.full_clean()

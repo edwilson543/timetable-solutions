@@ -6,6 +6,7 @@ from django.contrib import auth
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.models import User
 from django.utils import html
+from django.utils import safestring
 
 # Local application imports
 from data import models
@@ -36,10 +37,10 @@ admin.site.register(models.Profile)
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ["school_name", "school_access_key", "get_number_registered_users"]
 
-    def get_number_registered_users(self, obj):
+    @admin.display(description="Registered users")
+    def get_number_registered_users(self, obj: models.School) -> safestring.SafeString:
         user_count = obj.number_users
         return html.format_html(f"<b><i>{user_count}<i><b>")
-    get_number_registered_users.short_description = "Registered users"
 
 
 @admin.register(models.Pupil)
