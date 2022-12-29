@@ -4,4 +4,4 @@ repos:
     rev: 'v0.991'
     hooks:
     -   id: mypy
-        args: [--config-file=mypy.ini]
+        args: [--config-file=timetable_solutions/mypy.ini]
