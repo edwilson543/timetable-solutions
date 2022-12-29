@@ -66,7 +66,8 @@ def get_summary_stats_for_dashboard(school_access_key: int) -> StatsSummary | No
     # Stats relating to days of the week
     day_of_week_counts: dict[str, int] = {
         day.label: sum(total_lessons for slot, total_lessons in slot_lesson_count.items() if
-                       slot.day_of_week == day.value) for day in models.WeekDay}
+                       # mypy thinks Weekday (an IntegerChoices subclass) is not iterable (no __iter__), but it is
+                       slot.day_of_week == day.value) for day in models.WeekDay}  # type: ignore
     busiest_days = _get_dict_key_with_max_or_min_value(dictionary=day_of_week_counts, max_=True)
     busiest_days_pct = round(day_of_week_counts[busiest_days[0]] / total_lessons_taught, 2) * 100
     quietest_days = _get_dict_key_with_max_or_min_value(dictionary=day_of_week_counts, max_=False)
