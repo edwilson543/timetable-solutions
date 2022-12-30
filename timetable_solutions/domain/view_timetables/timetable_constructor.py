@@ -6,7 +6,6 @@ format for a view to render in the template.
 # Standard library imports
 import io
 from string import ascii_uppercase
-from typing import Dict, Tuple
 
 # Third party imports
 import pandas as pd
@@ -17,7 +16,7 @@ from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
 
 # PUPIL / TEACHER NAVIGATOR PREPROCESSING
-def get_year_indexed_pupils(school_id: int) -> Dict[str, models.PupilQuerySet]:
+def get_year_indexed_pupils(school_id: int) -> dict[str, models.PupilQuerySet]:
     """
     Function returning a dictionary of the pupils at a specific school, where the keys are the year groups, and the
     values the queryset of pupils in that year group.
@@ -28,7 +27,7 @@ def get_year_indexed_pupils(school_id: int) -> Dict[str, models.PupilQuerySet]:
     return year_indexed_pupils
 
 
-def get_letter_indexed_teachers(school_id: int) -> Dict[str, models.TeacherQuerySet]:
+def get_letter_indexed_teachers(school_id: int) -> dict[str, models.TeacherQuerySet]:
     """
     Function returning a dictionary of the teachers at a specific school, where the keys are letters of the alphabet,
     and the values the queryset of teachers who's surname starts with that letter.
@@ -41,7 +40,7 @@ def get_letter_indexed_teachers(school_id: int) -> Dict[str, models.TeacherQuery
 
 
 # PUPIL / TEACHER TIMETABLE PREPROCESSING
-def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.Pupil, Dict, Dict]:
+def get_pupil_timetable_context(pupil_id: int, school_id: int) -> tuple[models.Pupil, dict, dict]:
     """
     Function bundling together the data for populating the context dictionary in the pupil_timetable_view
     :return - pupil - an instance of the Pupil model
@@ -56,7 +55,7 @@ def get_pupil_timetable_context(pupil_id: int, school_id: int) -> Tuple[models.P
     return pupil, timetable, timetable_colours
 
 
-def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[models.Teacher, Dict, Dict]:
+def get_teacher_timetable_context(teacher_id: int, school_id: int) -> tuple[models.Teacher, dict, dict]:
     """
     Function bundling together the data for populating the context dictionary in the teacher_timetable_view
     :return - pupil - an instance of the Teacher model
@@ -71,7 +70,7 @@ def get_teacher_timetable_context(teacher_id: int, school_id: int) -> Tuple[mode
     return teacher, timetable, timetable_colours
 
 
-def get_pupil_timetable_as_csv(pupil_id: int, school_id: int) -> Tuple[models.Pupil, io.StringIO]:
+def get_pupil_timetable_as_csv(pupil_id: int, school_id: int) -> tuple[models.Pupil, io.StringIO]:
     """
     Function to retrieve a specific pupil's timetable as a csv.
     :return pupil - the instance of the Pupil model in question
@@ -84,7 +83,7 @@ def get_pupil_timetable_as_csv(pupil_id: int, school_id: int) -> Tuple[models.Pu
     return pupil, csv_buffer
 
 
-def get_teacher_timetable_as_csv(teacher_id: int, school_id: int) -> Tuple[models.Teacher, io.StringIO]:
+def get_teacher_timetable_as_csv(teacher_id: int, school_id: int) -> tuple[models.Teacher, io.StringIO]:
     """
     Function to retrieve a specific teacher's timetable as a csv.
     :return teacher - the instance of the Teacher model in question
@@ -122,7 +121,7 @@ def get_timetable_as_csv(lessons: models.LessonQuerySet,
 
 def get_timetable_slot_indexed_timetable(lessons: models.LessonQuerySet,
                                          timetable_slots: models.TimetableSlotQuerySet,
-                                         get_subject_name: bool = False) -> Dict:
+                                         get_subject_name: bool = False) -> dict:
     """
     Function defining a data structure for pupil / teacher timetables that can easily be iterated over in a django
     template to create a html table.

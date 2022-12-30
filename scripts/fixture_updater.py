@@ -3,7 +3,6 @@
 # Standard library imports
 import json
 from pathlib import Path
-from typing import List
 
 
 # io settings
@@ -16,7 +15,7 @@ output_filenames = ["unsolved_classes.json"]
 def update_fixture(input_fixture_file: str, output_fixture_file: str, location: Path = loc) -> None:
     with open(location / input_fixture_file, "r") as file:
         json_data = file.read()
-        pyt_data: List = json.loads(json_data)
+        pyt_data: list = json.loads(json_data)
         new_pyt_data = []
         for n, item in enumerate(pyt_data):
             new_item = item.copy()

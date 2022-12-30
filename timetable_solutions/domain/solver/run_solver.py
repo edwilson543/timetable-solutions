@@ -3,9 +3,6 @@ Entry point to the solver, both in terms of using it, and in terms of the interf
 The function below and SolutionSpecification are the only two objects used outside of domain/solver
 """
 
-# Standard library imports
-from typing import List
-
 # Local application imports
 from data import models
 from .solver_input_data import TimetableSolverInputs, SolutionSpecification
@@ -14,7 +11,7 @@ from .linear_programming.solver import TimetableSolver
 
 
 def produce_timetable_solutions(school_access_key: int, solution_specification: SolutionSpecification,
-                                clear_existing: bool = True) -> List[str]:
+                                clear_existing: bool = True) -> list[str]:
     """
     Function to be used by the web app to produce the timetable solutions.
     A button is clicked, creates a POST request handled by the CreateTimetable view which then calls this function,

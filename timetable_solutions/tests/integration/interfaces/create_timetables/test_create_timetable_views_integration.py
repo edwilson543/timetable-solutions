@@ -4,7 +4,6 @@ Integration tests for the views in the create_timetable app
 
 # Standard library imports
 import datetime as dt
-from typing import Dict
 
 # Django imports
 from django import test
@@ -57,7 +56,7 @@ class TestCreateTimetableFormView(test.TestCase):
         self.assertIn(expected_redirect_url, response.url)
 
     # POST request tests
-    def _post_form_data_to_url_and_test_outcome(self, form_data: Dict):
+    def _post_form_data_to_url_and_test_outcome(self, form_data: dict):
         """
         Utility test method that posts the passed form_data to the create_timetable URL, and checks whether the solver
         has been executed as appropriate.
@@ -70,8 +69,8 @@ class TestCreateTimetableFormView(test.TestCase):
         # Execute test unit
         response = self.client.post(url, data=form_data)
 
-        # Check outcome
-        assert response.headers["HX-Redirect"] == urls.reverse(UrlName.VIEW_TIMETABLES_DASH.value)
+        # Check the response redirects
+        assert response.headers["HX-Redirect"] == expected_url_redirect
 
         # Check that a solution has been produced
         lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
