@@ -28,15 +28,18 @@ class FileUploadProcessor:
         - Pupil, Teacher, Classroom, TimetableSlot
     The class is subclased to defined the processing of uploaded 'Lesson' files.
     """
+
     __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
 
-    def __init__(self,
-                 school_access_key: int,
-                 csv_file: UploadedFile,
-                 csv_headers: list[str],
-                 id_column_name: str,
-                 model: Type[models.ModelSubclass],
-                 attempt_upload: bool = True):
+    def __init__(
+        self,
+        school_access_key: int,
+        csv_file: UploadedFile,
+        csv_headers: list[str],
+        id_column_name: str,
+        model: Type[models.ModelSubclass],
+        attempt_upload: bool = True,
+    ):
         """
         :param csv_file: the file as received from the user upload
         :param csv_headers: the column headers from the csv file, which will correspond to the model fields
@@ -52,7 +55,9 @@ class FileUploadProcessor:
 
         # Instance attributes that get set during upload, providing info on the level of success
         self.n_model_instances_created = 0
-        self.upload_error_message: str | None = None  # Provides details on why the upload has failed
+        self.upload_error_message: str | None = (
+            None  # Provides details on why the upload has failed
+        )
 
         # Try uploading the file to the database
         if attempt_upload:
@@ -67,8 +72,10 @@ class FileUploadProcessor:
         # Check the file type and then try to read it in as a csv
         file_extension = file.name.split(".")[1]
         if file_extension != "csv":
-            self.upload_error_message = f"Please upload your file as with the .csv!\n" \
-                                        f"File extension given was .{file_extension}."
+            self.upload_error_message = (
+                f"Please upload your file as with the .csv!\n"
+                f"File extension given was .{file_extension}."
+            )
             return
 
         try:
@@ -77,11 +84,15 @@ class FileUploadProcessor:
             # noinspection PyTypeChecker
             upload_df = pd.read_csv(file_stream, sep=",")
         except UnicodeDecodeError:
-            self.upload_error_message = "Please check that your file is encoded using UTF-8!"
+            self.upload_error_message = (
+                "Please check that your file is encoded using UTF-8!"
+            )
             return
         except pd.errors.ParserError:
-            self.upload_error_message = "Bad file structure identified!\n" \
-                                        "Please check that data is only given under the defined columns."
+            self.upload_error_message = (
+                "Bad file structure identified!\n"
+                "Please check that data is only given under the defined columns."
+            )
             return
 
         # Basic cleaning / checks on file content & structure
@@ -94,7 +105,9 @@ class FileUploadProcessor:
             return
 
         # Process each file row into a dictionary to pass to create_new
-        create_new_dict_list = self._get_data_dict_list_for_create_new(upload_df=upload_df)
+        create_new_dict_list = self._get_data_dict_list_for_create_new(
+            upload_df=upload_df
+        )
         if create_new_dict_list is not None:
             try:
                 with transaction.atomic():
@@ -104,12 +117,16 @@ class FileUploadProcessor:
                 # Reaching this point means the upload processing has been successful
                 self.n_model_instances_created = len(create_new_dict_list)
 
-            except (ValidationError,  # Model does not pass the full_clean checks
-                    TypeError,  # Model was missing a required field (via the create_new method)
-                    ValueError) as debug_only_message:  # A string was passed to int(id_field)
+            except (
+                ValidationError,  # Model does not pass the full_clean checks
+                TypeError,  # Model was missing a required field (via the create_new method)
+                ValueError,
+            ) as debug_only_message:  # A string was passed to int(id_field)
 
-                error = f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!" \
-                            f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
+                error = (
+                    f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!"
+                    f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
+                )
                 self.upload_error_message = error
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
@@ -119,12 +136,16 @@ class FileUploadProcessor:
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
             except ObjectDoesNotExist as debug_only_message:
-                self.upload_error_message = f"Row {n + 1} of your file referenced a pupil / teacher / classroom / " \
-                                            f"timetable slot id which does not exist!\n Please check this!"
+                self.upload_error_message = (
+                    f"Row {n + 1} of your file referenced a pupil / teacher / classroom / "
+                    f"timetable slot id which does not exist!\n Please check this!"
+                )
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
 
-    def _get_data_dict_list_for_create_new(self, upload_df: pd.DataFrame) -> list[dict] | None:
+    def _get_data_dict_list_for_create_new(
+        self, upload_df: pd.DataFrame
+    ) -> list[dict] | None:
         """
         Method to iterate through the rows of the dataframe, and create a list of dictionaries that can be passed to
         self._model.create_new(**create_new_dict).
@@ -133,7 +154,9 @@ class FileUploadProcessor:
         row_number = 1  # row_number is only used for user-targeted error messages, so count from 1 not 0
 
         for _, data_ser in upload_df.iterrows():
-            create_new_dict = self._get_data_dict_from_row_for_create_new(row=data_ser, row_number=row_number)
+            create_new_dict = self._get_data_dict_from_row_for_create_new(
+                row=data_ser, row_number=row_number
+            )
 
             # dict-getting methods will set errors, so if there is / isn't one set, proceed as appropriate
             if self.upload_error_message is None:
@@ -145,14 +168,20 @@ class FileUploadProcessor:
 
         return create_new_dict_list
 
-    def _get_data_dict_from_row_for_create_new(self, row: pd.Series, row_number: int) -> dict:
+    def _get_data_dict_from_row_for_create_new(
+        self, row: pd.Series, row_number: int
+    ) -> dict:
         """
         Method to take an individual row from the csv file, and convert it into a dictionary which can be passed
         directly to self._model.create_new(**create_new_dict) to initialise a model instance
         :return dictionary mapping create_new kwargs to the field values of self._model
         """
         initial_create_new_dict = row.to_dict()
-        create_new_dict = {key: value for key, value in initial_create_new_dict.items() if value != self.__nan_handler}
+        create_new_dict = {
+            key: value
+            for key, value in initial_create_new_dict.items()
+            if value != self.__nan_handler
+        }
         create_new_dict[Header.SCHOOL_ID] = self._school_access_key
 
         return create_new_dict
@@ -192,9 +221,13 @@ class FileUploadProcessor:
     def _convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
         """Method to ensure timestamps / timedelta are converted to the correct type"""
         if Header.PERIOD_DURATION in upload_df.columns:
-            upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(upload_df[Header.PERIOD_DURATION])
+            upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(
+                upload_df[Header.PERIOD_DURATION]
+            )
         if Header.PERIOD_STARTS_AT in upload_df.columns:
-            upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(upload_df[Header.PERIOD_STARTS_AT])
+            upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(
+                upload_df[Header.PERIOD_STARTS_AT]
+            )
         return upload_df
 
     @property

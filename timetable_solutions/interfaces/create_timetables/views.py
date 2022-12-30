@@ -31,6 +31,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
     Note also that we use reverse_lazy since a URL reversal is needed BEFORE the URLConf is loaded, to avoid circular
     imports.
     """
+
     # LoginRequiredMixin attributes
     login_url = urls.reverse_lazy(UrlName.LOGIN.value)
 
@@ -51,9 +52,13 @@ class CreateTimetable(LoginRequiredMixin, FormView):
             return http.HttpResponse(headers={"HX-Redirect": self.success_url})
         else:
             for message in error_messages:
-                messages.add_message(self.request, level=messages.ERROR, message=message)
+                messages.add_message(
+                    self.request, level=messages.ERROR, message=message
+                )
             context_data = self.get_context_data()
-            return super().render_to_response(context=context_data)  # from views.generic.base.TemplateResponseMixin
+            return super().render_to_response(
+                context=context_data
+            )  # from views.generic.base.TemplateResponseMixin
 
     def _run_solver_from_view(self, form: forms.SolutionSpecification) -> list[str]:
         """
@@ -63,7 +68,8 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         school_access_key = self.request.user.profile.school.school_access_key
         solution_spec = form.get_solution_specification_from_form_data()
         error_messages = solver.produce_timetable_solutions(
-            school_access_key=school_access_key, solution_specification=solution_spec)
+            school_access_key=school_access_key, solution_specification=solution_spec
+        )
         return error_messages
 
     def get_context_data(self, **kwargs: Any) -> dict:
@@ -72,8 +78,12 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         In particular, we need to carry a boolean that's True if the user has uploaded all data and can start creating
         timetables, and False if they need to complete the data upload step.
         """
-        context_data = super().get_context_data()  # Method inherited from views.generic.edit.FormMixin
-        upload_status = UploadStatusTracker.get_upload_status(school=self.request.user.profile.school)
+        context_data = (
+            super().get_context_data()
+        )  # Method inherited from views.generic.edit.FormMixin
+        upload_status = UploadStatusTracker.get_upload_status(
+            school=self.request.user.profile.school
+        )
         context_data["ready_to_create"] = upload_status.all_uploads_complete
         return context_data
 
@@ -85,6 +95,8 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         kwargs = super().get_form_kwargs()
         school_access_key = self.request.user.profile.school.school_access_key
 
-        timeslots = models.TimetableSlot.get_unique_start_times(school_id=school_access_key)
+        timeslots = models.TimetableSlot.get_unique_start_times(
+            school_id=school_access_key
+        )
         kwargs["available_time_slots"] = timeslots
         return kwargs

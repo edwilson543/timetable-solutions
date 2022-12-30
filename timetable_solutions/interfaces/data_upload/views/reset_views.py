@@ -11,6 +11,7 @@ class PupilListReset(DataResetBase):
     """
     Class used to handle the resetting of pupil data.
     """
+
     pupils = True
 
 
@@ -18,6 +19,7 @@ class TeacherListReset(DataResetBase):
     """
     Class used to handle the resetting of teacher data.
     """
+
     teachers = True
 
 
@@ -25,6 +27,7 @@ class ClassroomListReset(DataResetBase):
     """
     Class used to handle the resetting of classroom data.
     """
+
     classrooms = True
 
 
@@ -32,6 +35,7 @@ class TimetableStructureReset(DataResetBase):
     """
     Class used to handle the resetting of timetable data.
     """
+
     timetable = True
 
 
@@ -39,6 +43,7 @@ class LessonReset(DataResetBase):
     """
     Class used to handle the resetting of lesson data.
     """
+
     lessons = True
 
 
@@ -46,6 +51,7 @@ class AllSchoolDataReset(DataResetBase):
     """
     Class used to reset ALL the data relevant to a given school (accept users / the school itself)
     """
+
     pupils = True
     teachers = True
     classrooms = True

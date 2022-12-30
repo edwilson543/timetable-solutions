@@ -17,8 +17,15 @@ class ProfileAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Profile model.
     """
+
     # Index page display
-    list_display = ["user", "get_first_name", "get_last_name", "role", "approved_by_school_admin"]
+    list_display = [
+        "user",
+        "get_first_name",
+        "get_last_name",
+        "role",
+        "approved_by_school_admin",
+    ]
     list_filter = ["role", "approved_by_school_admin"]
 
     search_fields = ["user__username", "user__first_name", "user__last_name"]
@@ -32,6 +39,7 @@ class ProfileAdmin(CustomModelAdminBase):
         """
         Include the Profile model as if it's in its own 'users' app.
         """
+
         custom_app_label = "users"
 
     # LIST DISPLAY
@@ -53,7 +61,9 @@ class ProfileAdmin(CustomModelAdminBase):
 
     # ACTIONS
     @admin.action(description="Approve selected users")
-    def approve_user_accounts(self, request: http.HttpRequest, queryset: models.ProfileQuerySet) -> None:
+    def approve_user_accounts(
+        self, request: http.HttpRequest, queryset: models.ProfileQuerySet
+    ) -> None:
         """
         Action allowing a SCHOOL_ADMIN user to approve other school users.
         """

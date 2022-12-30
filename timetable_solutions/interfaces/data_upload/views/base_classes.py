@@ -60,16 +60,25 @@ class DataUploadBase(LoginRequiredMixin, View):
         if form.is_valid():
             file = request.FILES[self.form.Meta.file_field_name]
             upload_processor = self.processor(
-                school_access_key=school_access_key, model=self.model,
-                csv_file=file, csv_headers=self.file_structure.headers, id_column_name=self.file_structure.id_column,
+                school_access_key=school_access_key,
+                model=self.model,
+                csv_file=file,
+                csv_headers=self.file_structure.headers,
+                id_column_name=self.file_structure.id_column,
             )
 
             # Create a flash message
             if upload_processor.upload_error_message is not None:
-                messages.add_message(request, level=messages.ERROR, message=upload_processor.upload_error_message)
+                messages.add_message(
+                    request,
+                    level=messages.ERROR,
+                    message=upload_processor.upload_error_message,
+                )
             elif upload_processor.upload_successful:
-                message = f"Successfully saved your data for {upload_processor.n_model_instances_created} " \
-                          f"{self.model.Constant.human_string_plural}!"
+                message = (
+                    f"Successfully saved your data for {upload_processor.n_model_instances_created} "
+                    f"{self.model.Constant.human_string_plural}!"
+                )
                 messages.add_message(request, level=messages.SUCCESS, message=message)
             else:
                 # Added insurance, in case the file upload processor hasn't uploaded, or made an error message
@@ -85,6 +94,7 @@ class DataResetBase(LoginRequiredMixin, View):
     The class attributes are aliases for the database tables which reset by this view - each subclass sets exactly
     one of these to True, except the subclass which resets all the data tables in one go.
     """
+
     pupils: bool = False
     teachers: bool = False
     classrooms: bool = False
@@ -108,8 +118,11 @@ class DataResetBase(LoginRequiredMixin, View):
 
         data_upload_processing.ResetUploads(
             school_access_key=school_access_key,
-            pupils=self.pupils, teachers=self.teachers, classrooms=self.classrooms, timetable=self.timetable,
-            lessons=self.lessons
+            pupils=self.pupils,
+            teachers=self.teachers,
+            classrooms=self.classrooms,
+            timetable=self.timetable,
+            lessons=self.lessons,
         )
 
         return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))
@@ -135,5 +148,7 @@ class ExampleDownloadBase(LoginRequiredMixin):
         Method to instantiate and return a file response object, using the example_filepath class attribute.
         """
         del request  # request is not used, but must be included as an argument
-        response = http.FileResponse(open(cls.example_filepath, "rb"), as_attachment=True)
+        response = http.FileResponse(
+            open(cls.example_filepath, "rb"), as_attachment=True
+        )
         return response

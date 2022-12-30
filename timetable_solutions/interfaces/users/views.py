@@ -32,8 +32,11 @@ from . import forms
 # Create your views here.
 class Register(View):
     """View for step 1 of registering - entering basic details."""
+
     @staticmethod
-    def get(request: http.HttpRequest, context: dict | None = None) -> http.HttpResponse:
+    def get(
+        request: http.HttpRequest, context: dict | None = None
+    ) -> http.HttpResponse:
         if context is None:
             context = {"form": forms.CustomUserCreation}
         if request.user.is_authenticated:
@@ -48,8 +51,10 @@ class Register(View):
             return redirect(reverse(UrlName.REGISTER_PIVOT.value))
         else:
             context = {
-                "error_messages": [error for error_list in form.errors.values() for error in error_list],
-                "form": forms.CustomUserCreation
+                "error_messages": [
+                    error for error_list in form.errors.values() for error in error_list
+                ],
+                "form": forms.CustomUserCreation,
             }
             return self.get(request, context=context)
 
@@ -97,19 +102,17 @@ class SchoolRegistration(View):
             new_school = models.School.create_new(school_name=school_name)
 
             models.Profile.create_and_save_new(
-                user=request.user, school_id=new_school.school_access_key,
+                user=request.user,
+                school_id=new_school.school_access_key,
                 role=models.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
-                approved_by_school_admin=True
+                approved_by_school_admin=True,
             )
 
             message = "Registration successful! You can now start using the site."
             messages.success(request, message=message)
             return redirect(reverse(UrlName.DASHBOARD.value))
         else:
-            context = {
-                "form": forms.SchoolRegistration,
-                "errors": form.errors
-            }
+            context = {"form": forms.SchoolRegistration, "errors": form.errors}
             return render(request, "users/register_school.html", context)
 
 
@@ -121,7 +124,9 @@ class ProfileRegistration(View):
     """
 
     @staticmethod
-    def get(request: http.HttpRequest, context: dict | None = None) -> http.HttpResponse:
+    def get(
+        request: http.HttpRequest, context: dict | None = None
+    ) -> http.HttpResponse:
         if context is None:
             context = {"form": forms.ProfileRegistration}
         return render(request, "users/register_profile_existing_school.html", context)
@@ -131,12 +136,18 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             role = form.cleaned_data.get("position")
-            models.Profile.create_and_save_new(user=request.user, school_id=access_key,
-                                               role=role, approved_by_school_admin=False)
+            models.Profile.create_and_save_new(
+                user=request.user,
+                school_id=access_key,
+                role=role,
+                approved_by_school_admin=False,
+            )
 
-            message = "Registration successful!\n" \
-                      "You will need to wait for your school admin to approve your account before gaining access to " \
-                      "the site."
+            message = (
+                "Registration successful!\n"
+                "You will need to wait for your school admin to approve your account before gaining access to "
+                "the site."
+            )
             messages.success(request, message=message)
             return redirect(reverse(UrlName.LOGIN.value))
         else:
@@ -152,7 +163,9 @@ class CustomLogin(LoginView):
     Slight customisation of the login process. See method docstrings for the customisations.
     """
 
-    def get(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+    def get(
+        self, request: http.HttpRequest, *args: Any, **kwargs: Any
+    ) -> http.HttpResponse:
         """
         Method to first log a user out if they visit the login page.
         """
@@ -160,7 +173,9 @@ class CustomLogin(LoginView):
             logout(request)
         return super().get(request, *args, **kwargs)
 
-    def form_valid(self, form: AuthenticationForm) -> http.HttpResponseRedirect | http.HttpResponse:
+    def form_valid(
+        self, form: AuthenticationForm
+    ) -> http.HttpResponseRedirect | http.HttpResponse:
         """
         Method to check that a user has been given access to their school's data by the school admin.
         """
@@ -168,8 +183,10 @@ class CustomLogin(LoginView):
         if user.profile.approved_by_school_admin:
             return super().form_valid(form)
         else:
-            error_message = "Your account has not yet been approved by your school's admin account.\n" \
-                            "Please contact them directly to approve your account."
+            error_message = (
+                "Your account has not yet been approved by your school's admin account.\n"
+                "Please contact them directly to approve your account."
+            )
 
             template = loader.get_template("registration/login.html")
             context = super().get_context_data()

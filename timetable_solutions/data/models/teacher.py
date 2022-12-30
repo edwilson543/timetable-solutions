@@ -20,10 +20,13 @@ class TeacherQuerySet(models.QuerySet):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(teacher_id=teacher_id))
 
-    def get_teachers_surnames_starting_with_x(self, school_id: int,
-                                              letter: str) -> "TeacherQuerySet":
+    def get_teachers_surnames_starting_with_x(
+        self, school_id: int, letter: str
+    ) -> "TeacherQuerySet":
         """Method returning the queryset of Teacher instances whose surname starts with the letter x."""
-        query_set = self.filter(models.Q(school_id=school_id) & models.Q(surname__startswith=letter))
+        query_set = self.filter(
+            models.Q(school_id=school_id) & models.Q(surname__startswith=letter)
+        )
         query_set.order_by("firstname")
         return query_set
 
@@ -34,6 +37,7 @@ class Teacher(models.Model):
     Note that the teacher_id is NOT set as a manual primary key since users will need to use this when uploading
     their own data, and certain primary keys may already be taken in the database by other schools.
     """
+
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     teacher_id = models.IntegerField()
     firstname = models.CharField(max_length=20)
@@ -47,12 +51,14 @@ class Teacher(models.Model):
         """
         Django Meta class for the Teacher model
         """
+
         unique_together = [["school", "teacher_id"]]
 
     class Constant:
         """
         Additional constants to store about the Teacher model (that aren't an option in Meta)
         """
+
         human_string_singular = "teacher"
         human_string_plural = "teachers"
 
@@ -66,11 +72,17 @@ class Teacher(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_id: int, teacher_id: int,
-                   firstname: str, surname: str, title: str) -> "Teacher":
+    def create_new(
+        cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str
+    ) -> "Teacher":
         """Method to create a new Teacher instance."""
-        teacher = cls.objects.create(school_id=school_id, teacher_id=teacher_id, firstname=firstname, surname=surname,
-                                     title=title)
+        teacher = cls.objects.create(
+            school_id=school_id,
+            teacher_id=teacher_id,
+            firstname=firstname,
+            surname=surname,
+            title=title,
+        )
         teacher.full_clean()
         return teacher
 
@@ -98,7 +110,9 @@ class Teacher(models.Model):
         elif n_commitments == 0:
             return False
         else:
-            raise ValueError(f"Teacher {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}")
+            raise ValueError(
+                f"Teacher {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
+            )
 
     # QUERY METHODS
     def get_lessons_per_week(self) -> int:

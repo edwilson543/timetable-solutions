@@ -23,6 +23,7 @@ class ModelDict(TypedDict):
     Dictionary structure listed by the key 'models' in the app dict.
     e.g. app_dict = {'data': {..., 'models': [d1: AppDictModel = {...}, d2: AppDictModel = {...}, ... ]}}
     """
+
     model: Type[models.ModelSubclass]
     name: str
     object_name: str
@@ -37,6 +38,7 @@ class AppDict(TypedDict):
     Dictionary structure of the values of the dict returned by the _build_app_dict method of CustomAdminSite.
     e.g. app_dict = {'data': AppDict()...}
     """
+
     name: str
     app_label: str
     has_module_perms: bool
@@ -58,7 +60,8 @@ class CustomAdminSite(admin.AdminSite):
         """
         if hasattr(request.user, "profile"):
             return request.user.is_active and (
-                    request.user.profile.role == models.UserRole.SCHOOL_ADMIN)
+                request.user.profile.role == models.UserRole.SCHOOL_ADMIN
+            )
         else:
             return False
 
@@ -69,16 +72,21 @@ class CustomAdminSite(admin.AdminSite):
         """
         url_list = super().get_urls()
         patterns_to_remove = [
-            UrlName.LOGIN.value, UrlName.LOGOUT.value,
-            UrlName.PASSWORD_CHANGE.value, UrlName.PASSWORD_CHANGE_DONE.value
+            UrlName.LOGIN.value,
+            UrlName.LOGOUT.value,
+            UrlName.PASSWORD_CHANGE.value,
+            UrlName.PASSWORD_CHANGE_DONE.value,
         ]
         final_urls = [
-            url for url in url_list if not
-            (isinstance(url, urls.URLPattern) and url.name in patterns_to_remove)
+            url
+            for url in url_list
+            if not (isinstance(url, urls.URLPattern) and url.name in patterns_to_remove)
         ]
         return final_urls
 
-    def _build_app_dict(self, request: http.HttpRequest, label: str | None = None) -> dict[str, AppDict]:
+    def _build_app_dict(
+        self, request: http.HttpRequest, label: str | None = None
+    ) -> dict[str, AppDict]:
         """
         Custom override of the base class's method.
         Purpose is to use the CustomModelAdminBase's Meta class' attribute 'custom_app_label', to create custom
@@ -96,7 +104,9 @@ class CustomAdminSite(admin.AdminSite):
             models_ = self._registry
 
         for model, model_admin in models_.items():
-            app_grouping_label = model_admin.meta.custom_app_label or model._meta.app_label
+            app_grouping_label = (
+                model_admin.meta.custom_app_label or model._meta.app_label
+            )
             app_config_label = model._meta.app_label
 
             has_module_perms = model_admin.has_module_permission(request)

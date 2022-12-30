@@ -16,8 +16,14 @@ class TestDataResetViews(test.TestCase):
     Tests for the post method supplied by each subclass of DataResetBase
     """
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     def test_pupil_reset_resets_pupils_and_lessons(self):
         """
@@ -34,7 +40,9 @@ class TestDataResetViews(test.TestCase):
 
         # Check outcome
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_pupils.count() == all_lessons.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
@@ -53,8 +61,12 @@ class TestDataResetViews(test.TestCase):
         response = self.client.post(url)
 
         # Check outcome
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_teachers.count() == all_lessons.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
@@ -73,8 +85,12 @@ class TestDataResetViews(test.TestCase):
         response = self.client.post(url)
 
         # Check outcome
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_classrooms.count() == all_lessons.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
@@ -93,8 +109,12 @@ class TestDataResetViews(test.TestCase):
         response = self.client.post(url)
 
         # Check outcome
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_slots.count() == all_lessons.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
@@ -112,7 +132,9 @@ class TestDataResetViews(test.TestCase):
         response = self.client.post(url)
 
         # Check outcome
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_lessons.count() == 0
 
         self.assertRedirects(response, expected_url=expected_redirect_url)
@@ -131,10 +153,18 @@ class TestDataResetViews(test.TestCase):
 
         # Check outcome
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_pupils.count() == all_teachers.count() == all_classrooms.count() == 0
         assert all_slots.count() == all_lessons.count() == 0
 

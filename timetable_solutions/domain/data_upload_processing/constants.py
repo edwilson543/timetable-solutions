@@ -15,6 +15,7 @@ class Header:
     """
     Class storing string literals that are header of upload files that must be recognised by the file upload processor
     """
+
     # Misc.
     SCHOOL_ID = "school_id"
 
@@ -49,6 +50,7 @@ class FileStructure:
     """
     Parameterisation of the structure of each user uploaded file
     """
+
     headers: list[str]
     id_column: str
 
@@ -58,24 +60,48 @@ class UploadFileStructure:
     """
     Storage of the file structure of all csv files that get uploaded / downloaded from the database by users.
     """
-    PUPILS = FileStructure(headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
-                           id_column=Header.PUPIL_ID)
-    TEACHERS = FileStructure(headers=[Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
-                             id_column=Header.TEACHER_ID)
-    CLASSROOMS = FileStructure(headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
-                               id_column=Header.CLASSROOM_ID)
+
+    PUPILS = FileStructure(
+        headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+        id_column=Header.PUPIL_ID,
+    )
+    TEACHERS = FileStructure(
+        headers=[Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
+        id_column=Header.TEACHER_ID,
+    )
+    CLASSROOMS = FileStructure(
+        headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
+        id_column=Header.CLASSROOM_ID,
+    )
     TIMETABLE = FileStructure(
-        headers=[Header.SLOT_ID, Header.DAY_OF_WEEK, Header.PERIOD_STARTS_AT, Header.PERIOD_DURATION],
-        id_column=Header.SLOT_ID)
+        headers=[
+            Header.SLOT_ID,
+            Header.DAY_OF_WEEK,
+            Header.PERIOD_STARTS_AT,
+            Header.PERIOD_DURATION,
+        ],
+        id_column=Header.SLOT_ID,
+    )
     LESSON = FileStructure(
-        headers=[Header.LESSON_ID, Header.SUBJECT_NAME, Header.TEACHER_ID, Header.PUPIL_IDS, Header.CLASSROOM_ID,
-                 Header.TOTAL_SLOTS, Header.TOTAL_DOUBLES, Header.USER_DEFINED_SLOTS], id_column=Header.LESSON_ID)
+        headers=[
+            Header.LESSON_ID,
+            Header.SUBJECT_NAME,
+            Header.TEACHER_ID,
+            Header.PUPIL_IDS,
+            Header.CLASSROOM_ID,
+            Header.TOTAL_SLOTS,
+            Header.TOTAL_DOUBLES,
+            Header.USER_DEFINED_SLOTS,
+        ],
+        id_column=Header.LESSON_ID,
+    )
 
 
 class ExampleFile(StrEnum):
     """
     Enumeration of all the example files that can be downloaded by users, and construction of their respective urls.
     """
+
     PUPILS = "example_pupils.csv"
     TEACHERS = "example_teachers.csv"
     CLASSROOMS = "example_classrooms.csv"

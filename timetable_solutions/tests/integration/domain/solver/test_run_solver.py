@@ -20,11 +20,15 @@ class TestRunSolver(test.TestCase):
         produce a timetable solution, and then save it in the database.
         """
         # Set test parameters
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                          allow_triple_periods_and_above=True)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True,
+            allow_triple_periods_and_above=True,
+        )
 
         # Execute
-        error_messages = produce_timetable_solutions(school_access_key=222222, solution_specification=spec)
+        error_messages = produce_timetable_solutions(
+            school_access_key=222222, solution_specification=spec
+        )
 
         # Check outcome - note we don't test for a specific solution
         assert len(error_messages) == 0

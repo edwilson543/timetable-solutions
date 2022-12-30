@@ -15,8 +15,14 @@ from data import models
 
 class TestPupil(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_pupil(self):
@@ -24,7 +30,9 @@ class TestPupil(test.TestCase):
         Tests that we can create and save a Pupil via the create_new method
         """
         # Execute test unit
-        pupil = models.Pupil.create_new(school_id=123456, pupil_id=7, firstname="test", surname="test", year_group=1)
+        pupil = models.Pupil.create_new(
+            school_id=123456, pupil_id=7, firstname="test", surname="test", year_group=1
+        )
 
         # Check outcome
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -36,8 +44,13 @@ class TestPupil(test.TestCase):
         """
         # Execute test unit
         with pytest.raises(IntegrityError):
-            models.Pupil.create_new(school_id=123456, pupil_id=1,  # Note the pupil_id 1 is already taken
-                                    firstname="test", surname="test", year_group=1)
+            models.Pupil.create_new(
+                school_id=123456,
+                pupil_id=1,  # Note the pupil_id 1 is already taken
+                firstname="test",
+                surname="test",
+                year_group=1,
+            )
 
     def test_delete_all_instances_for_school_successful(self):
         """
@@ -61,10 +74,14 @@ class TestPupil(test.TestCase):
         """
         # Set test parameters
         pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
 
         # We ensure they are busy at this time
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         lesson.add_pupils(pupils=pup)
         lesson.add_user_defined_time_slots(time_slots=slot)
 
@@ -80,7 +97,9 @@ class TestPupil(test.TestCase):
         """
         # Set test parameters
         pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=5)
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=5
+        )
 
         # Execute test unit
         is_busy = pup.check_if_busy_at_time_slot(slot=slot)

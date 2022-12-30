@@ -23,9 +23,10 @@ class TimetableSolverObjective:
     - Summary method (_sum_all_objective_components)
     - Methods producing the individual components of the objective
     """
-    def __init__(self,
-                 inputs: TimetableSolverInputs,
-                 variables: TimetableSolverVariables):
+
+    def __init__(
+        self, inputs: TimetableSolverInputs, variables: TimetableSolverVariables
+    ):
         self._inputs = inputs
         self._decision_variables = variables.decision_variables
 
@@ -58,7 +59,9 @@ class TimetableSolverObjective:
 
         for key, variable in self._decision_variables.items():
             # Get the time of the slot corresponding to the variable
-            slot_time = self._inputs.get_time_period_starts_at_from_slot_id(slot_id=key.slot_id)
+            slot_time = self._inputs.get_time_period_starts_at_from_slot_id(
+                slot_id=key.slot_id
+            )
 
             repulsive_time = self._get_optimal_free_period_time()
             difference_hours = abs(repulsive_time - slot_time.hour)
@@ -81,18 +84,39 @@ class TimetableSolverObjective:
         the given call to this method only - note that this method is called once for each variable, and hence each
         variable can have its own optimal free period time.)
         """
-        initial_optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day
+        initial_optimal_free_period_time = (
+            self._inputs.solution_specification.optimal_free_period_time_of_day
+        )
         if isinstance(initial_optimal_free_period_time, dt.time):
-            optimal_free_period_time = self._get_optimal_free_period_time_specified_time()
-        elif initial_optimal_free_period_time == SolutionSpecification.OptimalFreePeriodOptions.NONE:
-            optimal_free_period_time = self._get_optimal_free_period_time_no_specified_time()
-        elif initial_optimal_free_period_time == SolutionSpecification.OptimalFreePeriodOptions.MORNING:
-            optimal_free_period_time = self._get_optimal_free_period_time_morning_specified()
-        elif initial_optimal_free_period_time == SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON:
-            optimal_free_period_time = self._get_optimal_free_period_time_afternoon_specified()
+            optimal_free_period_time = (
+                self._get_optimal_free_period_time_specified_time()
+            )
+        elif (
+            initial_optimal_free_period_time
+            == SolutionSpecification.OptimalFreePeriodOptions.NONE
+        ):
+            optimal_free_period_time = (
+                self._get_optimal_free_period_time_no_specified_time()
+            )
+        elif (
+            initial_optimal_free_period_time
+            == SolutionSpecification.OptimalFreePeriodOptions.MORNING
+        ):
+            optimal_free_period_time = (
+                self._get_optimal_free_period_time_morning_specified()
+            )
+        elif (
+            initial_optimal_free_period_time
+            == SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
+        ):
+            optimal_free_period_time = (
+                self._get_optimal_free_period_time_afternoon_specified()
+            )
         else:
-            raise ValueError(f"{initial_optimal_free_period_time} is not a valid value for the optimal free period "
-                             f"time and hence cannot be used to get a repulsive hour.")
+            raise ValueError(
+                f"{initial_optimal_free_period_time} is not a valid value for the optimal free period "
+                f"time and hence cannot be used to get a repulsive hour."
+            )
         return optimal_free_period_time
 
     # METHODS PROVIDING THE LOGIC TO GET THE OPTIMAL FREE PERIOD IN EACH SOLUTION SPECIFICATION SCENARIO
@@ -106,7 +130,9 @@ class TimetableSolverObjective:
         Note that the ideal proportion parameter is not relevant in this case, since all hours are generated randomly.
         Note also that a different random value is generated for each variable
         """
-        optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
+        optimal_free_period_time = np.random.uniform(
+            low=self._timetable_start, high=self._timetable_finish
+        )
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_specified_time(self) -> float:
@@ -116,14 +142,20 @@ class TimetableSolverObjective:
         :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
         """
         # With probability (1 - ideal_proportion) we randomly generate a repulsive hour (otherwise return user spec.)
-        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        ideal_proportion = (
+            self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        )
         generate_random_optimal_free_period_time = np.random.random() > ideal_proportion
 
         if generate_random_optimal_free_period_time:
-            optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=self._timetable_finish)
+            optimal_free_period_time = np.random.uniform(
+                low=self._timetable_start, high=self._timetable_finish
+            )
         else:
-            optimal_free_period_time = self._inputs.solution_specification.optimal_free_period_time_of_day.\
-                hour  # type: ignore  # mypy doesn't realise this method only gets called when opt time is a dt.time
+            optimal_free_period_time = (
+                # mypy doesn't realise this method only gets called when opt time is a dt.time
+                self._inputs.solution_specification.optimal_free_period_time_of_day.hour  # type: ignore
+            )
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_morning_specified(self) -> float:
@@ -132,13 +164,19 @@ class TimetableSolverObjective:
         of the time returns a random time in the afternoon.
         :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
         """
-        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        ideal_proportion = (
+            self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        )
         randomly_go_for_afternoon = np.random.random() > ideal_proportion
 
         if randomly_go_for_afternoon:
-            optimal_free_period_time = np.random.uniform(low=12, high=self._timetable_finish)
+            optimal_free_period_time = np.random.uniform(
+                low=12, high=self._timetable_finish
+            )
         else:
-            optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=12)
+            optimal_free_period_time = np.random.uniform(
+                low=self._timetable_start, high=12
+            )
         return optimal_free_period_time
 
     def _get_optimal_free_period_time_afternoon_specified(self) -> float:
@@ -147,11 +185,17 @@ class TimetableSolverObjective:
         (1 - ideal_prop) % of the time returns a random time in the morning.
         :return - optimal_free_period_time - float representing hour on the 24 hour clock to avoid putting classes at
         """
-        ideal_proportion = self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        ideal_proportion = (
+            self._inputs.solution_specification.ideal_proportion_of_free_periods_at_this_time
+        )
         randomly_go_for_morning = np.random.random() > ideal_proportion
 
         if randomly_go_for_morning:
-            optimal_free_period_time = np.random.uniform(low=self._timetable_start, high=12)
+            optimal_free_period_time = np.random.uniform(
+                low=self._timetable_start, high=12
+            )
         else:
-            optimal_free_period_time = np.random.uniform(low=12, high=self._timetable_finish)
+            optimal_free_period_time = np.random.uniform(
+                low=12, high=self._timetable_finish
+            )
         return optimal_free_period_time

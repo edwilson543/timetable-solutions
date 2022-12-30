@@ -23,6 +23,7 @@ class SubjectNameFilter(admin.SimpleListFilter):
     """
     Custom filter to allow users to filter by the subject name (uncapitalised)
     """
+
     title = "Subject"
     parameter_name = "subject_name"
 
@@ -31,13 +32,20 @@ class SubjectNameFilter(admin.SimpleListFilter):
         Returns a list of tuples, whose first entry is the subject name as stored in the database, and the second
         subject name to show to the user. Subject names are used as the filters.
         """
-        unique_subjects = set(self.get_unfiltered_queryset(request=request).values_list("subject_name", flat=True))
+        unique_subjects = set(
+            self.get_unfiltered_queryset(request=request).values_list(
+                "subject_name", flat=True
+            )
+        )
         subject_names = [
-            (subject_name, clean_string(subject_name)) for subject_name in unique_subjects
+            (subject_name, clean_string(subject_name))
+            for subject_name in unique_subjects
         ]
         return subject_names
 
-    def queryset(self, request: http.HttpRequest, queryset: models.LessonQuerySet) -> models.LessonQuerySet:
+    def queryset(
+        self, request: http.HttpRequest, queryset: models.LessonQuerySet
+    ) -> models.LessonQuerySet:
         """
         Method to filter the full lesson queryset by the user's filter selection.
         """
@@ -55,7 +63,9 @@ class SubjectNameFilter(admin.SimpleListFilter):
         Method to get the full list of Lessons for a school.
         """
         school_access_key = request.user.profile.school.school_access_key
-        return models.Lesson.objects.get_all_instances_for_school(school_id=school_access_key)
+        return models.Lesson.objects.get_all_instances_for_school(
+            school_id=school_access_key
+        )
 
 
 @admin.register(models.Lesson, site=user_admin)
@@ -63,12 +73,24 @@ class LessonAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Lesson model.
     """
+
     # Index page display
-    list_display = ["format_lesson_id", "format_subject_name", "format_teacher",
-                    "number_pupils", "format_total_required_slots"]
+    list_display = [
+        "format_lesson_id",
+        "format_subject_name",
+        "format_teacher",
+        "number_pupils",
+        "format_total_required_slots",
+    ]
     list_filter = [SubjectNameFilter]
-    search_fields = ["lesson_id", "subject_name", "teacher__firstname", "teacher__surname",
-                     "pupils__firstname", "pupils__surname"]
+    search_fields = [
+        "lesson_id",
+        "subject_name",
+        "teacher__firstname",
+        "teacher__surname",
+        "pupils__firstname",
+        "pupils__surname",
+    ]
     search_help_text = "Search for lessons by id, subject name, teacher, or pupil"
 
     # Change / add behaviour & templates
@@ -76,8 +98,13 @@ class LessonAdmin(CustomModelAdminBase):
     change_form_template = "admin/lesson_change_add_form.html"
     add_form_template = "admin/lesson_change_add_form.html"
 
-    def get_form(self, request: http.HttpRequest, obj: models.Lesson | None = None, change: bool = False,
-                 **kwargs: Any) -> forms.ModelForm:
+    def get_form(
+        self,
+        request: http.HttpRequest,
+        obj: models.Lesson | None = None,
+        change: bool = False,
+        **kwargs: Any,
+    ) -> forms.ModelForm:
         """
         Allow the M2M field to be optional for the user, since they may not want to add pupils / user defined time slots
         to a given lesson.
@@ -87,8 +114,13 @@ class LessonAdmin(CustomModelAdminBase):
         form.base_fields["user_defined_time_slots"].required = False
         return form
 
-    def save_model(self, request: http.HttpRequest, obj: models.Lesson, form: forms.ModelForm,
-                   change: bool) -> None:
+    def save_model(
+        self,
+        request: http.HttpRequest,
+        obj: models.Lesson,
+        form: forms.ModelForm,
+        change: bool,
+    ) -> None:
         """
         The school is automatically added to the lesson instance from the request, and any existing SOLUTION is also
         cleared for ALL lessons, since e.g. adding a pupil to this lesson may be invalid if the pupil is bust at one
@@ -96,7 +128,9 @@ class LessonAdmin(CustomModelAdminBase):
         """
         school = request.user.profile.school
         obj.school = school
-        models.Lesson.delete_solver_solution_for_school(school_id=school.school_access_key)
+        models.Lesson.delete_solver_solution_for_school(
+            school_id=school.school_access_key
+        )
         obj.save()
 
     # List display fields

@@ -15,6 +15,7 @@ class TestLoadAllFixturesCommand(test.TestCase):
     """
     Class defining the tests for the load_all_fixtures custom management command
     """
+
     def test_load_all_fixtures_do_not_include_solution(self):
         """
         Unit test for the parameterless call to load all fixtures - which specifically does not load in any non-user-
@@ -35,7 +36,9 @@ class TestLoadAllFixturesCommand(test.TestCase):
         all_lessons = models.Lesson.objects.all()
         assert all_lessons.count() == 24
 
-        total_solver_produced_slots = sum(lesson.solver_defined_time_slots.all().count() for lesson in all_lessons)
+        total_solver_produced_slots = sum(
+            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        )
         assert total_solver_produced_slots == 0
 
     def test_load_all_fixtures_include_solution(self):
@@ -57,7 +60,9 @@ class TestLoadAllFixturesCommand(test.TestCase):
         all_lessons = models.Lesson.objects.all()
         assert all_lessons.count() == 24
 
-        total_solver_produced_slots = sum(lesson.solver_defined_time_slots.all().count() for lesson in all_lessons)
+        total_solver_produced_slots = sum(
+            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        )
         assert total_solver_produced_slots == 100
 
     def test_load_all_fixtures_when_all_data_is_already_present(self):
@@ -81,5 +86,7 @@ class TestLoadAllFixturesCommand(test.TestCase):
         all_lessons = models.Lesson.objects.all()
         assert all_lessons.count() == 24
 
-        total_solver_produced_slots = sum(lesson.solver_defined_time_slots.all().count() for lesson in all_lessons)
+        total_solver_produced_slots = sum(
+            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        )
         assert total_solver_produced_slots == 100

@@ -46,6 +46,7 @@ class UserRole(models.IntegerChoices):
     Note there is no interaction with the default Django authentication tiers (staff / superuser), these roles only
     relate to the custom admin.
     """
+
     SCHOOL_ADMIN = 1, "Administrator"  # Only role with access to the custom admin site
     TEACHER = 2, "Teacher"
     PUPIL = 3, "Pupil"
@@ -57,6 +58,7 @@ class Profile(models.Model):
     Note that this information is currently just the school_id, since initial users are imagined as the teacher
     responsible for generating their school_id's timetables.
     """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN)
@@ -75,12 +77,21 @@ class Profile(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_and_save_new(cls, user: User, school_id: int, role: str | UserRole,
-                            approved_by_school_admin: bool) -> "Profile":
+    def create_and_save_new(
+        cls,
+        user: User,
+        school_id: int,
+        role: str | UserRole,
+        approved_by_school_admin: bool,
+    ) -> "Profile":
         """Method to create a new Profile instance, and then save it into the database"""
         if isinstance(role, str):
             role = UserRole(int(role))
-        profile = cls.objects.create(user=user, school_id=school_id, role=role,
-                                     approved_by_school_admin=approved_by_school_admin)
+        profile = cls.objects.create(
+            user=user,
+            school_id=school_id,
+            role=role,
+            approved_by_school_admin=approved_by_school_admin,
+        )
         profile.full_clean()
         return profile

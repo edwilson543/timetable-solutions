@@ -15,6 +15,7 @@ from interfaces.users import forms
 
 class TestRegistration(TestCase):
     """Tests for the Register view class"""
+
     fixtures = ["user_school_profile.json"]
 
     # LOGIN TESTS
@@ -38,9 +39,15 @@ class TestRegistration(TestCase):
         given the correct error message.
         """
         # Setup
-        user = User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
-        models.Profile.create_and_save_new(user=user, school_id=123456, role=models.UserRole.TEACHER.value,
-                                           approved_by_school_admin=False)  # This is the key bit
+        user = User.objects.create_user(
+            username="dummy_teacher2", password="dt123dt123"
+        )
+        models.Profile.create_and_save_new(
+            user=user,
+            school_id=123456,
+            role=models.UserRole.TEACHER.value,
+            approved_by_school_admin=False,
+        )  # This is the key bit
 
         # Set test parameters
         url = reverse(UrlName.LOGIN.value)
@@ -63,17 +70,26 @@ class TestRegistration(TestCase):
         """
         # Set test parameters
         url = reverse(UrlName.REGISTER.value)
-        form_data = {"username": "dummy_teacher2", "email": "dummy_teacher@dt.co.uk",
-                     "password1": "dt123dt123", "password2": "dt123dt123",
-                     "first_name": "dummy", "last_name": "teacher"}
+        form_data = {
+            "username": "dummy_teacher2",
+            "email": "dummy_teacher@dt.co.uk",
+            "password1": "dt123dt123",
+            "password2": "dt123dt123",
+            "first_name": "dummy",
+            "last_name": "teacher",
+        }
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
 
         # Check outcome
         self.assertIsNotNone(User.objects.get(username="dummy_teacher2"))
-        self.assertEqual(User.objects.get(username="dummy_teacher2").first_name, "dummy")
-        self.assertEqual(User.objects.get(username="dummy_teacher2").last_name, "teacher")
+        self.assertEqual(
+            User.objects.get(username="dummy_teacher2").first_name, "dummy"
+        )
+        self.assertEqual(
+            User.objects.get(username="dummy_teacher2").last_name, "teacher"
+        )
         self.assertRedirects(response, reverse(UrlName.REGISTER_PIVOT.value))
 
     def test_register_new_user_invalid_credentials_passwords_different(self):
@@ -82,8 +98,12 @@ class TestRegistration(TestCase):
         """
         # Set test parameters
         url = reverse(UrlName.REGISTER.value)
-        form_data = {"username": "dummy_teacher2", "email": "dummy_teacher@dt.co.uk",
-                     "password1": "DIFFERENT_TO_PW_2", "password2": "dt123dt123"}
+        form_data = {
+            "username": "dummy_teacher2",
+            "email": "dummy_teacher@dt.co.uk",
+            "password1": "DIFFERENT_TO_PW_2",
+            "password2": "dt123dt123",
+        }
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
@@ -155,7 +175,9 @@ class TestRegistration(TestCase):
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
         user_school_id = profile.school.school_access_key
-        self.assertEqual(user_school_id, 123457)  # Since 123456 is the max access key in the fixture
+        self.assertEqual(
+            user_school_id, 123457
+        )  # Since 123456 is the max access key in the fixture
         self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN)
         self.assertTrue(profile.approved_by_school_admin)
 
@@ -171,7 +193,10 @@ class TestRegistration(TestCase):
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {"school_access_key": 123456, "position": models.UserRole.TEACHER.value}
+        form_data = {
+            "school_access_key": 123456,
+            "position": models.UserRole.TEACHER.value,
+        }
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
@@ -196,11 +221,16 @@ class TestRegistration(TestCase):
         # Set test parameters
         self.login_dummy_user()
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {"school_access_key": 765432, "position": models.UserRole.PUPIL.value}
+        form_data = {
+            "school_access_key": 765432,
+            "position": models.UserRole.PUPIL.value,
+        }
 
         # Execute test unit
         response = self.client.post(url, data=form_data)
 
         # Check outcome
-        self.assertEqual(response.context["error_message"], "Access key not found, please try again")
+        self.assertEqual(
+            response.context["error_message"], "Access key not found, please try again"
+        )
         self.assertEqual(response.context["form"], forms.ProfileRegistration)

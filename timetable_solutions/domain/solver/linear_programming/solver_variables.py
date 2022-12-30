@@ -14,7 +14,9 @@ from domain.solver.solver_input_data import TimetableSolverInputs
 
 # Keys for the different dictionaries used to store variables
 var_key = namedtuple("var_key", "lesson_id slot_id")  # Decision variables
-doubles_var_key = namedtuple("doubles_var_key", "lesson_id slot_1_id slot_2_id")  # Double period variables
+doubles_var_key = namedtuple(
+    "doubles_var_key", "lesson_id slot_1_id slot_2_id"
+)  # Double period variables
 
 
 class TimetableSolverVariables:
@@ -22,8 +24,7 @@ class TimetableSolverVariables:
     Class to define the PuLP variables, and implement the methods needed to instantiate and process them.
     """
 
-    def __init__(self,
-                 inputs: TimetableSolverInputs):
+    def __init__(self, inputs: TimetableSolverInputs):
         """
         :param inputs: data used to create the data - one decision variable is created per unique (class, slot)
         """
@@ -32,7 +33,9 @@ class TimetableSolverVariables:
         self.decision_variables = self._get_decision_variables()
         self.double_period_variables = self._get_double_period_variables()
 
-    def _get_decision_variables(self, strip: bool = True) -> dict[var_key, lp.LpVariable]:
+    def _get_decision_variables(
+        self, strip: bool = True
+    ) -> dict[var_key, lp.LpVariable]:
         """
         Method to get the pulp decision variables used to solve the timetabling problem.
         For each (lesson, timetable slot) pair, there is a binary variable indicating whether that class happens
@@ -40,15 +43,22 @@ class TimetableSolverVariables:
         :return - Dictionary of pulp variables, indexed by unique class / timetable slot tuples
         """
         variables = {
-            var_key(lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id): lp.LpVariable(
-                f"{lesson.lesson_id}_occurs_at_slot_{timetable_slot.slot_id}", cat="Binary") for
-            lesson in self._inputs.lessons for timetable_slot in self._inputs.timetable_slots
+            var_key(
+                lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id
+            ): lp.LpVariable(
+                f"{lesson.lesson_id}_occurs_at_slot_{timetable_slot.slot_id}",
+                cat="Binary",
+            )
+            for lesson in self._inputs.lessons
+            for timetable_slot in self._inputs.timetable_slots
         }
         if strip:
             self._strip_decision_variables(variables=variables)
         return variables
 
-    def _strip_decision_variables(self, variables: dict[var_key, lp.LpVariable]) -> None:
+    def _strip_decision_variables(
+        self, variables: dict[var_key, lp.LpVariable]
+    ) -> None:
         """
         Method to remove variables corresponding to times when we already know lessons occur.
         (i.e. we know their value must be 1, so do not want to slow down the solver unnecessarily.)
@@ -57,7 +67,9 @@ class TimetableSolverVariables:
         for lesson in self._inputs.lessons:
             for timetable_slot in lesson.user_defined_time_slots.all():
                 if timetable_slot in lesson.user_defined_time_slots.all():
-                    variable_key = var_key(lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id)
+                    variable_key = var_key(
+                        lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id
+                    )
                     variables.pop(variable_key)
 
     # DEPENDENT VARIABLES
@@ -75,11 +87,14 @@ class TimetableSolverVariables:
             for consecutive_slot_pair in self._inputs.consecutive_slots:
 
                 key = doubles_var_key(
-                    lesson_id=lesson.lesson_id, slot_1_id=consecutive_slot_pair[0].slot_id,
-                    slot_2_id=consecutive_slot_pair[1].slot_id
+                    lesson_id=lesson.lesson_id,
+                    slot_1_id=consecutive_slot_pair[0].slot_id,
+                    slot_2_id=consecutive_slot_pair[1].slot_id,
                 )
-                var_name = f"{lesson.lesson_id}_double_period_at_{consecutive_slot_pair[0].slot_id}_" \
-                           f"{consecutive_slot_pair[1].slot_id}"
+                var_name = (
+                    f"{lesson.lesson_id}_double_period_at_{consecutive_slot_pair[0].slot_id}_"
+                    f"{consecutive_slot_pair[1].slot_id}"
+                )
                 variable = lp.LpVariable(var_name, cat="Binary")
                 variables[key] = variable
 

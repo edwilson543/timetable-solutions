@@ -18,13 +18,19 @@ class PupilQuerySet(models.QuerySet):
 
     def get_school_year_group(self, school_id: int, year_group: int) -> "PupilQuerySet":
         """method returning the queryset of pupils belonging to a specific school and year group"""
-        query_set = self.filter(models.Q(school_id=school_id) & models.Q(year_group=year_group))
+        query_set = self.filter(
+            models.Q(school_id=school_id) & models.Q(year_group=year_group)
+        )
         query_set.order_by("surname")
         return query_set
 
-    def get_specific_pupils(self, school_id: int, pupil_ids: set[int]) -> "PupilQuerySet":
+    def get_specific_pupils(
+        self, school_id: int, pupil_ids: set[int]
+    ) -> "PupilQuerySet":
         """Method returning a queryset of pupils with the passed set of ids"""
-        return self.filter(models.Q(school_id=school_id) & models.Q(pupil_id__in=pupil_ids))
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(pupil_id__in=pupil_ids)
+        )
 
     def get_individual_pupil(self, school_id: int, pupil_id: int) -> "Pupil":
         """Method returning an individual Pupil"""
@@ -62,12 +68,14 @@ class Pupil(models.Model):
         """
         Django Meta class for the Pupil model
         """
+
         unique_together = [["school", "pupil_id"]]
 
     class Constant:
         """
         Additional constants to store about the Pupil model (that aren't an option in Meta)
         """
+
         human_string_singular = "pupil"
         human_string_plural = "pupils"
 
@@ -82,12 +90,22 @@ class Pupil(models.Model):
     # FACTORY METHODS
     @classmethod
     def create_new(
-            cls, school_id: int, pupil_id: int, firstname: str, surname: str, year_group: int
+        cls,
+        school_id: int,
+        pupil_id: int,
+        firstname: str,
+        surname: str,
+        year_group: int,
     ) -> "Pupil":
         """Method to create a new Pupil instance."""
         year_group = cls.YearGroup(year_group).value
-        pupil = cls.objects.create(school_id=school_id, pupil_id=pupil_id, firstname=firstname, surname=surname,
-                                   year_group=year_group)
+        pupil = cls.objects.create(
+            school_id=school_id,
+            pupil_id=pupil_id,
+            firstname=firstname,
+            surname=surname,
+            year_group=year_group,
+        )
         pupil.full_clean()
         return pupil
 
@@ -114,7 +132,9 @@ class Pupil(models.Model):
         elif n_commitments == 0:
             return False
         else:
-            raise ValueError(f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}")
+            raise ValueError(
+                f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
+            )
 
     # QUERY METHODS
     def get_lessons_per_week(self) -> int:

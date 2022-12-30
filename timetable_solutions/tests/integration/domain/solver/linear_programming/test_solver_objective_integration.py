@@ -15,8 +15,14 @@ from domain import solver as slvr
 
 class TestSolverConstraints(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution",
+    ]
 
     def test_add_objective_to_problem(self):
         """
@@ -26,14 +32,22 @@ class TestSolverConstraints(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
-                                          allow_triple_periods_and_above=False,
-                                          optimal_free_period_time_of_day=dt.time(hour=9))
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=False,
+            allow_triple_periods_and_above=False,
+            optimal_free_period_time_of_day=dt.time(hour=9),
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         variables = slvr.TimetableSolverVariables(inputs=data)
-        objective_maker = slvr.TimetableSolverObjective(inputs=data, variables=variables)
+        objective_maker = slvr.TimetableSolverObjective(
+            inputs=data, variables=variables
+        )
 
-        dummy_problem = lp.LpProblem()  # In real life, will be the LpProblem subclass carried by TimetableSolver
+        dummy_problem = (
+            lp.LpProblem()
+        )  # In real life, will be the LpProblem subclass carried by TimetableSolver
 
         # Execute test unit
         objective_maker.add_objective_to_problem(problem=dummy_problem)
@@ -43,6 +57,8 @@ class TestSolverConstraints(test.TestCase):
 
         assert isinstance(objective, lp.LpAffineExpression)
         # The slot which occurs at the free period slot has 0 zero coefficients so isn't included, hence:
-        assert len(objective) == (7 - 1) * 5 * 12  # =  (slots per day - 1) * days of week * unsolved classes
+        assert (
+            len(objective) == (7 - 1) * 5 * 12
+        )  # =  (slots per day - 1) * days of week * unsolved classes
         assert objective.constant == 0.0
         assert objective.name == "total_timetabling_objective"

@@ -16,7 +16,13 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
     All tests in this class use files with valid content / structure.
     """
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+    ]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
 
     def test_upload_lessons_file_to_database_valid_upload(self):
@@ -37,31 +43,56 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
         self.assertEqual(upload_processor.n_model_instances_created, 24)
 
         # Test the database is as expected
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(all_lessons.count(), 24)
 
-        total_solver_required_slots = sum(lesson.get_n_solver_slots_required() for lesson in all_lessons)
+        total_solver_required_slots = sum(
+            lesson.get_n_solver_slots_required() for lesson in all_lessons
+        )
         self.assertEqual(total_solver_required_slots, 100)  # = (8 * 8) + (9 * 4)
 
-        total_solver_required_doubles = sum(lesson.get_n_solver_double_periods_required() for lesson in all_lessons)
+        total_solver_required_doubles = sum(
+            lesson.get_n_solver_double_periods_required() for lesson in all_lessons
+        )
         self.assertEqual(total_solver_required_doubles, 36)
 
-        total_user_defined_slots = sum(lesson.user_defined_time_slots.all().count() for lesson in all_lessons)
+        total_user_defined_slots = sum(
+            lesson.user_defined_time_slots.all().count() for lesson in all_lessons
+        )
         self.assertEqual(total_user_defined_slots, 60)
 
-        lessons_with_teachers = sum(1 for lessons in all_lessons if lessons.teacher is not None)
+        lessons_with_teachers = sum(
+            1 for lessons in all_lessons if lessons.teacher is not None
+        )
         self.assertEqual(lessons_with_teachers, 23)  # All 24, except for 'PUPILS_LUNCH'
 
-        lessons_with_classrooms = sum(1 for lessons in all_lessons if lessons.classroom is not None)
+        lessons_with_classrooms = sum(
+            1 for lessons in all_lessons if lessons.classroom is not None
+        )
         self.assertEqual(lessons_with_classrooms, 12)
 
         total_non_unique_pupils = sum(lesson.pupils.count() for lesson in all_lessons)
-        self.assertEqual(total_non_unique_pupils, 24)  # 18 from actual lessons, 6 from 'PUPILS_LUNCH'
+        self.assertEqual(
+            total_non_unique_pupils, 24
+        )  # 18 from actual lessons, 6 from 'PUPILS_LUNCH'
 
         # Spot check on one specific Lesson
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        self.assertQuerysetEqual(lesson.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
-        self.assertEqual(lesson.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        self.assertQuerysetEqual(
+            lesson.pupils.all(),
+            models.Pupil.objects.filter(pupil_id__in={1, 2}),
+            ordered=False,
+        )
+        self.assertEqual(
+            lesson.teacher,
+            models.Teacher.objects.get_individual_teacher(
+                school_id=123456, teacher_id=1
+            ),
+        )
 
 
 class TestLessonFileUploadProcessorInvalidUploads(TestCase):
@@ -69,7 +100,13 @@ class TestLessonFileUploadProcessorInvalidUploads(TestCase):
     Tests for invalid lesson file uploads with invalid content / structure.
     """
 
-    fixtures = ["user_school_profile.json", "pupils.json", "teachers.json", "timetable.json", "classrooms.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "classrooms.json",
+    ]
     invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
     def run_test_for_lesson_file_with_error(self, filename: str) -> str:
@@ -85,10 +122,13 @@ class TestLessonFileUploadProcessorInvalidUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.LessonFileUploadProcessor(
-            csv_file=upload_file, school_access_key=123456)
+            csv_file=upload_file, school_access_key=123456
+        )
 
         # Check the outcome
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(all_lessons.count(), 0)
         self.assertTrue(not upload_processor.upload_successful)
 

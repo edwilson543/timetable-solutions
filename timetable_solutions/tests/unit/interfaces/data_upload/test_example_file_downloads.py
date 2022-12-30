@@ -29,7 +29,10 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.PUPILS.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.PUPILS.value}"'
+        )
 
     def test_download_teacher_file_successful(self):
         """
@@ -43,7 +46,10 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.TEACHERS.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.TEACHERS.value}"'
+        )
 
     def test_download_classroom_file_successful(self):
         """
@@ -57,7 +63,10 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.CLASSROOMS.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.CLASSROOMS.value}"'
+        )
 
     def test_download_timetable_file_successful(self):
         """
@@ -71,7 +80,10 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.TIMETABLE.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.TIMETABLE.value}"'
+        )
 
     def test_download_lesson_file_successful(self):
         """
@@ -85,7 +97,10 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.LESSON.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.LESSON.value}"'
+        )
 
     def test_download_pupil_file_successful_via_post_request(self):
         """
@@ -99,4 +114,7 @@ class TestExampleFileDownloads(test.TestCase):
 
         # Check outcome
         assert response.headers["Content-Type"] == "text/csv"
-        assert response.headers["Content-Disposition"] == f'attachment; filename="{ExampleFile.PUPILS.value}"'
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.PUPILS.value}"'
+        )

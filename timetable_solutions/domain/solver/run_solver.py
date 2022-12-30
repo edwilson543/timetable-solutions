@@ -10,8 +10,11 @@ from .solver_output_data import TimetableSolverOutcome
 from .linear_programming.solver import TimetableSolver
 
 
-def produce_timetable_solutions(school_access_key: int, solution_specification: SolutionSpecification,
-                                clear_existing: bool = True) -> list[str]:
+def produce_timetable_solutions(
+    school_access_key: int,
+    solution_specification: SolutionSpecification,
+    clear_existing: bool = True,
+) -> list[str]:
     """
     Function to be used by the web app to produce the timetable solutions.
     A button is clicked, creates a POST request handled by the CreateTimetable view which then calls this function,
@@ -25,7 +28,9 @@ def produce_timetable_solutions(school_access_key: int, solution_specification: 
     if clear_existing:
         models.Lesson.delete_solver_solution_for_school(school_id=school_access_key)
 
-    input_data = TimetableSolverInputs(school_id=school_access_key, solution_specification=solution_specification)
+    input_data = TimetableSolverInputs(
+        school_id=school_access_key, solution_specification=solution_specification
+    )
     if len(input_data.error_messages) > 0:
         return input_data.error_messages
 

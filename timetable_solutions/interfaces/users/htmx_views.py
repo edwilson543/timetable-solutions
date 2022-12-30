@@ -20,6 +20,7 @@ class FieldStatus(enum.StrEnum):
     """
     Enumeration of the icons displayed to users for inline field validation.
     """
+
     VALID = "✅"
     INVALID = "🚫"
     EMPTY = ""
@@ -41,7 +42,9 @@ def username_field_view(request: typing_utils.HtmxHttpRequest) -> http.HttpRespo
 
             try:
                 validators.ASCIIUsernameValidator()(username)
-                username_exists = auth_models.User.objects.filter(username=username).exists()
+                username_exists = auth_models.User.objects.filter(
+                    username=username
+                ).exists()
             except exceptions.ValidationError:
                 username_valid = False
 

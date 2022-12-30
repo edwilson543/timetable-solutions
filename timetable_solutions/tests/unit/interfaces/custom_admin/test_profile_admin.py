@@ -13,8 +13,14 @@ from interfaces.custom_admin import admin
 
 class TestBaseModelAdmin(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     def test_approve_user_accounts(self):
         """
@@ -23,16 +29,24 @@ class TestBaseModelAdmin(test.TestCase):
         # Add an approved user to the same school
         other_user = User.objects.create_user(username="test", password="test")
         models.Profile.create_and_save_new(
-            user=other_user, school_id=123456, role=models.UserRole.TEACHER, approved_by_school_admin=False)
+            user=other_user,
+            school_id=123456,
+            role=models.UserRole.TEACHER,
+            approved_by_school_admin=False,
+        )
 
         # Create a request to the admin index page
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
         request.user = User.objects.get(username="dummy_teacher")
-        profile_admin = admin.ProfileAdmin(model=models.Profile, admin_site=admin.user_admin)
+        profile_admin = admin.ProfileAdmin(
+            model=models.Profile, admin_site=admin.user_admin
+        )
 
         # Execute test unit
-        profile_queryset = models.Profile.objects.get_all_instances_for_school(school_id=123456)
+        profile_queryset = models.Profile.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         profile_admin.approve_user_accounts(request=request, queryset=profile_queryset)
 
         # Check outcome
@@ -47,7 +61,9 @@ class TestBaseModelAdmin(test.TestCase):
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
         request.user = User.objects.get(username="dummy_teacher")
-        profile_admin = admin.ProfileAdmin(model=models.Profile, admin_site=admin.user_admin)
+        profile_admin = admin.ProfileAdmin(
+            model=models.Profile, admin_site=admin.user_admin
+        )
 
         # Execute test unit
         actions = profile_admin.get_actions(request=request)
@@ -66,18 +82,26 @@ class TestBaseModelAdmin(test.TestCase):
         other_user = User.objects.create_user(username="test", password="test")
         models.School.create_new(school_name="test", school_access_key=100001)
         models.Profile.create_and_save_new(
-            user=other_user, school_id=100001, role=models.UserRole.TEACHER, approved_by_school_admin=False)
+            user=other_user,
+            school_id=100001,
+            role=models.UserRole.TEACHER,
+            approved_by_school_admin=False,
+        )
 
         # Create a request to the admin index page
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
         request.user = User.objects.get(username="dummy_teacher")
-        profile_admin = admin.ProfileAdmin(model=models.Profile, admin_site=admin.user_admin)
+        profile_admin = admin.ProfileAdmin(
+            model=models.Profile, admin_site=admin.user_admin
+        )
 
         # Execute test unit
         queryset = profile_admin.get_queryset(request=request)
 
         # Check outcome
-        expected_queryset = models.Profile.objects.get_all_instances_for_school(school_id=123456)
+        expected_queryset = models.Profile.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert queryset.count() == 1
         self.assertQuerysetEqual(queryset, expected_queryset, ordered=False)

@@ -20,14 +20,19 @@ class Command(management.base.BaseCommand):
         Method adding arguments to the command.
         arg: --include_solution - whether to load in the Lesson
         """
-        parser.add_argument("--include_solution", action="store_true",  # store_true stores the arg as a boolean
-                            help="Include if you also want to pre-populate a solution for the test dataset.")
+        parser.add_argument(
+            "--include_solution",
+            action="store_true",  # store_true stores the arg as a boolean
+            help="Include if you also want to pre-populate a solution for the test dataset.",
+        )
 
     def handle(self, *args: str, **kwargs: str) -> None:
         """
         Method carrying out the processing relevant to this command
         """
-        management.call_command("loaddata", "user_school_profile.json")  # All other models depend on this fixture
+        management.call_command(
+            "loaddata", "user_school_profile.json"
+        )  # All other models depend on this fixture
         management.call_command("loaddata", "classrooms.json")
         management.call_command("loaddata", "pupils.json")
         management.call_command("loaddata", "teachers.json")

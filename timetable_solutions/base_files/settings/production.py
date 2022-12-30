@@ -14,8 +14,11 @@ from .base_settings import *
 
 
 # Basic django settings
-ALLOWED_HOSTS = ["0.0.0.0", "localhost",  # For running production environment locally with docker
-                 ".timetable-solutions.com"]
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "localhost",  # For running production environment locally with docker
+    ".timetable-solutions.com",
+]
 
 # Tell django the htp header indicating whether the request came from https
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

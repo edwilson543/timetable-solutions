@@ -18,6 +18,7 @@ from data import models
 
 class TestTimetableSlotQuerySet(test.TestCase):
     """Unit tests for the TimetableSlot QuerySet"""
+
     fixtures = ["user_school_profile.json", "timetable.json"]
 
     def test_get_timeslots_on_given_day(self):
@@ -26,7 +27,9 @@ class TestTimetableSlotQuerySet(test.TestCase):
         monday = models.WeekDay.MONDAY.value
 
         # Execute test unit
-        slots = models.TimetableSlot.objects.get_timeslots_on_given_day(school_id=123456, day_of_week=monday)
+        slots = models.TimetableSlot.objects.get_timeslots_on_given_day(
+            school_id=123456, day_of_week=monday
+        )
 
         # Check outcome
         assert slots.count() == 7
@@ -34,6 +37,7 @@ class TestTimetableSlotQuerySet(test.TestCase):
 
 class TestTimetableSlot(test.TestCase):
     """Unit tests for the TimetableSlot model"""
+
     fixtures = ["user_school_profile.json", "timetable.json"]
 
     # FACTORY METHOD TESTS
@@ -42,11 +46,18 @@ class TestTimetableSlot(test.TestCase):
         Tests that we can create and save a TimetableSlot via the create_new method
         """
         # Execute test unit
-        slot = models.TimetableSlot.create_new(school_id=123456, slot_id=100, day_of_week=1,  # Slot 100 available
-                                               period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
+        slot = models.TimetableSlot.create_new(
+            school_id=123456,
+            slot_id=100,
+            day_of_week=1,  # Slot 100 available
+            period_starts_at=dt.time(hour=9),
+            period_duration=dt.timedelta(hours=1),
+        )
 
         # Check outcome
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert slot in all_slots
 
     def test_create_new_fails_when_timetable_slot_id_not_unique_for_school(self):
@@ -57,8 +68,12 @@ class TestTimetableSlot(test.TestCase):
         # Execute test unit
         with pytest.raises(IntegrityError):
             models.TimetableSlot.create_new(
-                school_id=123456, slot_id=1,  # Note that slot 1 is already taken
-                day_of_week=1, period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
+                school_id=123456,
+                slot_id=1,  # Note that slot 1 is already taken
+                day_of_week=1,
+                period_starts_at=dt.time(hour=9),
+                period_duration=dt.timedelta(hours=1),
+            )
 
     def test_create_new_fails_with_invalid_day_of_week(self):
         """
@@ -68,9 +83,12 @@ class TestTimetableSlot(test.TestCase):
         # Execute test unit
         with pytest.raises(ValueError):
             models.TimetableSlot.create_new(
-                school_id=123456, slot_id=100,  # Note that slot 100 is available
+                school_id=123456,
+                slot_id=100,  # Note that slot 100 is available
                 day_of_week=100,  # Invalid day of week
-                period_starts_at=dt.time(hour=9), period_duration=dt.timedelta(hours=1))
+                period_starts_at=dt.time(hour=9),
+                period_duration=dt.timedelta(hours=1),
+            )
 
     def test_delete_all_instances_for_school_successful(self):
         """
@@ -83,7 +101,9 @@ class TestTimetableSlot(test.TestCase):
         deleted_ref = outcome[1]
         assert deleted_ref["data.TimetableSlot"] == 35
 
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_slots.count() == 0
 
     # QUERY METHOD TESTS
@@ -93,7 +113,9 @@ class TestTimetableSlot(test.TestCase):
         monday = models.WeekDay.MONDAY.value
 
         # Execute test unit
-        slots = models.TimetableSlot.get_timeslot_ids_on_given_day(school_id=123456, day_of_week=monday)
+        slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
+            school_id=123456, day_of_week=monday
+        )
 
         # Check outcome
         assert set(slots) == {1, 6, 11, 16, 21, 26, 31}
@@ -104,10 +126,14 @@ class TestTimetableSlot(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        expected_times = [dt.time(hour=9 + x) for x in range(0, 7)]  # Fixture has 9:00, 10:00, ... , 15:00
+        expected_times = [
+            dt.time(hour=9 + x) for x in range(0, 7)
+        ]  # Fixture has 9:00, 10:00, ... , 15:00
 
         # Execute test unit
-        timeslots = models.TimetableSlot.get_unique_start_times(school_id=school_access_key)
+        timeslots = models.TimetableSlot.get_unique_start_times(
+            school_id=school_access_key
+        )
 
         # Check outcome
         assert timeslots == expected_times
@@ -117,12 +143,20 @@ class TestTimetableSlot(test.TestCase):
         Tests that consecutive time slots are correctly identified.
         """
         # Set test parameters
-        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
-        ten_til_eleven_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=6)
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        ten_til_eleven_mon = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=6
+        )
 
         # Execute test unit
-        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=ten_til_eleven_mon)
-        consecutive_2 = ten_til_eleven_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(
+            other_slot=ten_til_eleven_mon
+        )
+        consecutive_2 = ten_til_eleven_mon.check_if_slots_are_consecutive(
+            other_slot=nine_til_ten_mon
+        )
 
         # Check outcome
         assert consecutive_1 and consecutive_2
@@ -132,12 +166,20 @@ class TestTimetableSlot(test.TestCase):
         Tests that slots on different days are not called consecutive
         """
         # Set test parameters
-        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
-        nine_til_ten_tue = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=2)
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        nine_til_ten_tue = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=2
+        )
 
         # Execute test unit
-        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_tue)
-        consecutive_2 = nine_til_ten_tue.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(
+            other_slot=nine_til_ten_tue
+        )
+        consecutive_2 = nine_til_ten_tue.check_if_slots_are_consecutive(
+            other_slot=nine_til_ten_mon
+        )
 
         # Check outcome
         assert (not consecutive_1) and (not consecutive_2)
@@ -147,12 +189,20 @@ class TestTimetableSlot(test.TestCase):
         Tests that slots not starting / ending at the same time are not called consecutive
         """
         # Set test parameters
-        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
-        eleven_til_twelve_mon = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=11)
+        nine_til_ten_mon = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        eleven_til_twelve_mon = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=11
+        )
 
         # Execute test unit
-        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(other_slot=eleven_til_twelve_mon)
-        consecutive_2 = eleven_til_twelve_mon.check_if_slots_are_consecutive(other_slot=nine_til_ten_mon)
+        consecutive_1 = nine_til_ten_mon.check_if_slots_are_consecutive(
+            other_slot=eleven_til_twelve_mon
+        )
+        consecutive_2 = eleven_til_twelve_mon.check_if_slots_are_consecutive(
+            other_slot=nine_til_ten_mon
+        )
 
         # Check outcome
         assert (not consecutive_1) and (not consecutive_2)
@@ -163,7 +213,9 @@ class TestTimetableSlot(test.TestCase):
         Tests that the end time property for a timetable slot is working
         """
         # Set test parameters
-        slot = models.TimetableSlot.objects.get(pk=1)  # Starts at 9AM, lasting for 1 Hour
+        slot = models.TimetableSlot.objects.get(
+            pk=1
+        )  # Starts at 9AM, lasting for 1 Hour
 
         # Execute test unit
         end_time = slot.period_ends_at

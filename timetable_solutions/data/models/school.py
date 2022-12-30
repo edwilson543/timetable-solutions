@@ -6,6 +6,7 @@ from django.db import models
 
 class SchoolQuerySet(models.QuerySet):
     """Custom queryset manager for the School model"""
+
     def get_individual_school(self, school_id: int) -> "School":
         """Method returning a specific School instance"""
         return self.get(school_access_key=school_id)
@@ -15,6 +16,7 @@ class School(models.Model):
     """
     Model representing a school_id, with every other model associated with one school_id instance via a foreign key
     """
+
     school_access_key = models.PositiveIntegerField(primary_key=True)
     school_name = models.CharField(max_length=50)
 
@@ -27,13 +29,17 @@ class School(models.Model):
 
     # FACTORY METHODS
     @classmethod
-    def create_new(cls, school_name: str, school_access_key: int | None = None) -> "School":
+    def create_new(
+        cls, school_name: str, school_access_key: int | None = None
+    ) -> "School":
         """
         Method to create a new School instance. If no access key is given, then one is generated.
         """
         if school_access_key is None:
             school_access_key = cls.get_new_access_key()
-        school = cls.objects.create(school_access_key=school_access_key, school_name=school_name)
+        school = cls.objects.create(
+            school_access_key=school_access_key, school_name=school_name
+        )
         school.full_clean()
         return school
 

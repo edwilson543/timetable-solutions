@@ -14,6 +14,7 @@ class UploadStatus(StrEnum):
     """
     Enumeration of the possible upload statuses that can apply to an individual file that the user needs to upload
     """
+
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
     DISALLOWED = "disallowed"  # i.e. dependent on another file's completion status being complete, which is incomplete
@@ -36,35 +37,48 @@ class UploadStatusTracker:
     currently disallowed.
     All instance attributes are stored as UploadStatus member values, however are passed to __init__ as booleans.
     """
-    def __init__(self,
-                 pupils: bool,
-                 teachers: bool,
-                 classrooms: bool,
-                 timetable: bool,
-                 lessons: bool):
+
+    def __init__(
+        self,
+        pupils: bool,
+        teachers: bool,
+        classrooms: bool,
+        timetable: bool,
+        lessons: bool,
+    ):
         self.pupils = UploadStatus.get_upload_status_from_bool(upload_status=pupils)
         self.teachers = UploadStatus.get_upload_status_from_bool(upload_status=teachers)
-        self.classrooms = UploadStatus.get_upload_status_from_bool(upload_status=classrooms)
-        self.timetable = UploadStatus.get_upload_status_from_bool(upload_status=timetable)
+        self.classrooms = UploadStatus.get_upload_status_from_bool(
+            upload_status=classrooms
+        )
+        self.timetable = UploadStatus.get_upload_status_from_bool(
+            upload_status=timetable
+        )
 
-        self.lessons = self._check_if_upload_allowed_then_get_status(class_upload_status=lessons)
+        self.lessons = self._check_if_upload_allowed_then_get_status(
+            class_upload_status=lessons
+        )
 
-    def _check_if_upload_allowed_then_get_status(self, class_upload_status: bool) -> UploadStatus:
+    def _check_if_upload_allowed_then_get_status(
+        self, class_upload_status: bool
+    ) -> UploadStatus:
         """
         Method to get the upload status of the  uploads. If the user hasn't uploaded all the
         required tables that these tables reference, then we disallow these uploads until they have done.
         :return the uploads status of lessons, given an initial screening
         """
         able_to_add_class_data = (
-                self.pupils == UploadStatus.COMPLETE.value and
-                self.teachers == UploadStatus.COMPLETE.value and
-                self.classrooms == UploadStatus.COMPLETE.value and
-                self.timetable == UploadStatus.COMPLETE.value
+            self.pupils == UploadStatus.COMPLETE.value
+            and self.teachers == UploadStatus.COMPLETE.value
+            and self.classrooms == UploadStatus.COMPLETE.value
+            and self.timetable == UploadStatus.COMPLETE.value
         )
         if not able_to_add_class_data:
             return UploadStatus.DISALLOWED
         else:
-            return UploadStatus.get_upload_status_from_bool(upload_status=class_upload_status)
+            return UploadStatus.get_upload_status_from_bool(
+                upload_status=class_upload_status
+            )
 
     @classmethod
     def get_upload_status(cls, school: models.School) -> "UploadStatusTracker":
@@ -80,8 +94,11 @@ class UploadStatusTracker:
         lesson_upload_status = school.has_lesson_data
 
         upload_status = cls(
-            pupils=pupil_upload_status, teachers=teacher_upload_status, classrooms=classroom_upload_status,
-            timetable=timetable_upload_status, lessons=lesson_upload_status
+            pupils=pupil_upload_status,
+            teachers=teacher_upload_status,
+            classrooms=classroom_upload_status,
+            timetable=timetable_upload_status,
+            lessons=lesson_upload_status,
         )
 
         return upload_status
@@ -94,10 +111,10 @@ class UploadStatusTracker:
         create_timetables page to users.
         """
         all_complete = (
-                self.pupils == UploadStatus.COMPLETE.value and
-                self.teachers == UploadStatus.COMPLETE.value and
-                self.classrooms == UploadStatus.COMPLETE.value and
-                self.timetable == UploadStatus.COMPLETE.value and
-                self.lessons == UploadStatus.COMPLETE.value
+            self.pupils == UploadStatus.COMPLETE.value
+            and self.teachers == UploadStatus.COMPLETE.value
+            and self.classrooms == UploadStatus.COMPLETE.value
+            and self.timetable == UploadStatus.COMPLETE.value
+            and self.lessons == UploadStatus.COMPLETE.value
         )
         return all_complete

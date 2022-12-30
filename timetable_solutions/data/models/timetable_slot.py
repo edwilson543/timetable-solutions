@@ -13,6 +13,7 @@ from data.models.school import School
 
 class WeekDay(models.IntegerChoices):
     """Choices for the different days of the week a lesson can take place at"""
+
     MONDAY = 1, "Monday"
     TUESDAY = 2, "Tuesday"
     WEDNESDAY = 3, "Wednesday"
@@ -34,15 +35,21 @@ class TimetableSlotQuerySet(models.QuerySet):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(slot_id=slot_id))
 
-    def get_specific_timeslots(self, school_id: int,
-                               slot_ids: set[int]) -> "TimetableSlotQuerySet":
+    def get_specific_timeslots(
+        self, school_id: int, slot_ids: set[int]
+    ) -> "TimetableSlotQuerySet":
         """Method returning the slots at the given school, with the corresponding slot_ids"""
-        return self.filter(models.Q(school_id=school_id) & models.Q(slot_id__in=slot_ids))
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(slot_id__in=slot_ids)
+        )
 
-    def get_timeslots_on_given_day(self, school_id: int,
-                                   day_of_week: WeekDay) -> "TimetableSlotQuerySet":
+    def get_timeslots_on_given_day(
+        self, school_id: int, day_of_week: WeekDay
+    ) -> "TimetableSlotQuerySet":
         """Method returning the timetable slots for the school on the given day of the week"""
-        return self.filter(models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week))
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week)
+        )
 
 
 class TimetableSlot(models.Model):
@@ -61,6 +68,7 @@ class TimetableSlot(models.Model):
         """
         Django Meta class for the TimetableSlot model
         """
+
         ordering = ["day_of_week", "period_starts_at"]
         unique_together = [["school", "slot_id"]]
 
@@ -68,6 +76,7 @@ class TimetableSlot(models.Model):
         """
         Additional constants to store about the TimetableSlot model (that aren't an option in Meta)
         """
+
         human_string_singular = "timetable slot"
         human_string_plural = "timetable slots"
 
@@ -85,16 +94,29 @@ class TimetableSlot(models.Model):
 
     # FACTORIES
     @classmethod
-    def create_new(cls, school_id: int, slot_id: int, day_of_week: WeekDay, period_starts_at: dt.time,
-                   period_duration: dt.timedelta) -> "TimetableSlot":
+    def create_new(
+        cls,
+        school_id: int,
+        slot_id: int,
+        day_of_week: WeekDay,
+        period_starts_at: dt.time,
+        period_duration: dt.timedelta,
+    ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
             day_of_week = WeekDay(day_of_week).value
         except ValueError:
-            raise ValueError(f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
-                             f"{type(day_of_week)}")
-        slot = cls.objects.create(school_id=school_id, slot_id=slot_id, day_of_week=day_of_week,
-                                  period_starts_at=period_starts_at, period_duration=period_duration)
+            raise ValueError(
+                f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
+                f"{type(day_of_week)}"
+            )
+        slot = cls.objects.create(
+            school_id=school_id,
+            slot_id=slot_id,
+            day_of_week=day_of_week,
+            period_starts_at=period_starts_at,
+            period_duration=period_duration,
+        )
         slot.full_clean()
         return slot
 
@@ -110,12 +132,16 @@ class TimetableSlot(models.Model):
     # QUERIES
     @classmethod
     @lru_cache(maxsize=8)
-    def get_timeslot_ids_on_given_day(cls, school_id: int, day_of_week: WeekDay) -> list[int]:
+    def get_timeslot_ids_on_given_day(
+        cls, school_id: int, day_of_week: WeekDay
+    ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
         Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
         """
-        timeslots = cls.objects.get_timeslots_on_given_day(school_id=school_id, day_of_week=day_of_week)
+        timeslots = cls.objects.get_timeslots_on_given_day(
+            school_id=school_id, day_of_week=day_of_week
+        )
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids
 
@@ -127,7 +153,9 @@ class TimetableSlot(models.Model):
         """
         slots = cls.objects.get_all_instances_for_school(school_id=school_id)
         times = slots.values_list("period_starts_at", flat=True)
-        sorted_times = sorted(list(set(times)))  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
+        sorted_times = sorted(
+            list(set(times))
+        )  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
         return sorted_times
 
     def check_if_slots_are_consecutive(self, other_slot: "TimetableSlot") -> bool:
@@ -135,8 +163,9 @@ class TimetableSlot(models.Model):
         Method to check if a slot is consecutive with the passed 'other_slot'
         """
         same_day = self.day_of_week == other_slot.day_of_week
-        contiguous_time = ((self.period_starts_at == other_slot.period_ends_at) or
-                           (self.period_ends_at == other_slot.period_starts_at))
+        contiguous_time = (self.period_starts_at == other_slot.period_ends_at) or (
+            self.period_ends_at == other_slot.period_starts_at
+        )
         return same_day and contiguous_time
 
     # PROPERTIES
@@ -145,5 +174,8 @@ class TimetableSlot(models.Model):
         """
         Property calculating the time at which a timetable slot ends.
         """
-        end_datetime = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at) + self.period_duration
+        end_datetime = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
+            + self.period_duration
+        )
         return end_datetime.time()

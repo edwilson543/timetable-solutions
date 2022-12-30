@@ -22,7 +22,9 @@ class TestClassroom(test.TestCase):
         school = models.School.create_new(school_name="Test")
 
         # Check outcome
-        assert school.school_access_key == 123457  # Since the max access key in the fixture is 123456
+        assert (
+            school.school_access_key == 123457
+        )  # Since the max access key in the fixture is 123456
 
     # MISCELLANEOUS METHOD TESTS
     def test_get_new_access_key_equals_fixture_access_key_plus_one(self):

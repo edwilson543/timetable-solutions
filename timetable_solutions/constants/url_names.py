@@ -15,6 +15,7 @@ class UrlName(StrEnum):
     Note however that some django html templates access the string versions via the {% url <url_name> %} tag, so these
     would need updating.
     """
+
     # Users app
     DASHBOARD = "dashboard"
     LOGIN = "login"
@@ -61,7 +62,9 @@ class UrlName(StrEnum):
     PUPIL_TT_PDF_DOWNLOAD = "pupil_tt_pdf"  # <----------|
     TEACHERS_NAVIGATOR = "teachers_navigator"
     TEACHER_TIMETABLE = "teacher_timetable"  # |---------->
-    TEACHER_TT_CSV_DOWNLOAD = "teacher_tt_csv"  # Note reverse also requires a teacher id
+    TEACHER_TT_CSV_DOWNLOAD = (
+        "teacher_tt_csv"  # Note reverse also requires a teacher id
+    )
     TEACHER_TT_PDF_DOWNLOAD = "teacher_tt_pdf"  # <----------|
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 

@@ -15,8 +15,14 @@ from domain import solver as slvr
 
 class TestSolverConstraints(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution",
+    ]
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -27,11 +33,17 @@ class TestSolverConstraints(test.TestCase):
         Note that we include a default solution specification also within this method.
         """
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                          allow_triple_periods_and_above=True)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True,
+            allow_triple_periods_and_above=True,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         variables = slvr.TimetableSolverVariables(inputs=data)
-        constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
+        constraint_maker = slvr.TimetableSolverConstraints(
+            inputs=data, variables=variables
+        )
         return constraint_maker
 
     def test_get_all_fulfillment_constraints(self):
@@ -48,8 +60,12 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 35  # Since each decision variable is included in the sum
-            assert constraint.constant < 0  # Even if fixed lessons occupy the slots, should still be some free vars
+            assert (
+                len(constraint) == 35
+            )  # Since each decision variable is included in the sum
+            assert (
+                constraint.constant < 0
+            )  # Even if fixed lessons occupy the slots, should still be some free vars
             constraint_count += 1
         assert constraint_count == 12
 
@@ -62,19 +78,29 @@ class TestSolverConstraints(test.TestCase):
         pup_constraints = constraint_maker._get_all_pupil_constraints()
 
         # Check outcome
-        existing_commitment_count = 0  # constraints where the LpAffineExpression must always equal 0
-        free_constraint_count = 0  # constraints where the LpAffineExpression could equal 1
+        existing_commitment_count = (
+            0  # constraints where the LpAffineExpression must always equal 0
+        )
+        free_constraint_count = (
+            0  # constraints where the LpAffineExpression could equal 1
+        )
         for constraint_tuple in pup_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
 
             constant = constraint_tuple[0].constant
             if constant == 0:
-                existing_commitment_count += 1  # Constraint specifies that the pupil is unavailable at the time
+                existing_commitment_count += (
+                    1  # Constraint specifies that the pupil is unavailable at the time
+                )
             elif constant == -1:
                 free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
 
-        assert free_constraint_count + existing_commitment_count == 6 * 35  # = n_pupils * n_timetable_slots
-        assert free_constraint_count == 6 * (35 - 5)  # Since we have 5 fixed lunch slots (deducted per pupil)
+        assert (
+            free_constraint_count + existing_commitment_count == 6 * 35
+        )  # = n_pupils * n_timetable_slots
+        assert free_constraint_count == 6 * (
+            35 - 5
+        )  # Since we have 5 fixed lunch slots (deducted per pupil)
 
     def test_get_all_teacher_constraints(self):
         """
@@ -85,8 +111,12 @@ class TestSolverConstraints(test.TestCase):
         teacher_constraints = constraint_maker._get_all_teacher_constraints()
 
         # Check outcome
-        existing_commitment_count = 0  # constraints where the LpAffineExpression must always equal 0
-        free_constraint_count = 0  # constraints where the LpAffineExpression could equal 1
+        existing_commitment_count = (
+            0  # constraints where the LpAffineExpression must always equal 0
+        )
+        free_constraint_count = (
+            0  # constraints where the LpAffineExpression could equal 1
+        )
         for constraint_tuple in teacher_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
 
@@ -96,8 +126,12 @@ class TestSolverConstraints(test.TestCase):
             elif constant == -1:
                 free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
 
-        assert free_constraint_count + existing_commitment_count == 11 * 35  # = n_teachers * n_timetable_slots
-        assert free_constraint_count == 11 * (35 - 5)  # Since we have 5 fixed lunch slots (deducted per teacher)
+        assert (
+            free_constraint_count + existing_commitment_count == 11 * 35
+        )  # = n_teachers * n_timetable_slots
+        assert free_constraint_count == 11 * (
+            35 - 5
+        )  # Since we have 5 fixed lunch slots (deducted per teacher)
 
     def test_get_all_classroom_constraints(self):
         """
@@ -108,18 +142,26 @@ class TestSolverConstraints(test.TestCase):
         classroom_constraints = constraint_maker._get_all_classroom_constraints()
 
         # Check outcome
-        existing_occupied_count = 0  # constraints where the LpAffineExpression must always equal 0
-        free_constraint_count = 0  # constraints where the LpAffineExpression could equal 1
+        existing_occupied_count = (
+            0  # constraints where the LpAffineExpression must always equal 0
+        )
+        free_constraint_count = (
+            0  # constraints where the LpAffineExpression could equal 1
+        )
         for constraint_tuple in classroom_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
 
             constant = constraint_tuple[0].constant
             if constant == 0:
-                existing_occupied_count += 1  # Constraint specifies that the classroom is occupied at the time
+                existing_occupied_count += (
+                    1  # Constraint specifies that the classroom is occupied at the time
+                )
             elif constant == -1:
                 free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
 
-        assert free_constraint_count + existing_occupied_count == 12 * 35  # = n_classrooms * n_timetable_slots
+        assert (
+            free_constraint_count + existing_occupied_count == 12 * 35
+        )  # = n_classrooms * n_timetable_slots
         assert free_constraint_count == 12 * 35  # No lunch hall in fixture for now...
 
     def test_get_all_double_period_fulfillment_constraints(self):
@@ -129,14 +171,18 @@ class TestSolverConstraints(test.TestCase):
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        dp_fulfillment_constraints = constraint_maker._get_all_double_period_fulfillment_constraints()
+        dp_fulfillment_constraints = (
+            constraint_maker._get_all_double_period_fulfillment_constraints()
+        )
 
         # Check the outcome
         constraint_count = 0
         for constraint_tuple in dp_fulfillment_constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 30  # Since each double-period variable is included in the sum
+            assert (
+                len(constraint) == 30
+            )  # Since each double-period variable is included in the sum
             constraint_count += 1
         assert constraint_count == 12
 
@@ -147,7 +193,9 @@ class TestSolverConstraints(test.TestCase):
         """
         # Execute test unit
         constraint_maker = self.get_constraint_maker()
-        dependency_constraints = constraint_maker._get_all_double_period_dependency_constraints()
+        dependency_constraints = (
+            constraint_maker._get_all_double_period_dependency_constraints()
+        )
 
         # Check the outcome
         constraint_count = 0
@@ -172,8 +220,10 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 13  # Since we have 7 decision variables and 6 double period variables in the mix
-            assert constraint.constant == - 1  # 1 Double period per day
+            assert (
+                len(constraint) == 13
+            )  # Since we have 7 decision variables and 6 double period variables in the mix
+            assert constraint.constant == -1  # 1 Double period per day
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number lessons
 
@@ -191,7 +241,9 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert len(constraint) == 6  # Since there are 6 double periods that can happen in each day
-            assert constraint.constant == - 1  # 1 Double period per day
+            assert (
+                len(constraint) == 6
+            )  # Since there are 6 double periods that can happen in each day
+            assert constraint.constant == -1  # 1 Double period per day
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number lessons

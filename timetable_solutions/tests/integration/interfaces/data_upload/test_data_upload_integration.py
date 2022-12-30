@@ -23,8 +23,13 @@ class TestFileUploadIntegration(test.TestCase):
 
     fixtures = ["user_school_profile.json"]
 
-    def upload_test_file(self, filename: str, url_name: UrlName, file_field_name: str,
-                         base_path: Path = TEST_DATA_DIR / "valid_uploads") -> http.HttpResponse:
+    def upload_test_file(
+        self,
+        filename: str,
+        url_name: UrlName,
+        file_field_name: str,
+        base_path: Path = TEST_DATA_DIR / "valid_uploads",
+    ) -> http.HttpResponse:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_name: the url extension for the given test file upload (also dict key in the data post request)
@@ -42,16 +47,31 @@ class TestFileUploadIntegration(test.TestCase):
         """
         Method to upload all the valid files to the database
         """
-        self.upload_test_file(filename="pupils.csv", url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                              file_field_name=forms.PupilListUpload.Meta.file_field_name)
-        self.upload_test_file(filename="teachers.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-                              file_field_name=forms.TeacherListUpload.Meta.file_field_name)
-        self.upload_test_file(filename="classrooms.csv", url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
-                              file_field_name=forms.ClassroomListUpload.Meta.file_field_name)
-        self.upload_test_file(filename="timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
-                              file_field_name=forms.TimetableStructureUpload.Meta.file_field_name)
-        self.upload_test_file(filename="lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
-                              file_field_name=forms.LessonUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="pupils.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
+            filename="teachers.csv",
+            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            file_field_name=forms.TeacherListUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
+            filename="classrooms.csv",
+            url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+            file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
+            filename="timetable.csv",
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+            file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
+            filename="lessons.csv",
+            url_name=UrlName.LESSONS_UPLOAD.value,
+            file_field_name=forms.LessonUpload.Meta.file_field_name,
+        )
 
     def reset_all_files(self):
         """
@@ -64,10 +84,18 @@ class TestFileUploadIntegration(test.TestCase):
         Method to check whether the database has been populated / reset following the relevant action
         """
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
 
         assert all_pupils.count() == 6 * should_be_populated
         assert all_teachers.count() == 11 * should_be_populated
@@ -102,16 +130,36 @@ class TestFileUploadIntegration(test.TestCase):
         base_path = settings.BASE_DIR / settings.MEDIA_ROOT / "example_files"
 
         # Execute test unit
-        self.upload_test_file(filename="example_pupils.csv", url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                              file_field_name=forms.PupilListUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_teachers.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-                              file_field_name=forms.TeacherListUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_classrooms.csv", url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
-                              file_field_name=forms.ClassroomListUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
-                              file_field_name=forms.TimetableStructureUpload.Meta.file_field_name, base_path=base_path)
-        self.upload_test_file(filename="example_lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
-                              file_field_name=forms.LessonUpload.Meta.file_field_name, base_path=base_path)
+        self.upload_test_file(
+            filename="example_pupils.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
+            filename="example_teachers.csv",
+            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            file_field_name=forms.TeacherListUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
+            filename="example_classrooms.csv",
+            url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+            file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
+            filename="example_timetable.csv",
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+            file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
+            filename="example_lessons.csv",
+            url_name=UrlName.LESSONS_UPLOAD.value,
+            file_field_name=forms.LessonUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
 
         # Check outcome
         self.check_database_status(should_be_populated=True)

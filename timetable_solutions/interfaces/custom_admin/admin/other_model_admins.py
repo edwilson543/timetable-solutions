@@ -20,7 +20,15 @@ class PupilAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Pupil model
     """
-    list_display = ["firstname", "surname", "year_group", "pupil_id", "get_lessons_per_week", "get_occupied_percentage"]
+
+    list_display = [
+        "firstname",
+        "surname",
+        "year_group",
+        "pupil_id",
+        "get_lessons_per_week",
+        "get_occupied_percentage",
+    ]
     list_display_links = ["firstname"]
 
     list_filter = ["year_group"]
@@ -34,7 +42,15 @@ class TeacherAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Teacher model
     """
-    list_display = ["title", "firstname", "surname", "teacher_id", "get_lessons_per_week", "get_occupied_percentage"]
+
+    list_display = [
+        "title",
+        "firstname",
+        "surname",
+        "teacher_id",
+        "get_lessons_per_week",
+        "get_occupied_percentage",
+    ]
     list_display_links = ["firstname"]
 
     search_fields = ["firstname", "surname", "teacher_id"]
@@ -46,7 +62,14 @@ class ClassroomAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the Classroom model
     """
-    list_display = ["classroom_id", "building", "room_number", "get_lessons_per_week", "get_occupied_percentage"]
+
+    list_display = [
+        "classroom_id",
+        "building",
+        "room_number",
+        "get_lessons_per_week",
+        "get_occupied_percentage",
+    ]
     list_display_links = ["classroom_id"]
 
     list_filter = ["building"]
@@ -60,6 +83,7 @@ class TimetableSlotAdmin(CustomModelAdminBase):
     """
     ModelAdmin for the TimetableSlot model
     """
+
     list_display = ["_get_slot_time_string", "slot_id"]
     list_display_links = ["_get_slot_time_string"]
 
@@ -73,5 +97,9 @@ class TimetableSlotAdmin(CustomModelAdminBase):
         """
         Method to provide a string combining the time slot start and end time
         """
-        time = obj.period_starts_at.strftime("%H:%M") + "-" + obj.period_ends_at.strftime("%H:%M")
+        time = (
+            obj.period_starts_at.strftime("%H:%M")
+            + "-"
+            + obj.period_ends_at.strftime("%H:%M")
+        )
         return models.WeekDay(obj.day_of_week).label + ", " + time

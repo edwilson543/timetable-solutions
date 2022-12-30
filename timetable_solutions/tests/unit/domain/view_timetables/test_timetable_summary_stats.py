@@ -13,8 +13,15 @@ class TestTimetableSummaryStats(TestCase):
     """
     Test class for the timetable_summary_stats_module, which does include some pre-populated timetable solutions.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution"]  # Final fixture contains the timetable solutions to be summarised
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution",
+    ]  # Final fixture contains the timetable solutions to be summarised
 
     def test_get_summary_stats_for_dashboard_correct(self):
         """
@@ -29,9 +36,15 @@ class TestTimetableSummaryStats(TestCase):
         self.assertEqual(stats["total_pupils"], 6)
         self.assertEqual(stats["total_teachers"], 11)
 
-        self.assertEqual(stats["busiest_days"], ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            stats["busiest_days"],
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(stats["busiest_days_pct"], 20.0)
-        self.assertEqual(stats["quietest_days"], ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            stats["quietest_days"],
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(stats["quietest_days_pct"], 20.0)
 
         self.assertEqual(stats["busiest_times"], ["10:00"])
@@ -42,7 +55,14 @@ class TestTimetableSummaryStatsNoTimetablesLoaded(TestCase):
     """
     Test class for the timetable_summary_stats_module, which does NOT include some pre-populated timetable solutions.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+    ]
 
     def test_get_summary_stats_for_dashboard_no_timetable_solutions(self):
         """

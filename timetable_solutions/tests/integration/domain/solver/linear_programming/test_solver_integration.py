@@ -27,8 +27,15 @@ class TestSolver(test.TestCase):
     Test that the solver can produce a solution for the default fixtures.
     These fixtures are not contrived to produce a specific solution, so we do not test what the solution actually is.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+    ]
 
     def test_solver_finds_a_solution_for_default_fixtures_random_objective(self):
         """
@@ -38,9 +45,13 @@ class TestSolver(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
-                                          allow_triple_periods_and_above=False)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=False,
+            allow_triple_periods_and_above=False,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -49,7 +60,9 @@ class TestSolver(test.TestCase):
         # Check outcome - i.e. that a solution has been found
         assert lp.LpStatus[solver.problem.status] == "Optimal"
 
-    def test_solver_finds_a_solution_for_default_fixtures_with_non_random_objective(self):
+    def test_solver_finds_a_solution_for_default_fixtures_with_non_random_objective(
+        self,
+    ):
         """
         Test that the solver can find a problem for the full LP problem, INCLUDING an objective, for the default
         fixture set.
@@ -57,11 +70,15 @@ class TestSolver(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
-                                          allow_triple_periods_and_above=False,
-                                          optimal_free_period_time_of_day=dt.time(hour=14),
-                                          ideal_proportion_of_free_periods_at_this_time=0.75)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=False,
+            allow_triple_periods_and_above=False,
+            optimal_free_period_time_of_day=dt.time(hour=14),
+            ideal_proportion_of_free_periods_at_this_time=0.75,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -78,13 +95,23 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     'RandomObjective': The objective is randomly generated, and as such should not drive the solution
     """
 
-    fixtures = ["test_scenario_1.json", "test_scenario_2.json", "test_scenario_3.json", "test_scenario_4.json",
-                "test_scenario_5.json", "test_scenario_6.json", "test_scenario_7", "test_scenario_8.json",
-                "test_scenario_9.json", "test_scenario_10.json"]
+    fixtures = [
+        "test_scenario_1.json",
+        "test_scenario_2.json",
+        "test_scenario_3.json",
+        "test_scenario_4.json",
+        "test_scenario_5.json",
+        "test_scenario_6.json",
+        "test_scenario_7",
+        "test_scenario_8.json",
+        "test_scenario_9.json",
+        "test_scenario_10.json",
+    ]
 
     # Note that test scenarios 7 and above do not use this solution spec
-    solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                               allow_triple_periods_and_above=True)
+    solution_spec = slvr.SolutionSpecification(
+        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+    )
 
     # TESTS WHERE A BASIC CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_1(self):
@@ -95,7 +122,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 111111
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -103,9 +132,21 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # 1 option where each of 2 class' remaining slot could go
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)].varValue == 1
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="YEAR_ONE_MATHS_B", slot_id=1)].varValue == 1
+        assert (
+            len(solver.variables.decision_variables) == 2
+        )  # 1 option where each of 2 class' remaining slot could go
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="YEAR_ONE_MATHS_B", slot_id=1)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_2(self):
         """
@@ -115,7 +156,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 222222
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -123,12 +166,22 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 4  # Either class could be taught in either slot
+        assert (
+            len(solver.variables.decision_variables) == 4
+        )  # Either class could be taught in either slot
         # We test now that the sufficient classes take place, and not simultaneously
-        c1_t1 = solver.variables.decision_variables[slvr.var_key(lesson_id="MATHS", slot_id=1)].varValue
-        c1_t2 = solver.variables.decision_variables[slvr.var_key(lesson_id="MATHS", slot_id=2)].varValue
-        c2_t1 = solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue
-        c2_t2 = solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue
+        c1_t1 = solver.variables.decision_variables[
+            slvr.var_key(lesson_id="MATHS", slot_id=1)
+        ].varValue
+        c1_t2 = solver.variables.decision_variables[
+            slvr.var_key(lesson_id="MATHS", slot_id=2)
+        ].varValue
+        c2_t1 = solver.variables.decision_variables[
+            slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+        ].varValue
+        c2_t2 = solver.variables.decision_variables[
+            slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+        ].varValue
         assert c1_t1 + c1_t2 == 1
         assert c2_t1 + c2_t2 == 1
 
@@ -140,7 +193,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 333333
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -148,9 +203,21 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # Lesson's 1 slot could go in either time slot
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
+        assert (
+            len(solver.variables.decision_variables) == 2
+        )  # Lesson's 1 slot could go in either time slot
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )  # Busy
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_4(self):
         """
@@ -160,7 +227,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 444444
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -168,9 +237,21 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2  # Lesson's 1 slot could go in either time slot
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0  # Busy
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
+        assert (
+            len(solver.variables.decision_variables) == 2
+        )  # Lesson's 1 slot could go in either time slot
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )  # Busy
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 1
+        )
 
     # TESTS WHERE A DOUBLE PERIOD CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_5(self):
@@ -187,7 +268,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 555555
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -195,12 +278,29 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 3  # 1 lesson must be taught in 2 / 3 time slots
+        assert (
+            len(solver.variables.decision_variables) == 3
+        )  # 1 lesson must be taught in 2 / 3 time slots
 
         # The double period is slots 2 & 3
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_6(self):
         """
@@ -218,7 +318,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 666666
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -226,12 +328,29 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 3  # 4 slots, 1 class, but one variable gets stripped
+        assert (
+            len(solver.variables.decision_variables) == 3
+        )  # 4 slots, 1 class, but one variable gets stripped
 
         # The user defined slot is at slot 4, slots (1 & 2) and (3 & 4) are the consecutive pairs
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_7(self):
         """
@@ -250,7 +369,9 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 777777
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -258,13 +379,32 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 3  # 6 slots, 1 class, but three variable gets stripped
-        assert len(solver.variables.double_period_variables) == 4  # 4 possibles on the Monday, 0 on Tuesday
+        assert (
+            len(solver.variables.decision_variables) == 3
+        )  # 6 slots, 1 class, but three variable gets stripped
+        assert (
+            len(solver.variables.double_period_variables) == 4
+        )  # 4 possibles on the Monday, 0 on Tuesday
 
         # See docstring for solution
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=4)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=6)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=4)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=6)
+            ].varValue
+            == 1
+        )
 
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_8(self):
@@ -283,9 +423,13 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 888888
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,  # True but irrelevant
-                                          allow_split_classes_within_each_day=False)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=True,  # True but irrelevant
+            allow_split_classes_within_each_day=False,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -293,12 +437,29 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 3  # 3 slots, 1 class, but one variable gets stripped
+        assert (
+            len(solver.variables.decision_variables) == 3
+        )  # 3 slots, 1 class, but one variable gets stripped
 
         # Slot_id 3 represents the individual slot on the Tuesday where we want the class to happen
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=4)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=4)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_9(self):
         """
@@ -318,9 +479,13 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 999999
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=False,
-                                          allow_split_classes_within_each_day=True)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=False,
+            allow_split_classes_within_each_day=True,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -328,16 +493,45 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 5  # 6 slots, 1 class, but one variable gets stripped
-        assert len(solver.variables.double_period_variables) == 4  # 3 on the Monday, 1 on the Tuesday
+        assert (
+            len(solver.variables.decision_variables) == 5
+        )  # 6 slots, 1 class, but one variable gets stripped
+        assert (
+            len(solver.variables.double_period_variables) == 4
+        )  # 3 on the Monday, 1 on the Tuesday
 
         # See docstring for solution
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 1
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 0
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 0
+        )
         # slot_id=4 user defined so gets stripped
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=5)].varValue == 1
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=6)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=5)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=6)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_10(self):
         """
@@ -356,9 +550,13 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         """
         # Set test parameters
         school_access_key = 101010
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=False,
-                                          allow_split_classes_within_each_day=False)  # Note both False
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=False,
+            allow_split_classes_within_each_day=False,
+        )  # Note both False
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -366,29 +564,44 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
         # Check outcome
         assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 9  # 9 slots, none get stripped
-        assert len(solver.variables.double_period_variables) == 6  # 3 on the Monday, 3 on the Tuesday
+        assert (
+            len(solver.variables.decision_variables) == 9
+        )  # 9 slots, none get stripped
+        assert (
+            len(solver.variables.double_period_variables) == 6
+        )  # 3 on the Monday, 3 on the Tuesday
 
         # See docstring for solution
         # Wednesday must happen
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=9)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=9)
+            ].varValue
+            == 1
+        )
 
         # Must have exactly one double on Monday
-        monday_1_2 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=1, slot_2_id=2)].varValue
-        monday_2_3 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=2, slot_2_id=3)].varValue
-        monday_3_4 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=3, slot_2_id=4)].varValue
+        monday_1_2 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=1, slot_2_id=2)
+        ].varValue
+        monday_2_3 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=2, slot_2_id=3)
+        ].varValue
+        monday_3_4 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=3, slot_2_id=4)
+        ].varValue
         assert sum([monday_1_2, monday_2_3, monday_3_4]) == 1
 
         # Must have exactly one double on Tuesday
-        tuesday_1_2 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=5, slot_2_id=6)].varValue
-        tuesday_2_3 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=6, slot_2_id=7)].varValue
-        tuesday_3_4 = solver.variables.double_period_variables[slvr.doubles_var_key(
-            lesson_id="ENGLISH", slot_1_id=7, slot_2_id=8)].varValue
+        tuesday_1_2 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=5, slot_2_id=6)
+        ].varValue
+        tuesday_2_3 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=6, slot_2_id=7)
+        ].varValue
+        tuesday_3_4 = solver.variables.double_period_variables[
+            slvr.doubles_var_key(lesson_id="ENGLISH", slot_1_id=7, slot_2_id=8)
+        ].varValue
         assert sum([tuesday_1_2, tuesday_2_3, tuesday_3_4]) == 1
 
 
@@ -417,10 +630,14 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         # Set test parameters
         school_access_key = 111111
         optimal_free_period = dt.time(hour=9)
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
-                                          allow_split_classes_within_each_day=True,
-                                          optimal_free_period_time_of_day=optimal_free_period)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=True,
+            allow_split_classes_within_each_day=True,
+            optimal_free_period_time_of_day=optimal_free_period,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -432,10 +649,30 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         assert len(solver.variables.double_period_variables) == 0
 
         # See docstring for solution
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=3)].varValue == 0
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=4)].varValue == 1
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=4)
+            ].varValue
+            == 1
+        )
 
     def test_solver_solution_test_scenario_with_objective_2_ideal_morning(self):
         """
@@ -452,10 +689,14 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         # Set test parameters
         school_access_key = 222222
         morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
-                                          allow_split_classes_within_each_day=True,
-                                          optimal_free_period_time_of_day=morning)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=True,
+            allow_split_classes_within_each_day=True,
+            optimal_free_period_time_of_day=morning,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -467,8 +708,18 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         assert len(solver.variables.double_period_variables) == 0
 
         # See docstring for solution
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 0  # Morn
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 1  # Aft
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 0
+        )  # Morn
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 1
+        )  # Aft
 
     def test_solver_solution_test_scenario_with_objective_2_ideal_afternoon(self):
         """
@@ -485,10 +736,14 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         # Set test parameters
         school_access_key = 222222
         afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
-        spec = slvr.SolutionSpecification(allow_triple_periods_and_above=True,
-                                          allow_split_classes_within_each_day=True,
-                                          optimal_free_period_time_of_day=afternoon)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_triple_periods_and_above=True,
+            allow_split_classes_within_each_day=True,
+            optimal_free_period_time_of_day=afternoon,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         solver = slvr.TimetableSolver(input_data=data)
 
         # Execute test unit
@@ -500,5 +755,15 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         assert len(solver.variables.double_period_variables) == 0
 
         # See docstring for solution
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=1)].varValue == 1  # Morn
-        assert solver.variables.decision_variables[slvr.var_key(lesson_id="ENGLISH", slot_id=2)].varValue == 0  # Aft
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
+            ].varValue
+            == 1
+        )  # Morn
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
+            ].varValue
+            == 0
+        )  # Aft
