@@ -182,7 +182,8 @@ def custom_logout(request: http.HttpResponse) -> http.HttpResponseRedirect:
     View redirecting users to the login page when they logout rather than the dashboard, since there is no
     application unless the user is logged in.
     """
-    logout(request)
+    if request.user.is_authenticated:
+        logout(request)
     return redirect(reverse(UrlName.LOGIN.value))
 
 
