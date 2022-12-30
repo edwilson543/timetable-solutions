@@ -13,7 +13,9 @@ from interfaces.utils import typing_utils
 
 
 @login_required
-def lesson_detail_modal(request: typing_utils.HtmxHttpRequest, lesson_pk: int) -> http.HttpResponse:
+def lesson_detail_modal(
+    request: typing_utils.HtmxHttpRequest, lesson_pk: int
+) -> http.HttpResponse:
     """
     View populating a modal with the details for a specific Lesson instance.
     """
@@ -24,13 +26,15 @@ def lesson_detail_modal(request: typing_utils.HtmxHttpRequest, lesson_pk: int) -
         context = {
             "modal_is_active": True,
             "lesson": lesson,
-            "lesson_title": lesson.lesson_id.replace("_", " ").title()
+            "lesson_title": lesson.lesson_id.replace("_", " ").title(),
         }
         return http.HttpResponse(template.render(context=context, request=request))
 
 
 @login_required
-def close_lesson_detail_modal(request: typing_utils.HtmxHttpRequest) -> http.HttpResponse:
+def close_lesson_detail_modal(
+    request: typing_utils.HtmxHttpRequest,
+) -> http.HttpResponse:
     """
     View to close the less detail modal
     """

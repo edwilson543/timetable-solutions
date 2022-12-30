@@ -37,19 +37,25 @@ class TestHTMXViewsRegister(test.TestCase):
         """
         Tests that posting a username that is already taken returns an invalid status in the context.
         """
-        self.run_boilerplate_test(username="dummy_teacher", expected_status=htmx_views.FieldStatus.INVALID)
+        self.run_boilerplate_test(
+            username="dummy_teacher", expected_status=htmx_views.FieldStatus.INVALID
+        )
 
     def test_username_available_gets_valid_status(self):
         """
         Tests that posting a username that is already taken returns an invalid status in the context.
         """
-        self.run_boilerplate_test(username="available", expected_status=htmx_views.FieldStatus.VALID)
+        self.run_boilerplate_test(
+            username="available", expected_status=htmx_views.FieldStatus.VALID
+        )
 
     def test_username_containing_invalid_characters_gets_invalid_status(self):
         """
         Tests that posting a username that is already taken returns an invalid status in the context.
         """
-        self.run_boilerplate_test(username="!!!!!", expected_status=htmx_views.FieldStatus.INVALID)
+        self.run_boilerplate_test(
+            username="!!!!!", expected_status=htmx_views.FieldStatus.INVALID
+        )
 
 
 class TestHTMXViewsInfoPage(test.TestCase):

@@ -26,11 +26,12 @@ class RequiredUpload:
     to mark a form as complete and offer a reset button, or as incomplete and to offer an upload button.
     It also stores the urls related to different actions.
     """
+
     form_name: str  # Name of the form that will be shown to the user
     upload_status: data_upload_processing.UploadStatus  # User interpretable status string
     empty_form: forms.Form
     upload_url_name: UrlName
-    reset_url_name:  UrlName
+    reset_url_name: UrlName
     example_download_url_name: UrlName
 
 
@@ -45,7 +46,9 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(self, *args: Any, **kwargs: Any) -> dict[str, dict[str, RequiredUpload]]:
+    def get_context_data(
+        self, *args: Any, **kwargs: Any
+    ) -> dict[str, dict[str, RequiredUpload]]:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -53,46 +56,72 @@ class UploadPage(LoginRequiredMixin, TemplateView):
         Note the context also provides several url names for reversing in the template tags.
         """
         school = self.request.user.profile.school
-        upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(school=school)
+        upload_status = data_upload_processing.UploadStatusTracker.get_upload_status(
+            school=school
+        )
 
         if upload_status.all_uploads_complete:
-            message = "You have uploaded all the required files, and can now start generating timetable solutions!\n" \
-                      f"Navigate over to the " \
-                      f"<a href='{urls.reverse(UrlName.CREATE_TIMETABLES.value)}'>create</a> page to get started."
-            messages.add_message(request=self.request, level=messages.INFO, message=message, extra_tags="safe")
+            message = (
+                "You have uploaded all the required files, and can now start generating timetable solutions!\n"
+                f"Navigate over to the "
+                f"<a href='{urls.reverse(UrlName.CREATE_TIMETABLES.value)}'>create</a> page to get started."
+            )
+            messages.add_message(
+                request=self.request,
+                level=messages.INFO,
+                message=message,
+                extra_tags="safe",
+            )
 
         context = {
             "required_forms": {
-                    "pupils": RequiredUpload(form_name="Pupils", upload_status=upload_status.pupils,
-                                             empty_form=forms.PupilListUpload(),
-                                             upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
-                                             reset_url_name=UrlName.PUPIL_LIST_RESET,
-                                             example_download_url_name=UrlName.PUPIL_DOWNLOAD),
-                    "teachers": RequiredUpload(form_name="Teachers", upload_status=upload_status.teachers,
-                                               empty_form=forms.TeacherListUpload(),
-                                               upload_url_name=UrlName.TEACHER_LIST_UPLOAD,
-                                               reset_url_name=UrlName.TEACHER_LIST_RESET,
-                                               example_download_url_name=UrlName.TEACHER_DOWNLOAD),
-                    "classrooms": RequiredUpload(form_name="Classrooms", upload_status=upload_status.classrooms,
-                                                 empty_form=forms.ClassroomListUpload(),
-                                                 upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,
-                                                 reset_url_name=UrlName.CLASSROOM_LIST_RESET,
-                                                 example_download_url_name=UrlName.CLASSROOM_DOWNLOAD),
-                    "timetable": RequiredUpload(form_name="Timetable structure", upload_status=upload_status.timetable,
-                                                empty_form=forms.TimetableStructureUpload(),
-                                                upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
-                                                reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET,
-                                                example_download_url_name=UrlName.TIMETABLE_DOWNLOAD),
-                    "lessons": RequiredUpload(form_name="Lessons", upload_status=upload_status.lessons,
-                                              empty_form=forms.LessonUpload(),
-                                              upload_url_name=UrlName.LESSONS_UPLOAD,
-                                              reset_url_name=UrlName.LESSONS_RESET,
-                                              example_download_url_name=UrlName.LESSONS_DOWNLOAD)
-                    }
+                "pupils": RequiredUpload(
+                    form_name="Pupils",
+                    upload_status=upload_status.pupils,
+                    empty_form=forms.PupilListUpload(),
+                    upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
+                    reset_url_name=UrlName.PUPIL_LIST_RESET,
+                    example_download_url_name=UrlName.PUPIL_DOWNLOAD,
+                ),
+                "teachers": RequiredUpload(
+                    form_name="Teachers",
+                    upload_status=upload_status.teachers,
+                    empty_form=forms.TeacherListUpload(),
+                    upload_url_name=UrlName.TEACHER_LIST_UPLOAD,
+                    reset_url_name=UrlName.TEACHER_LIST_RESET,
+                    example_download_url_name=UrlName.TEACHER_DOWNLOAD,
+                ),
+                "classrooms": RequiredUpload(
+                    form_name="Classrooms",
+                    upload_status=upload_status.classrooms,
+                    empty_form=forms.ClassroomListUpload(),
+                    upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,
+                    reset_url_name=UrlName.CLASSROOM_LIST_RESET,
+                    example_download_url_name=UrlName.CLASSROOM_DOWNLOAD,
+                ),
+                "timetable": RequiredUpload(
+                    form_name="Timetable structure",
+                    upload_status=upload_status.timetable,
+                    empty_form=forms.TimetableStructureUpload(),
+                    upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
+                    reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET,
+                    example_download_url_name=UrlName.TIMETABLE_DOWNLOAD,
+                ),
+                "lessons": RequiredUpload(
+                    form_name="Lessons",
+                    upload_status=upload_status.lessons,
+                    empty_form=forms.LessonUpload(),
+                    upload_url_name=UrlName.LESSONS_UPLOAD,
+                    reset_url_name=UrlName.LESSONS_RESET,
+                    example_download_url_name=UrlName.LESSONS_DOWNLOAD,
+                ),
             }
+        }
         return context
 
-    def post(self, request: http.HttpRequest, *args: Any, **kwargs: Any) -> http.HttpResponse:
+    def post(
+        self, request: http.HttpRequest, *args: Any, **kwargs: Any
+    ) -> http.HttpResponse:
         """
         POST requests to the data upload page's base URL should just be handled the same as GET requests.
         """

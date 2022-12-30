@@ -12,6 +12,7 @@ from django.forms import Form, FileField
 
 class TeacherListUpload(Form):
     """Form containing an individual upload slot for the list of teachers."""
+
     teacher_list = FileField(allow_empty_file=False, label="")
 
     class Meta:
@@ -20,6 +21,7 @@ class TeacherListUpload(Form):
 
 class PupilListUpload(Form):
     """Form containing an individual upload slot for the list of pupils."""
+
     pupil_list = FileField(allow_empty_file=False, label="")
 
     class Meta:
@@ -28,6 +30,7 @@ class PupilListUpload(Form):
 
 class ClassroomListUpload(Form):
     """Form containing an individual upload slot for the list of pupils."""
+
     classroom_list = FileField(allow_empty_file=False, label="")
 
     class Meta:
@@ -36,6 +39,7 @@ class ClassroomListUpload(Form):
 
 class TimetableStructureUpload(Form):
     """Form containing an individual upload slot for the structure of the timetable."""
+
     timetable_structure = FileField(allow_empty_file=False, label="")
 
     class Meta:
@@ -44,6 +48,7 @@ class TimetableStructureUpload(Form):
 
 class LessonUpload(Form):
     """Form containing an individual upload slot for the lessons that must be taught, and associated details."""
+
     lessons = FileField(allow_empty_file=False, label="")
 
     class Meta:
@@ -51,4 +56,10 @@ class LessonUpload(Form):
 
 
 # Type hint to use when referencing one of the above collection of forms
-FormSubclass = Union[TeacherListUpload, PupilListUpload, ClassroomListUpload, TimetableStructureUpload, LessonUpload]
+FormSubclass = Union[
+    TeacherListUpload,
+    PupilListUpload,
+    ClassroomListUpload,
+    TimetableStructureUpload,
+    LessonUpload,
+]

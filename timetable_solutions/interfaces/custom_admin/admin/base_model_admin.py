@@ -25,9 +25,12 @@ class CustomModelAdminBase(admin.ModelAdmin):
         """
         Allow the option to customise the grouping of models on the django-admin sidebar.
         """
+
         custom_app_label: str | None = None
 
-    exclude: tuple[str, ...] = ("school",)  # Since users should only be able to add / change data to their own school
+    exclude: tuple[str, ...] = (
+        "school",
+    )  # Since users should only be able to add / change data to their own school
 
     # Methods relating to list display - note these only get used where relevant for subclasses
     @admin.display(description="Lessons / week")
@@ -47,8 +50,13 @@ class CustomModelAdminBase(admin.ModelAdmin):
         return html.format_html(f"<b><i>{percentage} %</i></b>")
 
     # Method ensuring users can only interact with their own school's data
-    def save_model(self, request: http.HttpRequest, obj: models.ModelSubclass,
-                   form: typing_utils.FormSubclass, change: bool) -> None:
+    def save_model(
+        self,
+        request: http.HttpRequest,
+        obj: models.ModelSubclass,
+        form: typing_utils.FormSubclass,
+        change: bool,
+    ) -> None:
         """
         When saving all model instances, we add the user's school to it
         """
@@ -78,18 +86,25 @@ class CustomModelAdminBase(admin.ModelAdmin):
         """
         if hasattr(request.user, "profile"):
             return request.user.is_active and (
-                    request.user.profile.role == models.UserRole.SCHOOL_ADMIN)
+                request.user.profile.role == models.UserRole.SCHOOL_ADMIN
+            )
         else:
             return False
 
     def has_add_permission(self, request: http.HttpRequest) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_view_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
+    def has_view_permission(
+        self, request: http.HttpRequest, obj: models.ModelSubclass | None = None
+    ) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_change_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
+    def has_change_permission(
+        self, request: http.HttpRequest, obj: models.ModelSubclass | None = None
+    ) -> bool:
         return self.has_module_permission(request=request)
 
-    def has_delete_permission(self, request: http.HttpRequest, obj: models.ModelSubclass | None = None) -> bool:
+    def has_delete_permission(
+        self, request: http.HttpRequest, obj: models.ModelSubclass | None = None
+    ) -> bool:
         return self.has_module_permission(request=request)

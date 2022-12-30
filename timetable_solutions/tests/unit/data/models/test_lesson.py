@@ -17,8 +17,15 @@ class TestLesson(test.TestCase):
     """
     Unit tests for the Lesson model
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_lesson(self):
@@ -27,20 +34,36 @@ class TestLesson(test.TestCase):
         """
         # Set test parameters
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
 
         # Execute test unit
         lesson = models.Lesson.create_new(
-            school_id=123456, lesson_id="TEST-A", subject_name="TEST", teacher_id=1, classroom_id=1, pupils=all_pupils,
-            user_defined_time_slots=all_slots[1:3], solver_defined_time_slots=all_slots[11:13],
-            total_required_slots=4, total_required_double_periods=2)
+            school_id=123456,
+            lesson_id="TEST-A",
+            subject_name="TEST",
+            teacher_id=1,
+            classroom_id=1,
+            pupils=all_pupils,
+            user_defined_time_slots=all_slots[1:3],
+            solver_defined_time_slots=all_slots[11:13],
+            total_required_slots=4,
+            total_required_double_periods=2,
+        )
 
         # Check outcome
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert lesson in all_lessons
         self.assertQuerysetEqual(all_pupils, lesson.pupils.all(), ordered=False)
-        self.assertQuerysetEqual(all_slots[1:3], lesson.user_defined_time_slots.all(), ordered=False)
-        self.assertQuerysetEqual(all_slots[11:13], lesson.solver_defined_time_slots.all(), ordered=False)
+        self.assertQuerysetEqual(
+            all_slots[1:3], lesson.user_defined_time_slots.all(), ordered=False
+        )
+        self.assertQuerysetEqual(
+            all_slots[11:13], lesson.solver_defined_time_slots.all(), ordered=False
+        )
 
     def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
         """
@@ -50,16 +73,23 @@ class TestLesson(test.TestCase):
         # Execute test unit
         with pytest.raises(IntegrityError):
             models.Lesson.create_new(
-                school_id=123456, lesson_id="YEAR_ONE_MATHS_A",  # This combo is already in the fixture
-                subject_name="TEST", teacher_id=1, classroom_id=1,
-                total_required_slots=4, total_required_double_periods=2)
+                school_id=123456,
+                lesson_id="YEAR_ONE_MATHS_A",  # This combo is already in the fixture
+                subject_name="TEST",
+                teacher_id=1,
+                classroom_id=1,
+                total_required_slots=4,
+                total_required_double_periods=2,
+            )
 
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can delete all the lessons associated with a school
         """
         # Initial check
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_lessons.count() == 24
 
         # Execute test unit
@@ -73,19 +103,27 @@ class TestLesson(test.TestCase):
         Test that we can delete the solver produced solution for a school
         """
         # Initial check
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
-        all_solver_slots = sum(lesson.solver_defined_time_slots.all().count() for lesson in all_lessons)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        all_solver_slots = sum(
+            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        )
         assert all_solver_slots == 100
 
         # Execute test unit
         models.Lesson.delete_solver_solution_for_school(school_id=123456)
 
         # Check outcome
-        all_solver_slots = sum(lesson.solver_defined_time_slots.all().count() for lesson in all_lessons)
+        all_solver_slots = sum(
+            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        )
         assert all_solver_slots == 0
 
         # Check no slots deleted
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_slots.count() == 35
 
     # QUERY METHOD TESTS
@@ -94,7 +132,9 @@ class TestLesson(test.TestCase):
         Test that the get all timeslots method correctly combines the solver / user time slot querysets
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
         lesson.user_defined_time_slots.add(*additional_slots)
 
@@ -102,7 +142,10 @@ class TestLesson(test.TestCase):
         all_slots = lesson.get_all_time_slots()
 
         # Check outcome
-        expected_total = lesson.user_defined_time_slots.all().count() + lesson.solver_defined_time_slots.all().count()
+        expected_total = (
+            lesson.user_defined_time_slots.all().count()
+            + lesson.solver_defined_time_slots.all().count()
+        )
         assert all_slots.count() == expected_total
 
     def test_get_lessons_requiring_solving(self):
@@ -122,7 +165,9 @@ class TestLesson(test.TestCase):
         Method to check that the correct number of solver slots is calculated for a lesson
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
         lesson.user_defined_time_slots.add(*additional_slots)
 
@@ -137,8 +182,12 @@ class TestLesson(test.TestCase):
         Method to check that the correct number of solver double periods is calculated for a lesson
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 6])  # Add a double, to reduce count
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        additional_slots = models.TimetableSlot.objects.filter(
+            slot_id__in=[1, 6]
+        )  # Add a double, to reduce count
         lesson.user_defined_time_slots.add(*additional_slots)
 
         # Execute test unit
@@ -152,7 +201,9 @@ class TestLesson(test.TestCase):
         Method to check that a lesson with unfulfilled slots requires solving
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
         lesson.user_defined_time_slots.add(*additional_slots)
 
@@ -167,7 +218,9 @@ class TestLesson(test.TestCase):
         Method to check that a lesson with unfulfilled slots requires solving
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="LUNCH_PUPILS")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="LUNCH_PUPILS"
+        )
 
         # Execute test unit
         requires_solving = lesson.requires_solving()
@@ -181,12 +234,18 @@ class TestLesson(test.TestCase):
         with ONE double period is correct.
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        lesson.user_defined_time_slots.add(*lesson.solver_defined_time_slots.all())  # Manually give some user slots
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        lesson.user_defined_time_slots.add(
+            *lesson.solver_defined_time_slots.all()
+        )  # Manually give some user slots
         monday = models.WeekDay.MONDAY.value
 
         # Execute test unit
-        double_period_count = lesson.get_user_defined_double_period_count_on_day(day_of_week=monday)
+        double_period_count = lesson.get_user_defined_double_period_count_on_day(
+            day_of_week=monday
+        )
 
         # Check outcome
         assert double_period_count == 1
@@ -197,12 +256,18 @@ class TestLesson(test.TestCase):
         with ZERO double periods is correct.
         """
         # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        lesson.user_defined_time_slots.add(*lesson.solver_defined_time_slots.all())  # Manually give some user slots
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        lesson.user_defined_time_slots.add(
+            *lesson.solver_defined_time_slots.all()
+        )  # Manually give some user slots
         tuesday = models.WeekDay.TUESDAY.value
 
         # Execute test unit
-        double_period_count = lesson.get_user_defined_double_period_count_on_day(day_of_week=tuesday)
+        double_period_count = lesson.get_user_defined_double_period_count_on_day(
+            day_of_week=tuesday
+        )
 
         # Check outcome
         assert double_period_count == 0

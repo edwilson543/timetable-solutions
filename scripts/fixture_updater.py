@@ -12,7 +12,9 @@ output_filenames = ["unsolved_classes.json"]
 # new_model_name = "data.fixedclass"
 
 
-def update_fixture(input_fixture_file: str, output_fixture_file: str, location: Path = loc) -> None:
+def update_fixture(
+    input_fixture_file: str, output_fixture_file: str, location: Path = loc
+) -> None:
     with open(location / input_fixture_file, "r") as file:
         json_data = file.read()
         pyt_data: list = json.loads(json_data)
@@ -31,4 +33,6 @@ def update_fixture(input_fixture_file: str, output_fixture_file: str, location: 
 
 if __name__ == "__main__":
     for n, fixture in enumerate(input_filenames):
-        update_fixture(input_fixture_file=fixture, output_fixture_file=output_filenames[n])
+        update_fixture(
+            input_fixture_file=fixture, output_fixture_file=output_filenames[n]
+        )

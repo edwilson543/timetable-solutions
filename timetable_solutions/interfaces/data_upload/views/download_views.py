@@ -12,6 +12,7 @@ class PupilDownload(ExampleDownloadBase):
     """
     Class used to download the example pupils file.
     """
+
     example_filepath = ExampleFile.PUPILS.filepath
 
 
@@ -19,6 +20,7 @@ class TeacherDownload(ExampleDownloadBase):
     """
     Class used to download the example teachers file.
     """
+
     example_filepath = ExampleFile.TEACHERS.filepath
 
 
@@ -26,6 +28,7 @@ class ClassroomDownload(ExampleDownloadBase):
     """
     Class used to download the example classrooms file.
     """
+
     example_filepath = ExampleFile.CLASSROOMS.filepath
 
 
@@ -33,6 +36,7 @@ class TimetableDownload(ExampleDownloadBase):
     """
     Class used to download the example timetable file.
     """
+
     example_filepath = ExampleFile.TIMETABLE.filepath
 
 
@@ -40,4 +44,5 @@ class LessonDownload(ExampleDownloadBase):
     """
     Class used to download the example lessons file.
     """
+
     example_filepath = ExampleFile.LESSON.filepath

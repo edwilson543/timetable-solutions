@@ -13,8 +13,14 @@ from constants.url_names import UrlName
 
 class TestLessonDetailModal(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     def test_get_request_to_modal_has_200_status_and_correct_context(self):
         """

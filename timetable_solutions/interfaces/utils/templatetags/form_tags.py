@@ -36,5 +36,5 @@ def render_form_field_in_div(bound_field: forms.BoundField) -> html.SafeString:
     </div>
     """
     text = text.strip()
-    text = re.sub(r'\n\s*\n', '\n', text)
+    text = re.sub(r"\n\s*\n", "\n", text)
     return html.format_html(text)

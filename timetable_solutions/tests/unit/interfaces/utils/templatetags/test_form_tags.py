@@ -19,8 +19,10 @@ def form() -> Type[forms.Form]:
     """
     Fixture to provide a dummy form for use in tests.
     """
+
     class TestForm(forms.Form):
         text = forms.CharField()
+
     return TestForm
 
 
@@ -40,13 +42,15 @@ def test_render_form_field_in_div_renders_text_field_correctly(form: Type[forms.
     outcome = temp.render(context=context)
 
     # Check outcome
-    expected_html = html.SafeString("""
+    expected_html = html.SafeString(
+        """
     <div>
         <label for="id_text">Text:</label>
         <div class="helptext">
         </div>
         <input type="text" name="text" required id="id_text">
     </div>
-    """)
+    """
+    )
     assert isinstance(outcome, html.SafeString)
     assert expected_html in outcome

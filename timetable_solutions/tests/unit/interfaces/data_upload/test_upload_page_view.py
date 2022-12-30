@@ -27,7 +27,9 @@ class TestUploadPageView(test.TestCase):
         Note we haven't loaded any fixtures beyond the basic user, and so all forms should be incomplete.
         """
         factory = test.RequestFactory()
-        url = reverse(UrlName.FILE_UPLOAD_PAGE.value)  # This should be irrelevant to this test anyway
+        url = reverse(
+            UrlName.FILE_UPLOAD_PAGE.value
+        )  # This should be irrelevant to this test anyway
         request = factory.get(url)
         user = User.objects.get_by_natural_key(username="dummy_teacher")
         request.user = user
@@ -66,15 +68,21 @@ class TestUploadPageView(test.TestCase):
 
         # Check the outcome - that all forms are currently incomplete
         required_forms = response.context["required_forms"]
-        disallowed_forms = ["lessons"]  # Will have status 'disallowed', not 'incomplete'
+        disallowed_forms = [
+            "lessons"
+        ]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
             self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
 
             if form_name in disallowed_forms:
-                self.assertEqual(required_upload.upload_status, UploadStatus.DISALLOWED.value)
+                self.assertEqual(
+                    required_upload.upload_status, UploadStatus.DISALLOWED.value
+                )
             else:
-                self.assertEqual(required_upload.upload_status, UploadStatus.INCOMPLETE.value)
+                self.assertEqual(
+                    required_upload.upload_status, UploadStatus.INCOMPLETE.value
+                )
 
     def test_post_request_returns_correct_context(self):
         """
@@ -89,15 +97,21 @@ class TestUploadPageView(test.TestCase):
 
         # Check the outcome
         required_forms = response.context["required_forms"]
-        disallowed_forms = ["lessons"]  # Will have status 'disallowed', not 'incomplete'
+        disallowed_forms = [
+            "lessons"
+        ]  # Will have status 'disallowed', not 'incomplete'
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
             self.assertIsInstance(required_upload.empty_form, forms.FormSubclass)
 
             if form_name in disallowed_forms:
-                self.assertEqual(required_upload.upload_status, UploadStatus.DISALLOWED.value)
+                self.assertEqual(
+                    required_upload.upload_status, UploadStatus.DISALLOWED.value
+                )
             else:
-                self.assertEqual(required_upload.upload_status, UploadStatus.INCOMPLETE.value)
+                self.assertEqual(
+                    required_upload.upload_status, UploadStatus.INCOMPLETE.value
+                )
 
     # Logged out user tests
     def test_get_request_with_no_login_redirects_to_login_page(self):
@@ -106,7 +120,9 @@ class TestUploadPageView(test.TestCase):
         """
         url = reverse(UrlName.FILE_UPLOAD_PAGE.value)
         response = self.client.get(url)
-        self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
+        self.assertIn(
+            "users/accounts/login", response.url
+        )  # We don't assert equal due to 'next' redirect field name
 
     def test_post_request_with_no_login_redirects_to_login_page(self):
         """
@@ -114,7 +130,9 @@ class TestUploadPageView(test.TestCase):
         """
         url = reverse(UrlName.PUPIL_LIST_UPLOAD.value)
         response = self.client.post(url, data={"junk": "not-a-file"})
-        self.assertIn("users/accounts/login", response.url)  # We don't assert equal due to 'next' redirect field name
+        self.assertIn(
+            "users/accounts/login", response.url
+        )  # We don't assert equal due to 'next' redirect field name
 
 
 class TestUploadPageViewExistingUploads(test.TestCase):
@@ -122,7 +140,9 @@ class TestUploadPageViewExistingUploads(test.TestCase):
 
     fixtures = ["user_school_profile.json", "pupils.json", "teachers.json"]
 
-    def test_upload_page_view_uploads_get_request_completion_statuses_match_loaded_fixtures(self):
+    def test_upload_page_view_uploads_get_request_completion_statuses_match_loaded_fixtures(
+        self,
+    ):
         """
         Unit test that the completion statuses in the required forms dict is in line with the fixtures loaded in by
         this test class
@@ -138,8 +158,18 @@ class TestUploadPageViewExistingUploads(test.TestCase):
         required_forms = response.context["required_forms"]
         for required_upload in required_forms.values():
             self.assertIsInstance(required_upload, RequiredUpload)
-        self.assertEqual(required_forms["pupils"].upload_status, UploadStatus.COMPLETE.value)
-        self.assertEqual(required_forms["teachers"].upload_status, UploadStatus.COMPLETE.value)
-        self.assertEqual(required_forms["classrooms"].upload_status, UploadStatus.INCOMPLETE.value)
-        self.assertEqual(required_forms["timetable"].upload_status, UploadStatus.INCOMPLETE.value)
-        self.assertEqual(required_forms["lessons"].upload_status, UploadStatus.DISALLOWED.value)
+        self.assertEqual(
+            required_forms["pupils"].upload_status, UploadStatus.COMPLETE.value
+        )
+        self.assertEqual(
+            required_forms["teachers"].upload_status, UploadStatus.COMPLETE.value
+        )
+        self.assertEqual(
+            required_forms["classrooms"].upload_status, UploadStatus.INCOMPLETE.value
+        )
+        self.assertEqual(
+            required_forms["timetable"].upload_status, UploadStatus.INCOMPLETE.value
+        )
+        self.assertEqual(
+            required_forms["lessons"].upload_status, UploadStatus.DISALLOWED.value
+        )

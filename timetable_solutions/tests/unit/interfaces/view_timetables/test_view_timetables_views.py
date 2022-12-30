@@ -23,8 +23,15 @@ class TestViews(TestCase):
     """
     Test class for the view_timetables app.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     def test_pupil_navigator_response(self):
         """
@@ -32,7 +39,7 @@ class TestViews(TestCase):
         pupil_navigator view. We test the data structures at successive depths of the nested context dictionary.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.PUPILS_NAVIGATOR.value)
 
         # Execute test unit
@@ -41,7 +48,10 @@ class TestViews(TestCase):
         # Test the keys of the dict are the year groups
         all_pupils_dict = response.context["all_pupils"]
         year_groups_list = list(all_pupils_dict.keys())
-        self.assertEqual(year_groups_list, [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value])
+        self.assertEqual(
+            year_groups_list,
+            [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value],
+        )
 
         # Test that each key corresponds to a value, which is the query set of pupils in that year group
         year_one = all_pupils_dict[models.Pupil.YearGroup.ONE.value]
@@ -56,7 +66,7 @@ class TestViews(TestCase):
     def test_teacher_navigator_response(self):
         """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.TEACHERS_NAVIGATOR.value)
 
         # Execute test unit
@@ -81,7 +91,7 @@ class TestViews(TestCase):
         which is the pupil's timetable.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.PUPIL_TIMETABLE.value, kwargs={"pupil_id": 1})
 
         # Execute test unit
@@ -107,8 +117,13 @@ class TestViews(TestCase):
         colours = response.context["class_colours"]
         default_colour_ranking = TimetableColourAssigner._colour_ranking
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours["MATHS"], default_colour_ranking[1])  # [1] since maths' rank is 1 on pupil's timetable
-        self.assertEqual(colours[TimetableColourAssigner.Colour.FREE.name], TimetableColourAssigner.Colour.FREE.value)
+        self.assertEqual(
+            colours["MATHS"], default_colour_ranking[1]
+        )  # [1] since maths' rank is 1 on pupil's timetable
+        self.assertEqual(
+            colours[TimetableColourAssigner.Colour.FREE.name],
+            TimetableColourAssigner.Colour.FREE.value,
+        )
 
     def test_teacher_timetable_view_correct_response(self):
         """
@@ -116,8 +131,10 @@ class TestViews(TestCase):
         relevant timetable etc.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
-        url = reverse(UrlName.TEACHER_TIMETABLE.value, kwargs={"teacher_id": 6})  # Timetable for Greg Thebaker
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = reverse(
+            UrlName.TEACHER_TIMETABLE.value, kwargs={"teacher_id": 6}
+        )  # Timetable for Greg Thebaker
 
         # Execute test unit
         response = self.client.get(url)
@@ -139,8 +156,13 @@ class TestViews(TestCase):
         colours = response.context["year_group_colours"]
         default_colour_ranking = TimetableColourAssigner._colour_ranking
         self.assertIsInstance(colours, dict)
-        self.assertEqual(colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1])
-        self.assertEqual(colours[TimetableColourAssigner.Colour.FREE.name], TimetableColourAssigner.Colour.FREE.value)
+        self.assertEqual(
+            colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1]
+        )
+        self.assertEqual(
+            colours[TimetableColourAssigner.Colour.FREE.name],
+            TimetableColourAssigner.Colour.FREE.value,
+        )
         self.assertEqual(colours["LUNCH"], TimetableColourAssigner.Colour.MEAL.value)
 
     # TESTS FOR CSV FILE DOWNLOADS
@@ -149,7 +171,7 @@ class TestViews(TestCase):
         Unit tests that the file provided by the url for pupil csv timetable downloads is as expected.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.PUPIL_TT_CSV_DOWNLOAD.value, kwargs={"pupil_id": 1})
 
         # Execute test unit
@@ -158,13 +180,19 @@ class TestViews(TestCase):
         # Check outcome
         headers = response.headers
         self.assertEqual(headers["Content-Type"], "text/csv")
-        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-John-Smith.csv")
+        self.assertEqual(
+            headers["Content-Disposition"],
+            "attachment; filename=Timetable-John-Smith.csv",
+        )
 
         timetable_buffer = io.BytesIO(response.content)
         timetable = pd.read_csv(timetable_buffer, index_col="Time")
 
         self.assertEqual(timetable.isnull().sum().sum(), 0)
-        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            list(timetable.columns),
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(timetable.index.name, "Time")
 
         # Check random specific element
@@ -176,7 +204,7 @@ class TestViews(TestCase):
         Unit tests that the file provided by the url for teacher csv timetable downloads is as expected.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.TEACHER_TT_CSV_DOWNLOAD.value, kwargs={"teacher_id": 1})
 
         # Execute test unit
@@ -185,13 +213,19 @@ class TestViews(TestCase):
         # Check outcome
         headers = response.headers
         self.assertEqual(headers["Content-Type"], "text/csv")
-        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-Theresa-May.csv")
+        self.assertEqual(
+            headers["Content-Disposition"],
+            "attachment; filename=Timetable-Theresa-May.csv",
+        )
 
         timetable_buffer = io.BytesIO(response.content)
         timetable = pd.read_csv(timetable_buffer, index_col="Time")
 
         self.assertEqual(timetable.isnull().sum().sum(), 0)
-        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            list(timetable.columns),
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(timetable.index.name, "Time")
 
         # Check random specific element
@@ -204,7 +238,7 @@ class TestViews(TestCase):
         Unit tests that the file provided by the url for pupil pdf timetable downloads is as expected.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.PUPIL_TT_PDF_DOWNLOAD.value, kwargs={"pupil_id": 1})
 
         # Execute test unit
@@ -213,14 +247,17 @@ class TestViews(TestCase):
         # Check outcome
         headers = response.headers
         self.assertEqual(headers["Content-Type"], "application/pdf")
-        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-John-Smith.pdf")
+        self.assertEqual(
+            headers["Content-Disposition"],
+            "attachment; filename=Timetable-John-Smith.pdf",
+        )
 
     def test_teacher_timetable_pdf_download_as_expected(self):
         """
         Unit tests that the file provided by the url for teacher pdf timetable downloads is as expected.
         """
         # Set test parameters
-        self.client.login(username='dummy_teacher', password='dt123dt123')
+        self.client.login(username="dummy_teacher", password="dt123dt123")
         url = reverse(UrlName.TEACHER_TT_PDF_DOWNLOAD.value, kwargs={"teacher_id": 1})
 
         # Execute test unit
@@ -229,4 +266,7 @@ class TestViews(TestCase):
         # Check outcome
         headers = response.headers
         self.assertEqual(headers["Content-Type"], "application/pdf")
-        self.assertEqual(headers["Content-Disposition"], "attachment; filename=Timetable-Theresa-May.pdf")
+        self.assertEqual(
+            headers["Content-Disposition"],
+            "attachment; filename=Timetable-Theresa-May.pdf",
+        )

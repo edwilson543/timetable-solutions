@@ -18,6 +18,7 @@ class LessonQuerySet(models.QuerySet):
     """
     Custom queryset manager for the Lesson model
     """
+
     def get_all_instances_for_school(self, school_id: int) -> "LessonQuerySet":
         """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
@@ -37,15 +38,25 @@ class Lesson(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     lesson_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
-    teacher = models.ForeignKey(Teacher, on_delete=models.PROTECT,
-                                related_name="lessons", blank=True, null=True)  # Null for e.g. lunch
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.PROTECT, related_name="lessons", blank=True, null=True
+    )  # Null for e.g. lunch
     pupils = models.ManyToManyField(Pupil, related_name="lessons")
-    classroom = models.ForeignKey(Classroom, on_delete=models.PROTECT,
-                                  related_name="lessons", blank=True, null=True)  # Null for e.g. sport
+    classroom = models.ForeignKey(
+        Classroom,
+        on_delete=models.PROTECT,
+        related_name="lessons",
+        blank=True,
+        null=True,
+    )  # Null for e.g. sport
 
     # Fulfillment fields
-    user_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="user_lessons")
-    solver_defined_time_slots = models.ManyToManyField(TimetableSlot, related_name="solver_lessons")
+    user_defined_time_slots = models.ManyToManyField(
+        TimetableSlot, related_name="user_lessons"
+    )
+    solver_defined_time_slots = models.ManyToManyField(
+        TimetableSlot, related_name="solver_lessons"
+    )
 
     # Fulfillment requirement fields - note that both counts include any user defined instances
     total_required_slots = models.PositiveSmallIntegerField()
@@ -58,12 +69,14 @@ class Lesson(models.Model):
         """
         Django Meta class for the Lesson model
         """
+
         unique_together = [["school", "lesson_id"]]
 
     class Constant:
         """
         Additional constants to store about the Lesson model (that aren't an option in Meta)
         """
+
         human_string_singular = "lesson"
         human_string_plural = "lessons"
 
@@ -82,44 +95,62 @@ class Lesson(models.Model):
 
     # FACTORIES
     @classmethod
-    def create_new(cls,
-                   school_id: int, lesson_id: str, subject_name: str,
-                   total_required_slots: int, total_required_double_periods: int,
-                   teacher_id: int | None = None, classroom_id: int | None = None,  # IDs since it's a foreign key
-                   pupils: PupilQuerySet | None = None,
-                   user_defined_time_slots: TimetableSlotQuerySet | None = None,
-                   solver_defined_time_slots: TimetableSlotQuerySet | None = None,
-                   ) -> "Lesson":
+    def create_new(
+        cls,
+        school_id: int,
+        lesson_id: str,
+        subject_name: str,
+        total_required_slots: int,
+        total_required_double_periods: int,
+        teacher_id: int | None = None,
+        classroom_id: int
+        | None = None,  # ID for classroom & teacher since they're foreign keys
+        pupils: PupilQuerySet | None = None,
+        user_defined_time_slots: TimetableSlotQuerySet | None = None,
+        solver_defined_time_slots: TimetableSlotQuerySet | None = None,
+    ) -> "Lesson":
         """
         Method to create a new Lesson instance.
         Note that pupils and timetable slots get added separately, since they have a many-to-many relationship to the
         model, so the lesson instance must be saved first.
         """
         if teacher_id is not None:
-            teacher = Teacher.objects.get_individual_teacher(school_id=school_id, teacher_id=teacher_id)
+            teacher = Teacher.objects.get_individual_teacher(
+                school_id=school_id, teacher_id=teacher_id
+            )
         else:
             teacher = None
 
         if classroom_id is not None:
-            classroom = Classroom.objects.get_individual_classroom(school_id=school_id, classroom_id=classroom_id)
+            classroom = Classroom.objects.get_individual_classroom(
+                school_id=school_id, classroom_id=classroom_id
+            )
         else:
             classroom = None
 
         subject_name = subject_name.upper()
 
         lesson = cls.objects.create(
-            school_id=school_id, lesson_id=lesson_id, subject_name=subject_name,
+            school_id=school_id,
+            lesson_id=lesson_id,
+            subject_name=subject_name,
             total_required_slots=total_required_slots,
             total_required_double_periods=total_required_double_periods,
-            teacher=teacher, classroom=classroom)
+            teacher=teacher,
+            classroom=classroom,
+        )
         lesson.full_clean()
         lesson.save()
 
         if (pupils is not None) and (pupils.count() > 0):
             lesson.add_pupils(pupils=pupils)
-        if (user_defined_time_slots is not None) and (user_defined_time_slots.count()) > 0:
+        if (user_defined_time_slots is not None) and (
+            user_defined_time_slots.count()
+        ) > 0:
             lesson.add_user_defined_time_slots(time_slots=user_defined_time_slots)
-        if (solver_defined_time_slots is not None) and (solver_defined_time_slots.count()) > 0:
+        if (solver_defined_time_slots is not None) and (
+            solver_defined_time_slots.count()
+        ) > 0:
             lesson.add_solver_defined_time_slots(time_slots=solver_defined_time_slots)
 
         return lesson
@@ -146,7 +177,9 @@ class Lesson(models.Model):
         elif isinstance(pupils, Pupil):
             self.pupils.add(pupils)
 
-    def add_user_defined_time_slots(self, time_slots: TimetableSlotQuerySet | TimetableSlot) -> None:
+    def add_user_defined_time_slots(
+        self, time_slots: TimetableSlotQuerySet | TimetableSlot
+    ) -> None:
         """Method adding a queryset of time slots to the Lesson's many-to-many user_defined_time_slot field"""
         if isinstance(time_slots, TimetableSlotQuerySet):
             self.user_defined_time_slots.add(*time_slots)
@@ -167,7 +200,9 @@ class Lesson(models.Model):
         Method to retrieve the lessons where the total required slots is greater than the user defined slots count.
         """
         all_lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
-        filtered_lesson_pks = [lesson.pk for lesson in all_lessons if lesson.requires_solving()]
+        filtered_lesson_pks = [
+            lesson.pk for lesson in all_lessons if lesson.requires_solving()
+        ]
         lessons = cls.objects.filter(pk__in=filtered_lesson_pks)
         return lessons
 
@@ -185,8 +220,10 @@ class Lesson(models.Model):
         where duplicates are created within one of the individual query sets, at the point of combining.
         """
         return (
-            self.user_defined_time_slots.all() | self.solver_defined_time_slots.all()).distinct(
-        ).order_by("day_of_week", "period_starts_at")
+            (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all())
+            .distinct()
+            .order_by("day_of_week", "period_starts_at")
+        )
 
     def get_n_solver_slots_required(self) -> int:
         """
@@ -198,8 +235,10 @@ class Lesson(models.Model):
         """
         Method to calculate the total additional number of double periods that the solver must produce.
         """
-        total_user_defined = sum(self.get_user_defined_double_period_count_on_day(day_of_week=day) for
-                                 day in WeekDay.values)
+        total_user_defined = sum(
+            self.get_user_defined_double_period_count_on_day(day_of_week=day)
+            for day in WeekDay.values
+        )
         return self.total_required_double_periods - total_user_defined
 
     def requires_solving(self) -> bool:
@@ -217,15 +256,20 @@ class Lesson(models.Model):
         """
 
         # Note that slots will be ordered in time, using the TimetableSlot Meta class
-        user_slots_on_day = self.user_defined_time_slots.all().get_timeslots_on_given_day(
-            school_id=self.school.school_access_key, day_of_week=day_of_week)
+        user_slots_on_day = (
+            self.user_defined_time_slots.all().get_timeslots_on_given_day(
+                school_id=self.school.school_access_key, day_of_week=day_of_week
+            )
+        )
 
         # Set initial parameters affected by the for loop
         double_period_count = 0
         previous_slot = None
 
         for slot in user_slots_on_day:
-            if (previous_slot is not None) and slot.check_if_slots_are_consecutive(other_slot=previous_slot):
+            if (previous_slot is not None) and slot.check_if_slots_are_consecutive(
+                other_slot=previous_slot
+            ):
                 double_period_count += 1
             previous_slot = slot
 
@@ -251,8 +295,12 @@ class Lesson(models.Model):
             return
 
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
-            raise ValidationError(f"User has defined more slots for {self.__repr__()} than the total requirement")
+            raise ValidationError(
+                f"User has defined more slots for {self.__repr__()} than the total requirement"
+            )
 
         for slot in self.solver_defined_time_slots.all():
             if slot in self.user_defined_time_slots.all():
-                raise ValidationError(f"{slot} appears in both user and solver slots for {self.__repr__}")
+                raise ValidationError(
+                    f"{slot} appears in both user and solver slots for {self.__repr__}"
+                )

@@ -14,9 +14,10 @@ from data import models
 
 class ProfileInline(admin.StackedInline):
     """Inline admin descriptor for TimetableLeadTeacher model which acts a bit like a singleton."""
+
     model = models.Profile
     can_delete = False
-    verbose_name_plural = 'user_profile'
+    verbose_name_plural = "user_profile"
 
 
 # Define a new User admin
@@ -73,5 +74,7 @@ class TimetableSlotAdmin(admin.ModelAdmin):
 class LessonAdmin(admin.ModelAdmin):
     list_display = ["school", "lesson_id", "teacher"]
     list_filter = ["school"]
-    search_fields = ["school__school_access_key", ]
+    search_fields = [
+        "school__school_access_key",
+    ]
     search_help_text = "Search by school access key"

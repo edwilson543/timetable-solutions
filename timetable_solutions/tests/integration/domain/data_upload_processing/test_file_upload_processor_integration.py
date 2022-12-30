@@ -34,18 +34,25 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.TEACHERS.id_column,
-            model=models.Teacher, school_access_key=123456)
+            model=models.Teacher,
+            school_access_key=123456,
+        )
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
         self.assertEqual(upload_processor.n_model_instances_created, 11)
 
         # Test the database is as expected
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(len(all_teachers), 11)
-        greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
+        greg = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=6
+        )
         self.assertIsInstance(greg, models.Teacher)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
@@ -58,9 +65,12 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil, school_access_key=123456)
+            model=models.Pupil,
+            school_access_key=123456,
+        )
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
@@ -82,18 +92,25 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.CLASSROOMS.id_column,
-            model=models.Classroom, school_access_key=123456)
+            model=models.Classroom,
+            school_access_key=123456,
+        )
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
         self.assertEqual(upload_processor.n_model_instances_created, 12)
 
         # Test that the database is as expected
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(len(all_classrooms), 12)
-        room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
+        room = models.Classroom.objects.get_individual_classroom(
+            school_id=123456, classroom_id=11
+        )
         self.assertEqual(room.room_number, 40)
 
     def test_upload_timetable_structure_to_database_valid_upload(self):
@@ -104,18 +121,25 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
             id_column_name=data_upload_processing.UploadFileStructure.TIMETABLE.id_column,
-            model=models.TimetableSlot, school_access_key=123456)
+            model=models.TimetableSlot,
+            school_access_key=123456,
+        )
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
         self.assertEqual(upload_processor.n_model_instances_created, 35)
 
         # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(len(all_slots), 35)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
         self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, dt.time(hour=9))
         self.assertEqual(slot.period_duration, dt.timedelta(hours=1))
@@ -141,13 +165,19 @@ class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
 
         # Upload the file
         upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil, school_access_key=123456)
+            model=models.Pupil,
+            school_access_key=123456,
+        )
 
         # Check the outcome
         self.assertTrue(not upload_processor.upload_successful)
-        self.assertIn(f"Could not interpret values in row {row_n}", upload_processor.upload_error_message)
+        self.assertIn(
+            f"Could not interpret values in row {row_n}",
+            upload_processor.upload_error_message,
+        )
 
         # Check NO pupils have been uploaded to the database
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -219,9 +249,12 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
 
         # Execute test unit
         processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil, school_access_key=123456)
+            model=models.Pupil,
+            school_access_key=123456,
+        )
 
         # Check outcome
         self.assertIsNotNone(processor.upload_error_message)
@@ -242,9 +275,12 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
 
         # Execute test unit
         processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil, school_access_key=123456)
+            model=models.Pupil,
+            school_access_key=123456,
+        )
 
         # Check outcome
         self.assertIsNotNone(processor.upload_error_message)
@@ -265,9 +301,13 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file, csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
             id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil, school_access_key=123456, attempt_upload=False)
+            model=models.Pupil,
+            school_access_key=123456,
+            attempt_upload=False,
+        )
 
         # Execute test unit one
         processor._upload_file_content(file=upload_file)

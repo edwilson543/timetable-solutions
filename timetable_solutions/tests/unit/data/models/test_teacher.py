@@ -16,8 +16,14 @@ from data import models
 
 class TestTeacher(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     # FACTORY METHOD TESTS
     def test_create_new_valid_teacher(self):
@@ -25,11 +31,18 @@ class TestTeacher(test.TestCase):
         Tests that we can create and save a Teacher via the create_new method
         """
         # Execute test unit
-        teacher = models.Teacher.create_new(school_id=123456, teacher_id=12,  # Note that id 12 is available
-                                            firstname="test", surname="test", title="mr")
+        teacher = models.Teacher.create_new(
+            school_id=123456,
+            teacher_id=12,  # Note that id 12 is available
+            firstname="test",
+            surname="test",
+            title="mr",
+        )
 
         # Check outcome
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert teacher in all_teachers
 
     def test_create_new_fails_when_teacher_id_not_unique_for_school(self):
@@ -38,10 +51,17 @@ class TestTeacher(test.TestCase):
         """
         # Execute test unit
         with pytest.raises(IntegrityError):
-            models.Teacher.create_new(school_id=123456, teacher_id=1,  # Note that id 1 is unavailable
-                                      firstname="test", surname="test", title="mr")
+            models.Teacher.create_new(
+                school_id=123456,
+                teacher_id=1,  # Note that id 1 is unavailable
+                firstname="test",
+                surname="test",
+                title="mr",
+            )
 
-    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_lessons(self):
+    def test_delete_all_instances_for_school_unsuccessful_when_attached_to_lessons(
+        self,
+    ):
         """
         Test that we cannot delete all teachers associated with a school, when there is at least one Lesson
         referencing the teachers we are trying to delete.
@@ -54,11 +74,17 @@ class TestTeacher(test.TestCase):
     def test_check_if_busy_at_time_slot_when_teacher_is_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to"""
         # Set test parameters
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
 
         # Ensure they are busy at this time
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         lesson.teacher = teacher
         lesson.add_user_defined_time_slots(time_slots=slot)
 
@@ -71,8 +97,12 @@ class TestTeacher(test.TestCase):
     def test_check_if_busy_at_time_slot_when_teacher_is_not_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to"""
         # Set test parameters
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=5)
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=5
+        )
 
         # Execute test unit
         is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
@@ -86,7 +116,9 @@ class TestTeacher(test.TestCase):
         Test that the correct number of lessons per week is retrieved for a teacher.
         """
         # Set test parameters
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
 
         # Execute test unit
         n_lessons = teacher.get_lessons_per_week()
@@ -99,7 +131,9 @@ class TestTeacher(test.TestCase):
         Test that the correct number of lessons per week is retrieved for a teacher.
         """
         # Set test parameters
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1)
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
 
         # Execute test unit
         percentage = teacher.get_occupied_percentage()
@@ -127,5 +161,7 @@ class TestTeacherLessFixtures(test.TestCase):
         deleted_ref = outcome[1]
         assert deleted_ref["data.Teacher"] == 11
 
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_teachers.count() == 0

@@ -18,8 +18,15 @@ class TestTimetableConstruction(TestCase):
     """
     Test class for the all functions in the timetable_constructor module of the view_timetables in the domain.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_with_solution.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+    ]
 
     # PUPIL / TEACHER NAVIGATOR PREPROCESSING TESTS
     def test_get_year_indexed_pupils(self):
@@ -29,10 +36,15 @@ class TestTimetableConstruction(TestCase):
 
         # Test the correct year group list has been retrieved
         expected_year_groups = list(all_pupils_dict.keys())
-        self.assertEqual(expected_year_groups, [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value])
+        self.assertEqual(
+            expected_year_groups,
+            [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value],
+        )
         for year_group, pupils in all_pupils_dict.items():
             for pupil in pupils:
-                self.assertEqual(pupil["year_group"], year_group)  # Check the pupils have been correctly assigned
+                self.assertEqual(
+                    pupil["year_group"], year_group
+                )  # Check the pupils have been correctly assigned
 
         # Test that each key corresponds to a value, which is the query set of pupils in that year group
         year_one = all_pupils_dict[models.Pupil.YearGroup.ONE.value]
@@ -46,13 +58,17 @@ class TestTimetableConstruction(TestCase):
 
     def test_get_letter_indexed_teachers(self):
         """Test that the correct full list of teachers, indexed by their surname letters is returned"""
-        all_teachers_dict = view_timetables.get_letter_indexed_teachers(school_id=123456)
+        all_teachers_dict = view_timetables.get_letter_indexed_teachers(
+            school_id=123456
+        )
 
         # Test the keys are the relevant alphabet letters
         self.assertEqual(list(all_teachers_dict.keys()), list("CDFHJMPSTV"))
         for letter, teachers in all_teachers_dict.items():
             for teacher in teachers:
-                self.assertEqual(teacher["surname"][0], letter)  # Check the surnames' first letters match the index
+                self.assertEqual(
+                    teacher["surname"][0], letter
+                )  # Check the surnames' first letters match the index
 
         # Test the data at an individual key
         self.assertIsInstance(all_teachers_dict["C"], QuerySet)
@@ -68,11 +84,16 @@ class TestTimetableConstruction(TestCase):
         # Data setup
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
         lessons = pupil.lessons.all()
-        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
 
         # Run the relevant domain unit
-        timetable = view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
-            lessons=lessons, timetable_slots=timetable_slots)
+        timetable = (
+            view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
+                lessons=lessons, timetable_slots=timetable_slots
+            )
+        )
 
         # Test assertions
         monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
@@ -81,25 +102,36 @@ class TestTimetableConstruction(TestCase):
         self.assertEqual(monday_period_one.classroom.building, "MB")
         free_period = timetable["12:00-13:00"][models.WeekDay.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a Lesson instance
-        self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)
+        self.assertEqual(
+            free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name
+        )
 
     def test_get_timetable_slot_indexed_timetable_for_a_teacher(self):
         """Test that the correct timetable is returned for a given pupil, in the correct structure."""
         # Data setup
-        teacher = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=6
+        )
         lessons = teacher.lessons.all()
-        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        timetable_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
 
         # Run the relevant domain unit
-        timetable = view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
-            lessons=lessons, timetable_slots=timetable_slots)
+        timetable = (
+            view_timetables.timetable_constructor.get_timetable_slot_indexed_timetable(
+                lessons=lessons, timetable_slots=timetable_slots
+            )
+        )
 
         # Test assertions
         monday_period_one = timetable["09:00-10:00"][models.WeekDay.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.Lesson)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
         free_period = timetable["10:00-11:00"][models.WeekDay.MONDAY.label]
-        self.assertEqual(free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name)
+        self.assertEqual(
+            free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name
+        )
 
     # TESTS FOR CSV FILES
     def test_get_pupil_timetable_as_csv(self):
@@ -111,13 +143,18 @@ class TestTimetableConstruction(TestCase):
         pupil_id = 1
 
         # Execute test unit
-        _, csv_buffer = view_timetables.get_pupil_timetable_as_csv(school_id=school_id, pupil_id=pupil_id)
+        _, csv_buffer = view_timetables.get_pupil_timetable_as_csv(
+            school_id=school_id, pupil_id=pupil_id
+        )
 
         # Check outcome - basic structure
         timetable = pd.read_csv(csv_buffer, index_col="Time")
 
         self.assertEqual(timetable.isnull().sum().sum(), 0)
-        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            list(timetable.columns),
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(timetable.index.name, "Time")
 
         # Check random specific element
@@ -133,13 +170,18 @@ class TestTimetableConstruction(TestCase):
         teacher_id = 1
 
         # Execute test unit
-        _, csv_buffer = view_timetables.get_teacher_timetable_as_csv(school_id=school_id, teacher_id=teacher_id)
+        _, csv_buffer = view_timetables.get_teacher_timetable_as_csv(
+            school_id=school_id, teacher_id=teacher_id
+        )
 
         # Check outcome - basic structure
         timetable = pd.read_csv(csv_buffer, index_col="Time")
 
         self.assertEqual(timetable.isnull().sum().sum(), 0)
-        self.assertEqual(list(timetable.columns), ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"])
+        self.assertEqual(
+            list(timetable.columns),
+            ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        )
         self.assertEqual(timetable.index.name, "Time")
 
         # Check random specific element

@@ -14,25 +14,36 @@ from domain import solver as slvr
 
 class TestTimetableSolverInputsLoading(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+    ]
 
-    solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                               allow_triple_periods_and_above=True)
+    solution_spec = slvr.SolutionSpecification(
+        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+    )
 
     def test_instantiation_of_timetable_solver_inputs(self):
         """
         Test the solver data loader retrieves all data from the 'data' layer as expected
         """
         # Execute test unit
-        data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=123456, solution_specification=self.solution_spec
+        )
 
         # Check the outcome is as expected
         assert len(data.pupils) == 6
         assert len(data.teachers) == 11
         assert len(data.classrooms) == 12
         assert len(data.timetable_slots) == 35
-        assert len(data.lessons) == 12  # Since the 12 lunch 'lessons' aren't included in the solver input data
+        assert (
+            len(data.lessons) == 12
+        )  # Since the 12 lunch 'lessons' aren't included in the solver input data
 
     # PROPERTIES TESTS
     def test_consecutive_slots_property(self):
@@ -42,7 +53,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
 
         # Execute test unit
         consecutive_slots = data.consecutive_slots
@@ -51,8 +64,12 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert len(consecutive_slots) == 30  # 7 slots per day, 5 days a week...
         # All timeslots are 1 hour apart, so we check this
         for double_slot in consecutive_slots:
-            slot_0_start = dt.datetime.combine(dt.date(year=2020, month=1, day=1), time=double_slot[0].period_starts_at)
-            slot_1_start = dt.datetime.combine(dt.date(year=2020, month=1, day=1), time=double_slot[1].period_starts_at)
+            slot_0_start = dt.datetime.combine(
+                dt.date(year=2020, month=1, day=1), time=double_slot[0].period_starts_at
+            )
+            slot_1_start = dt.datetime.combine(
+                dt.date(year=2020, month=1, day=1), time=double_slot[1].period_starts_at
+            )
             assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
             assert double_slot[0].day_of_week == double_slot[1].day_of_week
 
@@ -63,7 +80,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
 
         # Execute test unit
         available_days = data.available_days
@@ -77,7 +96,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
 
         # Execute test unit
         timetable_start = data.timetable_start
@@ -91,7 +112,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
 
         # Execute test unit
         timetable_start = data.timetable_finish
@@ -106,7 +129,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
         slot_id = 1
 
         # Execute test unit
@@ -122,7 +147,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=self.solution_spec)
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
 
         # Check outcome - note the checks get performed at instantiation
         assert data.error_messages == []
@@ -138,8 +165,15 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         spec.allow_split_classes_within_each_day = False
         pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         models.Lesson.create_new(
-            school_id=123456, lesson_id="TEST", subject_name="MATHS", teacher_id=1, classroom_id=1,
-            total_required_slots=100, total_required_double_periods=1, pupils=pupils)
+            school_id=123456,
+            lesson_id="TEST",
+            subject_name="MATHS",
+            teacher_id=1,
+            classroom_id=1,
+            total_required_slots=100,
+            total_required_double_periods=1,
+            pupils=pupils,
+        )
 
         # Execute test unit and check outcome
         data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=spec)

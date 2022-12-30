@@ -18,9 +18,12 @@ from tests.input_settings import TEST_DATA_DIR
 
 class TestCaseWithUpload(TestCase):
     """Subclass of the TestCase class, capable of uploading test csv files (subclasses twice below)."""
+
     fixtures = ["user_school_profile.json"]
 
-    def upload_test_file(self, filename: str, url_name: UrlName, file_field_name: str) -> HttpResponse:
+    def upload_test_file(
+        self, filename: str, url_name: UrlName, file_field_name: str
+    ) -> HttpResponse:
         """
         :param filename: the name of the csv file we are simulating the upload of
         :param url_name: the url extension for the given test file upload (also dict key in the data post request)
@@ -46,13 +49,20 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         the database.
         """
         # Execute test unit
-        self.upload_test_file(filename="teachers.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-                              file_field_name=forms.TeacherListUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="teachers.csv",
+            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            file_field_name=forms.TeacherListUpload.Meta.file_field_name,
+        )
 
         # Test that the database is as expected
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(school_id=123456)
+        all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(all_teachers.count(), 11)
-        greg = models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=6)
+        greg = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=6
+        )
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
 
@@ -63,11 +73,18 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         """
         # Try uploading the wrong file (pupils.csv)
         response = self.upload_test_file(
-            filename="lessons.csv", url_name=UrlName.TEACHER_LIST_UPLOAD.value,
-            file_field_name=forms.TeacherListUpload.Meta.file_field_name)
+            filename="lessons.csv",
+            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            file_field_name=forms.TeacherListUpload.Meta.file_field_name,
+        )
 
         # Check outcome
-        self.assertEqual(models.Lesson.objects.get_all_instances_for_school(school_id=123456).count(), 0)
+        self.assertEqual(
+            models.Lesson.objects.get_all_instances_for_school(
+                school_id=123456
+            ).count(),
+            0,
+        )
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_pupil_list_upload_view_file_uploads_successfully(self):
@@ -76,8 +93,11 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         database.
         """
         # Execute test unit
-        self.upload_test_file(filename="pupils.csv", url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                              file_field_name=forms.PupilListUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="pupils.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+        )
 
         # Test that the database is as expected
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -92,11 +112,17 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         and also that the database is unaffected.
         """
         # Try uploading the wrong file (teachers.csv)
-        response = self.upload_test_file(filename="teachers.csv", url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-                                         file_field_name=forms.PupilListUpload.Meta.file_field_name)
+        response = self.upload_test_file(
+            filename="teachers.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+        )
 
         # Assert that nothing has happened
-        self.assertEqual(models.Pupil.objects.get_all_instances_for_school(school_id=123456).count(), 0)
+        self.assertEqual(
+            models.Pupil.objects.get_all_instances_for_school(school_id=123456).count(),
+            0,
+        )
         assert isinstance(response.cookies["messages"].value, str)
 
     def test_classroom_list_upload_view_file_uploads_successfully(self):
@@ -104,13 +130,20 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         Unit test for the ClassrromListView, that simulating a csv file upload of classrooms successfully populates the
         database.
         """
-        self.upload_test_file(filename="classrooms.csv", url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
-                              file_field_name=forms.ClassroomListUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="classrooms.csv",
+            url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+            file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
+        )
 
         # Test that the database is as expected
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(school_id=123456)
+        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(all_classrooms.count(), 12)
-        room = models.Classroom.objects.get_individual_classroom(school_id=123456, classroom_id=11)
+        room = models.Classroom.objects.get_individual_classroom(
+            school_id=123456, classroom_id=11
+        )
         self.assertEqual(room.room_number, 40)
 
     def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
@@ -118,13 +151,20 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         Unit test for the TimetableStructureUpload view, that simulating a csv file upload of tt slots successfully
         populates the database.
         """
-        self.upload_test_file(filename="timetable.csv", url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
-                              file_field_name=forms.TimetableStructureUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="timetable.csv",
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+            file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
+        )
 
         # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(school_id=123456)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         self.assertEqual(all_slots.count(), 35)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(school_id=123456, slot_id=1)
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
         self.assertEqual(slot.day_of_week, 1)
         self.assertEqual(slot.period_starts_at, time(hour=9))
         self.assertEqual(slot.period_duration, timedelta(hours=1))
@@ -150,20 +190,42 @@ class TestLessonFileUpload(TestCaseWithUpload):
     which depends on the prior completiong of all other files.
     """
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+    ]
 
     def test_lesson_upload_view_file_uploads_successfully(self):
         """
         Unit test for the Lesson View, that simulating a csv file upload of lessons successfully populates the database.
         """
-        self.upload_test_file(filename="lessons.csv", url_name=UrlName.LESSONS_UPLOAD.value,
-                              file_field_name=forms.LessonUpload.Meta.file_field_name)
+        self.upload_test_file(
+            filename="lessons.csv",
+            url_name=UrlName.LESSONS_UPLOAD.value,
+            file_field_name=forms.LessonUpload.Meta.file_field_name,
+        )
 
         # Test the database is as expected
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
+        all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=123456
+        )
         assert all_lessons.count() == 24
 
         # Check a random specific class
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
-        self.assertQuerysetEqual(lesson.pupils.all(), models.Pupil.objects.filter(pupil_id__in={1, 2}), ordered=False)
-        self.assertEqual(lesson.teacher, models.Teacher.objects.get_individual_teacher(school_id=123456, teacher_id=1))
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        self.assertQuerysetEqual(
+            lesson.pupils.all(),
+            models.Pupil.objects.filter(pupil_id__in={1, 2}),
+            ordered=False,
+        )
+        self.assertEqual(
+            lesson.teacher,
+            models.Teacher.objects.get_individual_teacher(
+                school_id=123456, teacher_id=1
+            ),
+        )

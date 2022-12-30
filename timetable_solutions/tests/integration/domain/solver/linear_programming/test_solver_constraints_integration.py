@@ -12,8 +12,14 @@ from domain import solver as slvr
 
 class TestSolverConstraints(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+    ]
 
     def test_add_all_constraints_to_problem(self):
         """
@@ -24,13 +30,21 @@ class TestSolverConstraints(test.TestCase):
         """
         # Set test parameters
         school_access_key = 123456
-        spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=False,
-                                          allow_triple_periods_and_above=False)
-        data = slvr.TimetableSolverInputs(school_id=school_access_key, solution_specification=spec)
+        spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=False,
+            allow_triple_periods_and_above=False,
+        )
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=spec
+        )
         variables = slvr.TimetableSolverVariables(inputs=data)
-        constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
+        constraint_maker = slvr.TimetableSolverConstraints(
+            inputs=data, variables=variables
+        )
 
-        dummy_problem = lp.LpProblem()  # In real life, will be the LpProblem subclass carried by TimetableSolver
+        dummy_problem = (
+            lp.LpProblem()
+        )  # In real life, will be the LpProblem subclass carried by TimetableSolver
 
         # Execute test unit
         constraint_maker.add_constraints_to_problem(problem=dummy_problem)
@@ -42,5 +56,9 @@ class TestSolverConstraints(test.TestCase):
         fulfillment_pupil_teacher_classroom = 12 + (6 * 35) + (11 * 35) + (12 * 35)
         double_period_fulfillment_dependency = 12 + (12 * 30 * 2)
         no_split_no_triples = (12 * 5) + (12 * 5)
-        assert len(constraints) == fulfillment_pupil_teacher_classroom + double_period_fulfillment_dependency + \
-            no_split_no_triples
+        assert (
+            len(constraints)
+            == fulfillment_pupil_teacher_classroom
+            + double_period_fulfillment_dependency
+            + no_split_no_triples
+        )

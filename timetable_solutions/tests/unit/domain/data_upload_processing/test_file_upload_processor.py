@@ -16,6 +16,7 @@ class TestFileUploadProcessor(test.TestCase):
     """
     Unit test class for the methods on FileUploadProcessor.
     """
+
     fixtures = ["user_school_profile.json", "pupils.json", "timetable.json"]
 
     @staticmethod
@@ -25,8 +26,12 @@ class TestFileUploadProcessor(test.TestCase):
         """
         # noinspection PyTypeChecker
         processor = FileUploadProcessor(
-            csv_file=None, csv_headers=None, id_column_name=None, model=None,  # None of these are relevant
-            school_access_key=123456, attempt_upload=False,
+            csv_file=None,
+            csv_headers=None,
+            id_column_name=None,
+            model=None,  # None of these are relevant
+            school_access_key=123456,
+            attempt_upload=False,
         )
         return processor
 
@@ -69,7 +74,9 @@ class TestFileUploadProcessor(test.TestCase):
         # Set test parameters
         processor = self._get_file_agnostic_processor()
         processor._csv_headers = ["a", "b"]
-        df = pd.DataFrame({"c": [1, 2, 3], "d": [4, 5, 6]})  # Note that shape is right but column names wrong
+        df = pd.DataFrame(
+            {"c": [1, 2, 3], "d": [4, 5, 6]}
+        )  # Note that shape is right but column names wrong
 
         # Execute test unit
         check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)
@@ -86,7 +93,9 @@ class TestFileUploadProcessor(test.TestCase):
         processor = self._get_file_agnostic_processor()
         processor._csv_headers = ["a", "b"]
         processor._id_column_name = "a"
-        df = pd.DataFrame({"a": [1, 1, 2], "b": [4, 5, 6]})  # Note that column 'a' is the id column, but is not unique
+        df = pd.DataFrame(
+            {"a": [1, 1, 2], "b": [4, 5, 6]}
+        )  # Note that column 'a' is the id column, but is not unique
 
         # Execute test unit
         check_outcome = processor._check_upload_df_structure_and_content(upload_df=df)

@@ -19,8 +19,14 @@ from domain import solver as slvr
 
 class TestTimetableSolverVariables(test.TestCase):
 
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+    ]
 
     @staticmethod
     @lru_cache(maxsize=1)
@@ -29,11 +35,20 @@ class TestTimetableSolverVariables(test.TestCase):
         Utility method used to return an instance of the class holding the timetable variables.
         Note that we patch the methods called at instantiation, to avoid silently testing that they work
         """
-        solution_spec = slvr.SolutionSpecification(allow_split_classes_within_each_day=True,
-                                                   allow_triple_periods_and_above=True)
-        input_data = slvr.TimetableSolverInputs(school_id=123456, solution_specification=solution_spec)
-        with mock.patch.object(slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None),\
-                mock.patch.object(slvr.TimetableSolverVariables, "_get_double_period_variables", return_value=None):
+        solution_spec = slvr.SolutionSpecification(
+            allow_split_classes_within_each_day=True,
+            allow_triple_periods_and_above=True,
+        )
+        input_data = slvr.TimetableSolverInputs(
+            school_id=123456, solution_specification=solution_spec
+        )
+        with mock.patch.object(
+            slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None
+        ), mock.patch.object(
+            slvr.TimetableSolverVariables,
+            "_get_double_period_variables",
+            return_value=None,
+        ):
             variables_maker = slvr.TimetableSolverVariables(inputs=input_data)
         return variables_maker
 
@@ -61,7 +76,9 @@ class TestTimetableSolverVariables(test.TestCase):
         Test for the method removing irrelevant variables from the variables dict.
         """
         # Set parameters - we add two user defined slots at monday at 9AM, so that this variable gets stripped
-        lesson = models.Lesson.objects.get_individual_lesson(school_id=123456, lesson_id="YEAR_ONE_MATHS_A")
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
         two_slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 2])
         lesson.add_user_defined_time_slots(time_slots=two_slots)
 
@@ -91,8 +108,12 @@ class TestTimetableSolverVariables(test.TestCase):
         variables = variables_maker._get_double_period_variables()
 
         # Test the outcome - we expect one variable per consecutive period
-        assert len(variables) == 12 * 6 * 5  # 12 lessons, 6 consecutive periods / day, 5 days / week
-        random_var_key = slvr.doubles_var_key(lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12)
+        assert (
+            len(variables) == 12 * 6 * 5
+        )  # 12 lessons, 6 consecutive periods / day, 5 days / week
+        random_var_key = slvr.doubles_var_key(
+            lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12
+        )
         random_var = variables[random_var_key]
         assert random_var.lowBound == 0
         assert random_var.upBound == 1

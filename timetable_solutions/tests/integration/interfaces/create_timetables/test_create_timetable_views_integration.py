@@ -21,8 +21,15 @@ class TestCreateTimetableFormView(test.TestCase):
     Class for integration tests of the CreateTimetable FormView allowing users to create timetable solutions.
     'Integration' since all tests involve fully running the solver.
     """
-    fixtures = ["user_school_profile.json", "classrooms.json", "pupils.json", "teachers.json", "timetable.json",
-                "lessons_without_solution.json"]
+
+    fixtures = [
+        "user_school_profile.json",
+        "classrooms.json",
+        "pupils.json",
+        "teachers.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+    ]
 
     # GET request tests
     def test_get_method_returns_empty_solution_specification_form(self):
@@ -76,9 +83,14 @@ class TestCreateTimetableFormView(test.TestCase):
         lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
         for lesson in lessons:
             if lesson.requires_solving():
-                assert lesson.solver_defined_time_slots.count() in [8, 9]  # per requirements
+                assert lesson.solver_defined_time_slots.count() in [
+                    8,
+                    9,
+                ]  # per requirements
 
-    def test_post_method_runs_solver_with_solution_spec_form_using_simplest_run_options(self):
+    def test_post_method_runs_solver_with_solution_spec_form_using_simplest_run_options(
+        self,
+    ):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that uses
         simple run requirements (i.e. allows all simplifications), the solver is run successfully.
@@ -104,7 +116,9 @@ class TestCreateTimetableFormView(test.TestCase):
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
-    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_exact(self):
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_exact(
+        self,
+    ):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
         includes an specific optimal free period time and ideal proportion, the solver runs as expected
@@ -117,7 +131,9 @@ class TestCreateTimetableFormView(test.TestCase):
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
-    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_morning(self):
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_morning(
+        self,
+    ):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
         includes an optimum free period specified as the MORNING, and an ideal proportion, the solver runs as expected
@@ -130,7 +146,9 @@ class TestCreateTimetableFormView(test.TestCase):
         }
         self._post_form_data_to_url_and_test_outcome(form_data=form_data)
 
-    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_afternoon(self):
+    def test_post_method_runs_solver_with_solution_spec_form_disallow_everything_specify_optimal_time_afternoon(
+        self,
+    ):
         """
         Test that by submitting a POST request to the create timetable url, with a SolutionSpecification form that
         includes an optimum free period specified as the AFTERNOON, and an ideal proportion, the solver runs as expected
