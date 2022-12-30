@@ -6,3 +6,18 @@ repos:
     -   id: mypy
         args: [--ignore-missing-imports, --disallow-untyped-defs]
         exclude: 'test_.*py'
+
+    # black code formatter
+-   repo: https://github.com/psf/black
+    rev: 21.12b0
+    hooks:
+    -   id: black
+        language_version: python3.11
+
+    # Basic pre-commit hooks provided by default
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v2.3.0
+  hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
