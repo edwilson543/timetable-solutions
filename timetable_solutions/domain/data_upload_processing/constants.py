@@ -6,7 +6,6 @@ Module listing constants related to the processing of uploaded user files.
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-from typing import List
 
 # Django imports
 from django.conf import settings
@@ -50,7 +49,7 @@ class FileStructure:
     """
     Parameterisation of the structure of each user uploaded file
     """
-    headers: List[str]
+    headers: list[str]
     id_column: str
 
 

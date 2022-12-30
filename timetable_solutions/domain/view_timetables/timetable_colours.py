@@ -5,7 +5,7 @@ Module defining the constant values (hexadecimal colour codes) assigned to subje
 # Standard library imports
 from enum import StrEnum
 import re
-from typing import Dict, Pattern
+from typing import Pattern
 
 # Third party imports
 import pandas as pd
@@ -29,7 +29,7 @@ class TimetableColourAssigner:
         FREE = "#feffba"  # Yellow
 
     # Dictionary with compiled regex patterns as keys (matched against user input strings), and values are colour codes
-    _regex_dict: Dict[Pattern, Colour] = {
+    _regex_dict: dict[Pattern, Colour] = {
         re.compile("(.*breakfast.*)|(.*lunch.*)|(.*tea.*)|(.*dinner.*)|(.*supper.*)",
                    flags=re.IGNORECASE): Colour.MEAL,
         re.compile("(.*break.*)|(.*recreation.*)|(.*play.*time.*)", flags=re.IGNORECASE): Colour.BREAK,
@@ -38,7 +38,7 @@ class TimetableColourAssigner:
 
     # Colours to be assigned to subjects, based on weekly frequency in pupil timetables,
     # or in the case of teacher timetables, the numbers represent year groups.
-    _colour_ranking: Dict[int, str] = {
+    _colour_ranking: dict[int, str] = {
         0: "#ffbfd6",  # Pale red
         1: "#c8d4e3",  # Pale blue
         2: "#b3f2b3",  # Pale green
@@ -53,7 +53,7 @@ class TimetableColourAssigner:
     }
 
     @classmethod
-    def get_colours_for_pupil_timetable(cls, lessons: models.LessonQuerySet) -> Dict[str, str]:
+    def get_colours_for_pupil_timetable(cls, lessons: models.LessonQuerySet) -> dict[str, str]:
         """
         Method to produce a dictionary mapping a single pupil's subject name strings to hexadecimal colours.
         :param lessons - the queryset of lessons that a given pupil takes
@@ -80,7 +80,7 @@ class TimetableColourAssigner:
         return lesson_colours
 
     @classmethod
-    def get_colours_for_teacher_timetable(cls, lessons: models.LessonQuerySet) -> Dict[str | int, str]:
+    def get_colours_for_teacher_timetable(cls, lessons: models.LessonQuerySet) -> dict[str | int, str]:
         """
         Method to produce a dictionary mapping a single teacher's year groups, and year-group-less lessons (lunch /
         break) name strings to hexadecimal colours.
@@ -104,7 +104,7 @@ class TimetableColourAssigner:
 
     # HELPER METHODS
     @classmethod
-    def _get_generic_period_colours(cls, lessons: models.LessonQuerySet) -> Dict[str, str]:
+    def _get_generic_period_colours(cls, lessons: models.LessonQuerySet) -> dict[str, str]:
         """
         Method getting the generic period colours relevant to an individual timetable.
         :param lessons - the queryset of lessons specific to an individual pupil / teacher
