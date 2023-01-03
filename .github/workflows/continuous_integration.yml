@@ -3,8 +3,7 @@ name: Continuous integration
 on:
   # Pull requests, pushes to main, or manual execution can all run the test suite
   push:
-    branches:
-      - 'main'
+    branches: ['main', '62-diff-tts-for-year-groups']
   pull_request:
   workflow_dispatch:
 
