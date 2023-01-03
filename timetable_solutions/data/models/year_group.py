@@ -33,3 +33,13 @@ class YearGroup(models.Model):
 
     # Introduce a custom manager
     objects = YearGroupQuerySet.as_manager()
+
+    # FACTORY METHODS
+    @classmethod
+    def create_new(cls, school_id: int, year_group: str | int) -> "YearGroup":
+        """
+        Method to create a new YearGroup instance.
+        """
+        yg = cls.objects.create(school_id=school_id, year_group=str(year_group))
+        yg.full_clean()
+        return yg

@@ -4,7 +4,7 @@ Module containing utility class used to do the processing of the uploaded csv fi
 
 # Standard library imports
 from io import StringIO
-from typing import Type, TypeVar
+from typing import Type
 
 # Third party imports
 import pandas as pd
@@ -26,7 +26,7 @@ class FileUploadProcessor:
     file, check it fits the requirements, and then upload to the database or not as appropriate.
     This processor conducts the upload for the following models:
         - Pupil, Teacher, Classroom, TimetableSlot
-    The class is subclased to defined the processing of uploaded 'Lesson' files.
+    The class is subclassed to define the processing of uploaded 'Lesson' files.
     """
 
     __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
@@ -137,7 +137,7 @@ class FileUploadProcessor:
                     self.upload_error_message = str(debug_only_message)
             except ObjectDoesNotExist as debug_only_message:
                 self.upload_error_message = (
-                    f"Row {n + 1} of your file referenced a pupil / teacher / classroom / "
+                    f"Row {n + 1} of your file referenced a year group / pupil / teacher / classroom / "
                     f"timetable slot id which does not exist!\n Please check this!"
                 )
                 if settings.DEBUG:
