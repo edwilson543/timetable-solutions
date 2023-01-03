@@ -4,7 +4,7 @@ Module defining the data upload page, its context, and required ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Any, Literal, TypedDict
+from typing import Any, TypedDict
 
 # Django imports
 from django import urls, forms, http
@@ -49,6 +49,14 @@ class RequiredFormsContext(TypedDict):
     lessons: RequiredUpload
 
 
+class UploadPageContext(TypedDict):
+    """
+    Type and structure of the context provided to the data upload page.
+    """
+
+    required_forms: RequiredFormsContext
+
+
 class UploadPage(LoginRequiredMixin, TemplateView):
     """
     Template view with the following main purposes:
@@ -60,9 +68,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(
-        self, *args: Any, **kwargs: Any
-    ) -> dict[str, dict[str, RequiredUpload]]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> UploadPageContext:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -87,7 +93,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 extra_tags="safe",
             )
 
-        context = {
+        context: UploadPageContext = {
             "required_forms": {
                 "teachers": RequiredUpload(
                     form_name="Teachers",
