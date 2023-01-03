@@ -47,7 +47,14 @@ class School(models.Model):
     @property
     def number_users(self) -> int:
         """Method to get the number of users associated with a school"""
+        # noinspection PyUnresolvedReferences
         return self.profile_set.count()
+
+    @property
+    def has_year_group_data(self) -> bool:
+        """Indicates whether a user from the given school has uploaded YearGroup data into the database."""
+        # noinspection PyUnresolvedReferences
+        return self.yeargroup_set.exists()
 
     @property
     def has_teacher_data(self) -> bool:

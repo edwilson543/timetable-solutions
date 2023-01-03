@@ -4,6 +4,7 @@ uploads cannot yet be uploaded.
 """
 
 # Standard library imports
+from dataclasses import dataclass
 from enum import StrEnum
 
 # Local application imports
@@ -19,66 +20,59 @@ class UploadStatus(StrEnum):
     INCOMPLETE = "incomplete"
     DISALLOWED = "disallowed"  # i.e. dependent on another file's completion status being complete, which is incomplete
 
+
+@dataclass(frozen=True)
+class UploadStatusReason:
+    """Dataclass to store an upload status alongside a reason for this status, if necessary"""
+
+    status: "UploadStatus"
+    reason: str | None = None  # Only not None if upload status
+
     @classmethod
-    def get_upload_status_from_bool(cls, upload_status: bool) -> "UploadStatus":
+    def get_status_from_bool(cls, upload_status: bool) -> "UploadStatusReason":
         """
         Method receiving an upload status as a boolean and returning it as an UploadStatus member value, to avoid
-        doing the if/else chain below more than once
+        using the if/else chain more than once
         """
         if upload_status:
-            return cls.COMPLETE
+            return cls(status=UploadStatus.COMPLETE)
         else:
-            return cls.INCOMPLETE
+            return cls(status=UploadStatus.INCOMPLETE)
 
 
 class UploadStatusTracker:
     """
     Class used to store which files the user has successfully uploaded into the database, and any uploads that are
     currently disallowed.
-    All instance attributes are stored as UploadStatus member values, however are passed to __init__ as booleans.
     """
+
+    year_groups: UploadStatusReason
+    teachers: UploadStatusReason
+    classrooms: UploadStatusReason
+    pupils: UploadStatusReason
+    timetable: UploadStatusReason
+    lessons: UploadStatusReason
 
     def __init__(
         self,
-        pupils: bool,
+        year_groups: bool,
         teachers: bool,
         classrooms: bool,
+        pupils: bool,
         timetable: bool,
         lessons: bool,
     ):
-        self.pupils = UploadStatus.get_upload_status_from_bool(upload_status=pupils)
-        self.teachers = UploadStatus.get_upload_status_from_bool(upload_status=teachers)
-        self.classrooms = UploadStatus.get_upload_status_from_bool(
-            upload_status=classrooms
-        )
-        self.timetable = UploadStatus.get_upload_status_from_bool(
-            upload_status=timetable
-        )
-
-        self.lessons = self._check_if_upload_allowed_then_get_status(
-            class_upload_status=lessons
-        )
-
-    def _check_if_upload_allowed_then_get_status(
-        self, class_upload_status: bool
-    ) -> UploadStatus:
         """
-        Method to get the upload status of the  uploads. If the user hasn't uploaded all the
-        required tables that these tables reference, then we disallow these uploads until they have done.
-        :return the uploads status of lessons, given an initial screening
+        At initialisation the boolean parameters are converted to UploadStatusReasons
         """
-        able_to_add_class_data = (
-            self.pupils == UploadStatus.COMPLETE.value
-            and self.teachers == UploadStatus.COMPLETE.value
-            and self.classrooms == UploadStatus.COMPLETE.value
-            and self.timetable == UploadStatus.COMPLETE.value
+        self._set_upload_status(
+            year_groups=year_groups,
+            teachers=teachers,
+            classrooms=classrooms,
+            pupils=pupils,
+            timetable=timetable,
+            lessons=lessons,
         )
-        if not able_to_add_class_data:
-            return UploadStatus.DISALLOWED
-        else:
-            return UploadStatus.get_upload_status_from_bool(
-                upload_status=class_upload_status
-            )
 
     @classmethod
     def get_upload_status(cls, school: models.School) -> "UploadStatusTracker":
@@ -87,6 +81,7 @@ class UploadStatusTracker:
         and return an UploadStatusTracker instance.
         """
         # Query database (by calling the data layer)
+        year_group_status = school.has_year_group_data
         pupil_upload_status = school.has_pupil_data
         teacher_upload_status = school.has_teacher_data
         classroom_upload_status = school.has_classroom_data
@@ -94,6 +89,7 @@ class UploadStatusTracker:
         lesson_upload_status = school.has_lesson_data
 
         upload_status = cls(
+            year_groups=year_group_status,
             pupils=pupil_upload_status,
             teachers=teacher_upload_status,
             classrooms=classroom_upload_status,
@@ -103,6 +99,81 @@ class UploadStatusTracker:
 
         return upload_status
 
+    def _set_upload_status(
+        self,
+        year_groups: bool,
+        teachers: bool,
+        classrooms: bool,
+        pupils: bool,
+        timetable: bool,
+        lessons: bool,
+    ) -> None:
+        """
+        Method to set the instance attributes on an UploadStatusTracker instance, given all the relevant bools.
+        """
+        # Independent uploads
+        self.year_groups = UploadStatusReason.get_status_from_bool(
+            upload_status=year_groups
+        )
+        self.teachers = UploadStatusReason.get_status_from_bool(upload_status=teachers)
+        self.classrooms = UploadStatusReason.get_status_from_bool(
+            upload_status=classrooms
+        )
+
+        # Year group dependent uploads
+        self.pupils = self._get_year_group_dependent_upload_status(
+            target_file_status=pupils
+        )
+        self.timetable = self._get_year_group_dependent_upload_status(
+            target_file_status=timetable
+        )
+
+        # Dependent on all other uploads
+        self.lessons = self._get_lesson_upload_status(lesson_upload_status=lessons)
+
+    def _get_year_group_dependent_upload_status(
+        self, target_file_status: bool
+    ) -> UploadStatusReason:
+        """
+        Get the upload status of a file that requires the year group file to be uploaded first
+        :param target_file_status - the file we want to get the status of.
+        """
+        if not self.year_groups.status == UploadStatus.COMPLETE:
+            reason = (
+                "You must define your year groups before this file can be uploaded."
+            )
+            return UploadStatusReason(status=UploadStatus.DISALLOWED, reason=reason)
+        else:
+            return UploadStatusReason.get_status_from_bool(
+                upload_status=target_file_status
+            )
+
+    # Methods checking dependent uploads status
+    def _get_lesson_upload_status(
+        self, lesson_upload_status: bool
+    ) -> UploadStatusReason:
+        """
+        Get the upload status of the lesson file (which may be disallowed).
+        If the user hasn't uploaded all the required tables that the Lesson model references,
+        then we disallow these uploads until they have done.
+        """
+        able_to_add_lesson_data = (
+            self.year_groups.status == UploadStatus.COMPLETE
+            and self.pupils.status == UploadStatus.COMPLETE
+            and self.teachers.status == UploadStatus.COMPLETE
+            and self.classrooms.status == UploadStatus.COMPLETE
+            and self.timetable.status == UploadStatus.COMPLETE
+        )
+
+        if not able_to_add_lesson_data:
+            reason = "All other files must be uploaded before this file can be."
+            return UploadStatusReason(status=UploadStatus.DISALLOWED, reason=reason)
+        else:
+            return UploadStatusReason.get_status_from_bool(
+                upload_status=lesson_upload_status
+            )
+
+    # PROPERTIES
     @property
     def all_uploads_complete(self) -> bool:
         """
@@ -111,10 +182,11 @@ class UploadStatusTracker:
         create_timetables page to users.
         """
         all_complete = (
-            self.pupils == UploadStatus.COMPLETE.value
-            and self.teachers == UploadStatus.COMPLETE.value
-            and self.classrooms == UploadStatus.COMPLETE.value
-            and self.timetable == UploadStatus.COMPLETE.value
-            and self.lessons == UploadStatus.COMPLETE.value
+            self.year_groups.status == UploadStatus.COMPLETE
+            and self.pupils.status == UploadStatus.COMPLETE
+            and self.teachers.status == UploadStatus.COMPLETE
+            and self.classrooms.status == UploadStatus.COMPLETE
+            and self.timetable.status == UploadStatus.COMPLETE
+            and self.lessons.status == UploadStatus.COMPLETE
         )
         return all_complete
