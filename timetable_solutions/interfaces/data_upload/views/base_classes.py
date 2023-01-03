@@ -93,8 +93,11 @@ class DataResetBase(LoginRequiredMixin, View):
     Base class for views handling the reset data buttons provided on the data reset page.
     The class attributes are aliases for the database tables which reset by this view - each subclass sets exactly
     one of these to True, except the subclass which resets all the data tables in one go.
+
+    The domain layer handles any dependency-related resets.
     """
 
+    year_groups: bool = False
     pupils: bool = False
     teachers: bool = False
     classrooms: bool = False
@@ -118,6 +121,7 @@ class DataResetBase(LoginRequiredMixin, View):
 
         data_upload_processing.ResetUploads(
             school_access_key=school_access_key,
+            year_groups=self.year_groups,
             pupils=self.pupils,
             teachers=self.teachers,
             classrooms=self.classrooms,

@@ -13,11 +13,6 @@ urlpatterns = [
     path("", views.UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
     # Data UPLOAD endpoints
     path(
-        "pupil_upload/",
-        views.PupilListUpload.as_view(),
-        name=UrlName.PUPIL_LIST_UPLOAD.value,
-    ),
-    path(
         "teacher_upload/",
         views.TeacherListUpload.as_view(),
         name=UrlName.TEACHER_LIST_UPLOAD.value,
@@ -26,6 +21,11 @@ urlpatterns = [
         "classroom_upload/",
         views.ClassroomListUpload.as_view(),
         name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+    ),
+    path(
+        "pupil_upload/",
+        views.PupilListUpload.as_view(),
+        name=UrlName.PUPIL_LIST_UPLOAD.value,
     ),
     path(
         "timetable_upload/",
@@ -39,11 +39,6 @@ urlpatterns = [
     ),
     # Data RESET endpoints
     path(
-        "pupil_reset/",
-        views.PupilListReset.as_view(),
-        name=UrlName.PUPIL_LIST_RESET.value,
-    ),
-    path(
         "teacher_reset/",
         views.TeacherListReset.as_view(),
         name=UrlName.TEACHER_LIST_RESET.value,
@@ -52,6 +47,16 @@ urlpatterns = [
         "classroom_reset/",
         views.ClassroomListReset.as_view(),
         name=UrlName.CLASSROOM_LIST_RESET.value,
+    ),
+    path(
+        "year_group_reset/",
+        views.YearGroupReset.as_view(),
+        name=UrlName.YEAR_GROUP_RESET.value,
+    ),
+    path(
+        "pupil_reset/",
+        views.PupilListReset.as_view(),
+        name=UrlName.PUPIL_LIST_RESET.value,
     ),
     path(
         "timetable_reset/",
@@ -68,11 +73,6 @@ urlpatterns = [
     ),
     # Data example DOWNLOAD endpoints
     path(
-        "pupil_download/",
-        views.PupilDownload.as_view(),
-        name=UrlName.PUPIL_DOWNLOAD.value,
-    ),
-    path(
         "teacher_download/",
         views.TeacherDownload.as_view(),
         name=UrlName.TEACHER_DOWNLOAD.value,
@@ -81,6 +81,11 @@ urlpatterns = [
         "classroom_download/",
         views.ClassroomDownload.as_view(),
         name=UrlName.CLASSROOM_DOWNLOAD.value,
+    ),
+    path(
+        "pupil_download/",
+        views.PupilDownload.as_view(),
+        name=UrlName.PUPIL_DOWNLOAD.value,
     ),
     path(
         "timetable_download/",

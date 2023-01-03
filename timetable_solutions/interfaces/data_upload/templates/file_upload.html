@@ -70,7 +70,7 @@
                 <td class="table_cell">
                     <form
                         hx-post="{% url required_form.reset_url_name %}"
-                        hx-confirm="You will lose all {{ required_form.form_name | lower }} data, are you sure?"
+                        hx-confirm="{{ required_form.reset_warning }}"
                         hx-target="#form_container"
                         hx-select="#form_container"
                         hx-swap="outerHTML"
@@ -100,7 +100,7 @@
             </form>
             <form
                 hx-post="{% url 'all_data_reset' %}"
-                hx-confirm="You will lose all you data, are you sure?"
+                hx-confirm="You will lose all your uploaded data, are you sure?"
                 hx-target="#form_container"
                 hx-select="#form_container"
                 hx-swap="outerHTML"
