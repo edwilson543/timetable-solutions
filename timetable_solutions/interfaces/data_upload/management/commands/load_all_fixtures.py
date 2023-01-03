@@ -33,6 +33,7 @@ class Command(management.base.BaseCommand):
         management.call_command(
             "loaddata", "user_school_profile.json"
         )  # All other models depend on this fixture
+        management.call_command("loaddata", "year_groups.json")
         management.call_command("loaddata", "classrooms.json")
         management.call_command("loaddata", "pupils.json")
         management.call_command("loaddata", "teachers.json")
