@@ -15,4 +15,6 @@ from .timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
 from .lesson import Lesson, LessonQuerySet
 
 # Type hints
-ModelSubclass = Union[Profile, School, Pupil, Teacher, Classroom, TimetableSlot, Lesson]
+ModelSubclass = Union[
+    Profile, School, YearGroup, Pupil, Teacher, Classroom, TimetableSlot, Lesson
+]
