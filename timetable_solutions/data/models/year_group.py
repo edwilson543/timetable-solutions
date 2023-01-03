@@ -50,3 +50,10 @@ class YearGroup(models.Model):
         yg = cls.objects.create(school_id=school_id, year_group=str(year_group))
         yg.full_clean()
         return yg
+
+    @classmethod
+    def delete_all_instances_for_school(cls, school_id: int) -> tuple:
+        """Method deleting all entries for a school in the YearGroup table"""
+        year_groups = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = year_groups.delete()
+        return outcome
