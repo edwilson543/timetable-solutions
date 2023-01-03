@@ -34,6 +34,13 @@ class YearGroup(models.Model):
     # Introduce a custom manager
     objects = YearGroupQuerySet.as_manager()
 
+    class Meta:
+        """
+        Django Meta class for the YearGroup model
+        """
+
+        unique_together = [["school", "year_group"]]
+
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, year_group: str | int) -> "YearGroup":
