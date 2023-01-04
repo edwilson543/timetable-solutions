@@ -20,6 +20,12 @@ class YearGroupQuerySet(models.QuerySet):
         """
         return self.filter(school_id=school_id)
 
+    def get_individual_year_group(self, school_id: int, year_group: str) -> "YearGroup":
+        """
+        Method retrieving a specific YearGroup instance.
+        """
+        return self.get(models.Q(school_id=school_id) & models.Q(year_group=year_group))
+
 
 class YearGroup(models.Model):
     """

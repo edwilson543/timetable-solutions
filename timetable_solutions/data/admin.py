@@ -44,12 +44,6 @@ class SchoolAdmin(admin.ModelAdmin):
         return html.format_html(f"<b><i>{user_count}<i><b>")
 
 
-@admin.register(models.Pupil)
-class PupilAdmin(admin.ModelAdmin):
-    list_display = ["school", "firstname", "surname", "year_group"]
-    list_filter = ["school"]
-
-
 @admin.register(models.Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ["school", "firstname", "surname", "title"]
@@ -59,6 +53,18 @@ class TeacherAdmin(admin.ModelAdmin):
 @admin.register(models.Classroom)
 class ClassroomAdmin(admin.ModelAdmin):
     list_display = ["school", "building", "room_number"]
+    list_filter = ["school"]
+
+
+@admin.register(models.YearGroup)
+class YearGroupAdmin(admin.ModelAdmin):
+    list_display = ["school", "year_group"]
+    list_filter = ["school"]
+
+
+@admin.register(models.Pupil)
+class PupilAdmin(admin.ModelAdmin):
+    list_display = ["school", "firstname", "surname", "year_group"]
     list_filter = ["school"]
 
 
