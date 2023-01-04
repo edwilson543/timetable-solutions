@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any, TypedDict
 
 # Django imports
-from django import urls, forms, http
+from django import urls, http
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import TemplateView
@@ -29,7 +29,7 @@ class RequiredUpload:
 
     form_name: str  # Name of the form that will be shown to the user
     upload_status: data_upload_processing.UploadStatusReason
-    empty_form: forms.Form
+    empty_form: forms.UploadForm
     upload_url_name: UrlName
     reset_url_name: UrlName
     example_download_url_name: UrlName
@@ -114,15 +114,13 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     reset_warning=data_upload_processing.ResetWarning.classrooms,
                 ),
                 "year_groups": RequiredUpload(
-                    # TODO -> create a form for this...
                     form_name="Year Groups",
                     upload_status=upload_status.year_groups,
-                    empty_form=forms.ClassroomListUpload(),  # todo
-                    upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,  # TODO
+                    empty_form=forms.YearGroupUpload(),
+                    upload_url_name=UrlName.YEAR_GROUP_UPLOAD,
                     reset_url_name=UrlName.YEAR_GROUP_RESET,
                     example_download_url_name=UrlName.YEAR_GROUP_DOWNLOAD,
                     reset_warning=data_upload_processing.ResetWarning.year_groups,
-                    # TODO -> create a form for this...
                 ),
                 "pupils": RequiredUpload(
                     form_name="Pupils",

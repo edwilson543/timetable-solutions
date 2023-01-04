@@ -40,7 +40,7 @@ class DataUploadBase(LoginRequiredMixin, View):
 
     file_structure: data_upload_processing.FileStructure
     model: Type[models.ModelSubclass]
-    form: Type[forms.FormSubclass]
+    form: Type[forms.UploadForm]
     processor: Type[data_upload_processing.Processor]
 
     @staticmethod

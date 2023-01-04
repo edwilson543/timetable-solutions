@@ -5,6 +5,7 @@ from .data_upload_page import UploadPage
 from .upload_views import (
     TeacherListUpload,
     ClassroomListUpload,
+    YearGroupListUpload,
     PupilListUpload,
     TimetableStructureUpload,
     LessonsUpload,

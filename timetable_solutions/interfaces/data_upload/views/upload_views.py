@@ -9,17 +9,6 @@ from interfaces.data_upload import forms
 from .base_classes import DataUploadBase
 
 
-class PupilListUpload(DataUploadBase):
-    """
-    View class to control the uploading of the list of pupils by the user
-    """
-
-    file_structure = data_upload_processing.constants.UploadFileStructure.PUPILS
-    model = models.Pupil
-    form = forms.PupilListUpload
-    processor = data_upload_processing.FileUploadProcessor
-
-
 class TeacherListUpload(DataUploadBase):
     """
     View class to control the uploading of the list of teachers by the user
@@ -39,6 +28,28 @@ class ClassroomListUpload(DataUploadBase):
     file_structure = data_upload_processing.constants.UploadFileStructure.CLASSROOMS
     model = models.Classroom
     form = forms.ClassroomListUpload
+    processor = data_upload_processing.FileUploadProcessor
+
+
+class YearGroupListUpload(DataUploadBase):
+    """
+    View class to control the uploading of the list of year groups by the user
+    """
+
+    file_structure = data_upload_processing.constants.UploadFileStructure.YEAR_GROUPS
+    model = models.YearGroup
+    form = forms.YearGroupUpload
+    processor = data_upload_processing.FileUploadProcessor
+
+
+class PupilListUpload(DataUploadBase):
+    """
+    View class to control the uploading of the list of pupils by the user
+    """
+
+    file_structure = data_upload_processing.constants.UploadFileStructure.PUPILS
+    model = models.Pupil
+    form = forms.PupilListUpload
     processor = data_upload_processing.FileUploadProcessor
 
 

@@ -22,6 +22,11 @@ urlpatterns = [
         name=UrlName.CLASSROOM_LIST_UPLOAD.value,
     ),
     path(
+        "year_group_upload/",
+        views.YearGroupListUpload.as_view(),
+        name=UrlName.YEAR_GROUP_UPLOAD.value,
+    ),
+    path(
         "pupil_upload/",
         views.PupilListUpload.as_view(),
         name=UrlName.PUPIL_LIST_UPLOAD.value,
