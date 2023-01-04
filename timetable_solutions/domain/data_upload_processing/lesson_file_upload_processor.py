@@ -94,7 +94,7 @@ class LessonFileUploadProcessor(FileUploadProcessor):
         create_new_dict_ = {
             key: value for key, value in create_new_dict.items() if value is not None
         }
-        return create_new_dict
+        return create_new_dict_
 
     # METHODS TO GET QUERY SETS FROM RAW STRINGS
     def _get_pupils_from_raw_pupil_ids_string(
