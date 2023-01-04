@@ -12,7 +12,7 @@ with the new content being specific to file_upload.html
     --incomplete_row_hover: #c78d65;
     --disallowed_row_passive: #bababa;
     --disallowed_row_hover: #8e9191;
-    --disallowed_row_font: #9c988f;
+    --disallowed_row_font: #4d4d4d;
 }
 
 /* ====================

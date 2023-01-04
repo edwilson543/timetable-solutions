@@ -20,6 +20,7 @@ class Header:
     SCHOOL_ID = "school_id"
 
     # Id columns
+    YEAR_GROUP = "year_group"
     PUPIL_ID = "pupil_id"
     TEACHER_ID = "teacher_id"
     CLASSROOM_ID = "classroom_id"
@@ -30,7 +31,6 @@ class Header:
     FIRSTNAME = "firstname"
     SURNAME = "surname"
     TITLE = "title"
-    YEAR_GROUP = "year_group"
     BUILDING = "building"
     ROOM_NUMBER = "room_number"
     DAY_OF_WEEK = "day_of_week"
@@ -61,6 +61,9 @@ class UploadFileStructure:
     Storage of the file structure of all csv files that get uploaded / downloaded from the database by users.
     """
 
+    YEAR_GROUPS = FileStructure(
+        headers=[Header.YEAR_GROUP], id_column=Header.YEAR_GROUP
+    )
     PUPILS = FileStructure(
         headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
         id_column=Header.PUPIL_ID,
@@ -102,6 +105,7 @@ class ExampleFile(StrEnum):
     Enumeration of all the example files that can be downloaded by users, and construction of their respective urls.
     """
 
+    YEAR_GROUPS = "example_year_groups.csv"
     PUPILS = "example_pupils.csv"
     TEACHERS = "example_teachers.csv"
     CLASSROOMS = "example_classrooms.csv"

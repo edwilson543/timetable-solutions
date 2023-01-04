@@ -56,7 +56,7 @@ class TestCustomAdminSite(test.TestCase):
         url_list = admin_site.get_urls()
 
         # Check outcome
-        assert len(url_list) == 12
+        assert len(url_list) == 13
 
         url_namespace = "user_admin"
         with pytest.raises(urls.NoReverseMatch):
@@ -87,9 +87,10 @@ class TestCustomAdminSite(test.TestCase):
             model["object_name"] for app in app_list for model in app["models"]
         }
         assert model_names == {
-            "Pupil",
             "Teacher",
             "Classroom",
+            "YearGroup",
+            "Pupil",
             "TimetableSlot",
             "Lesson",
             "Profile",

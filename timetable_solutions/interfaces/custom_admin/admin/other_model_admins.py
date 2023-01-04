@@ -15,28 +15,6 @@ from .base_model_admin import CustomModelAdminBase
 from data import models
 
 
-@admin.register(models.Pupil, site=user_admin)
-class PupilAdmin(CustomModelAdminBase):
-    """
-    ModelAdmin for the Pupil model
-    """
-
-    list_display = [
-        "firstname",
-        "surname",
-        "year_group",
-        "pupil_id",
-        "get_lessons_per_week",
-        "get_occupied_percentage",
-    ]
-    list_display_links = ["firstname"]
-
-    list_filter = ["year_group"]
-
-    search_fields = ["firstname", "surname", "pupil_id"]
-    search_help_text = "Search for a pupil by name or id"
-
-
 @admin.register(models.Teacher, site=user_admin)
 class TeacherAdmin(CustomModelAdminBase):
     """
@@ -76,6 +54,47 @@ class ClassroomAdmin(CustomModelAdminBase):
 
     search_fields = ["classroom_id", "building", "room_number"]
     search_help_text = "Search for a classroom by building, room number or id"
+
+
+@admin.register(models.YearGroup, site=user_admin)
+class YearGroupAdmin(CustomModelAdminBase):
+    """
+    ModelAdmin for the Pupil model
+    """
+
+    list_display = [
+        "year_group",
+    ]
+    list_display_links = ["year_group"]
+
+    search_fields = [
+        "year_group",
+    ]
+    search_help_text = "Search for a year group"
+
+    # TODO add number pupils, once linked
+
+
+@admin.register(models.Pupil, site=user_admin)
+class PupilAdmin(CustomModelAdminBase):
+    """
+    ModelAdmin for the Pupil model
+    """
+
+    list_display = [
+        "firstname",
+        "surname",
+        "year_group",
+        "pupil_id",
+        "get_lessons_per_week",
+        "get_occupied_percentage",
+    ]
+    list_display_links = ["firstname"]
+
+    list_filter = ["year_group"]
+
+    search_fields = ["firstname", "surname", "pupil_id"]
+    search_help_text = "Search for a pupil by name or id"
 
 
 @admin.register(models.TimetableSlot, site=user_admin)

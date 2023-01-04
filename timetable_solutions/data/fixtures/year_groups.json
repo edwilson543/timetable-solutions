@@ -1,0 +1,26 @@
+[
+  {
+    "model": "data.yeargroup",
+    "pk": 1,
+    "fields": {
+      "year_group": "1",
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.yeargroup",
+    "pk": 2,
+    "fields": {
+      "year_group": "2",
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.yeargroup",
+    "pk": 3,
+    "fields": {
+      "year_group": "Reception",
+      "school": 123456
+    }
+  }
+]

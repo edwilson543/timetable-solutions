@@ -48,29 +48,6 @@ class TestBaseModelAdmin(test.TestCase):
         }
 
     # SAVE MODEL TESTS
-    def test_save_model_auto_associates_user_school_with_pupil(self):
-        """
-        Test that when posting a form to the admin to add a Pupil, the school (carried on the user's profile)
-        successfully gets added to the object by the save_model code.
-        """
-        # Set test parameters
-        self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = "/data/admin/data/pupil/add/"
-        form_data = {
-            "pupil_id": 7,
-            "firstname": "test",
-            "surname": "testson",
-            "year_group": 1,
-        }
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertRedirects(response=response, expected_url="/data/admin/data/pupil/")
-        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=7)
-        assert pupil.school.school_access_key == 123456
-
     def test_save_model_auto_associates_user_school_with_teacher(self):
         """
         Test that when posting a form to the admin to add a Teacher, the school (carried on the user's profile)
@@ -119,6 +96,53 @@ class TestBaseModelAdmin(test.TestCase):
             school_id=123456, classroom_id=100
         )
         assert classroom.school.school_access_key == 123456
+
+    def test_save_model_auto_associates_user_school_with_year_group(self):
+        """
+        Test that when posting a form to the admin to add a YearGroup, the school (carried on the user's profile)
+        successfully gets added to the object by the save_model code.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/yeargroup/add/"
+        form_data = {
+            "year_group": "7",
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(
+            response=response, expected_url="/data/admin/data/yeargroup/"
+        )
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="7"
+        )
+        assert year_group.school.school_access_key == 123456
+
+    def test_save_model_auto_associates_user_school_with_pupil(self):
+        """
+        Test that when posting a form to the admin to add a Pupil, the school (carried on the user's profile)
+        successfully gets added to the object by the save_model code.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/pupil/add/"
+        form_data = {
+            "pupil_id": 7,
+            "firstname": "test",
+            "surname": "testson",
+            "year_group": 1,
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(response=response, expected_url="/data/admin/data/pupil/")
+        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=7)
+        assert pupil.school.school_access_key == 123456
 
     def test_save_model_auto_associates_user_school_with_timetable_slot(self):
         """
