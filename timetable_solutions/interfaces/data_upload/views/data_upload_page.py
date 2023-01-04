@@ -120,7 +120,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     empty_form=forms.ClassroomListUpload(),  # todo
                     upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,  # TODO
                     reset_url_name=UrlName.YEAR_GROUP_RESET,
-                    example_download_url_name=UrlName.CLASSROOM_DOWNLOAD,  # TODO
+                    example_download_url_name=UrlName.YEAR_GROUP_DOWNLOAD,
                     reset_warning=data_upload_processing.ResetWarning.year_groups,
                     # TODO -> create a form for this...
                 ),

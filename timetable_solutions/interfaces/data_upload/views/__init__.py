@@ -21,6 +21,7 @@ from .reset_views import (
 from .download_views import (
     TeacherDownload,
     ClassroomDownload,
+    YearGroupDownload,
     PupilDownload,
     TimetableDownload,
     LessonDownload,

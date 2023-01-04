@@ -4,7 +4,6 @@
 from django.urls import path
 
 # Local application imports
-from domain.data_upload_processing.constants import ExampleFile
 from constants.url_names import UrlName
 from . import views
 
@@ -64,7 +63,9 @@ urlpatterns = [
         name=UrlName.TIMETABLE_STRUCTURE_RESET.value,
     ),
     path(
-        "lesson_reset/", views.LessonReset.as_view(), name=UrlName.LESSONS_RESET.value
+        "lesson_reset/",
+        views.LessonReset.as_view(),
+        name=UrlName.LESSONS_RESET.value,
     ),
     path(
         "all_data_reset/",
@@ -81,6 +82,11 @@ urlpatterns = [
         "classroom_download/",
         views.ClassroomDownload.as_view(),
         name=UrlName.CLASSROOM_DOWNLOAD.value,
+    ),
+    path(
+        "year_group_download/",
+        views.YearGroupDownload.as_view(),
+        name=UrlName.YEAR_GROUP_DOWNLOAD.value,
     ),
     path(
         "pupil_download/",
