@@ -41,6 +41,22 @@ class YearGroup(models.Model):
 
         unique_together = [["school", "year_group"]]
 
+    class Constant:
+        """
+        Additional constants to store about the Year Group model (that aren't an option in Meta)
+        """
+
+        human_string_singular = "year group"
+        human_string_plural = "year groups"
+
+    def __str__(self) -> str:
+        """String representation of the model for the django admin site"""
+        return f"Year {self.year_group}"
+
+    def __repr__(self) -> str:
+        """String representation of the model for debugging"""
+        return f"Year {self.year_group}"
+
     # FACTORY METHODS
     @classmethod
     def create_new(cls, school_id: int, year_group: str | int) -> "YearGroup":
