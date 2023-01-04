@@ -88,9 +88,11 @@ class ResetWarning(StrEnum):
     Mapping of reset file to the warning message displayed to users for the file(s) it will reset.
     """
 
-    teachers = "This will reset all of your teacher data, are you sure?"
-    classrooms = "This will reset all of your classroom data, are you sure?"
-    year_groups = "This will reset all of your year group, pupil and timetable structure data, are you sure?"
-    pupils = "This will reset all of your pupil data, are you sure?"
-    timetable = "This will reset all of your timetable structure data, are you sure?"
+    teachers = "This will reset all of your teacher and lesson data, are you sure?"
+    classrooms = "This will reset all of your classroom and lesson data, are you sure?"
+    year_groups = "This will reset all of your year group, pupil, timetable structure and lesson data, are you sure?"
+    pupils = "This will reset all of your pupil and lesson data, are you sure?"
+    timetable = (
+        "This will reset all of your timetable structure and lesson data, are you sure?"
+    )
     lessons = "This will reset ALL of your uploaded data, are you sure?"
