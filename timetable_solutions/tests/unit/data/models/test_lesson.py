@@ -272,3 +272,33 @@ class TestLesson(test.TestCase):
 
         # Check outcome
         assert double_period_count == 0
+
+    def test_get_year_group_str_for_lesson_with_pupils(self):
+        """
+        Test that the correct year group for a lesson (with pupils and therefore a year group) is returned.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+
+        # Execute test unit
+        year_group = lesson.get_year_group_str()
+
+        # Check outcome
+        assert year_group == "1"
+
+    def test_get_year_group_str_for_lesson_without_pupils(self):
+        """
+        Test that N/A is returned as the year group when a lesson has no pupils.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="LUNCH_1"
+        )
+
+        # Execute test unit
+        year_group = lesson.get_year_group_str()
+
+        # Check outcome
+        assert year_group == "N/A"

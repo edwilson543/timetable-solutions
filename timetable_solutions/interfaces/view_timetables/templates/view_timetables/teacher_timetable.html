@@ -62,9 +62,9 @@
                 hx-target="#modal-htmx-handle"
                 hx-swap="innerHTML"
 
-                class="color_{{lesson.pupils.all.first.year_group.year_group}} timetable_slot timetable_slot_lesson">
+                class="color_{{ lesson.get_year_group_str }} timetable_slot timetable_slot_lesson">
                 <b>{{ lesson.subject_name|title}}</b><br>
-              <i>Year {{ lesson.pupils.all.first.year_group.year_group }}</i><br>
+              <i>Year {{ lesson.get_year_group_str }}</i><br>
               <i>{{ lesson.classroom.building }} {{ lesson.classroom.room_number }}</i>
             </td>
           {% endif %}

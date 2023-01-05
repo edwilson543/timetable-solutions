@@ -281,6 +281,15 @@ class Lesson(models.Model):
         """
         return self.pupils.all().count()
 
+    def get_year_group_str(self) -> str:
+        """
+        Method returning the year_group associated with a Lesson.
+        """
+        if self.pupils.all().exists():
+            return self.pupils.first().year_group.year_group
+        else:
+            return "N/A"
+
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
