@@ -17,9 +17,10 @@ class TestPupil(test.TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
     ]
@@ -31,12 +32,21 @@ class TestPupil(test.TestCase):
         """
         # Execute test unit
         pupil = models.Pupil.create_new(
-            school_id=123456, pupil_id=7, firstname="test", surname="test", year_group=1
+            school_id=123456,
+            pupil_id=7,
+            firstname="test",
+            surname="test",
+            year_group="1",
         )
 
         # Check outcome
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         assert pupil in all_pupils
+
+        yg = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
+        assert pupil.year_group == yg
 
     def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
         """
@@ -49,7 +59,7 @@ class TestPupil(test.TestCase):
                 pupil_id=1,  # Note the pupil_id 1 is already taken
                 firstname="test",
                 surname="test",
-                year_group=1,
+                year_group="1",
             )
 
     def test_delete_all_instances_for_school_successful(self):
