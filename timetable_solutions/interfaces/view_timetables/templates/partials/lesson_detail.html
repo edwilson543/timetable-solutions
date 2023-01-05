@@ -177,6 +177,7 @@ Styling of the modal containers + panels
 
                 <div id="modal_content">
                     <b>Teacher:</b> {{ lesson.teacher }}<hr>
+                    <b>Year Group:</b> {{ lesson.get_year_group_str }}<hr>
                     <b>Building:</b> {{ lesson.classroom.building }}<hr>
                     <b>Room number:</b> {{ lesson.classroom.room_number }}<hr>
                     <b>Slots ({{ lesson.total_required_slots }}):</b>
