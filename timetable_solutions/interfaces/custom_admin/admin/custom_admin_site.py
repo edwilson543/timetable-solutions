@@ -3,7 +3,7 @@ Module for the AdminSite instance used to implement the custom AdminSite.
 """
 
 # Standard library imports
-from typing import Type, TypedDict
+from typing import TypedDict
 
 # Django imports
 from django import http
@@ -24,7 +24,7 @@ class ModelDict(TypedDict):
     e.g. app_dict = {'data': {..., 'models': [d1: AppDictModel = {...}, d2: AppDictModel = {...}, ... ]}}
     """
 
-    model: Type[models.ModelSubclass]
+    model: type[models.ModelSubclass]
     name: str
     object_name: str
     perms: dict[str, bool]

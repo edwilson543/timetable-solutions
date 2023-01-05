@@ -2,9 +2,6 @@
 Unit tests for the custom form tags.
 """
 
-# Standard library imports
-from typing import Type
-
 # Third party imports
 import pytest
 
@@ -15,7 +12,7 @@ from django.utils import html
 
 
 @pytest.fixture(scope="module")
-def form() -> Type[forms.Form]:
+def form() -> type[forms.Form]:
     """
     Fixture to provide a dummy form for use in tests.
     """
@@ -26,7 +23,7 @@ def form() -> Type[forms.Form]:
     return TestForm
 
 
-def test_render_form_field_in_div_renders_text_field_correctly(form: Type[forms.Form]):
+def test_render_form_field_in_div_renders_text_field_correctly(form: type[forms.Form]):
     """
     Test that the correct html is returned from the 'text' field.
     """
