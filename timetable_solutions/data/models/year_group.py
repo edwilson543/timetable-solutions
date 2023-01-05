@@ -65,11 +65,17 @@ class YearGroup(models.Model):
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        return f"Year {self.year_group}"
+        try:
+            float(self.year_group)
+            # If the year group can be interpreted as a number, it makes sense to say 'Year x'
+            return f"Year {self.year_group}"
+        except ValueError:
+            # If not, we just want the year group name, e.g. 'Reception'
+            return f"{self.year_group}"
 
     def __repr__(self) -> str:
         """String representation of the model for debugging"""
-        return f"Year {self.year_group}"
+        return self.__str__()
 
     # FACTORY METHODS
     @classmethod
