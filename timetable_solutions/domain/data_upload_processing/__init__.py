@@ -3,9 +3,14 @@ Convenience imports. Within the interfaces layer we simply import data_upload_pr
 """
 from typing import Union
 
-from .constants import FileStructure, UploadFileStructure
-from .file_upload_processor import FileUploadProcessor
 from .lesson_file_upload_processor import LessonFileUploadProcessor
+from .file_upload_processors import (
+    TeacherFileUploadProcessor,
+    ClassroomFileUploadProcessor,
+    YearGroupFileUploadProcessor,
+    PupilFileUploadProcessor,
+    TimetableFileUploadProcessor,
+)
 from .upload_status_tracking import (
     UploadStatusTracker,
     UploadStatus,
@@ -15,4 +20,11 @@ from .reset_uploads import ResetUploads, ResetWarning
 
 
 # Type hints
-Processor = Union[FileUploadProcessor, LessonFileUploadProcessor]
+Processor = Union[
+    TeacherFileUploadProcessor,
+    ClassroomFileUploadProcessor,
+    YearGroupFileUploadProcessor,
+    PupilFileUploadProcessor,
+    TimetableFileUploadProcessor,
+    LessonFileUploadProcessor,
+]

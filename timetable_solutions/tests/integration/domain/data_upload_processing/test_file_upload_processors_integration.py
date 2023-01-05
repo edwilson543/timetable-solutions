@@ -33,11 +33,8 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.TeacherFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.TEACHERS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.TEACHERS.id_column,
-            model=models.Teacher,
             school_access_key=123456,
         )
 
@@ -65,11 +62,8 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.ClassroomFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.CLASSROOMS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.CLASSROOMS.id_column,
-            model=models.Classroom,
             school_access_key=123456,
         )
 
@@ -95,11 +89,8 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.YearGroupFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.YEAR_GROUPS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.YEAR_GROUPS.id_column,
-            model=models.YearGroup,
             school_access_key=123456,
         )
 
@@ -124,11 +115,8 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.TimetableFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.TIMETABLE.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.TIMETABLE.id_column,
-            model=models.TimetableSlot,
             school_access_key=123456,
         )
 
@@ -166,11 +154,8 @@ class TestFileUploadProcessorYearGroupDependentUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
             school_access_key=123456,
         )
 
@@ -210,11 +195,8 @@ class TestFileUploadProcessorInvalidPupilUploads(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
+        upload_processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
             school_access_key=123456,
         )
 
@@ -297,11 +279,8 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
             upload_file = SimpleUploadedFile(png_file.name, png_file.read())
 
         # Execute test unit
-        processor = data_upload_processing.FileUploadProcessor(
+        processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
             school_access_key=123456,
         )
 
@@ -323,11 +302,8 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Execute test unit
-        processor = data_upload_processing.FileUploadProcessor(
+        processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
             school_access_key=123456,
         )
 
@@ -349,11 +325,8 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
         with open(test_filepath, "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
-        processor = data_upload_processing.FileUploadProcessor(
+        processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
             school_access_key=123456,
             attempt_upload=False,
         )

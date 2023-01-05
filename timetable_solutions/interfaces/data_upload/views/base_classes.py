@@ -9,7 +9,7 @@ which has next to no code in it.
 
 # Standard library imports
 from pathlib import Path
-from typing import Callable, Type
+from typing import Callable
 
 # Django imports
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -20,7 +20,6 @@ from django import urls
 
 # Local application imports
 from constants.url_names import UrlName
-from data import models
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 
@@ -32,16 +31,12 @@ class DataUploadBase(LoginRequiredMixin, View):
     Note - subclasses are used, rather than creating instances, since View.as_view(), used in the url
     dispatcher, is only available on classes and not on instances.
 
-    :param file_structure - the column headers and id column of the uploaded file
-    :param model - the model the uploaded file is seeking to create instances of
     :param form - the form that the view receives input from
     :param processor - the class that will be used to process the user's uploaded file into the database.
     """
 
-    file_structure: data_upload_processing.FileStructure
-    model: Type[models.ModelSubclass]
-    form: Type[forms.UploadForm]
-    processor: Type[data_upload_processing.Processor]
+    form: type[forms.UploadForm]
+    processor: type[data_upload_processing.Processor]
 
     @staticmethod
     def get() -> http.HttpResponseRedirect:
@@ -61,10 +56,7 @@ class DataUploadBase(LoginRequiredMixin, View):
             file = request.FILES[self.form.Meta.file_field_name]
             upload_processor = self.processor(
                 school_access_key=school_access_key,
-                model=self.model,
                 csv_file=file,
-                csv_headers=self.file_structure.headers,
-                id_column_name=self.file_structure.id_column,
             )
 
             # Create a flash message
@@ -77,7 +69,7 @@ class DataUploadBase(LoginRequiredMixin, View):
             elif upload_processor.upload_successful:
                 message = (
                     f"Successfully saved your data for {upload_processor.n_model_instances_created} "
-                    f"{self.model.Constant.human_string_plural}!"
+                    f"{self.processor.model.Constant.human_string_plural}!"
                 )
                 messages.add_message(request, level=messages.SUCCESS, message=message)
             else:
