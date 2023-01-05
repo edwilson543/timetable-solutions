@@ -25,7 +25,7 @@ class FileUploadProcessor:
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
     This processor conducts the upload for the following models:
-        - Pupil, Teacher, Classroom, TimetableSlot
+        - Teacher, Classroom, YearGroup, Pupil, TimetableSlot
     The class is subclassed to define the processing of uploaded 'Lesson' files.
     """
 
@@ -81,8 +81,9 @@ class FileUploadProcessor:
         try:
             file_bytes = file.read().decode("utf-8")
             file_stream = StringIO(file_bytes)
+
             # noinspection PyTypeChecker
-            upload_df = pd.read_csv(file_stream, sep=",")
+            upload_df = pd.read_csv(file_stream, sep=",", dtype=Header.AMBIGUOUS_DTYPES)
         except UnicodeDecodeError:
             self.upload_error_message = (
                 "Please check that your file is encoded using UTF-8!"
@@ -217,6 +218,7 @@ class FileUploadProcessor:
         # All checks have passed so return True
         return True
 
+    # COLUMN-BY-COLUMN PROCESSING
     @staticmethod
     def _convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
         """Method to ensure timestamps / timedelta are converted to the correct type"""
@@ -230,6 +232,7 @@ class FileUploadProcessor:
             )
         return upload_df
 
+    # PROPERTIES
     @property
     def upload_successful(self) -> bool:
         """

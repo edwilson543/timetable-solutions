@@ -19,7 +19,7 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
     Tests for the file uploads that depend on no existing data in the database,
     using files with valid content / structure.
     These are:
-        - Pupil, Teacher, Classroom, TimetableSlot
+        - Teacher, Classroom, YearGroup
     """
 
     fixtures = ["user_school_profile.json"]
@@ -49,39 +49,13 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
         all_teachers = models.Teacher.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(len(all_teachers), 11)
+        self.assertEqual(all_teachers.count(), 11)
         greg = models.Teacher.objects.get_individual_teacher(
             school_id=123456, teacher_id=6
         )
         self.assertIsInstance(greg, models.Teacher)
         self.assertEqual(greg.firstname, "Greg")
         self.assertEqual(greg.surname, "Thebaker")
-
-    def test_upload_pupils_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the pupil csv file and use it to populate database"""
-        # Set test parameters
-        with open(self.valid_uploads / "pupils.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-
-        # Upload the file
-        upload_processor = data_upload_processing.FileUploadProcessor(
-            csv_file=upload_file,
-            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
-            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
-            model=models.Pupil,
-            school_access_key=123456,
-        )
-
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 6)
-
-        # Test that the database is as expected
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(len(all_pupils), 6)
-        teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
-        self.assertEqual(teemu.firstname, "Teemu")
-        self.assertEqual(teemu.surname, "Pukki")
 
     def test_upload_classrooms_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the classroom csv file and use it to populate database"""
@@ -107,11 +81,41 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
         all_classrooms = models.Classroom.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(len(all_classrooms), 12)
+        self.assertEqual(all_classrooms.count(), 12)
         room = models.Classroom.objects.get_individual_classroom(
             school_id=123456, classroom_id=11
         )
         self.assertEqual(room.room_number, 40)
+
+    def test_upload_year_groups_to_database_valid_upload(self):
+        """Test that the FileUploadProcessor can upload the year_group csv file and use it to populate database"""
+
+        # Set test parameters
+        with open(self.valid_uploads / "year_groups.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.YEAR_GROUPS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.YEAR_GROUPS.id_column,
+            model=models.YearGroup,
+            school_access_key=123456,
+        )
+
+        # Test the upload was successful
+        self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 3)
+
+        # Test that the database is as expected
+        all_ygs = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        self.assertEqual(all_ygs.count(), 3)
+
+        expected_year_groups = ["1", "2", "Reception"]
+        actual_year_groups = list(all_ygs.values_list("year_group", flat=True))
+        self.assertEqual(expected_year_groups, actual_year_groups)
 
     def test_upload_timetable_structure_to_database_valid_upload(self):
         """Test that the FileUploadProcessor can upload the timetable csv file and use it to populate database"""
@@ -136,7 +140,7 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(len(all_slots), 35)
+        self.assertEqual(all_slots.count(), 35)
         slot = models.TimetableSlot.objects.get_individual_timeslot(
             school_id=123456, slot_id=1
         )
@@ -145,15 +149,57 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
         self.assertEqual(slot.period_duration, dt.timedelta(hours=1))
 
 
-class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
+class TestFileUploadProcessorYearGroupDependentUploads(TestCase):
+    """
+    Test for file uploads which depend on the YearGroup model.
+    These are:
+        - Pupil  # TODO -> check safter adding TimetableSlot
+    """
+
+    fixtures = ["user_school_profile.json", "year_groups.json"]
+    valid_uploads = TEST_DATA_DIR / "valid_uploads"
+
+    def test_upload_pupils_to_database_valid_upload(self):
+        """Test that the FileUploadProcessor can upload the pupil csv file and use it to populate database"""
+        # Set test parameters
+        with open(self.valid_uploads / "pupils.csv", "rb") as csv_file:
+            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+
+        # Upload the file
+        upload_processor = data_upload_processing.FileUploadProcessor(
+            csv_file=upload_file,
+            csv_headers=data_upload_processing.UploadFileStructure.PUPILS.headers,
+            id_column_name=data_upload_processing.UploadFileStructure.PUPILS.id_column,
+            model=models.Pupil,
+            school_access_key=123456,
+        )
+
+        # Test the upload was successful
+        self.assertTrue(upload_processor.upload_successful)
+        self.assertEqual(upload_processor.n_model_instances_created, 6)
+
+        # Test that the database is as expected
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        self.assertEqual(all_pupils.count(), 6)
+        teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
+        self.assertEqual(teemu.firstname, "Teemu")
+        self.assertEqual(teemu.surname, "Pukki")
+
+
+class TestFileUploadProcessorInvalidPupilUploads(TestCase):
     """
     Tests for pupil file uploads with invalid content / structure.
     """
 
-    fixtures = ["user_school_profile.json"]
+    fixtures = ["user_school_profile.json", "year_groups.json"]
     invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 
-    def run_test_for_pupils_with_error_in_row_n(self, filename: str, row_n: int):
+    def run_test_for_pupils_with_error_in_row_n(
+        self,
+        filename: str,
+        row_n: int,
+        expected_error_snippet: str | None = None,
+    ) -> None:
         """
         Utility test that can be run for different files, all with different types of error in row n.
         Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
@@ -174,10 +220,9 @@ class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
 
         # Check the outcome
         self.assertTrue(not upload_processor.upload_successful)
-        self.assertIn(
-            f"Could not interpret values in row {row_n}",
-            upload_processor.upload_error_message,
-        )
+        if expected_error_snippet is None:
+            expected_error_snippet = f"Could not interpret values in row {row_n}"
+        self.assertIn(expected_error_snippet, upload_processor.upload_error_message)
 
         # Check NO pupils have been uploaded to the database
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
@@ -215,15 +260,19 @@ class TestFileUploadProcessorIndependentFilesInvalidPupilUploads(TestCase):
         # Execute test
         self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
 
-    def test_upload_pupils_file_invalid_type_float_instead_of_int(self):
+    def test_upload_pupils_file_non_existent_year_group(self):
         """
-        Unit test that a pupils file with a FLOAT in the year group column is rejected
+        Unit test that a pupils file with a non-existent year group (3.8) is rejected
         """
         # Set test parameters
-        filename = "pupils_float_in_year_group_column.csv"
+        filename = "pupils_non_existent_year_group.csv"
 
         # Execute test
-        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
+        self.run_test_for_pupils_with_error_in_row_n(
+            filename=filename,
+            row_n=6,
+            expected_error_snippet="Row 6 of your file referenced a",  # ...
+        )
 
 
 class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
@@ -234,7 +283,7 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
         - Simulate a resubmitted form -> should not upload the same data twice
     """
 
-    fixtures = ["user_school_profile.json"]
+    fixtures = ["user_school_profile.json", "year_groups.json"]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
     invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
 

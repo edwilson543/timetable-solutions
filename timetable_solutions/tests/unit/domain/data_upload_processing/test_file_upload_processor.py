@@ -17,7 +17,12 @@ class TestFileUploadProcessor(test.TestCase):
     Unit test class for the methods on FileUploadProcessor.
     """
 
-    fixtures = ["user_school_profile.json", "pupils.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+    ]
 
     @staticmethod
     def _get_file_agnostic_processor() -> FileUploadProcessor:
