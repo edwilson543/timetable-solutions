@@ -18,7 +18,14 @@ class YearGroupQuerySet(models.QuerySet):
         """
         Method to retrieve all YearGroups associate with a school.
         """
-        return self.filter(school_id=school_id)
+        return self.filter(school_id=school_id).order_by("year_group")
+
+    def get_all_year_groups_with_pupils(self, school_id: int) -> "YearGroupQuerySet":
+        """
+        Method retrieving all YearGroups with at least one pupil.
+        """
+        all_ygs = self.get_all_instances_for_school(school_id=school_id)
+        return all_ygs.annotate(n_pupils=models.Count("pupils")).filter(n_pupils__gt=0)
 
     def get_individual_year_group(self, school_id: int, year_group: str) -> "YearGroup":
         """
@@ -46,6 +53,7 @@ class YearGroup(models.Model):
         """
 
         unique_together = [["school", "year_group"]]
+        ordering = ["year_group"]
 
     class Constant:
         """
