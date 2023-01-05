@@ -21,8 +21,8 @@
     </p>
 
 <!--    Create a collapsible for each year group-->
-    {% for year_group, pupils_in_year in all_pupils.items %}
-    <button class="collapsible">Year {{year_group}} pupils</button>
+    {% for year_group in year_groups %}
+    <button class="collapsible">Year {{year_group.year_group}} pupils</button>
     <div class="expandable_content">
       <table class="list_table">
           <tr>
@@ -30,7 +30,7 @@
               <th>Surname</th>
               <th>Timetable</th>
           </tr>
-          {% for pupil in pupils_in_year %}
+          {% for pupil in year_group.pupils.all %}
           <tr class="table_row">
               <td>{{pupil.firstname}}</td>
               <td>{{pupil.surname}}</td>

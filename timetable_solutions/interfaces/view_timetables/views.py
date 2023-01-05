@@ -35,9 +35,9 @@ def pupil_navigator(request: http.HttpRequest) -> http.HttpResponse:
     This is pre-processed to be indexed by year group for display in the template.
     """
     school_id = request.user.profile.school.school_access_key
-    year_indexed_pupils = view_timetables.get_year_indexed_pupils(school_id=school_id)
+    year_groups = view_timetables.get_pupil_year_groups(school_id=school_id)
     template = loader.get_template("view_timetables/pupils_navigator.html")
-    context = {"all_pupils": year_indexed_pupils}
+    context = {"year_groups": year_groups}
     return http.HttpResponse(template.render(context, request))
 
 
