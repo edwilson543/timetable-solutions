@@ -17,9 +17,10 @@ class Test(TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution",
     ]
@@ -57,10 +58,10 @@ class Test(TestCase):
         )
         lessons = teacher.lessons.all()
         expected_colour_dict = {
-            "LUNCH": "#b3b3b3",
-            "FREE": "#feffba",  # Generic period colours
-            1: "#c8d4e3",
-            2: "#b3f2b3",  # Ranked colours
+            "LUNCH": "#b3b3b3",  # Generic period colours
+            "FREE": "#feffba",
+            "1": "#ffbfd6",  # Year group colours colours
+            "2": "#c8d4e3",
         }
 
         # Execute test unit

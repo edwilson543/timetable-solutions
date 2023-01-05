@@ -88,7 +88,7 @@ class TestViews(TestCase):
         pupil = response.context["pupil"]
         self.assertIsInstance(pupil, models.Pupil)
         self.assertEqual(pupil.firstname, "John")
-        self.assertEqual(pupil.year_group, 1)
+        self.assertEqual(pupil.year_group.year_group, "1")
 
         # Test timetable context
         timetable = response.context["timetable"]
@@ -143,9 +143,7 @@ class TestViews(TestCase):
         colours = response.context["year_group_colours"]
         default_colour_ranking = TimetableColourAssigner._colour_ranking
         self.assertIsInstance(colours, dict)
-        self.assertEqual(
-            colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1]
-        )
+        self.assertEqual(colours["1"], default_colour_ranking[0])
         self.assertEqual(
             colours[TimetableColourAssigner.Colour.FREE.name],
             TimetableColourAssigner.Colour.FREE.value,
