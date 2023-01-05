@@ -39,7 +39,7 @@ class TestFileUploadIntegration(test.TestCase):
         self.client.login(username="dummy_teacher", password="dt123dt123")
         with open((base_path / filename), "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-        url = urls.reverse(url_name)
+        url = urls.reverse(url_name.value)
         response = self.client.post(url, data={file_field_name: upload_file})
         return response
 
@@ -48,28 +48,33 @@ class TestFileUploadIntegration(test.TestCase):
         Method to upload all the valid files to the database
         """
         self.upload_test_file(
-            filename="pupils.csv",
-            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-            file_field_name=forms.PupilListUpload.Meta.file_field_name,
-        )
-        self.upload_test_file(
             filename="teachers.csv",
-            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            url_name=UrlName.TEACHER_LIST_UPLOAD,
             file_field_name=forms.TeacherListUpload.Meta.file_field_name,
         )
         self.upload_test_file(
             filename="classrooms.csv",
-            url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+            url_name=UrlName.CLASSROOM_LIST_UPLOAD,
             file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
         )
         self.upload_test_file(
+            filename="year_groups.csv",
+            url_name=UrlName.YEAR_GROUP_UPLOAD,
+            file_field_name=forms.YearGroupUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
+            filename="pupils.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+        )
+        self.upload_test_file(
             filename="timetable.csv",
-            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
             file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
         )
         self.upload_test_file(
             filename="lessons.csv",
-            url_name=UrlName.LESSONS_UPLOAD.value,
+            url_name=UrlName.LESSONS_UPLOAD,
             file_field_name=forms.LessonUpload.Meta.file_field_name,
         )
 
@@ -131,32 +136,38 @@ class TestFileUploadIntegration(test.TestCase):
 
         # Execute test unit
         self.upload_test_file(
-            filename="example_pupils.csv",
-            url_name=UrlName.PUPIL_LIST_UPLOAD.value,
-            file_field_name=forms.PupilListUpload.Meta.file_field_name,
-            base_path=base_path,
-        )
-        self.upload_test_file(
             filename="example_teachers.csv",
-            url_name=UrlName.TEACHER_LIST_UPLOAD.value,
+            url_name=UrlName.TEACHER_LIST_UPLOAD,
             file_field_name=forms.TeacherListUpload.Meta.file_field_name,
             base_path=base_path,
         )
         self.upload_test_file(
             filename="example_classrooms.csv",
-            url_name=UrlName.CLASSROOM_LIST_UPLOAD.value,
+            url_name=UrlName.CLASSROOM_LIST_UPLOAD,
             file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
             base_path=base_path,
         )
         self.upload_test_file(
+            filename="example_year_groups.csv",
+            url_name=UrlName.YEAR_GROUP_UPLOAD,
+            file_field_name=forms.YearGroupUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
+            filename="example_pupils.csv",
+            url_name=UrlName.PUPIL_LIST_UPLOAD,
+            file_field_name=forms.PupilListUpload.Meta.file_field_name,
+            base_path=base_path,
+        )
+        self.upload_test_file(
             filename="example_timetable.csv",
-            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD.value,
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
             file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
             base_path=base_path,
         )
         self.upload_test_file(
             filename="example_lessons.csv",
-            url_name=UrlName.LESSONS_UPLOAD.value,
+            url_name=UrlName.LESSONS_UPLOAD,
             file_field_name=forms.LessonUpload.Meta.file_field_name,
             base_path=base_path,
         )
