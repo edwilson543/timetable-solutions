@@ -141,15 +141,11 @@ class Lesson(models.Model):
         )
         lesson.full_clean()
 
-        if (pupils is not None) and (pupils.count() > 0):
+        if pupils is not None:
             lesson.add_pupils(pupils=pupils)
-        if (user_defined_time_slots is not None) and (
-            user_defined_time_slots.count() > 0
-        ):
+        if user_defined_time_slots is not None:
             lesson.add_user_defined_time_slots(time_slots=user_defined_time_slots)
-        if (solver_defined_time_slots is not None) and (
-            solver_defined_time_slots.count() > 0
-        ):
+        if solver_defined_time_slots is not None:
             lesson.add_solver_defined_time_slots(time_slots=solver_defined_time_slots)
 
         return lesson
