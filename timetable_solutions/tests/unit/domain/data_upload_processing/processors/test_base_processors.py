@@ -9,13 +9,14 @@ import pandas as pd
 from django import test
 
 # Local application imports
-from domain.data_upload_processing.base_file_upload_processor import (
+from domain.data_upload_processing.processors.base_processors import (
     BaseFileUploadProcessor,
+    M2MUploadProcessorMixin,
 )
 from domain.data_upload_processing.constants import FileStructure
 
 
-class TestFileUploadProcessor(test.TestCase):
+class TestBaseFileUploadProcessor(test.TestCase):
     """
     Unit test class for the methods on FileUploadProcessor.
     """
@@ -107,3 +108,70 @@ class TestFileUploadProcessor(test.TestCase):
         # Check outcome
         assert not check_outcome
         assert "repeated ids" in processor.upload_error_message
+
+
+class TestM2MUploadProcessorMixin(test.TestCase):
+    """
+    Unit test class for the methods on M2MUploadProcessorMixin.
+    """
+
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+    ]
+
+    def test_get_id_set_from_string_valid_input_to_ints(self):
+        """
+        Test that the mm processor can convert a raw string of ids to a list of integers.
+        """
+        # Set test parameters
+        raw_string = "1;2;3;4;5"
+
+        # Execute test unit
+        id_list = M2MUploadProcessorMixin().get_id_set_from_string(
+            raw_string_of_ids=raw_string,
+            row_number=1,
+            target_id_type=int,
+            valid_id_chars=",0123456789",
+        )
+
+        # Check outcome
+        assert id_list == frozenset({1, 2, 3, 4, 5})
+
+    def test_get_id_set_from_string_returns_none_from_invalid_input_to_ints(self):
+        """
+        Test that the mm processor can convert a raw string of ids to a list of integers.
+        """
+        # Set test parameters
+        raw_strings = ["", ";", ",", "dwfvwdojfvbewfvjbwvew,,fewew,"]
+
+        for raw_string in raw_strings:
+            # Execute test unit
+            id_list = M2MUploadProcessorMixin().get_id_set_from_string(
+                raw_string_of_ids=raw_string,
+                row_number=1,
+                target_id_type=int,
+                valid_id_chars=",0123456789",
+            )
+
+            # Check outcome
+            assert id_list is None
+
+    def test_get_id_set_from_string_valid_input_to_strs(self):
+        """
+        Test that the mm processor can convert a raw string of ids to a list of integers.
+        """
+        # Set test parameters
+        raw_string = "reception, 1, 2, 3, year 10"
+
+        # Execute test unit
+        id_list = M2MUploadProcessorMixin().get_id_set_from_string(
+            raw_string_of_ids=raw_string,
+            row_number=1,
+            target_id_type=str,
+        )
+
+        # Check outcome
+        assert set(id_list) == {"reception", "1", "2", "3", "year10"}

@@ -3,8 +3,10 @@ Convenience imports. Within the interfaces layer we simply import data_upload_pr
 """
 from typing import Union
 
-from .lesson_file_upload_processor import LessonFileUploadProcessor
-from .file_upload_processors import (
+from domain.data_upload_processing.processors.lesson_file_upload_processor import (
+    LessonFileUploadProcessor,
+)
+from domain.data_upload_processing.processors.file_upload_processors import (
     TeacherFileUploadProcessor,
     ClassroomFileUploadProcessor,
     YearGroupFileUploadProcessor,

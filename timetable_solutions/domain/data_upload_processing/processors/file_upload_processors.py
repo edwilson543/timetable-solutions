@@ -3,7 +3,7 @@ Subclasses of the BaseFileUploadProcessor used to handle the upload of individua
 """
 
 # Local application imports
-from domain.data_upload_processing.base_file_upload_processor import (
+from domain.data_upload_processing.processors.base_processors import (
     BaseFileUploadProcessor,
 )
 from domain.data_upload_processing.constants import UploadFileStructure

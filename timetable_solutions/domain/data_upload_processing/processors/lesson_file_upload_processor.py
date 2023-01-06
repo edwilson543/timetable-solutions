@@ -3,7 +3,6 @@ Implementation for the special case of handling the Lesson file upload
 """
 
 # Standard library imports
-import ast
 import re
 
 # Third party imports
@@ -13,12 +12,15 @@ import pandas as pd
 from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
-from .constants import Header, UploadFileStructure
-from .base_file_upload_processor import BaseFileUploadProcessor
+from domain.data_upload_processing.constants import Header, UploadFileStructure
+from domain.data_upload_processing.processors.base_processors import (
+    BaseFileUploadProcessor,
+    M2MUploadProcessorMixin,
+)
 from data import models
 
 
-class LessonFileUploadProcessor(BaseFileUploadProcessor):
+class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin):
     """
     Processing class for the user's file upload defining Lesson data.
     This model is a 'special case' and hence gets its own class (due to the foreign keys and many-to-many fields,
@@ -155,10 +157,11 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor):
         if user_input_id is not None:
             user_input_id = str(user_input_id)
             user_input_id_no_floats = re.sub(
-                r"[.].+", "", user_input_id
-            )  # User's id may be read-in as '10.0'
+                r"[.].+", "", user_input_id  # User's id may be read-in as '10.0'
+            )
             id_set = self._get_integer_set_from_string(
-                raw_string_of_ids=user_input_id_no_floats, row_number=row_number
+                raw_string_of_ids=user_input_id_no_floats,
+                row_number=row_number,
             )
             if id_set is not None:
                 if len(id_set) > 1:
@@ -173,46 +176,19 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor):
         return None
 
     def _get_integer_set_from_string(
-        self, raw_string_of_ids: str, row_number: int
-    ) -> set[int] | None:
+        self,
+        raw_string_of_ids: str,
+        row_number: int,
+    ) -> frozenset[int] | None:
         """
-        Method to do some basic checks on a raw string that need to be evaluated as a python list, and try to evaluate
-        it literally. The raw strings originate from user upload files.
+        Method providing a reduced entry point to M2MUploadProcessorMixin's get_id_set_from_string method,
+        by only offering 2 of the arguments (which is what we always want for this processor.
 
-        :return - a set of integers, or None in the case where there is an error.
-        :side effects - to set the upload_error_message instance attribute, if an error is encountered.
+        :return A set of ids, representing pupil ids or timetable slot ids.
         """
-        # Clean up the string and make it into a list
-        raw_string_of_ids = re.sub(
-            r"[:;&-]", ",", raw_string_of_ids
-        )  # standardise allowed join characters
-
-        valid_chars = [",", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        raw_string_of_ids = "".join(
-            [character for character in raw_string_of_ids if character in valid_chars]
+        return super().get_id_set_from_string(
+            raw_string_of_ids=raw_string_of_ids,
+            row_number=row_number,
+            target_id_type=int,
+            valid_id_chars=",0123456789",
         )
-        raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
-        if len(raw_string_of_ids) == 0 or raw_string_of_ids == ",":
-            # This isn't an issue directly, so just return None here
-            return None
-
-        if raw_string_of_ids[0] == ",":
-            raw_string_of_ids = raw_string_of_ids[1:]
-        raw_string_of_ids = "[" + raw_string_of_ids
-        raw_string_of_ids = raw_string_of_ids + "]"
-
-        # Try to convert the string into a set of integers
-        try:
-            id_list = ast.literal_eval(raw_string_of_ids)
-            unique_id_set = {int(value) for value in id_list}
-            return unique_id_set
-
-        except SyntaxError:
-            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '1; 2; 3'"
-            self.upload_error_message = error
-
-        except ValueError:
-            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
-            self.upload_error_message = error
-
-        return None

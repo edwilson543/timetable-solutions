@@ -4,6 +4,8 @@ Module containing utility class used to do the processing of the uploaded csv fi
 
 # Standard library imports
 from io import StringIO
+import re
+from typing import overload
 
 # Third party imports
 import pandas as pd
@@ -15,7 +17,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
 
 # Local application imports
-from .constants import Header, FileStructure
+from domain.data_upload_processing.constants import Header, FileStructure
 from data import models
 
 
@@ -238,3 +240,125 @@ class BaseFileUploadProcessor:
         Note that n_model_instances_created is only set as the very last step of a successful upload.
         """
         return self.n_model_instances_created > 0
+
+
+class M2MUploadProcessorMixin:
+    """
+    Mixin allowing processing of columns representing a many-to-many relationship.
+
+    For example, extracting the pupil ids the user is trying to reference via the string '1; 2; 3' in a column
+    called 'pupil_ids' in the Lesson file.
+    """
+
+    upload_error_message: str | None = None
+
+    @overload
+    def get_id_set_from_string(
+        self,
+        raw_string_of_ids: str,
+        row_number: int,
+        target_id_type: type[int],
+        valid_id_chars: str | None = None,
+    ) -> frozenset[int] | None:
+        ...
+
+    @overload
+    def get_id_set_from_string(
+        self,
+        raw_string_of_ids: str,
+        row_number: int,
+        target_id_type: type[str],
+        valid_id_chars: str | None = None,
+    ) -> frozenset[str] | None:
+        ...
+
+    def get_id_set_from_string(
+        self,
+        raw_string_of_ids: str,
+        row_number: int,
+        target_id_type: type[int] | type[str],
+        valid_id_chars: str | None = None,
+    ) -> frozenset[int] | frozenset[str] | None:
+        """
+        Method to get a set of ids from a raw string take from the user's uploaded file
+
+        :param raw_string_of_ids: The raw content of a cell in the user's csv file.
+        :param row_number: The row the raw string originated from (for error messages).
+        :param target_id_type: The type the ids should be converted to.
+        :param valid_id_chars: Any restriction on the characters which are allowed.
+
+        :return - a set of strings or integers, or None if an error occurred.
+
+        :side effects - to set the upload_error_message instance attribute, if an error is encountered.
+        """
+        # Clean up the string and make it into a list
+        raw_string_of_ids = re.sub(
+            r"[:;&-]", ",", raw_string_of_ids  # standardise allowed join characters
+        )
+
+        # Prune out any invalid characters
+        if valid_id_chars is not None:
+            raw_string_of_ids = "".join(
+                [
+                    character
+                    for character in raw_string_of_ids
+                    if character in valid_id_chars
+                ]
+            )
+
+        # Remove double commas
+        raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
+        if len(raw_string_of_ids) == 0 or raw_string_of_ids == ",":
+            # This isn't an issue directly, so just return None here
+            return None
+
+        # Make string into python list syntax
+        if raw_string_of_ids[0] == ",":
+            raw_string_of_ids = raw_string_of_ids[1:]
+
+        # Try to convert the string as a python list
+        try:
+            id_list = self._process_string_to_list(
+                comma_separated_string=raw_string_of_ids,
+            )
+            unique_id_set = frozenset(target_id_type(value) for value in id_list)
+            # mypy thinks this can be a mixed set of integers / strings, which it can't
+            return unique_id_set  # type: ignore
+
+        except SyntaxError:
+            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '1; 2; 3'"
+            self.upload_error_message = error
+
+        except ValueError:
+            error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
+            self.upload_error_message = error
+
+        return None
+
+    @staticmethod
+    def _process_string_to_list(comma_separated_string: str) -> list[str]:
+        """
+        Method to create a list from a comma separated string.
+
+        :param comma_separated_string: A string originating from a single entry of the user's uploaded file
+
+        e.g. take: '1,2,3,4' and return ['1', '2', '3', '4']
+        e.g take: '1,2,3,reception' and return ['1', '2', '3', 'reception']
+
+        Note that if we just wanted to process to integer, ast.literal_eval() would be sufficient,
+        but this is not capable of creating a list of strings.
+        """
+        lis = []
+        current_component = ""
+        for character in comma_separated_string:
+            if character == ",":
+                lis.append(current_component.replace(" ", ""))
+                current_component = ""
+            else:
+                current_component += character
+
+        # Ensure the final current component gets added to the list
+        if current_component not in lis and current_component != "":
+            lis.append(current_component.replace(" ", ""))
+
+        return lis
