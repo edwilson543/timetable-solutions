@@ -3,6 +3,7 @@ Unit tests for methods on the YearGroup class and YearGroupQuerySet class.
 """
 
 # Django imports
+from django.core import management
 from django import test
 
 # Local application imports
@@ -40,7 +41,7 @@ class TestYearGroup(test.TestCase):
         """
         Test that we can successfully delete all year groups associated with a school
         """
-        # Execute test unit
+        # Execute test unit - note there are currently no pupils in the db
         outcome = models.YearGroup.delete_all_instances_for_school(school_id=123456)
 
         # Check outcome
@@ -52,7 +53,31 @@ class TestYearGroup(test.TestCase):
         )
         assert all_ygs.count() == 0
 
-    # TODO -> add tests for unsuccessful deletions once foreign keys to yg model added
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        assert all_pupils.count() == 0
+
+    def test_deleting_all_year_groups_also_deletes_all_pupils(self):
+        """
+        Test that we can successfully delete all year groups associated with a school
+        """
+        # Set test parameters
+        management.call_command("loaddata", "pupils.json")
+
+        # Execute test unit
+        outcome = models.YearGroup.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.YearGroup"] == 3
+        assert deleted_ref["data.Pupil"] == 6
+
+        all_ygs = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        assert all_ygs.count() == 0
+
+        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
+        assert all_pupils.count() == 0
 
 
 class TestYearGroupQuerySet(test.TestCase):
