@@ -39,7 +39,7 @@ class TestYearGroup(test.TestCase):
 
     def test_delete_all_instances_for_school_successful(self):
         """
-        Test that we can successfully delete all year groups associated with a school
+        Test that we can successfully delete all year groups associated with a school.
         """
         # Execute test unit - note there are currently no pupils in the db
         outcome = models.YearGroup.delete_all_instances_for_school(school_id=123456)
@@ -58,7 +58,7 @@ class TestYearGroup(test.TestCase):
 
     def test_deleting_all_year_groups_also_deletes_all_pupils(self):
         """
-        Test that we can successfully delete all year groups associated with a school
+        Test that deleting year groups cascades to pupil deletions.
         """
         # Set test parameters
         management.call_command("loaddata", "pupils.json")
