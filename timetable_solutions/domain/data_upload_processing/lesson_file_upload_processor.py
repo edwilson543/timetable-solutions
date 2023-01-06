@@ -5,7 +5,6 @@ Implementation for the special case of handling the Lesson file upload
 # Standard library imports
 import ast
 import re
-from typing import Type
 
 # Third party imports
 import pandas as pd
@@ -15,32 +14,29 @@ from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
 from .constants import Header, UploadFileStructure
-from .file_upload_processor import FileUploadProcessor
+from .base_file_upload_processor import BaseFileUploadProcessor
 from data import models
 
 
-class LessonFileUploadProcessor(FileUploadProcessor):
+class LessonFileUploadProcessor(BaseFileUploadProcessor):
     """
     Processing class for the user's file upload defining Lesson data.
     This model is a 'special case' and hence gets its own class (due to the foreign keys and many-to-many fields,
     it must tbe uploaded last
     """
 
+    model = models.Lesson
+    file_structure = UploadFileStructure.LESSON
+
     def __init__(
         self,
         school_access_key: int,
         csv_file: UploadedFile,
-        csv_headers: list[str] = UploadFileStructure.LESSON.headers,
-        id_column_name: str = UploadFileStructure.LESSON.id_column,
-        model: Type[models.ModelSubclass] = models.Lesson,
         attempt_upload: bool = True,
     ):
         super().__init__(
             school_access_key=school_access_key,
             csv_file=csv_file,
-            csv_headers=csv_headers,
-            id_column_name=id_column_name,
-            model=model,
             attempt_upload=attempt_upload,
         )
 

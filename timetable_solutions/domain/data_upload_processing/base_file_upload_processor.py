@@ -4,7 +4,6 @@ Module containing utility class used to do the processing of the uploaded csv fi
 
 # Standard library imports
 from io import StringIO
-from typing import Type
 
 # Third party imports
 import pandas as pd
@@ -16,18 +15,22 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction, IntegrityError
 
 # Local application imports
-from .constants import Header
+from .constants import Header, FileStructure
 from data import models
 
 
-class FileUploadProcessor:
+class BaseFileUploadProcessor:
     """
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
     This processor conducts the upload for the following models:
-        - Pupil, Teacher, Classroom, TimetableSlot
+        - Teacher, Classroom, YearGroup, Pupil, TimetableSlot
     The class is subclassed to define the processing of uploaded 'Lesson' files.
     """
+
+    # Class attributes set on each subclass
+    model: type[models.ModelSubclass]  # Database table we are processing to
+    file_structure: FileStructure  # Column headers and unique id_column in the file being processed
 
     __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
 
@@ -35,23 +38,15 @@ class FileUploadProcessor:
         self,
         school_access_key: int,
         csv_file: UploadedFile,
-        csv_headers: list[str],
-        id_column_name: str,
-        model: Type[models.ModelSubclass],
         attempt_upload: bool = True,
     ):
         """
-        :param csv_file: the file as received from the user upload
-        :param csv_headers: the column headers from the csv file, which will correspond to the model fields
-        :param id_column_name: string depending on whether the input file contains an id column
-        :param model: the model that the file is used to create instances of
-        :param attempt_upload - whether to try to process the file's contents into the database.
+        :param school_access_key: Primary key of the school whose data is being processed
+        :param csv_file: The file as received from the user upload
+        :param attempt_upload: Whether to try to process the file's contents into the database.
         """
         # Instance attributes used internally
-        self._csv_headers = csv_headers
         self._school_access_key = school_access_key
-        self._id_column_name = id_column_name
-        self._model = model
 
         # Instance attributes that get set during upload, providing info on the level of success
         self.n_model_instances_created = 0
@@ -81,8 +76,9 @@ class FileUploadProcessor:
         try:
             file_bytes = file.read().decode("utf-8")
             file_stream = StringIO(file_bytes)
+
             # noinspection PyTypeChecker
-            upload_df = pd.read_csv(file_stream, sep=",")
+            upload_df = pd.read_csv(file_stream, sep=",", dtype=Header.AMBIGUOUS_DTYPES)
         except UnicodeDecodeError:
             self.upload_error_message = (
                 "Please check that your file is encoded using UTF-8!"
@@ -112,7 +108,7 @@ class FileUploadProcessor:
             try:
                 with transaction.atomic():
                     for n, create_new_dict in enumerate(create_new_dict_list):
-                        self._model.create_new(**create_new_dict)
+                        self.model.create_new(**create_new_dict)
 
                 # Reaching this point means the upload processing has been successful
                 self.n_model_instances_created = len(create_new_dict_list)
@@ -124,14 +120,14 @@ class FileUploadProcessor:
             ) as debug_only_message:  # A string was passed to int(id_field)
 
                 error = (
-                    f"Could not interpret values in row {n+1} as a {self._model.Constant.human_string_singular}!"
+                    f"Could not interpret values in row {n+1} as a {self.model.Constant.human_string_singular}!"
                     f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
                 )
                 self.upload_error_message = error
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
             except IntegrityError as debug_only_message:
-                error = f"ID given for {self._model.Constant.human_string_singular} in row {n + 1} was not unique!"
+                error = f"ID given for {self.model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
@@ -197,8 +193,8 @@ class FileUploadProcessor:
 
         # Check that the file has the required column headers
         headers_error = "Input file headers did not match required format - please check against the example file."
-        if len(upload_df.columns) == len(self._csv_headers):
-            headers_valid = all(upload_df.columns == self._csv_headers)
+        if len(upload_df.columns) == len(self.file_structure.headers):
+            headers_valid = all(upload_df.columns == self.file_structure.headers)
             if not headers_valid:
                 self.upload_error_message = headers_error
                 return False
@@ -207,16 +203,20 @@ class FileUploadProcessor:
             return False
 
         # Check that the id column contains no duplicates
-        if self._id_column_name is not None:
+        if self.file_structure.id_column is not None:
             # This needs to be done upfront, as .validate_unique() called by .full_clean() is redundant here
-            ids_unique = upload_df[self._id_column_name].is_unique
+            ids_unique = upload_df[self.file_structure.id_column].is_unique
             if not ids_unique:
-                self.upload_error_message = f"Input file contained repeated ids (id column is {self._id_column_name})"
+                self.upload_error_message = (
+                    "Input file contained repeated ids "
+                    f"(id column is {self.file_structure.id_column})"
+                )
                 return False
 
         # All checks have passed so return True
         return True
 
+    # COLUMN-BY-COLUMN PROCESSING
     @staticmethod
     def _convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
         """Method to ensure timestamps / timedelta are converted to the correct type"""
@@ -230,6 +230,7 @@ class FileUploadProcessor:
             )
         return upload_df
 
+    # PROPERTIES
     @property
     def upload_successful(self) -> bool:
         """

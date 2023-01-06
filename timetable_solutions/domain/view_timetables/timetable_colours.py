@@ -111,19 +111,22 @@ class TimetableColourAssigner:
         :param lessons - the queryset of lessons that a given teacher teaches / has
         :return A dictionary whose keys are subject names, and values are corresponding hexadecimal colour codes
         """
-        # Get dictionary of  subject_name -> hexadecimal colour mappings
+        # Get dictionary of subject_name -> hexadecimal colour mappings
         generic_period_colours = cls._get_generic_period_colours(lessons=lessons)
 
         colour_ranking = cls._colour_ranking
-        year_group_colours = {}  # Dictionary that will map year group colours -> ints
-        for lesson in lessons:
-            all_pupils = lesson.pupils.all()
-            if (
-                all_pupils.exists()
-            ):  # Take first pupil from queryset since all have same year group
-                first_pupil = lesson.pupils.all().first()
-                year_group: int = first_pupil.year_group
-                year_group_colours[year_group] = colour_ranking[year_group]
+        year_group_colours = (
+            {}
+        )  # Dictionary that will map year groups -> hexadecimal colour codes
+
+        school_id = lessons.first().school.school_access_key
+        all_ygs = models.YearGroup.objects.get_all_year_groups_with_pupils(
+            school_id=school_id
+        )
+        for n, year_group in enumerate(all_ygs):
+            year_group_colours[year_group.year_group] = colour_ranking[
+                (n % 11)  # 11 since we have 11 colours in the dict
+            ]
 
         all_colours = generic_period_colours | year_group_colours
         return all_colours

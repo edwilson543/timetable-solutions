@@ -16,9 +16,10 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_without_solution.json",
     ]

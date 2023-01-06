@@ -7,6 +7,14 @@
     }
   },
   {
+    "model": "data.yeargroup",
+    "pk": 201,
+    "fields": {
+      "year_group": "1",
+      "school": 222222
+    }
+  },
+  {
     "model": "data.timetableslot",
     "pk": 201,
     "fields": {
@@ -34,7 +42,7 @@
     "fields": {
       "firstname": "John",
       "surname": "Smith",
-      "year_group": 1,
+      "year_group": 201,
       "pupil_id": 1,
       "school": 222222
     }

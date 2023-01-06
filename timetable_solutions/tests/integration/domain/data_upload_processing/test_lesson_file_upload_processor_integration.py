@@ -18,9 +18,10 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
     ]
     valid_uploads = TEST_DATA_DIR / "valid_uploads"
@@ -102,9 +103,10 @@ class TestLessonFileUploadProcessorInvalidUploads(TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "pupils.json",
         "teachers.json",
         "timetable.json",
+        "year_groups.json",
+        "pupils.json",
         "classrooms.json",
     ]
     invalid_uploads = TEST_DATA_DIR / "invalid_uploads"

@@ -15,7 +15,12 @@ class TestLessonFileUploadProcessor(test.TestCase):
     Unit test class for the small methods on LessonFileUploadProcessor.
     """
 
-    fixtures = ["user_school_profile.json", "pupils.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+    ]
 
     @staticmethod
     def _get_file_agnostic_processor() -> LessonFileUploadProcessor:
@@ -25,9 +30,6 @@ class TestLessonFileUploadProcessor(test.TestCase):
         # noinspection PyTypeChecker
         processor = LessonFileUploadProcessor(
             csv_file=None,
-            csv_headers=None,
-            id_column_name=None,
-            model=None,  # None of these are relevant
             school_access_key=123456,
             attempt_upload=False,
         )

@@ -18,7 +18,14 @@ class YearGroupQuerySet(models.QuerySet):
         """
         Method to retrieve all YearGroups associate with a school.
         """
-        return self.filter(school_id=school_id)
+        return self.filter(school_id=school_id).order_by("year_group")
+
+    def get_all_year_groups_with_pupils(self, school_id: int) -> "YearGroupQuerySet":
+        """
+        Method retrieving all YearGroups with at least one pupil.
+        """
+        all_ygs = self.get_all_instances_for_school(school_id=school_id)
+        return all_ygs.annotate(n_pupils=models.Count("pupils")).filter(n_pupils__gt=0)
 
     def get_individual_year_group(self, school_id: int, year_group: str) -> "YearGroup":
         """
@@ -46,6 +53,7 @@ class YearGroup(models.Model):
         """
 
         unique_together = [["school", "year_group"]]
+        ordering = ["year_group"]
 
     class Constant:
         """
@@ -57,11 +65,17 @@ class YearGroup(models.Model):
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        return f"Year {self.year_group}"
+        try:
+            float(self.year_group)
+            # If the year group can be interpreted as a number, it makes sense to say 'Year x'
+            return f"Year {self.year_group}"
+        except ValueError:
+            # If not, we just want the year group name, e.g. 'Reception'
+            return f"{self.year_group}"
 
     def __repr__(self) -> str:
         """String representation of the model for debugging"""
-        return f"Year {self.year_group}"
+        return self.__str__()
 
     # FACTORY METHODS
     @classmethod
@@ -79,3 +93,8 @@ class YearGroup(models.Model):
         year_groups = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = year_groups.delete()
         return outcome
+
+    # QUERY METHODS
+    def get_number_pupils(self) -> int:
+        """Method querying for how many pupils there are in a year group"""
+        return self.pupils.all().count()

@@ -2,7 +2,7 @@
 Convenience imports for objects form view_timetables domain component
 """
 from .timetable_constructor import (
-    get_year_indexed_pupils,
+    get_pupil_year_groups,
     get_letter_indexed_teachers,
     get_pupil_timetable_context,
     get_teacher_timetable_context,

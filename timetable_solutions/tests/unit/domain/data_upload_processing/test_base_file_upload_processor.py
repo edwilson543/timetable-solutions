@@ -9,7 +9,10 @@ import pandas as pd
 from django import test
 
 # Local application imports
-from domain.data_upload_processing import FileUploadProcessor
+from domain.data_upload_processing.base_file_upload_processor import (
+    BaseFileUploadProcessor,
+)
+from domain.data_upload_processing.constants import FileStructure
 
 
 class TestFileUploadProcessor(test.TestCase):
@@ -17,19 +20,21 @@ class TestFileUploadProcessor(test.TestCase):
     Unit test class for the methods on FileUploadProcessor.
     """
 
-    fixtures = ["user_school_profile.json", "pupils.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+    ]
 
     @staticmethod
-    def _get_file_agnostic_processor() -> FileUploadProcessor:
+    def _get_file_agnostic_processor() -> BaseFileUploadProcessor:
         """
         Fixture for a FileUploadProcessor that is not specific to any of the upload files.
         """
         # noinspection PyTypeChecker
-        processor = FileUploadProcessor(
-            csv_file=None,
-            csv_headers=None,
-            id_column_name=None,
-            model=None,  # None of these are relevant
+        processor = BaseFileUploadProcessor(
+            csv_file=None,  # Not relevant to these tests
             school_access_key=123456,
             attempt_upload=False,
         )
@@ -57,7 +62,7 @@ class TestFileUploadProcessor(test.TestCase):
         """
         # Set test parameters
         processor = self._get_file_agnostic_processor()
-        processor._csv_headers = ["a", "b", "c"]
+        processor.file_structure = FileStructure(headers=["a", "b", "c"], id_column="")
         df = pd.DataFrame({"test": [1, 2, 3]})  # Note that the shape is wrong
 
         # Execute test unit
@@ -73,7 +78,7 @@ class TestFileUploadProcessor(test.TestCase):
         """
         # Set test parameters
         processor = self._get_file_agnostic_processor()
-        processor._csv_headers = ["a", "b"]
+        processor.file_structure = FileStructure(headers=["a", "b"], id_column="")
         df = pd.DataFrame(
             {"c": [1, 2, 3], "d": [4, 5, 6]}
         )  # Note that shape is right but column names wrong
@@ -91,8 +96,7 @@ class TestFileUploadProcessor(test.TestCase):
         """
         # Set test parameters
         processor = self._get_file_agnostic_processor()
-        processor._csv_headers = ["a", "b"]
-        processor._id_column_name = "a"
+        processor.file_structure = FileStructure(headers=["a", "b"], id_column="a")
         df = pd.DataFrame(
             {"a": [1, 1, 2], "b": [4, 5, 6]}
         )  # Note that column 'a' is the id column, but is not unique

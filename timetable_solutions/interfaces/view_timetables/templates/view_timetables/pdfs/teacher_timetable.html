@@ -83,9 +83,9 @@
           {% elif lesson.subject_name == "LUNCH" %}
             <td class="color_{{lesson.subject_name}} timetable_slot"><b>{{ lesson.subject_name|title}}</b></td>
           {% else %}
-            <td class="color_{{lesson.pupils.all.0.year_group}} timetable_slot">
+            <td class="color_{{ lesson.get_year_group_str }} timetable_slot">
                 <b>{{ lesson.subject_name|title}}</b><br>
-              <i>Year {{ lesson.pupils.all.0.year_group }}</i><br>
+              <i>Year {{ lesson.get_year_group_str }}</i><br>
               <i>{{ lesson.classroom.building }} {{ lesson.classroom.room_number }}</i>
             </td>
           {% endif %}

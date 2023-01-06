@@ -16,29 +16,18 @@ from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
 
 # PUPIL / TEACHER NAVIGATOR PREPROCESSING
-def get_year_indexed_pupils(school_id: int) -> dict[str, models.PupilQuerySet]:
+def get_pupil_year_groups(school_id: int) -> models.YearGroupQuerySet:
     """
-    Function returning a dictionary of the pupils at a specific school, where the keys are the year groups, and the
-    values the queryset of pupils in that year group.
+    Get the pupils, grouped by year group, for a given school.
+    Purpose: to iterate through in a django template.
     """
-    year_indexed_pupils_unfiltered = {
-        year: models.Pupil.objects.get_school_year_group(
-            school_id=school_id, year_group=year
-        ).values()
-        for year in models.Pupil.YearGroup.values
-    }
-    year_indexed_pupils = {
-        key: value
-        for key, value in year_indexed_pupils_unfiltered.items()
-        if len(value) > 0
-    }
-    return year_indexed_pupils
+    return models.YearGroup.objects.get_all_year_groups_with_pupils(school_id=school_id)
 
 
 def get_letter_indexed_teachers(school_id: int) -> dict[str, models.TeacherQuerySet]:
     """
     Function returning a dictionary of the teachers at a specific school, where the keys are letters of the alphabet,
-    and the values the queryset of teachers who's surname starts with that letter.
+    and the values the queryset of teachers with a surname starting with that letter.
     """
     alphabet = list(ascii_uppercase)
     teachers_unfiltered = {

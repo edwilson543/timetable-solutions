@@ -20,7 +20,7 @@ class TestCreateTimetableFormView(test.TestCase):
     Class for Unit tests of the CreateTimetable FormView allowing users to create timetable solutions.
     """
 
-    fixtures = ["user_school_profile.json", "timetable.json"]
+    fixtures = ["user_school_profile.json", "year_groups.json", "timetable.json"]
 
     def test_get_form_kwargs_contains_correct_available_time_slots(self):
         """

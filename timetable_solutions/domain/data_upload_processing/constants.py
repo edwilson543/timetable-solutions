@@ -44,6 +44,11 @@ class Header:
     PUPIL_IDS = "pupil_ids"
     USER_DEFINED_SLOTS = "user_defined_slot_ids"
 
+    # Type reference - where pandas.read_csv() doesn't always get it right
+    AMBIGUOUS_DTYPES = {
+        YEAR_GROUP: str,
+    }
+
 
 @dataclass(frozen=True)
 class FileStructure:

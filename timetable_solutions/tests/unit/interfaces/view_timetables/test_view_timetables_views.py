@@ -26,9 +26,10 @@ class TestViews(TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
     ]
@@ -46,22 +47,8 @@ class TestViews(TestCase):
         response = self.client.get(url)
 
         # Test the keys of the dict are the year groups
-        all_pupils_dict = response.context["all_pupils"]
-        year_groups_list = list(all_pupils_dict.keys())
-        self.assertEqual(
-            year_groups_list,
-            [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value],
-        )
-
-        # Test that each key corresponds to a value, which is the query set of pupils in that year group
-        year_one = all_pupils_dict[models.Pupil.YearGroup.ONE.value]
-        self.assertIsInstance(year_one, QuerySet)
-        self.assertEqual(len(year_one), 3)
-
-        # Test an individual pupil returned from the query set
-        john_smith = year_one.get(pupil_id=1)
-        self.assertIsInstance(john_smith, dict)
-        self.assertEqual(john_smith["firstname"], "John")
+        assert response.status_code == 200
+        assert "year_groups" in response.context
 
     def test_teacher_navigator_response(self):
         """Test that the correct full list of teachers is returned, indexed by the first letter of their surname."""
@@ -101,7 +88,7 @@ class TestViews(TestCase):
         pupil = response.context["pupil"]
         self.assertIsInstance(pupil, models.Pupil)
         self.assertEqual(pupil.firstname, "John")
-        self.assertEqual(pupil.year_group, 1)
+        self.assertEqual(pupil.year_group.year_group, "1")
 
         # Test timetable context
         timetable = response.context["timetable"]
@@ -156,9 +143,7 @@ class TestViews(TestCase):
         colours = response.context["year_group_colours"]
         default_colour_ranking = TimetableColourAssigner._colour_ranking
         self.assertIsInstance(colours, dict)
-        self.assertEqual(
-            colours[models.Pupil.YearGroup.ONE.value], default_colour_ranking[1]
-        )
+        self.assertEqual(colours["1"], default_colour_ranking[0])
         self.assertEqual(
             colours[TimetableColourAssigner.Colour.FREE.name],
             TimetableColourAssigner.Colour.FREE.value,

@@ -62,9 +62,7 @@ class YearGroupAdmin(CustomModelAdminBase):
     ModelAdmin for the Pupil model
     """
 
-    list_display = [
-        "year_group",
-    ]
+    list_display = ["year_group", "get_number_pupils"]
     list_display_links = ["year_group"]
 
     search_fields = [
@@ -72,7 +70,12 @@ class YearGroupAdmin(CustomModelAdminBase):
     ]
     search_help_text = "Search for a year group"
 
-    # TODO add number pupils, once linked
+    @admin.display(description="Number of pupils")
+    def get_number_pupils(self, obj: models.YearGroup) -> int:
+        """
+        Admin display column for a year group's number of pupils.
+        """
+        return obj.get_number_pupils()
 
 
 @admin.register(models.Pupil, site=user_admin)

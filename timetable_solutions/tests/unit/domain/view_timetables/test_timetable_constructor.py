@@ -22,39 +22,31 @@ class TestTimetableConstruction(TestCase):
     fixtures = [
         "user_school_profile.json",
         "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
     ]
 
     # PUPIL / TEACHER NAVIGATOR PREPROCESSING TESTS
-    def test_get_year_indexed_pupils(self):
-        """Test that the correct full list of pupils indexed by year group is returned"""
+    def test_get_pupil_year_groups(self):
+        """Test that the correct queryset of year groups (and associated) pupils is returned"""
         # Execute the unit of the domain layer
-        all_pupils_dict = view_timetables.get_year_indexed_pupils(school_id=123456)
+        all_ygs = view_timetables.get_pupil_year_groups(school_id=123456)
 
-        # Test the correct year group list has been retrieved
-        expected_year_groups = list(all_pupils_dict.keys())
-        self.assertEqual(
-            expected_year_groups,
-            [models.Pupil.YearGroup.ONE.value, models.Pupil.YearGroup.TWO.value],
-        )
-        for year_group, pupils in all_pupils_dict.items():
-            for pupil in pupils:
-                self.assertEqual(
-                    pupil["year_group"], year_group
-                )  # Check the pupils have been correctly assigned
+        # Test the correct year group list has been retrieved,
+        # in particular that "Reception", which has no pupils, is not included.
+        expected_year_groups = ["1", "2"]
+        actual_year_groups = list(all_ygs.values_list("year_group", flat=True))
+        assert expected_year_groups == actual_year_groups
 
-        # Test that each key corresponds to a value, which is the query set of pupils in that year group
-        year_one = all_pupils_dict[models.Pupil.YearGroup.ONE.value]
-        self.assertIsInstance(year_one, QuerySet)
-        self.assertEqual(len(year_one), 3)
+        for year_group in all_ygs:
+            pupils = year_group.pupils.all()
+            assert isinstance(pupils, models.PupilQuerySet)
+            assert pupils.count() == 3
 
-        # Test an individual pupil returned from the query set
-        john_smith = year_one.get(pupil_id=1)
-        self.assertIsInstance(john_smith, dict)
-        self.assertEqual(john_smith["firstname"], "John")
+        assert all_ygs.first().pupils.first().firstname == "Lynn"
 
     def test_get_letter_indexed_teachers(self):
         """Test that the correct full list of teachers, indexed by their surname letters is returned"""
