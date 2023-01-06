@@ -140,7 +140,6 @@ class Lesson(models.Model):
             classroom=classroom,
         )
         lesson.full_clean()
-        lesson.save()
 
         if (pupils is not None) and (pupils.count() > 0):
             lesson.add_pupils(pupils=pupils)
