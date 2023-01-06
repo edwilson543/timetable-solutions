@@ -145,12 +145,12 @@ class Lesson(models.Model):
         if (pupils is not None) and (pupils.count() > 0):
             lesson.add_pupils(pupils=pupils)
         if (user_defined_time_slots is not None) and (
-            user_defined_time_slots.count()
-        ) > 0:
+            user_defined_time_slots.count() > 0
+        ):
             lesson.add_user_defined_time_slots(time_slots=user_defined_time_slots)
         if (solver_defined_time_slots is not None) and (
-            solver_defined_time_slots.count()
-        ) > 0:
+            solver_defined_time_slots.count() > 0
+        ):
             lesson.add_solver_defined_time_slots(time_slots=solver_defined_time_slots)
 
         return lesson
