@@ -7,9 +7,8 @@ from pathlib import Path
 
 # io settings
 loc = Path(__file__).parents[1] / "timetable_solutions" / "data" / "fixtures"
-input_filenames = ["unsolved_classes.json"]
-output_filenames = ["unsolved_classes.json"]
-# new_model_name = "data.fixedclass"
+input_filenames = ["timetable.json"]
+output_filenames = ["timetable.json"]
 
 
 def update_fixture(
@@ -22,8 +21,7 @@ def update_fixture(
         for n, item in enumerate(pyt_data):
             new_item = item.copy()
 
-            new_item["fields"]["class_id"] = new_item["pk"]
-            new_item["pk"] = n + 1
+            new_item["fields"]["relevant_year_groups"] = [1, 2]
 
             new_pyt_data.append(new_item)
 

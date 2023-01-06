@@ -79,6 +79,34 @@ class TestYearGroup(test.TestCase):
         all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
         assert all_pupils.count() == 0
 
+    def test_deleting_all_year_groups_doesnt_delete_timetable_slots(self):
+        """
+        Test that deleting year groups only deletes relationships with TimetableSlots
+        """
+        # Set test parameters
+        management.call_command("loaddata", "timetable.json")
+
+        # Execute test unit
+        outcome = models.YearGroup.delete_all_instances_for_school(school_id=123456)
+
+        # Check outcome
+        deleted_ref = outcome[1]
+        assert deleted_ref["data.YearGroup"] == 3
+        assert (
+            deleted_ref["data.TimetableSlot_relevant_year_groups"] == 70
+        )  # = 35 slots * 2 year groups
+
+        all_ygs = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        assert all_ygs.count() == 0
+
+        # Ensure that the timetable slots aren't deleted (only their relations to year groups)
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        assert all_slots.count() == 35
+
 
 class TestYearGroupQuerySet(test.TestCase):
 

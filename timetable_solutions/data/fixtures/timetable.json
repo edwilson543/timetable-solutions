@@ -7,7 +7,11 @@
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -18,7 +22,11 @@
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -29,7 +37,11 @@
       "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -40,7 +52,11 @@
       "period_duration": "01:00:00",
       "slot_id": 4,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -51,7 +67,11 @@
       "period_duration": "01:00:00",
       "slot_id": 5,
       "period_starts_at": "09:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -62,7 +82,11 @@
       "period_duration": "01:00:00",
       "slot_id": 6,
       "period_starts_at": "10:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -73,7 +97,11 @@
       "period_duration": "01:00:00",
       "slot_id": 7,
       "period_starts_at": "10:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -84,7 +112,11 @@
       "period_duration": "01:00:00",
       "slot_id": 8,
       "period_starts_at": "10:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -95,7 +127,11 @@
       "period_duration": "01:00:00",
       "slot_id": 9,
       "period_starts_at": "10:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -106,7 +142,11 @@
       "period_duration": "01:00:00",
       "slot_id": 10,
       "period_starts_at": "10:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -117,7 +157,11 @@
       "period_duration": "01:00:00",
       "slot_id": 11,
       "period_starts_at": "11:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -128,7 +172,11 @@
       "period_duration": "01:00:00",
       "slot_id": 12,
       "period_starts_at": "11:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -139,7 +187,11 @@
       "period_duration": "01:00:00",
       "slot_id": 13,
       "period_starts_at": "11:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -150,7 +202,11 @@
       "period_duration": "01:00:00",
       "slot_id": 14,
       "period_starts_at": "11:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -161,7 +217,11 @@
       "period_duration": "01:00:00",
       "slot_id": 15,
       "period_starts_at": "11:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -172,7 +232,11 @@
       "period_duration": "01:00:00",
       "slot_id": 16,
       "period_starts_at": "12:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -183,7 +247,11 @@
       "period_duration": "01:00:00",
       "slot_id": 17,
       "period_starts_at": "12:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -194,7 +262,11 @@
       "period_duration": "01:00:00",
       "slot_id": 18,
       "period_starts_at": "12:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -205,7 +277,11 @@
       "period_duration": "01:00:00",
       "slot_id": 19,
       "period_starts_at": "12:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -216,7 +292,11 @@
       "period_duration": "01:00:00",
       "slot_id": 20,
       "period_starts_at": "12:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -227,7 +307,11 @@
       "period_duration": "01:00:00",
       "slot_id": 21,
       "period_starts_at": "13:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -238,7 +322,11 @@
       "period_duration": "01:00:00",
       "slot_id": 22,
       "period_starts_at": "13:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -249,7 +337,11 @@
       "period_duration": "01:00:00",
       "slot_id": 23,
       "period_starts_at": "13:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -260,7 +352,11 @@
       "period_duration": "01:00:00",
       "slot_id": 24,
       "period_starts_at": "13:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -271,7 +367,11 @@
       "period_duration": "01:00:00",
       "slot_id": 25,
       "period_starts_at": "13:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -282,7 +382,11 @@
       "period_duration": "01:00:00",
       "slot_id": 26,
       "period_starts_at": "14:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -293,7 +397,11 @@
       "period_duration": "01:00:00",
       "slot_id": 27,
       "period_starts_at": "14:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -304,7 +412,11 @@
       "period_duration": "01:00:00",
       "slot_id": 28,
       "period_starts_at": "14:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -315,7 +427,11 @@
       "period_duration": "01:00:00",
       "slot_id": 29,
       "period_starts_at": "14:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -326,7 +442,11 @@
       "period_duration": "01:00:00",
       "slot_id": 30,
       "period_starts_at": "14:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -337,7 +457,11 @@
       "period_duration": "01:00:00",
       "slot_id": 31,
       "period_starts_at": "15:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -348,7 +472,11 @@
       "period_duration": "01:00:00",
       "slot_id": 32,
       "period_starts_at": "15:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -359,7 +487,11 @@
       "period_duration": "01:00:00",
       "slot_id": 33,
       "period_starts_at": "15:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -370,7 +502,11 @@
       "period_duration": "01:00:00",
       "slot_id": 34,
       "period_starts_at": "15:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   },
   {
@@ -381,7 +517,11 @@
       "period_duration": "01:00:00",
       "slot_id": 35,
       "period_starts_at": "15:00:00",
-      "school": 123456
+      "school": 123456,
+      "relevant_year_groups": [
+        1,
+        2
+      ]
     }
   }
 ]

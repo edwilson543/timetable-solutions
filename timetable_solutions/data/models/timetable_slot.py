@@ -9,6 +9,7 @@ from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
+from data.models.year_group import YearGroup, YearGroupQuerySet
 
 
 class WeekDay(models.IntegerChoices):
@@ -60,6 +61,7 @@ class TimetableSlot(models.Model):
     day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
     period_starts_at = models.TimeField()
     period_duration = models.DurationField(default=dt.timedelta(hours=1))
+    relevant_year_groups = models.ManyToManyField(YearGroup, related_name="slots")
 
     # Introduce a custom manager
     objects = TimetableSlotQuerySet.as_manager()
@@ -101,6 +103,7 @@ class TimetableSlot(models.Model):
         day_of_week: WeekDay,
         period_starts_at: dt.time,
         period_duration: dt.timedelta,
+        relevant_year_groups: YearGroupQuerySet | None = None,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
@@ -110,6 +113,7 @@ class TimetableSlot(models.Model):
                 f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
                 f"{type(day_of_week)}"
             )
+
         slot = cls.objects.create(
             school_id=school_id,
             slot_id=slot_id,
@@ -118,6 +122,10 @@ class TimetableSlot(models.Model):
             period_duration=period_duration,
         )
         slot.full_clean()
+
+        if relevant_year_groups is not None:
+            slot.add_year_groups(year_groups=relevant_year_groups)
+
         return slot
 
     @classmethod
@@ -128,6 +136,14 @@ class TimetableSlot(models.Model):
         instances = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = instances.delete()
         return outcome
+
+    # MUTATORS
+    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+        """Method adding a queryset of / yeargroup instance to a TimetableSlot instance"""
+        if isinstance(year_groups, YearGroupQuerySet):
+            self.relevant_year_groups.add(*year_groups)
+        elif isinstance(year_groups, YearGroup):
+            self.relevant_year_groups.add(year_groups)
 
     # QUERIES
     @classmethod
@@ -146,16 +162,16 @@ class TimetableSlot(models.Model):
         return timeslot_ids
 
     @classmethod
-    def get_unique_start_times(cls, school_id: int) -> list[dt.time]:
+    def get_unique_start_hours(cls, school_id: int) -> list[dt.time]:
         """
         Method to find the unique period_start_at times for a givens school (ordered from first to last).
         Note that we are only interested in the times of day, and not the days.
         """
         slots = cls.objects.get_all_instances_for_school(school_id=school_id)
         times = slots.values_list("period_starts_at", flat=True)
-        sorted_times = sorted(
-            list(set(times))
-        )  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
+        unique_rounded_hours = {dt.time(hour=round(time.hour, 0)) for time in times}
+        sorted_times = sorted(list(unique_rounded_hours))
+
         return sorted_times
 
     def check_if_slots_are_consecutive(self, other_slot: "TimetableSlot") -> bool:
