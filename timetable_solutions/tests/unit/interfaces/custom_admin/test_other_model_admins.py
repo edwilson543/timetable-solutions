@@ -134,7 +134,7 @@ class TestBaseModelAdmin(test.TestCase):
             "pupil_id": 7,
             "firstname": "test",
             "surname": "testson",
-            "year_group": 1,
+            "year_group": "1",
         }
 
         # Execute test unit
@@ -144,6 +144,11 @@ class TestBaseModelAdmin(test.TestCase):
         self.assertRedirects(response=response, expected_url="/data/admin/data/pupil/")
         pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=7)
         assert pupil.school.school_access_key == 123456
+
+        expected_yg = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
+        assert pupil.year_group == expected_yg
 
     def test_save_model_auto_associates_user_school_with_timetable_slot(self):
         """

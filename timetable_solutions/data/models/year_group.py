@@ -93,3 +93,8 @@ class YearGroup(models.Model):
         year_groups = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = year_groups.delete()
         return outcome
+
+    # QUERY METHODS
+    def get_number_pupils(self) -> int:
+        """Method querying for how many pupils there are in a year group"""
+        return self.pupils.all().count()
