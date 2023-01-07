@@ -163,6 +163,7 @@ class TestBaseModelAdmin(test.TestCase):
             "day_of_week": 1,
             "period_starts_at": "09:00",
             "period_duration": "01:00",
+            "relevant_year_groups": [1, 2],
         }
 
         # Execute test unit
@@ -176,6 +177,32 @@ class TestBaseModelAdmin(test.TestCase):
             school_id=123456, slot_id=100
         )
         assert slot.school.school_access_key == 123456
+
+        expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
+            school_id=123456, year_groups={1, 2}
+        )
+        self.assertQuerysetEqual(slot.relevant_year_groups.all(), expected_year_groups)
+
+    def test_cannot_create_timetable_slot_without_year_group_via_admin(self):
+        """
+        Test that a form not containing the relevant_year_groups_field will be unsuccessful.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/timetableslot/add/"
+        form_data = {
+            "slot_id": 100,
+            "day_of_week": 1,
+            "period_starts_at": "09:00",
+            "period_duration": "01:00",
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        assert b"Please correct the error below" in response.content
+        assert b"This field is required" in response.content
 
     # GET QUERYSET TESTS
     def test_get_queryset_pupils_filters_by_school(self):

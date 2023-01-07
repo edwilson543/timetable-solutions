@@ -106,8 +106,8 @@ class TimetableSlotAdmin(CustomModelAdminBase):
     ModelAdmin for the TimetableSlot model
     """
 
-    list_display = ["_get_slot_time_string", "slot_id"]
-    list_display_links = ["_get_slot_time_string"]
+    list_display = ["get_slot_time_string", "slot_id", "get_year_groups"]
+    list_display_links = ["get_slot_time_string"]
 
     list_filter = ["day_of_week", "period_starts_at"]
 
@@ -115,7 +115,7 @@ class TimetableSlotAdmin(CustomModelAdminBase):
     search_help_text = "Search for a slot by day, time, or id"
 
     @admin.display(description="Time")
-    def _get_slot_time_string(self, obj: models.TimetableSlot) -> str:
+    def get_slot_time_string(self, obj: models.TimetableSlot) -> str:
         """
         Method to provide a string combining the time slot start and end time
         """
@@ -125,3 +125,12 @@ class TimetableSlotAdmin(CustomModelAdminBase):
             + obj.period_ends_at.strftime("%H:%M")
         )
         return models.WeekDay(obj.day_of_week).label + ", " + time
+
+    @admin.display(description="Year Groups")
+    def get_year_groups(self, obj: models.TimetableSlot) -> str:
+        """
+        Method to provide a string representation of the year groups associated with a TimetableSlot.
+        """
+        ygs = obj.relevant_year_groups.all()
+        yg_list = [f"{yg.year_group}, " for yg in ygs]
+        return "".join(yg_list)[:-2]
