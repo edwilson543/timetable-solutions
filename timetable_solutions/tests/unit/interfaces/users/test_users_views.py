@@ -61,7 +61,7 @@ class TestRegistration(TestCase):
         self.assertIn("not yet been approved", unapproved_error)
         self.assertTrue(user.is_authenticated)
         login_successful = response.wsgi_request.user.is_authenticated
-        self.assertTrue(not login_successful)
+        self.assertFalse(login_successful)
 
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
@@ -208,7 +208,7 @@ class TestRegistration(TestCase):
         profile = response.wsgi_request.user.profile
         self.assertEqual(profile.school.school_access_key, 123456)
         self.assertEqual(profile.role, models.UserRole.TEACHER)
-        self.assertTrue(not profile.approved_by_school_admin)
+        self.assertFalse(profile.approved_by_school_admin)
 
         # Check the flash message
         message = response.cookies["messages"].value
