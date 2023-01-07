@@ -325,10 +325,6 @@ class M2MUploadProcessorMixin:
             # mypy thinks this can be a mixed set of integers / strings, which it can't
             return unique_id_set  # type: ignore
 
-        except SyntaxError:
-            error = f"Invalid syntax: {raw_string_of_ids} in row {row_number}! Please use the format: '1; 2; 3'"
-            self.upload_error_message = error
-
         except ValueError:
             error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
             self.upload_error_message = error
