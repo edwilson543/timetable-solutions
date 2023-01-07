@@ -22,7 +22,10 @@
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -33,10 +36,13 @@
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "10:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
-    {
+  {
     "model": "data.timetableslot",
     "pk": 703,
     "fields": {
@@ -44,7 +50,10 @@
       "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "11:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -55,10 +64,13 @@
       "period_duration": "01:00:00",
       "slot_id": 4,
       "period_starts_at": "12:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
-    {
+  {
     "model": "data.timetableslot",
     "pk": 705,
     "fields": {
@@ -66,7 +78,10 @@
       "period_duration": "01:00:00",
       "slot_id": 5,
       "period_starts_at": "13:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -77,7 +92,10 @@
       "period_duration": "01:00:00",
       "slot_id": 6,
       "period_starts_at": "09:00:00",
-      "school": 777777
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -119,9 +137,15 @@
       "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 701,
-      "pupils": [701],
+      "pupils": [
+        701
+      ],
       "classroom": 701,
-      "user_defined_time_slots": [701, 702, 705],
+      "user_defined_time_slots": [
+        701,
+        702,
+        705
+      ],
       "solver_defined_time_slots": [],
       "total_required_slots": 4,
       "total_required_double_periods": 1,

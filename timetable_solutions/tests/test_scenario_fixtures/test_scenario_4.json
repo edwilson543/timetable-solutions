@@ -22,7 +22,10 @@
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 444444
+      "school": 444444,
+      "relevant_year_groups": [
+        401
+      ]
     }
   },
   {
@@ -33,7 +36,10 @@
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "09:00:00",
-      "school": 444444
+      "school": 444444,
+      "relevant_year_groups": [
+        401
+      ]
     }
   },
   {

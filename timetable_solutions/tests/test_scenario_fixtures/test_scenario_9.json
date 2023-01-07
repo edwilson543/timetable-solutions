@@ -22,7 +22,10 @@
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
   {
@@ -33,7 +36,10 @@
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "10:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
   {
@@ -44,7 +50,10 @@
       "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "11:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
   {
@@ -55,7 +64,10 @@
       "period_duration": "01:00:00",
       "slot_id": 4,
       "period_starts_at": "12:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
   {
@@ -66,10 +78,13 @@
       "period_duration": "01:00:00",
       "slot_id": 5,
       "period_starts_at": "09:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
-      {
+  {
     "model": "data.timetableslot",
     "pk": 906,
     "fields": {
@@ -77,7 +92,10 @@
       "period_duration": "01:00:00",
       "slot_id": 6,
       "period_starts_at": "10:00:00",
-      "school": 999999
+      "school": 999999,
+      "relevant_year_groups": [
+        901
+      ]
     }
   },
   {
@@ -119,25 +137,33 @@
       "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 901,
-      "pupils": [901],
+      "pupils": [
+        901
+      ],
       "classroom": 901,
-      "user_defined_time_slots": [904],
+      "user_defined_time_slots": [
+        904
+      ],
       "solver_defined_time_slots": [],
       "total_required_slots": 5,
       "total_required_double_periods": 2,
       "school": 999999
     }
   },
-    {
+  {
     "model": "data.lesson",
     "pk": 902,
     "fields": {
       "lesson_id": "MATHS",
       "subject_name": "MATHS",
       "teacher": 901,
-      "pupils": [901],
+      "pupils": [
+        901
+      ],
       "classroom": 901,
-      "user_defined_time_slots": [903],
+      "user_defined_time_slots": [
+        903
+      ],
       "solver_defined_time_slots": [],
       "total_required_slots": 1,
       "total_required_double_periods": 0,
