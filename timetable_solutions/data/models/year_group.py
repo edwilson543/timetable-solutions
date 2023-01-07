@@ -33,6 +33,16 @@ class YearGroupQuerySet(models.QuerySet):
         """
         return self.get(models.Q(school_id=school_id) & models.Q(year_group=year_group))
 
+    def get_specific_year_groups(
+        self, school_id: int, year_groups: frozenset[str]
+    ) -> "YearGroupQuerySet":
+        """
+        Method retrieving a specific set of YearGroups.
+        """
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(year_group__in=year_groups)
+        )
+
 
 class YearGroup(models.Model):
     """

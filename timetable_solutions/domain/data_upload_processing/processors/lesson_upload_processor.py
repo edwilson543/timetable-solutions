@@ -46,14 +46,14 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
         self, row: pd.Series, row_number: int
     ) -> dict:
         """
-        Customisation of the base class' method fore extracting data from the row.
+        Customisation of the base class' method for extracting data from the row.
         The output is a dictionary which can be passed directly to the Lesson model's create_new method.
         """
         create_new_dict = super()._get_data_dict_from_row_for_create_new(
             row=row, row_number=row_number
         )
 
-        if Header.TEACHER_ID in create_new_dict.keys():
+        if Header.TEACHER_ID in create_new_dict:
             raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
             create_new_dict[
                 Header.TEACHER_ID
@@ -63,7 +63,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                 field_name="teachers",
             )
 
-        if Header.CLASSROOM_ID in create_new_dict.keys():
+        if Header.CLASSROOM_ID in create_new_dict:
             raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
             create_new_dict[
                 Header.CLASSROOM_ID
@@ -73,7 +73,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                 field_name="classrooms",
             )
 
-        if Header.PUPIL_IDS in create_new_dict.keys():
+        if Header.PUPIL_IDS in create_new_dict:
             raw_pupil_ids = create_new_dict.pop(Header.PUPIL_IDS)
             create_new_dict[
                 models.Lesson.Constant.pupils
@@ -81,7 +81,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                 pupil_ids_raw=raw_pupil_ids, row_number=row_number
             )
 
-        if Header.USER_DEFINED_SLOTS in create_new_dict.keys():
+        if Header.USER_DEFINED_SLOTS in create_new_dict:
             raw_slot_ids = create_new_dict.pop(Header.USER_DEFINED_SLOTS)
             create_new_dict[
                 models.Lesson.Constant.user_defined_time_slots

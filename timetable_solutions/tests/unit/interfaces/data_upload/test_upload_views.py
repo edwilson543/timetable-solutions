@@ -1,7 +1,7 @@
 """Unit tests for views of the data_upload app"""
 
 # Standard library imports
-from datetime import time, timedelta
+import datetime as dt
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -125,29 +125,6 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         )
         self.assertEqual(all_ygs.count(), 3)
 
-    def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
-        """
-        Unit test for the TimetableStructureUpload view, that simulating a csv file upload of tt slots successfully
-        populates the database.
-        """
-        self.upload_test_file(
-            filename="timetable.csv",
-            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
-            file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
-        )
-
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        self.assertEqual(all_slots.count(), 35)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=1
-        )
-        self.assertEqual(slot.day_of_week, 1)
-        self.assertEqual(slot.period_starts_at, time(hour=9))
-        self.assertEqual(slot.period_duration, timedelta(hours=1))
-
     def test_file_upload_page_redirects_logged_out_users_who_submit_get_requests(self):
         """
         Unit test that an anonymous user will be redirected to login, when submitting a GET request to the data
@@ -209,6 +186,40 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
             0,
         )
         assert isinstance(response.cookies["messages"].value, str)
+
+    def test_timetable_structure_list_upload_view_file_uploads_successfully(self):
+        """
+        Unit test for the TimetableStructureUpload view, that simulating a csv file upload of tt slots successfully
+        populates the database.
+        """
+        self.upload_test_file(
+            filename="timetable.csv",
+            url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
+            file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
+        )
+
+        # Test that the database is as expected
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+        self.assertEqual(all_slots.count(), 35)
+
+        # Check a random individual slot
+        slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        self.assertEqual(slot.day_of_week, 1)
+        self.assertEqual(slot.period_starts_at, dt.time(hour=9))
+        self.assertEqual(slot.period_duration, dt.timedelta(hours=1))
+
+        # Check that all timetable slots have been associated with the correct year groups
+        expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
+            school_id=123456, year_groups={"1", "2"}
+        )
+        for slot in all_slots:
+            self.assertQuerysetEqual(
+                slot.relevant_year_groups.all(), expected_year_groups
+            )
 
 
 class TestLessonFileUpload(TestCaseWithUpload):

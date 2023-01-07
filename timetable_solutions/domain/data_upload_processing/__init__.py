@@ -3,21 +3,26 @@ Convenience imports. Within the interfaces layer we simply import data_upload_pr
 """
 from typing import Union
 
-from domain.data_upload_processing.processors.lesson_file_upload_processor import (
-    LessonFileUploadProcessor,
-)
-from domain.data_upload_processing.processors.file_upload_processors import (
+# File upload processors
+from domain.data_upload_processing.processors.other_upload_processors import (
     TeacherFileUploadProcessor,
     ClassroomFileUploadProcessor,
     YearGroupFileUploadProcessor,
     PupilFileUploadProcessor,
-    TimetableFileUploadProcessor,
 )
+from .processors.timetable_slot_upload_processor import TimetableSlotFileUploadProcessor
+from domain.data_upload_processing.processors.lesson_upload_processor import (
+    LessonFileUploadProcessor,
+)
+
+# Upload status tracking
 from .upload_status_tracking import (
     UploadStatusTracker,
     UploadStatus,
     UploadStatusReason,
 )
+
+# Upload resetting
 from .reset_uploads import ResetUploads, ResetWarning
 
 
@@ -27,6 +32,6 @@ Processor = Union[
     ClassroomFileUploadProcessor,
     YearGroupFileUploadProcessor,
     PupilFileUploadProcessor,
-    TimetableFileUploadProcessor,
+    TimetableSlotFileUploadProcessor,
     LessonFileUploadProcessor,
 ]

@@ -49,9 +49,8 @@ class TimetableStructureUpload(DataUploadBase):
     View class to control the uploading of the list of teachers by the user
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.TIMETABLE
     form = forms.TimetableStructureUpload
-    processor = data_upload_processing.TimetableFileUploadProcessor
+    processor = data_upload_processing.TimetableSlotFileUploadProcessor
 
 
 class LessonsUpload(DataUploadBase):

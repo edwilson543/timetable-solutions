@@ -44,12 +44,3 @@ class PupilFileUploadProcessor(BaseFileUploadProcessor):
 
     model = models.Pupil
     file_structure = UploadFileStructure.PUPILS
-
-
-class TimetableFileUploadProcessor(BaseFileUploadProcessor):
-    """
-    Processor of csv files containing teacher data
-    """
-
-    model = models.TimetableSlot
-    file_structure = UploadFileStructure.TIMETABLE

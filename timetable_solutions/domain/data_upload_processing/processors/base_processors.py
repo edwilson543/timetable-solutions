@@ -148,7 +148,7 @@ class BaseFileUploadProcessor:
         Method to iterate through the rows of the dataframe, and create a list of dictionaries that can be passed to
         self._model.create_new(**create_new_dict).
         """
-        create_new_dict_list = []
+        create_new_dict_list: list[dict] = []
         row_number = 1  # row_number is only used for user-targeted error messages, so count from 1 not 0
 
         for _, data_ser in upload_df.iterrows():
@@ -157,7 +157,7 @@ class BaseFileUploadProcessor:
             )
 
             # dict-getting methods will set errors, so if there is / isn't one set, proceed as appropriate
-            if self.upload_error_message is None:
+            if create_new_dict and not self.upload_error_message:
                 create_new_dict_list.append(create_new_dict)
                 row_number += 1
             else:
