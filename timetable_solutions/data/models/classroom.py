@@ -6,7 +6,6 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
-from data import utils
 
 
 class ClassroomQuerySet(models.QuerySet):
@@ -114,10 +113,4 @@ class Classroom(models.Model):
         """
         Method to get the number of lessons taught per week in a classroom.
         """
-        return utils.get_lessons_per_week(obj=self)
-
-    def get_occupied_percentage(self) -> float:
-        """
-        Method to get the percentage of time a classroom is occupied (including any lunch slots)
-        """
-        return utils.get_occupied_percentage(obj=self)
+        return sum(lesson.total_required_slots for lesson in self.lessons.all())

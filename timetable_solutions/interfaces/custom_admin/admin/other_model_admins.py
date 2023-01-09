@@ -27,7 +27,6 @@ class TeacherAdmin(CustomModelAdminBase):
         "surname",
         "teacher_id",
         "get_lessons_per_week",
-        "get_occupied_percentage",
     ]
     list_display_links = ["firstname"]
 
@@ -46,7 +45,6 @@ class ClassroomAdmin(CustomModelAdminBase):
         "building",
         "room_number",
         "get_lessons_per_week",
-        "get_occupied_percentage",
     ]
     list_display_links = ["classroom_id"]
 
