@@ -5,9 +5,8 @@ from django.db import models
 
 # Local application imports (other models)
 from data.models.school import School
-from data.models.timetable_slot import TimetableSlot
+from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet
 from data.models.year_group import YearGroup
-from data import utils
 
 
 class PupilQuerySet(models.QuerySet):
@@ -124,14 +123,21 @@ class Pupil(models.Model):
             )
 
     # QUERY METHODS
+    def get_relevant_slots(self) -> TimetableSlotQuerySet:
+        """
+        Method to return the TimetableSlot instances relevant to a pupil
+        """
+        return self.year_group.slots.all()
+
     def get_lessons_per_week(self) -> int:
         """
         Method to get the number of lessons a pupil has per week.
         """
-        return utils.get_lessons_per_week(obj=self)
+        return sum(lesson.total_required_slots for lesson in self.lessons.all())
 
     def get_occupied_percentage(self) -> float:
         """
         Method to get the percentage of time a pupil is occupied (including any lunch slots)
         """
-        return utils.get_occupied_percentage(obj=self)
+        n_relevant_slots = self.get_relevant_slots().count()
+        return self.get_lessons_per_week() / n_relevant_slots
