@@ -9,5 +9,5 @@ from .timetable_constructor import (
     get_pupil_timetable_as_csv,
     get_teacher_timetable_as_csv,
 )
-from .timetable_summary_stats import get_summary_stats_for_dashboard
 from .timetable_colours import TimetableColourAssigner
+from .timetable_summary_stats import SummaryStats

@@ -3,6 +3,7 @@
 
 {% extends "base.html" %}
 {% load static %}
+{% load python_ops %}
 
 <head>
 
@@ -126,81 +127,49 @@ li {
         </div>
         <div id="summary_info" class="info_frame">
             <ul>
-                <li>Timetable solutions for a total of {{total_classes}} classes have been found -
-                {{total_lessons}} lessons will be taught each week</li>
-                {% if busiest_days == quietest_days %}
-                    <li>Every day of the week has {{ busiest_days_pct | floatformat:1 }} % of lessons in it</li>
-                {% else %}
-                    {% with bd_length=busiest_days|length %}
-                        {% if bd_length == 1 %}
-                            <li>
-                                The busiest day of the week is {{ busiest_days | first }},
-                                which has {{ busiest_days_pct | floatformat:1 }}% of lessons
-                            </li>
-                        {% else %}
-                            <li>
-                                The busiest days of the week are
-                                {% for day in busiest_days %}
-                                    {% if forloop.last %}
-                                        and {{ day }},
-                                    {% else %}
-                                        {{ day }},
-                                    {% endif %}
-                                {% endfor %}
-                                which each have {{ busiest_days_pct | floatformat:1 }}% of lessons
-                            </li>
-                        {% endif %}
-                    {% endwith %}
-
-                    {% with qd_length=quietest_days|length %}
-                        {% if qd_length == 1 %}
-                            <li>
-                                The quietest day of the week is {{ quietest_days | first}},
-                                with only {{ quietest_days_pct | floatformat:1 }}% of lessons
-                            </li>
-                        {% else %}
-                            <li>
-                                The quietest days of the week are
-                                {% for day in quietest_days %}
-                                    {% if forloop.last %}
-                                        and {{ day }},
-                                    {% else %}
-                                        {{ day }},
-                                    {% endif %}
-                                {% endfor %}
-                                which each have {{ quietest_days_pct | floatformat:1 }}% of lessons
-                            </li>
-                        {% endif %}
-                    {% endwith %}
-                {% endif %}
-
-                {% with bt_length=busiest_times|length %}
-                    {% if bt_length == 1 %}
-                        <li>
-                            The busiest time on average is {{ busiest_times | first }},
-                            which has {{ busiest_times_pct | floatformat:1 }}% of lessons
-                        </li>
-                    {% else %}
-                        <li>
-                            The times of the day are
-                            {% for time in busiest_times %}
-                                {% if forloop.last %}
-                                    and {{ time }},
-                                {% else %}
-                                    {{ time }},
-                                {% endif %}
-                            {% endfor %}
-                            which each have {{ busiest_times_pct | floatformat:1 }}% of lessons
-                        </li>
-                    {% endif %}
-                {% endwith %}
+                <li>
+                    Timetable solutions for {{ n_solved_lessons }} classes
+                    ({{ n_solved_slots}} individual slots) have been found!
+                </li>
+                <li>
+                    Here is how the timetables look across the week:
+                </li>
             </ul>
+
+            <table>
+                <tr>
+                    <th>
+                        Solver lessons
+                    </th>
+                    <th>
+                        User defined lessons
+                    </th>
+                    <th>
+                        <b>Total</b>
+                    </th>
+                </tr>
+                {% for day in daily_solver_lessons.keys %}
+                    <tr>
+                        <td>
+                            {% get_item mapping=daily_solver_lessons key=day as day_solver_lessons %}
+                            {{ day_solver_lessons }}
+                        </td>
+                        <td>
+                            {% get_item mapping=daily_user_lessons key=day as day_user_lessons %}
+                            {{ day_user_lessons }}
+                        </td>
+                        <td>
+                            {% add day_solver_lessons day_user_lessons %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
 
         </div>
 
         <div id ="pupil_info" class="pup_teach_info info_frame">
             <ul>
-                <li>Timetables have been generated for all {{total_pupils}} pupils</li>
+                <li>Timetables have been created for all {{ n_pupils }} of your pupils!</li>
             </ul>
             <a href="{% url 'pupils_navigator' %}" class="view_link_button white_link">
                 View pupil timetables
@@ -213,7 +182,7 @@ li {
 
         <div id="teacher_info" class="pup_teach_info info_frame">
             <ul>
-                <li>Timetables have been generated for all {{total_teachers}} teachers</li>
+                <li>Timetables have been generated for all {{ n_teachers }} of your teachers!</li>
             </ul>
             <a href="{% url 'teachers_navigator' %}" class="view_link_button white_link">
                 View teacher timetables
