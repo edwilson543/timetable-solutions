@@ -47,33 +47,6 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         )  # Since the 12 lunch 'lessons' aren't included in the solver input data
 
     # PROPERTIES TESTS
-    def test_consecutive_slots_property(self):
-        """
-        Test that the correct list of consecutive slots is returned by the consecutive_slots property method
-        on the TimetableSolverInputs class.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-
-        # Execute test unit
-        consecutive_slots = data.consecutive_slots
-
-        # Check outcome
-        assert len(consecutive_slots) == 30  # 7 slots per day, 5 days a week...
-        # All timeslots are 1 hour apart, so we check this
-        for double_slot in consecutive_slots:
-            slot_0_start = dt.datetime.combine(
-                dt.date(year=2020, month=1, day=1), time=double_slot[0].period_starts_at
-            )
-            slot_1_start = dt.datetime.combine(
-                dt.date(year=2020, month=1, day=1), time=double_slot[1].period_starts_at
-            )
-            assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
-            assert double_slot[0].day_of_week == double_slot[1].day_of_week
-
     def test_available_days_property(self):
         """
         Test that the correct list of days, of the correct type, is returned by the available_days property method
@@ -124,6 +97,74 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert timetable_start == 16  # Correspond to 16:00
 
     # QUERIES TESTS
+    def test_get_consecutive_slots_for_year_group_no_clashes(self):
+        """
+        Test that the correct list of consecutive slots is returned for Year 1,
+        when there is only one set of timetables in the db.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+
+        # Execute test unit
+        consecutive_slots = data.get_consecutive_slots_for_year_group(year_group="1")
+
+        # Check outcome
+        assert len(consecutive_slots) == 30  # 7 slots per day, 5 days a week...
+        # All timeslots are 1 hour apart, so we check this
+        for double_slot in consecutive_slots:
+            slot_0_start = dt.datetime.combine(
+                dt.date(year=2020, month=1, day=1), time=double_slot[0].period_starts_at
+            )
+            slot_1_start = dt.datetime.combine(
+                dt.date(year=2020, month=1, day=1), time=double_slot[1].period_starts_at
+            )
+            assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
+            assert double_slot[0].day_of_week == double_slot[1].day_of_week
+
+    def test_get_consecutive_slots_for_year_group(self):
+        """
+        Test that the correct list of consecutive slots is returned for Year 1,
+        """
+        # Set test parameters
+        # Create a new double period candidate
+        yg = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="Reception"
+        )
+
+        slot_0 = models.TimetableSlot.create_new(
+            school_id=123456,
+            slot_id=100,
+            period_starts_at=dt.time(hour=9),
+            period_duration=dt.timedelta(hours=1),
+            day_of_week=models.WeekDay.MONDAY,
+            relevant_year_groups=yg,
+        )
+        slot_1 = models.TimetableSlot.create_new(
+            school_id=123456,
+            slot_id=101,
+            period_starts_at=dt.time(hour=10),
+            period_duration=dt.timedelta(hours=1),
+            day_of_week=models.WeekDay.MONDAY,
+            relevant_year_groups=yg,
+        )
+
+        data = slvr.TimetableSolverInputs(
+            school_id=123456, solution_specification=self.solution_spec
+        )
+
+        # Execute test unit
+        consecutive_slots = data.get_consecutive_slots_for_year_group(
+            year_group="Reception"
+        )
+
+        # Check outcome
+        assert len(consecutive_slots) == 1  # We only created one candidate
+        assert consecutive_slots[0][0] == slot_0
+        assert consecutive_slots[0][1] == slot_1
+
     def test_get_time_period_starts_at_from_slot_id(self):
         """
         Test that the correct period start time is looked up from the slot id.

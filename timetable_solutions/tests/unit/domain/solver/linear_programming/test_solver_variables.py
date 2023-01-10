@@ -6,9 +6,6 @@ Unit tests for the instantiation of solver variables
 from functools import lru_cache
 from unittest import mock
 
-# Third party imports
-import pulp as lp
-
 # Django imports
 from django import test
 
@@ -110,8 +107,9 @@ class TestTimetableSolverVariables(test.TestCase):
 
         # Test the outcome - we expect one variable per consecutive period
         assert (
-            len(variables) == 12 * 6 * 5
-        )  # 12 lessons, 6 consecutive periods / day, 5 days / week
+            len(variables)
+            == 12 * 6 * 5  # 12 lessons, 6 consecutive periods / day, 5 days / week
+        )
         random_var_key = slvr.doubles_var_key(
             lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12
         )

@@ -14,9 +14,9 @@ from domain.solver.solver_input_data import TimetableSolverInputs
 
 # Keys for the different dictionaries used to store variables
 var_key = namedtuple("var_key", "lesson_id slot_id")  # Decision variables
-doubles_var_key = namedtuple(
+doubles_var_key = namedtuple(  # Double period variables
     "doubles_var_key", "lesson_id slot_1_id slot_2_id"
-)  # Double period variables
+)
 
 
 class TimetableSolverVariables:
@@ -82,9 +82,16 @@ class TimetableSolverVariables:
         """
         variables = {}  # Dict comp a bit too long here
         for lesson in self._inputs.lessons:
+
             if lesson.total_required_double_periods == 0:
                 continue
-            for consecutive_slot_pair in self._inputs.consecutive_slots:
+
+            relevant_year_group = lesson.get_relevant_year_group().year_group
+            for (
+                consecutive_slot_pair
+            ) in self._inputs.get_consecutive_slots_for_year_group(
+                year_group=relevant_year_group
+            ):
 
                 key = doubles_var_key(
                     lesson_id=lesson.lesson_id,

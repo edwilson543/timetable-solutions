@@ -4,7 +4,7 @@ Module defining the data used by the solver, and how this data is accessed from 
 # Standard library imports
 from dataclasses import dataclass
 import datetime as dt
-from functools import cached_property
+from functools import cached_property, lru_cache
 
 # Local application imports
 from data import models
@@ -14,14 +14,16 @@ from data import models
 class SolutionSpecification:
     """
     Data class for storing any parameters relating to how the solution should be generated. These parameters are all
-    user-defined. Note tht this dataclass is closely tied to the SolutionSpecification Form subclass
+    user-defined. Note tht this dataclass is closely tied to the SolutionSpecification Form.
 
-    :param - allow_allow_split_classes_within_each_day whether or not to prevent having one class to be taught more
+    :field allow_split_classes_within_each_day: Whether to prevent having one class to be taught more
     than once in a day, with a gap in between either session.
-    :param - allow_triple_periods_and_above - self evident, but the way it's implemented is to actually prevent a triple
+    :field allow_triple_periods_and_above: Self-evident, but the way it's implemented is to actually prevent a triple
     period or above, since 3 periods in a row would get counted as 2 doubles.
-    :param - optimal_optimal_free_period_time_of_day - the time of day which the user has described as the best time to
+    :field optimal_optimal_free_period_time_of_day: The time of day which the user has described as the best time to
     have free periods.
+    :field ideal_proportion_of_free_periods_at_this_time: 1 - the proportion of objective function contributions
+    that will be randomly allocated.
     """
 
     class OptimalFreePeriodOptions:
@@ -76,29 +78,6 @@ class TimetableSolverInputs:
         self._check_specification_aligns_with_input_data()
 
     # PROPERTIES
-    @property
-    def consecutive_slots(
-        self,
-    ) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
-        """
-        Method to find which of the timetable slots on the class instance are consecutive.
-        Not cached since it's only accessed once.
-
-        :return - as a list, the tuples of consecutive slots. The PURPOSE of these are to understand where are the
-        candidates for double periods.
-        """
-        consecutive_slots: list[tuple[models.TimetableSlot, models.TimetableSlot]] = []
-        previous_slot = None
-        # A key thing to note here is that the Meta class on TimetableSlot pre-orders the slots by week and by day.
-        for current_slot in self.timetable_slots:
-            if (
-                previous_slot is not None
-            ) and current_slot.check_if_slots_are_consecutive(other_slot=previous_slot):
-                consecutive_slots.append((previous_slot, current_slot))
-            previous_slot = current_slot
-
-        return consecutive_slots
-
     @cached_property
     def available_days(self) -> list[models.WeekDay]:
         """
@@ -133,6 +112,33 @@ class TimetableSolverInputs:
         return finish
 
     # QUERIES
+    @lru_cache(maxsize=4)
+    def get_consecutive_slots_for_year_group(
+        self, year_group: str
+    ) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
+        """
+        Find the timetable slots that could form double periods, for the given year group.
+        Note that a double period is a Lesson-specific concept, and Lessons only contain one year group.
+
+        :param year_group: The string identifier of the year_group instance
+        :return - as a list, the tuples of consecutive slots.
+        """
+        slots = self.timetable_slots.filter(
+            relevant_year_groups__year_group=year_group
+            # Ordering here is essential for the iteration
+        ).order_by("day_of_week", "period_starts_at")
+
+        consecutive_slots: list[tuple[models.TimetableSlot, models.TimetableSlot]] = []
+        previous_slot = None
+        for current_slot in slots:
+            if (
+                previous_slot is not None
+            ) and current_slot.check_if_slots_are_consecutive(other_slot=previous_slot):
+                consecutive_slots.append((previous_slot, current_slot))
+            previous_slot = current_slot
+
+        return consecutive_slots
+
     def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """
         Method to find the time of day that a period starts at.
