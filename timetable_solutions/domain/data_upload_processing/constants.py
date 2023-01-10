@@ -43,6 +43,7 @@ class Header:
     # Headers in files containing many-to-many relationships
     PUPIL_IDS = "pupil_ids"
     USER_DEFINED_SLOTS = "user_defined_slot_ids"
+    RELEVANT_YEAR_GROUPS = "relevant_year_groups"
 
     # Type reference - where pandas.read_csv() doesn't always get it right
     AMBIGUOUS_DTYPES = {
@@ -87,6 +88,7 @@ class UploadFileStructure:
             Header.DAY_OF_WEEK,
             Header.PERIOD_STARTS_AT,
             Header.PERIOD_DURATION,
+            Header.RELEVANT_YEAR_GROUPS,
         ],
         id_column=Header.SLOT_ID,
     )

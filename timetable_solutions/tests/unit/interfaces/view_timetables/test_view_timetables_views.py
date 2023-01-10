@@ -34,6 +34,21 @@ class TestViews(TestCase):
         "lessons_with_solution.json",
     ]
 
+    def test_selection_dashboard_response(self):
+        """
+        Test that the selection dashboard is being loaded along with the relevant summary stats.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = reverse(UrlName.VIEW_TIMETABLES_DASH.value)
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Test the keys of the dict are the year groups
+        assert response.status_code == 200
+        assert response.context["has_solutions"]
+
     def test_pupil_navigator_response(self):
         """
         Test that the correct full list of pupils indexed by year group is returned by a get request to the

@@ -134,21 +134,6 @@ class TestClassroom(test.TestCase):
         # Check outcome
         assert n_lessons == 8
 
-    def test_get_utilisation_percentage(self):
-        """
-        Test that the correct number of lessons per week is retrieved for a classroom.
-        """
-        # Set test parameters
-        classroom = models.Classroom.objects.get_individual_classroom(
-            school_id=123456, classroom_id=1
-        )
-
-        # Execute test unit
-        percentage = classroom.get_occupied_percentage()
-
-        # Check outcome
-        assert percentage == (8 / 35)
-
 
 class TestClassroomLessFixtures(test.TestCase):
     """

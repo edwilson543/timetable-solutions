@@ -23,7 +23,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
     ]
 
     @staticmethod
-    def _get_file_agnostic_processor() -> LessonFileUploadProcessor:
+    def _get_file_processor() -> LessonFileUploadProcessor:
         """
         Fixture for a LessonFileUploadProcessor that is used throughout the tests.
         """
@@ -42,7 +42,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         of Pupils is returned as expected.
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         raw_string = "1, 4, 6"  # Bog-standard string we know should work
 
@@ -60,7 +60,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         Test that when a string contains a pupil id without a corresponding Pupil, an error message is set
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         raw_string = "1, 4, 1000000, 333"  # Note that pupil with ids 1000000 333 does not exist for school 123456
 
@@ -82,7 +82,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         of TimetableSlots is returned as expected.
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         raw_string = "1, 2, 3"  # Bog standard string we know should work
 
@@ -100,7 +100,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         Test that when a string contains a slot id without a corresponding Timetableslot, an error message is set
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         raw_string = "1, 2, 123456, 412"  # Note that slots with ids 123456, 412 does not exist for school 123456
 
@@ -121,7 +121,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         Test that the raw string cleaner is producing the correct set of integers
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         valid_strings = [
             "[1, 4, 6]",
@@ -145,14 +145,18 @@ class TestLessonFileUploadProcessor(test.TestCase):
             )
 
             # Check outcome
-            assert integer_set == {1, 4, 6}, f"{valid_string} caused test failure!"
+            assert integer_set == {
+                1,
+                4,
+                6,
+            }, f"{valid_string} caused test failure with wrong integer set: {integer_set}"
 
     def test_get_integer_set_from_string_invalid_harmless_strings_return_none(self):
         """
         Test that the raw string cleaner is correctly handling strings that can signal an empty queryset
         """
         # Set test parameters
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         invalid_strings = [
             "",
@@ -179,7 +183,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         """
         # Set tst parameters
         raw_ids = [1, 10, 100, 123, 423412]
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         # Execute test unit
         for raw_id in raw_ids:
@@ -197,7 +201,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         # Set tst parameters
         raw_ids = [1.0, 10.0, 100.0, 123.0, 423412.0]
         expected_converted_ids = [1, 10, 100, 123, 423412]
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         # Execute test unit
         for n, raw_id in enumerate(raw_ids):
@@ -215,7 +219,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         # Set tst parameters
         raw_ids = ["1.0", "10.0", "100", "123.0", "423412.0"]
         expected_converted_ids = [1, 10, 100, 123, 423412]
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         # Execute test unit
         for n, raw_id in enumerate(raw_ids):
@@ -232,7 +236,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         """
         # Set tst parameters
         raw_id = "1, 2, 3"
-        processor = self._get_file_agnostic_processor()
+        processor = self._get_file_processor()
 
         # Execute test unit
         processor._get_clean_id_from_file_field_value(

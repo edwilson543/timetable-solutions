@@ -132,7 +132,7 @@ class TestLessonFileUploadProcessorInvalidUploads(TestCase):
             school_id=123456
         )
         self.assertEqual(all_lessons.count(), 0)
-        self.assertTrue(not upload_processor.upload_successful)
+        self.assertFalse(upload_processor.upload_successful)
 
         return upload_processor.upload_error_message
 

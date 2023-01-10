@@ -127,21 +127,6 @@ class TestTeacher(test.TestCase):
         # Check outcome
         assert n_lessons == 22  # Since it includes lunch
 
-    def test_get_utilisation_percentage(self):
-        """
-        Test that the correct number of lessons per week is retrieved for a teacher.
-        """
-        # Set test parameters
-        teacher = models.Teacher.objects.get_individual_teacher(
-            school_id=123456, teacher_id=1
-        )
-
-        # Execute test unit
-        percentage = teacher.get_occupied_percentage()
-
-        # Check outcome
-        assert percentage == (22 / 35)  # Since it includes lunch
-
 
 class TestTeacherLessFixtures(test.TestCase):
     """

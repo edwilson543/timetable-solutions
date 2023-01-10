@@ -22,7 +22,10 @@
       "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
-      "school": 555555
+      "school": 555555,
+      "relevant_year_groups": [
+        501
+      ]
     }
   },
   {
@@ -33,7 +36,10 @@
       "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "09:00:00",
-      "school": 555555
+      "school": 555555,
+      "relevant_year_groups": [
+        501
+      ]
     }
   },
   {
@@ -44,7 +50,10 @@
       "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "10:00:00",
-      "school": 555555
+      "school": 555555,
+      "relevant_year_groups": [
+        501
+      ]
     }
   },
   {
@@ -88,11 +97,13 @@
       "subject_name": "ENGLISH",
       "teacher": 501,
       "classroom": 501,
-          "user_defined_time_slots": [],
+      "user_defined_time_slots": [],
       "solver_defined_time_slots": [],
       "total_required_slots": 2,
       "total_required_double_periods": 1,
-      "pupils": [501]
+      "pupils": [
+        501
+      ]
     }
   }
 ]

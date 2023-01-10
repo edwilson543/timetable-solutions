@@ -118,6 +118,22 @@ class TestPupil(test.TestCase):
         assert not is_busy
 
     # QUERY METHOD TESTS
+    def test_get_relevant_slots(self):
+        """
+        Test that the correct TimetableSlots are associated with a pupil.
+        """
+        # Set test parameters
+        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
+        expected_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Execute test unit
+        slots = pupil.get_relevant_slots()
+
+        # Check outcome
+        self.assertQuerysetEqual(slots, expected_slots)
+
     def test_get_lessons_per_week(self):
         """
         Test that the correct number of lessons per week is retrieved for a pupil.

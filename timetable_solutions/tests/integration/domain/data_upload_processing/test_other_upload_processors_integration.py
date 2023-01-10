@@ -1,11 +1,15 @@
-"""Module containing integration tests for the FileUploadProcessor"""
-
-# Standard library imports
-import datetime as dt
+"""
+Module containing integration tests for:
+- TeacherFileUploadProcessor
+- ClassroomFileUploadProcessor
+- YearGroupFileUploadProcessor
+- PupilFileUploadProcessor
+"""
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+
 
 # Local application imports
 from base_files.settings.base_settings import BASE_DIR
@@ -108,40 +112,10 @@ class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
         actual_year_groups = list(all_ygs.values_list("year_group", flat=True))
         self.assertEqual(expected_year_groups, actual_year_groups)
 
-    def test_upload_timetable_structure_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the timetable csv file and use it to populate database"""
-        # Set test parameters
-        with open(self.valid_uploads / "timetable.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
-        # Upload the file
-        upload_processor = data_upload_processing.TimetableFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
-        )
-
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 35)
-
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        self.assertEqual(all_slots.count(), 35)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=1
-        )
-        self.assertEqual(slot.day_of_week, 1)
-        self.assertEqual(slot.period_starts_at, dt.time(hour=9))
-        self.assertEqual(slot.period_duration, dt.timedelta(hours=1))
-
-
-class TestFileUploadProcessorYearGroupDependentUploads(TestCase):
+class TestPupilFileUploadProcessor(TestCase):
     """
-    Test for file uploads which depend on the YearGroup model.
-    These are:
-        - Pupil  # TODO -> check safter adding TimetableSlot
+    Test for pupil file uploads, which needs the YearGroup database table populated.
     """
 
     fixtures = ["user_school_profile.json", "year_groups.json"]
@@ -201,7 +175,7 @@ class TestFileUploadProcessorInvalidPupilUploads(TestCase):
         )
 
         # Check the outcome
-        self.assertTrue(not upload_processor.upload_successful)
+        self.assertFalse(upload_processor.upload_successful)
         if expected_error_snippet is None:
             expected_error_snippet = f"Could not interpret values in row {row_n}"
         self.assertIn(expected_error_snippet, upload_processor.upload_error_message)

@@ -7,28 +7,25 @@ from typing import TypedDict, Literal
 
 # Local application imports
 from data import models
-from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
 
-class StatsSummary(TypedDict):
+class _StatsSummary(TypedDict):
     """
     Summary dict provided when the user has existing timetable solutions.
     """
 
     has_solutions: Literal[True]
-    total_classes: int
-    total_lessons: int
-    total_pupils: int
-    total_teachers: int
-    busiest_days: list[str]
-    busiest_days_pct: float
-    quietest_days: list[str]
-    quietest_days_pct: float
-    busiest_times: list[str]
-    busiest_times_pct: float
+
+    n_pupils: int
+    n_teachers: int
+    n_solved_lessons: int
+    n_solved_slots: int
+
+    daily_solver_lessons: dict[models.WeekDay, int]
+    daily_user_lessons: dict[models.WeekDay, int]
 
 
-class NoStatsSummary(TypedDict):
+class _NoStatsSummary(TypedDict):
     """
     Summary dict provided when the user DOES NOT have existing timetable solutions.
     """
@@ -36,119 +33,119 @@ class NoStatsSummary(TypedDict):
     has_solutions: Literal[False]
 
 
-def get_summary_stats_for_dashboard(
-    school_access_key: int,
-) -> StatsSummary | NoStatsSummary:
+class SummaryStats:
     """
-    Function to extract some summary statistics on the timetable solutions that have been found, to be displayed on
-    the selection_dashboard.
-    :return - stats - a dictionary that gets added to the HTTP response context for the view_timetables' dashboard
+    Class used to provide basic summary stats on a school's timetables.
     """
-    # Call data layer to get required query sets
-    all_lessons = models.Lesson.objects.get_all_instances_for_school(
-        school_id=school_access_key
-    )
-    all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-        school_id=school_access_key
-    )
-    all_pupils = models.Pupil.objects.get_all_instances_for_school(
-        school_id=school_access_key
-    )
-    all_teachers = models.Teacher.objects.get_all_instances_for_school(
-        school_id=school_access_key
-    )
 
-    # High-level dict / stats used to calculate all other stats
-    all_slot_lessons = {slot: slot.solver_lessons for slot in all_slots}
-    slot_lesson_count = {
-        slot: len(
-            [
-                lesson
-                for lesson in lessons.all()
-                # Slight abuse of colour matcher, to avoid counting e.g. lunch:
-                if TimetableColourAssigner.check_lesson_for_colour_in_regex(
-                    lesson_name=lesson.subject_name
-                )
-                is None
-            ]
+    def __init__(self, school_access_key: int) -> None:
+        """
+        Retrieve all data relevant to the school from db.
+        """
+        self._school_access_key = school_access_key
+
+        self._all_lessons = models.Lesson.objects.get_all_instances_for_school(
+            school_id=school_access_key
         )
-        for slot, lessons in all_slot_lessons.items()
-    }
-
-    distinct_lessons = len(all_lessons)
-    total_lessons_taught = sum(slot_lesson_count.values())
-
-    # Check whether there are in fact any summary stats to calculate
-    if total_lessons_taught == 0:
-        no_stats: NoStatsSummary = {"has_solutions": False}
-        return no_stats
-
-    # Stats relating to days of the week
-    day_of_week_counts: dict[str, int] = {
-        day.label: sum(
-            total_lessons
-            for slot, total_lessons in slot_lesson_count.items()
-            if
-            # mypy thinks Weekday (an IntegerChoices subclass) is not iterable (no __iter__), but it is
-            slot.day_of_week == day.value
+        self._all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=school_access_key
         )
-        for day in models.WeekDay  # type: ignore
-    }
-    busiest_days = _get_dict_key_with_max_or_min_value(
-        dictionary=day_of_week_counts, max_=True
-    )
-    busiest_days_pct = (
-        round(day_of_week_counts[busiest_days[0]] / total_lessons_taught, 2) * 100
-    )
-    quietest_days = _get_dict_key_with_max_or_min_value(
-        dictionary=day_of_week_counts, max_=False
-    )
-    quietest_days_pct = (
-        round(day_of_week_counts[quietest_days[0]] / total_lessons_taught, 2) * 100
-    )
-
-    # Stats relating to times of day
-    distinct_times = {slot.period_starts_at for slot in slot_lesson_count}
-    time_of_day_counts = {
-        time_of_day.strftime("%H:%M"): sum(
-            total_lessons
-            for slot, total_lessons in slot_lesson_count.items()
-            if slot.period_starts_at == time_of_day
+        self._all_pupils = models.Pupil.objects.get_all_instances_for_school(
+            school_id=school_access_key
         )
-        for time_of_day in distinct_times
-    }
-    busiest_times = _get_dict_key_with_max_or_min_value(
-        dictionary=time_of_day_counts, max_=True
-    )
-    busiest_times_pct = (
-        round(time_of_day_counts[busiest_times[0]] / total_lessons_taught, 2) * 100
-    )
+        self._all_teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=school_access_key
+        )
 
-    # Summary dict
-    stats: StatsSummary = {
-        "has_solutions": True,  # We only reach this line if there are solutions
-        "total_classes": distinct_lessons,
-        "total_lessons": total_lessons_taught,
-        "total_pupils": len(all_pupils),
-        "total_teachers": len(all_teachers),
-        "busiest_days": busiest_days,
-        "busiest_days_pct": busiest_days_pct,
-        "quietest_days": quietest_days,
-        "quietest_days_pct": quietest_days_pct,
-        "busiest_times": busiest_times,
-        "busiest_times_pct": busiest_times_pct,
-    }
-    return stats
+    # PROPERTIES
+    @property
+    def summary_stats(self) -> _StatsSummary | _NoStatsSummary:
+        """
+        Summary stats dictionary produced by thise class - its purpose.
+        """
+        if not self._has_solutions:
+            return {"has_solutions": False}
+        else:
+            return {
+                "has_solutions": True,
+                "n_pupils": self._n_pupils,
+                "n_teachers": self._n_teachers,
+                "n_solved_lessons": self._n_solved_lessons,
+                "n_solved_slots": self._n_solved_slots,
+                "daily_solver_lessons": self._daily_solver_lessons,
+                "daily_user_lessons": self._daily_user_lessons,
+            }
 
+    @property
+    def _has_solutions(self) -> bool:
+        """
+        Whether there is anything to summarise - if solver output count is zero, it hasn't been run yet.
+        """
+        solver_output_count = sum(
+            lesson.solver_defined_time_slots.all().count()
+            for lesson in self._all_lessons
+        )
+        return solver_output_count > 0
 
-def _get_dict_key_with_max_or_min_value(
-    dictionary: dict[str, int], max_: bool
-) -> list[str]:
-    """
-    Retrieve the key(s) in a dictionary that correspond to the maximum value.
-    """
-    if max_:
-        value = max(dictionary.values())
-    else:
-        value = min(dictionary.values())
-    return [key for key, val in dictionary.items() if value == val]
+    @property
+    def _n_solved_lessons(self) -> int:
+        """
+        Get the number of Lesson instances the solver has finished defining.
+        """
+        return sum(
+            1 if lesson.solver_defined_time_slots.all().count() > 0 else 0
+            for lesson in self._all_lessons
+        )
+
+    @property
+    def _n_solved_slots(self) -> int:
+        """
+        Get the number of slots the solver has solved.
+        """
+        return sum(
+            lesson.solver_defined_time_slots.all().count()
+            for lesson in self._all_lessons
+        )
+
+    @property
+    def _n_pupils(self) -> int:
+        """
+        Number of pupils timetables have been created for.
+        """
+        return self._all_pupils.count()
+
+    @property
+    def _n_teachers(self) -> int:
+        """
+        Number of teachers timetables have been created for.
+        """
+        return self._all_teachers.count()
+
+    @property
+    def _daily_solver_lessons(self) -> dict[models.WeekDay, int]:
+        """
+        Get the total number of lesson slots produced by the solver on each day.
+        """
+        return {
+            day.label: sum(
+                slot.solver_lessons.all().count() if slot.day_of_week == day else 0
+                for slot in self._all_slots
+            )
+            # mypy doesn't recognise IntegerChoices as an iterable
+            for day in models.WeekDay  # type: ignore
+        }
+
+    @property
+    def _daily_user_lessons(self) -> dict[models.WeekDay, int]:
+        """
+        Get the total number of lesson slots defined by the user on each day.
+        Note includes things like break and lunch.
+        """
+        return {
+            day.label: sum(
+                slot.user_lessons.all().count() if slot.day_of_week == day else 0
+                for slot in self._all_slots
+            )
+            # mypy doesn't recognise IntegerChoices as an iterable
+            for day in models.WeekDay  # type: ignore
+        }
