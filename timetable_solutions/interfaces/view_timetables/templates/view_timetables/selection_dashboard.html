@@ -98,6 +98,28 @@ li {
     margin-bottom: 10px;
 }
 
+/* Daily lessons table */
+#daily-lessons-table {
+    width: 95%;
+    border-collapse: collapse;
+}
+.row:hover {
+    background-color: var(--dark_grey_background);
+    color: white;
+}
+.cell {
+    width: 25%;
+    padding: 2px;
+    text-align: center;
+}
+.header-cell {
+    border-bottom: 1px solid black;
+}
+.central-column-cell {
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
 {% endblock %}
 </style>
 </head>
@@ -136,30 +158,36 @@ li {
                 </li>
             </ul>
 
-            <table>
+            <table id="daily-lessons-table">
                 <tr>
-                    <th>
+                    <th class="cell header-cell">
+                        Day
+                    </th>
+                    <th class="cell header-cell central-column-cell">
                         Solver lessons
                     </th>
-                    <th>
-                        User defined lessons
+                    <th class="cell header-cell central-column-cell">
+                        User lessons
                     </th>
-                    <th>
+                    <th class="cell header-cell">
                         <b>Total</b>
                     </th>
                 </tr>
                 {% for day in daily_solver_lessons.keys %}
-                    <tr>
-                        <td>
+                    <tr class="row">
+                        <td class="cell">
+                            {{ day }}
+                        </td>
+                        <td class="cell central-column-cell">
                             {% get_item mapping=daily_solver_lessons key=day as day_solver_lessons %}
                             {{ day_solver_lessons }}
                         </td>
-                        <td>
+                        <td class="cell central-column-cell">
                             {% get_item mapping=daily_user_lessons key=day as day_user_lessons %}
                             {{ day_user_lessons }}
                         </td>
-                        <td>
-                            {% add day_solver_lessons day_user_lessons %}
+                        <td class="cell">
+                            <b>{% add day_solver_lessons day_user_lessons %}</b>
                         </td>
                     </tr>
                 {% endfor %}
