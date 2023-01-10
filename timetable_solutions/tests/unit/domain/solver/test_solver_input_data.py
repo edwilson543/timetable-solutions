@@ -6,6 +6,7 @@ import datetime as dt
 
 # Django imports
 from django import test
+from django.core import management
 
 # Local application imports
 from data import models
@@ -97,10 +98,10 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert timetable_start == 16  # Correspond to 16:00
 
     # QUERIES TESTS
-    def test_get_consecutive_slots_for_year_group_no_clashes(self):
+    def test_get_consecutive_slots_for_year_group_one_timetable(self):
         """
         Test that the correct list of consecutive slots is returned for Year 1,
-        when there is only one set of timetables in the db.
+        when all year groups share a set of timetable slots.
         """
         # Set test parameters
         school_access_key = 123456
@@ -124,31 +125,21 @@ class TestTimetableSolverInputsLoading(test.TestCase):
             assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
             assert double_slot[0].day_of_week == double_slot[1].day_of_week
 
-    def test_get_consecutive_slots_for_year_group(self):
+    def test_get_consecutive_slots_for_year_group_varied_timetables(self):
         """
         Test that the correct list of consecutive slots is returned for Year 1,
+        when some year groups have different timetable slots.
         """
         # Set test parameters
-        # Create a new double period candidate
-        yg = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="Reception"
-        )
+        management.call_command("loaddata", "extra-year.json")
 
-        slot_0 = models.TimetableSlot.create_new(
+        slot_0 = models.TimetableSlot.objects.get_individual_timeslot(
             school_id=123456,
             slot_id=100,
-            period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
-            day_of_week=models.WeekDay.MONDAY,
-            relevant_year_groups=yg,
         )
-        slot_1 = models.TimetableSlot.create_new(
+        slot_1 = models.TimetableSlot.objects.get_individual_timeslot(
             school_id=123456,
             slot_id=101,
-            period_starts_at=dt.time(hour=10),
-            period_duration=dt.timedelta(hours=1),
-            day_of_week=models.WeekDay.MONDAY,
-            relevant_year_groups=yg,
         )
 
         data = slvr.TimetableSolverInputs(
@@ -157,7 +148,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Execute test unit
         consecutive_slots = data.get_consecutive_slots_for_year_group(
-            year_group="Reception"
+            year_group="extra-year"
         )
 
         # Check outcome

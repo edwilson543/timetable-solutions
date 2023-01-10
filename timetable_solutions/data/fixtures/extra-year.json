@@ -1,0 +1,138 @@
+[
+  {
+    "model": "data.yeargroup",
+    "pk": 100,
+    "fields": {
+      "year_group": "extra-year",
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 100,
+    "fields": {
+      "firstname": "Gareth",
+      "surname": "Barry",
+      "title": "Mr",
+      "teacher_id": 100,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 101,
+    "fields": {
+      "firstname": "Louis",
+      "surname": "Theroux",
+      "title": "Mr",
+      "teacher_id": 101,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 100,
+    "fields": {
+      "building": "Square",
+      "room_number": 1,
+      "classroom_id": 100,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 101,
+    "fields": {
+      "building": "Square",
+      "room_number": 2,
+      "classroom_id": 101,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 100,
+    "fields": {
+      "firstname": "Jack",
+      "surname": "Thelad",
+      "year_group": 100,
+      "pupil_id": 100,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 101,
+    "fields": {
+      "firstname": "Grant",
+      "surname": "Hanley",
+      "year_group": 100,
+      "pupil_id": 101,
+      "school": 123456
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 100,
+    "fields": {
+      "day_of_week": 1,
+      "period_duration": "01:00:00",
+      "slot_id": 100,
+      "period_starts_at": "08:30:00",
+      "school": 123456,
+      "relevant_year_groups": [
+        100
+      ]
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 101,
+    "fields": {
+      "day_of_week": 1,
+      "period_duration": "01:00:00",
+      "slot_id": 101,
+      "period_starts_at": "09:30:00",
+      "school": 123456,
+      "relevant_year_groups": [
+        100
+      ]
+    }
+  },
+  {
+    "model": "data.lesson",
+    "pk": 100,
+    "fields": {
+      "school": 123456,
+      "lesson_id": "extra-year-geography",
+      "subject_name": "GEOGRAPHY",
+      "teacher": 100,
+      "classroom": 100,
+      "pupils": [
+        100
+      ],
+      "solver_defined_time_slots": [],
+      "user_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 1
+    }
+  },
+  {
+    "model": "data.lesson",
+    "pk": 101,
+    "fields": {
+      "school": 123456,
+      "lesson_id": "extra-year-history",
+      "subject_name": "HISTORY",
+      "teacher": 100,
+      "classroom": 100,
+      "pupils": [
+        101
+      ],
+      "solver_defined_time_slots": [],
+      "user_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 1
+    }
+  }
+]

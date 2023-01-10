@@ -3,11 +3,11 @@ Unit tests for the instantiation of solver variables
 """
 
 # Standard library imports
-from functools import lru_cache
 from unittest import mock
 
 # Django imports
 from django import test
+from django.core import management
 
 # Local application imports
 from data import models
@@ -27,7 +27,6 @@ class TestTimetableSolverVariables(test.TestCase):
     ]
 
     @staticmethod
-    @lru_cache(maxsize=1)
     def get_variables_maker() -> slvr.TimetableSolverVariables:
         """
         Utility method used to return an instance of the class holding the timetable variables.
@@ -114,6 +113,42 @@ class TestTimetableSolverVariables(test.TestCase):
             lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12
         )
         random_var = variables[random_var_key]
+        assert random_var.lowBound == 0
+        assert random_var.upBound == 1
+        assert random_var.cat == "Integer"
+        assert random_var.varValue is None
+
+    def test_get_double_period_variables_varied_timetables(self):
+        """
+        Test of the dependent, double period variables instantiation,
+        when some year groups have different timetable slots.
+        """
+        # Set parameters
+        management.call_command("loaddata", "extra-year.json")
+        variables_maker = self.get_variables_maker()
+
+        # Execute test unit
+        variables = variables_maker._get_double_period_variables()
+
+        # Test the outcome - we expect one variable per consecutive period
+        assert (
+            # 360 is for the year groups 1 and 2, and then PLUS TWO for extra-year lessons
+            len(variables)
+            == 360 + 2
+        )
+        geog_double = slvr.doubles_var_key(
+            lesson_id="extra-year-geography", slot_1_id=100, slot_2_id=101
+        )
+        random_var = variables[geog_double]
+        assert random_var.lowBound == 0
+        assert random_var.upBound == 1
+        assert random_var.cat == "Integer"
+        assert random_var.varValue is None
+
+        history_double = slvr.doubles_var_key(
+            lesson_id="extra-year-history", slot_1_id=100, slot_2_id=101
+        )
+        random_var = variables[history_double]
         assert random_var.lowBound == 0
         assert random_var.upBound == 1
         assert random_var.cat == "Integer"
