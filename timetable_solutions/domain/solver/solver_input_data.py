@@ -68,6 +68,9 @@ class TimetableSolverInputs:
         self.classrooms = models.Classroom.objects.get_all_instances_for_school(
             school_id=self.school_id
         )
+
+        # Note this filter is vital, as throughout solving it's assumed
+        # that lesson instances have the data (e.g. some pupils) needed.
         self.lessons = models.Lesson.get_lessons_requiring_solving(
             school_id=self.school_id
         )

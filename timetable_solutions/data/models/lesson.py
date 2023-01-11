@@ -258,10 +258,13 @@ class Lesson(models.Model):
         :return - an integer specifying how many double periods the Lesson instance has on the given day
         """
 
+        year_group = self.get_associated_year_group()
         # Note that slots will be ordered in time, using the TimetableSlot Meta class
         user_slots_on_day = (
             self.user_defined_time_slots.all().get_timeslots_on_given_day(
-                school_id=self.school.school_access_key, day_of_week=day_of_week
+                school_id=self.school.school_access_key,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
         )
 

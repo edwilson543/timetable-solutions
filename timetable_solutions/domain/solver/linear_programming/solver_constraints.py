@@ -404,8 +404,11 @@ class TimetableSolverConstraints:
             :param day_of_week: the day of week we are disallowing the splitting on
             :return: a tuple of the constraint and the name for that constraint
             """
+            year_group = lesson.get_associated_year_group()
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
-                school_id=self._inputs.school_id, day_of_week=day_of_week
+                school_id=self._inputs.school_id,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
 
             # Variables contribution
@@ -430,7 +433,9 @@ class TimetableSolverConstraints:
             # Fixed contribution
             existing_singles_on_day = (
                 lesson.user_defined_time_slots.get_timeslots_on_given_day(
-                    school_id=self._inputs.school_id, day_of_week=day_of_week
+                    school_id=self._inputs.school_id,
+                    day_of_week=day_of_week,
+                    year_group=year_group,
                 ).count()
             )
             existing_doubles_on_day = (
@@ -443,8 +448,7 @@ class TimetableSolverConstraints:
             fixed_contribution = min(
                 existing_singles_on_day - existing_doubles_on_day, 1
             )
-            if "extra-year" in lesson.lesson_id:
-                a = 1
+
             constraint = (
                 periods_on_day - double_periods_on_day + fixed_contribution <= 1,
                 f"no_split_{lesson.lesson_id}_classes_on_day_{day_of_week}",
@@ -475,8 +479,11 @@ class TimetableSolverConstraints:
             States that the given lesson can only have one double period on the given day.
             :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
             """
+            year_group = lesson.get_associated_year_group()
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
-                school_id=self._inputs.school_id, day_of_week=day_of_week
+                school_id=self._inputs.school_id,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
             solver_doubles_on_day = lp.lpSum(
                 [  # We only check slot_1_id is in slot_ids, since 1 & 2 are on same day

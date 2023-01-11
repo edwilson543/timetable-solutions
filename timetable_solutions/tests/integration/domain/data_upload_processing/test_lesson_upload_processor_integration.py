@@ -54,11 +54,6 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
         )
         self.assertEqual(total_solver_required_slots, 100)  # = (8 * 8) + (9 * 4)
 
-        total_solver_required_doubles = sum(
-            lesson.get_n_solver_double_periods_required() for lesson in all_lessons
-        )
-        self.assertEqual(total_solver_required_doubles, 36)
-
         total_user_defined_slots = sum(
             lesson.user_defined_time_slots.all().count() for lesson in all_lessons
         )

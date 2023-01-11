@@ -45,11 +45,16 @@ class TimetableSlotQuerySet(models.QuerySet):
         )
 
     def get_timeslots_on_given_day(
-        self, school_id: int, day_of_week: WeekDay
+        self, school_id: int, day_of_week: WeekDay, year_group: YearGroup
     ) -> "TimetableSlotQuerySet":
-        """Method returning the timetable slots for the school on the given day of the week"""
+        """
+        Method returning the timetable slots for the school on the given day of the week,
+        relevant to a particular year group.
+        """
         return self.filter(
-            models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week)
+            models.Q(school_id=school_id)
+            & models.Q(day_of_week=day_of_week)
+            & models.Q(relevant_year_groups=year_group)
         )
 
 
@@ -148,14 +153,14 @@ class TimetableSlot(models.Model):
     # QUERIES
     @classmethod
     def get_timeslot_ids_on_given_day(
-        cls, school_id: int, day_of_week: WeekDay
+        cls, school_id: int, day_of_week: WeekDay, year_group: YearGroup
     ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
         Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
         """
         timeslots = cls.objects.get_timeslots_on_given_day(
-            school_id=school_id, day_of_week=day_of_week
+            school_id=school_id, day_of_week=day_of_week, year_group=year_group
         )
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids

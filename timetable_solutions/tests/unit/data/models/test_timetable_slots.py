@@ -10,6 +10,7 @@ import pytest
 
 # Django imports
 from django import test
+from django.core import management
 from django.db import IntegrityError
 
 # Local application imports
@@ -19,16 +20,27 @@ from data import models
 class TestTimetableSlotQuerySet(test.TestCase):
     """Unit tests for the TimetableSlot QuerySet"""
 
-    fixtures = ["user_school_profile.json", "year_groups.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "timetable.json",
+        "extra-year.json",
+    ]
 
-    def test_get_timeslots_on_given_day(self):
-        """Test that filtering timeslots by school and day is working as expected"""
+    def test_get_timeslots_on_given_day_year_one(self):
+        """
+        Test that filtering timeslots by school and day is working as expected.
+        In particular that only the year groups relevant to year 1 are returned.
+        """
         # Test parameters
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
         monday = models.WeekDay.MONDAY.value
 
         # Execute test unit
         slots = models.TimetableSlot.objects.get_timeslots_on_given_day(
-            school_id=123456, day_of_week=monday
+            school_id=123456, day_of_week=monday, year_group=year_group
         )
 
         # Check outcome
@@ -174,18 +186,38 @@ class TestTimetableSlot(test.TestCase):
         assert all_ygs.count() == 3
 
     # QUERY METHOD TESTS
-    def test_get_timeslots_on_given_day(self):
+    def test_get_timeslots_on_given_day_year_one(self):
         """Test that filtering timeslots by school and day to get the slot ids is working as expected"""
         # Test parameters
         monday = models.WeekDay.MONDAY
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
 
         # Execute test unit
         slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
-            school_id=123456, day_of_week=monday
+            school_id=123456, day_of_week=monday, year_group=year_group
         )
 
         # Check outcome
         assert set(slots) == {1, 6, 11, 16, 21, 26, 31}
+
+    def test_get_timeslots_on_given_day_extra_year(self):
+        """Test that filtering timeslots by school and day to get the slot ids is working as expected"""
+        # Test parameters
+        management.call_command("loaddata", "extra-year.json")
+        monday = models.WeekDay.MONDAY
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="extra-year"
+        )
+
+        # Execute test unit
+        slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
+            school_id=123456, day_of_week=monday, year_group=year_group
+        )
+
+        # Check outcome
+        assert set(slots) == {100, 101}
 
     def test_get_unique_start_hours(self):
         """
