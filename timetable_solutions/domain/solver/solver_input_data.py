@@ -4,7 +4,6 @@ Module defining the data used by the solver, and how this data is accessed from 
 # Standard library imports
 from dataclasses import dataclass
 import datetime as dt
-from functools import lru_cache
 
 # Local application imports
 from data import models
@@ -101,7 +100,6 @@ class TimetableSolverInputs:
         return finish
 
     # QUERIES
-    @lru_cache(maxsize=4)
     def get_consecutive_slots_for_year_group(
         self, year_group: str
     ) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
