@@ -113,8 +113,9 @@ class TimetableSolverInputs:
         return period_starts_at
 
     # Methods for variables
+    @staticmethod
     def get_consecutive_slots_for_year_group(
-        self, year_group: str
+        year_group: models.YearGroup,
     ) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
         """
         Find the timetable slots that could form double periods, for the given year group.
@@ -123,10 +124,7 @@ class TimetableSolverInputs:
         :param year_group: The string identifier of the year_group instance
         :return - as a list, the tuples of consecutive slots.
         """
-        slots = self.timetable_slots.filter(
-            relevant_year_groups__year_group=year_group
-            # Ordering here is essential for the iteration
-        ).order_by("day_of_week", "period_starts_at")
+        slots = year_group.slots.all().order_by("day_of_week", "period_starts_at")
 
         consecutive_slots: list[tuple[models.TimetableSlot, models.TimetableSlot]] = []
         previous_slot = None

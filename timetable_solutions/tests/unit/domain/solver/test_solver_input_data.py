@@ -91,9 +91,14 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         data = slvr.TimetableSolverInputs(
             school_id=school_access_key, solution_specification=self.solution_spec
         )
+        year_one = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
 
         # Execute test unit
-        consecutive_slots = data.get_consecutive_slots_for_year_group(year_group="1")
+        consecutive_slots = data.get_consecutive_slots_for_year_group(
+            year_group=year_one
+        )
 
         # Check outcome
         assert len(consecutive_slots) == 30  # 7 slots per day, 5 days a week...
@@ -124,6 +129,9 @@ class TestTimetableSolverInputsLoading(test.TestCase):
             school_id=123456,
             slot_id=101,
         )
+        extra_year = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="extra-year"
+        )
 
         data = slvr.TimetableSolverInputs(
             school_id=123456, solution_specification=self.solution_spec
@@ -131,7 +139,7 @@ class TestTimetableSolverInputsLoading(test.TestCase):
 
         # Execute test unit
         consecutive_slots = data.get_consecutive_slots_for_year_group(
-            year_group="extra-year"
+            year_group=extra_year
         )
 
         # Check outcome

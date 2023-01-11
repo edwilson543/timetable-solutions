@@ -85,7 +85,7 @@ class TimetableSolverVariables:
             if lesson.total_required_double_periods == 0:
                 continue
 
-            relevant_year_group = lesson.get_associated_year_group().year_group
+            relevant_year_group = lesson.get_associated_year_group()
             for (
                 consecutive_slot_pair
             ) in self._inputs.get_consecutive_slots_for_year_group(
