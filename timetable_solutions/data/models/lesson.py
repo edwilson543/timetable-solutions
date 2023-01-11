@@ -290,6 +290,16 @@ class Lesson(models.Model):
         year_group = self.get_associated_year_group()
         return year_group.slots.all()
 
+    def get_associated_days_of_week(self) -> list[WeekDay]:
+        """
+        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
+        :return - days_list - a list of the days, sorted from lowest to highest.
+        """
+        slots = self.get_associated_timeslots()
+        days = {slot.day_of_week for slot in slots}  # We only want unique days
+        days_list = sorted(list(days))
+        return days_list
+
     def get_associated_year_group(self) -> YearGroup:
         """
         Get the year group a Lesson will be taught to.

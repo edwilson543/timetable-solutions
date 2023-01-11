@@ -79,7 +79,7 @@ class TimetableSolverInputs:
         self.error_messages: list[str] = []
         self._check_specification_aligns_with_input_data()
 
-    # PROPERTIES
+    # Properties / methods for objective function
     @property
     def timetable_start(self) -> float:
         """
@@ -102,7 +102,17 @@ class TimetableSolverInputs:
         )
         return finish
 
-    # QUERIES
+    def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
+        """
+        Method to find the time of day that a period starts at.
+        :param slot_id: The id of the timetable slot we are searching
+        :return: period_starts_at - the time of day when the relevant period starts.
+        """
+        slot = self.timetable_slots.get(slot_id=slot_id)
+        period_starts_at = slot.period_starts_at
+        return period_starts_at
+
+    # Methods for variables
     def get_consecutive_slots_for_year_group(
         self, year_group: str
     ) -> list[tuple[models.TimetableSlot, models.TimetableSlot]]:
@@ -129,28 +139,6 @@ class TimetableSolverInputs:
 
         return consecutive_slots
 
-    @staticmethod
-    def get_available_days_for_lesson(lesson: models.Lesson) -> list[models.WeekDay]:
-        """
-        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
-        Cached since called in two different constraints.
-        :return - days_list - a list of the days, sorted from lowest to highest.
-        """
-        slots = lesson.get_associated_timeslots()
-        days = {slot.day_of_week for slot in slots}
-        days_list = sorted(list(days))
-        return days_list
-
-    def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
-        """
-        Method to find the time of day that a period starts at.
-        :param slot_id: The id of the timetable slot we are searching
-        :return: period_starts_at - the time of day when the relevant period starts.
-        """
-        slot = self.timetable_slots.get(slot_id=slot_id)
-        period_starts_at = slot.period_starts_at
-        return period_starts_at
-
     # CHECKS
     def _check_specification_aligns_with_input_data(self) -> None:
         """
@@ -164,19 +152,24 @@ class TimetableSolverInputs:
                 required_distinct_days = (
                     lesson.total_required_slots - lesson.total_required_double_periods
                 )
-                n_available_distinct_days = len(
-                    self.get_available_days_for_lesson(lesson)
-                )
+                n_available_distinct_days = len(lesson.get_associated_days_of_week())
                 if required_distinct_days > n_available_distinct_days:
                     self.error_messages.append(
-                        "Classes require too many distinct slots to all be on separate days. "
+                        f"Lesson: {lesson} requires too many distinct slots for the solution timetables to all be "
+                        f"on separate days.\n"
                         "Please allow this in your solution, or amend your data!"
+                    )
+
+                if lesson.pupils.all().count() == 0:
+                    self.error_messages.append(
+                        f"Lesson: {lesson} has no pupils, and therefore cannot be solved.\n"
+                        f"Please add some!"
                     )
 
         # Check no existing solution
         for lesson in self.lessons:
             if lesson.solver_defined_time_slots.count() > 0:
                 self.error_messages.append(
-                    f"{lesson.__repr__} with solver defined time slot(s) was passed as "
+                    f"{lesson} with solver defined time slot(s) was passed as "
                     f"solver input data!"
                 )
