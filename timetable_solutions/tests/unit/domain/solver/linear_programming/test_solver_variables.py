@@ -68,6 +68,22 @@ class TestTimetableSolverVariables(test.TestCase):
         assert random_var.cat == "Integer"
         assert random_var.varValue is None
 
+    def test_get_decision_variables_extra_year(self):
+        """
+        Test for the decision variable instantiation,
+        in the case where different year groups have different timetable slots.
+        """
+        # Set parameters
+        management.call_command("loaddata", "extra-year.json")
+        variables_maker = self.get_variables_maker()
+
+        # Execute test unit
+        variables = variables_maker._get_decision_variables()
+
+        # Expect one variable per lesson / timetable slot pair
+        # The extra year carries 2 timetable slots and 2 lessons
+        assert len(variables) == (12 * 35) + (2 * 2)
+
     def test_strip_decision_variables(self):
         """
         Test for the method removing irrelevant variables from the variables dict.

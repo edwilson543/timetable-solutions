@@ -50,7 +50,7 @@ class TimetableSolverVariables:
                 cat="Binary",
             )
             for lesson in self._inputs.lessons
-            for timetable_slot in self._inputs.timetable_slots
+            for timetable_slot in lesson.get_associated_timeslots()
         }
         if strip:
             self._strip_decision_variables(variables=variables)
@@ -66,11 +66,10 @@ class TimetableSolverVariables:
         """
         for lesson in self._inputs.lessons:
             for timetable_slot in lesson.user_defined_time_slots.all():
-                if timetable_slot in lesson.user_defined_time_slots.all():
-                    variable_key = var_key(
-                        lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id
-                    )
-                    variables.pop(variable_key)
+                variable_key = var_key(
+                    lesson_id=lesson.lesson_id, slot_id=timetable_slot.slot_id
+                )
+                variables.pop(variable_key)
 
     # DEPENDENT VARIABLES
     def _get_double_period_variables(self) -> dict[doubles_var_key, lp.LpVariable]:

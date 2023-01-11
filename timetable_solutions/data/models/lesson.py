@@ -272,6 +272,17 @@ class Lesson(models.Model):
 
         return double_period_count
 
+    def get_associated_timeslots(self) -> TimetableSlotQuerySet | None:
+        """
+        Get the timetable slots associated with a particular Lesson (via its year group).
+        We intentionally don't check e.g. whether the lesson already occurs at one of these slots,
+        as this is solver domain logic.
+        """
+        year_group = self.get_relevant_year_group()
+        if year_group:
+            return year_group.slots.all()
+        return None
+
     def get_relevant_year_group(self) -> YearGroup | None:
         """
         Get the year group a Lesson will be taught to.
@@ -279,8 +290,7 @@ class Lesson(models.Model):
         all_pupils = self.pupils.all()
         if all_pupils.count() > 0:
             return all_pupils.first().year_group
-        else:
-            return None
+        return None
 
     # QUERIES FOR THE ADMIN SITE
     def get_number_pupils(self) -> int:
@@ -293,10 +303,10 @@ class Lesson(models.Model):
         """
         Method returning the year_group associated with a Lesson.
         """
-        if self.pupils.all().exists():
-            return self.pupils.first().year_group.year_group
-        else:
-            return "N/A"
+        yg = self.get_relevant_year_group()
+        if yg:
+            return yg.year_group
+        return "N/A"
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:
