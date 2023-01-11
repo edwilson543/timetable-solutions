@@ -7,11 +7,33 @@ from unittest import mock
 
 # Django imports
 from django import test
-from django.core import management
 
 # Local application imports
 from data import models
 from domain import solver as slvr
+
+
+def get_variables_maker() -> slvr.TimetableSolverVariables:
+    """
+    Utility method used to return an instance of the class holding the timetable variables.
+    Note that we patch the methods called at instantiation, to avoid silently testing that they work
+    """
+    solution_spec = slvr.SolutionSpecification(
+        allow_split_classes_within_each_day=True,
+        allow_triple_periods_and_above=True,
+    )
+    input_data = slvr.TimetableSolverInputs(
+        school_id=123456, solution_specification=solution_spec
+    )
+    with mock.patch.object(
+        slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None
+    ), mock.patch.object(
+        slvr.TimetableSolverVariables,
+        "_get_double_period_variables",
+        return_value=None,
+    ):
+        variables_maker = slvr.TimetableSolverVariables(inputs=input_data)
+    return variables_maker
 
 
 class TestTimetableSolverVariables(test.TestCase):
@@ -26,35 +48,12 @@ class TestTimetableSolverVariables(test.TestCase):
         "lessons_without_solution.json",
     ]
 
-    @staticmethod
-    def get_variables_maker() -> slvr.TimetableSolverVariables:
-        """
-        Utility method used to return an instance of the class holding the timetable variables.
-        Note that we patch the methods called at instantiation, to avoid silently testing that they work
-        """
-        solution_spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=True,
-            allow_triple_periods_and_above=True,
-        )
-        input_data = slvr.TimetableSolverInputs(
-            school_id=123456, solution_specification=solution_spec
-        )
-        with mock.patch.object(
-            slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None
-        ), mock.patch.object(
-            slvr.TimetableSolverVariables,
-            "_get_double_period_variables",
-            return_value=None,
-        ):
-            variables_maker = slvr.TimetableSolverVariables(inputs=input_data)
-        return variables_maker
-
     def test_get_decision_variables(self):
         """
         Test for the decision variable instantiation.
         """
         # Set parameters
-        variables_maker = self.get_variables_maker()
+        variables_maker = get_variables_maker()
 
         # Execute test unit
         variables = variables_maker._get_decision_variables()
@@ -67,22 +66,6 @@ class TestTimetableSolverVariables(test.TestCase):
         assert random_var.upBound == 1
         assert random_var.cat == "Integer"
         assert random_var.varValue is None
-
-    def test_get_decision_variables_extra_year(self):
-        """
-        Test for the decision variable instantiation,
-        in the case where different year groups have different timetable slots.
-        """
-        # Set parameters
-        management.call_command("loaddata", "extra-year.json")
-        variables_maker = self.get_variables_maker()
-
-        # Execute test unit
-        variables = variables_maker._get_decision_variables()
-
-        # Expect one variable per lesson / timetable slot pair
-        # The extra year carries 2 timetable slots and 2 lessons
-        assert len(variables) == (12 * 35) + (2 * 2)
 
     def test_strip_decision_variables(self):
         """
@@ -98,7 +81,7 @@ class TestTimetableSolverVariables(test.TestCase):
         to_strip_variable_key_1 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=1)
         to_strip_variable_key_2 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)
 
-        variables_maker = self.get_variables_maker()
+        variables_maker = get_variables_maker()
         variables = variables_maker._get_decision_variables(strip=False)
 
         # Execute the test unit
@@ -115,7 +98,7 @@ class TestTimetableSolverVariables(test.TestCase):
         Test of the dependent, double period variables instantiation.
         """
         # Set parameters
-        variables_maker = self.get_variables_maker()
+        variables_maker = get_variables_maker()
 
         # Execute test unit
         variables = variables_maker._get_double_period_variables()
@@ -134,14 +117,45 @@ class TestTimetableSolverVariables(test.TestCase):
         assert random_var.cat == "Integer"
         assert random_var.varValue is None
 
+
+class TestTimetableSolverVariablesExtraYear(test.TestCase):
+    """
+    Test for solve variables when different year groups have different timetables.
+    """
+
+    fixtures = [
+        "user_school_profile.json",
+        "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+        "extra-year.json",  # Now include this
+    ]
+
+    def test_get_decision_variables_extra_year(self):
+        """
+        Test for the decision variable instantiation,
+        in the case where different year groups have different timetable slots.
+        """
+        # Set parameters
+        variables_maker = get_variables_maker()
+
+        # Execute test unit
+        variables = variables_maker._get_decision_variables()
+
+        # Expect one variable per lesson / timetable slot pair
+        # The extra year carries 2 timetable slots and 2 lessons
+        assert len(variables) == (12 * 35) + (2 * 2)
+
     def test_get_double_period_variables_varied_timetables(self):
         """
         Test of the dependent, double period variables instantiation,
         when some year groups have different timetable slots.
         """
         # Set parameters
-        management.call_command("loaddata", "extra-year.json")
-        variables_maker = self.get_variables_maker()
+        variables_maker = get_variables_maker()
 
         # Execute test unit
         variables = variables_maker._get_double_period_variables()

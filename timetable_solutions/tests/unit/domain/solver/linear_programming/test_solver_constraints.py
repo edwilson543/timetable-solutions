@@ -1,8 +1,5 @@
 """Unit tests for the methods on the TimetableSolverConstraints class"""
 
-# Standard library imports
-from functools import lru_cache
-
 # Django imports
 from django import test
 
@@ -11,6 +8,25 @@ from pulp import LpConstraint
 
 # Local application imports
 from domain import solver as slvr
+
+
+def get_constraint_maker() -> slvr.TimetableSolverConstraints:
+    """
+    Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixtures, but this does not work
+    since the test class subclasses the Django TestCase.
+    Note that we include a default solution specification also within this method.
+    """
+    school_access_key = 123456
+    spec = slvr.SolutionSpecification(
+        allow_split_classes_within_each_day=True,
+        allow_triple_periods_and_above=True,
+    )
+    data = slvr.TimetableSolverInputs(
+        school_id=school_access_key, solution_specification=spec
+    )
+    variables = slvr.TimetableSolverVariables(inputs=data)
+    constraint_maker = slvr.TimetableSolverConstraints(inputs=data, variables=variables)
+    return constraint_maker
 
 
 class TestSolverConstraints(test.TestCase):
@@ -22,30 +38,8 @@ class TestSolverConstraints(test.TestCase):
         "year_groups.json",
         "pupils.json",
         "timetable.json",
-        "lessons_without_solution",
+        "lessons_without_solution.json",
     ]
-
-    @staticmethod
-    @lru_cache(maxsize=1)
-    def get_constraint_maker() -> slvr.TimetableSolverConstraints:
-        """
-        Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixtures, but this does not work
-        since the test class subclasses the Django TestCase.
-        Note that we include a default solution specification also within this method.
-        """
-        school_access_key = 123456
-        spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=True,
-            allow_triple_periods_and_above=True,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        variables = slvr.TimetableSolverVariables(inputs=data)
-        constraint_maker = slvr.TimetableSolverConstraints(
-            inputs=data, variables=variables
-        )
-        return constraint_maker
 
     def test_get_all_fulfillment_constraints(self):
         """
@@ -53,7 +47,7 @@ class TestSolverConstraints(test.TestCase):
         We expect one constraint per lesson.
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         constraints = constraint_maker._get_all_fulfillment_constraints()
 
         # Check outcome
@@ -75,7 +69,7 @@ class TestSolverConstraints(test.TestCase):
         Test that the correct set of constraints is returned for pupils
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         pup_constraints = constraint_maker._get_all_pupil_constraints()
 
         # Check outcome
@@ -108,7 +102,7 @@ class TestSolverConstraints(test.TestCase):
         Test that the correct set of constraints is returned for teachers
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         teacher_constraints = constraint_maker._get_all_teacher_constraints()
 
         # Check outcome
@@ -139,7 +133,7 @@ class TestSolverConstraints(test.TestCase):
         Test that the correct set of constraints is returned for classrooms
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         classroom_constraints = constraint_maker._get_all_classroom_constraints()
 
         # Check outcome
@@ -171,7 +165,7 @@ class TestSolverConstraints(test.TestCase):
         We expect one constraint per lesson class.
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         dp_fulfillment_constraints = (
             constraint_maker._get_all_double_period_fulfillment_constraints()
         )
@@ -193,7 +187,7 @@ class TestSolverConstraints(test.TestCase):
         variables
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         dependency_constraints = (
             constraint_maker._get_all_double_period_dependency_constraints()
         )
@@ -208,33 +202,13 @@ class TestSolverConstraints(test.TestCase):
         # Note that we haveL 12 lessons; 6 double options / day / class; 5 days; 2 related decision variables
         assert constraint_count == 12 * 6 * 5 * 2
 
-    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
-        """
-        Test that the correct set of constraints is returned preventing split periods.
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
-
-        # Check the outcome
-        constraint_count = 0
-        for constraint_tuple in constraints:
-            constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 13
-            )  # Since we have 7 decision variables and 6 double period variables in the mix
-            assert constraint.constant == -1  # 1 Double period per day
-            constraint_count += 1
-        assert constraint_count == 5 * 12  # number days * number lessons
-
-    def test_get_all_no_triple_periods_and_above_constraints(self):
+    def test_get_all_no_two_doubles_in_a_day_constraint(self):
         """
         Test that the correct set of constraints is returned limiting the number of double periods that can take place
         on one day to 1.
         """
         # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        constraint_maker = get_constraint_maker()
         constraints = constraint_maker._get_all_no_two_doubles_in_a_day_constraints()
 
         # Check the outcome
@@ -248,3 +222,77 @@ class TestSolverConstraints(test.TestCase):
             assert constraint.constant == -1  # 1 Double period per day
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number lessons
+
+
+class TestSolverConstraintsWithExtraYear(test.TestCase):
+
+    fixtures = [
+        "user_school_profile.json",
+        "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+        "lessons_without_solution.json",
+        "extra-year.json",
+    ]
+
+    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
+        """
+        Test that the correct set of constraints is returned preventing split periods,
+        when some year groups have different timetables.
+        """
+        # Execute test unit
+        constraint_maker = get_constraint_maker()
+        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
+
+        # Check the outcome
+        constraint_count = 0
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+
+            if "extra_year" in str(constraint):
+                # Here we have slot 1 + slot 2 - double at slot 1&2  <= 1
+                assert len(constraint) == 3
+                assert constraint.constant == -1
+
+            else:
+                assert isinstance(constraint, LpConstraint)
+                # We have 7 decision variables and 6 double period variables in the mix
+                assert len(constraint) == 13
+                assert constraint.constant == -1
+
+            constraint_count += 1
+
+        assert constraint_count == (5 * 12) + (1 * 2)  # number days * number lessons
+
+    def test_get_all_no_two_doubles_in_a_day_constraint(self):
+        """
+        Test that the correct set of constraints is returned limiting the number of double periods that can take place
+        on one day to 1, when some year groups have different timetables.
+        """
+        # Execute test unit
+        constraint_maker = get_constraint_maker()
+        constraints = constraint_maker._get_all_no_two_doubles_in_a_day_constraints()
+
+        # Check the outcome
+        constraint_count = 0
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+
+            if "extra_year" in str(constraint):
+                assert isinstance(constraint, LpConstraint)
+                # Just saying double period at slots 1 & 2 <= 1
+                assert len(constraint) == 1
+                assert constraint.constant == -1  # 1 Double period per day
+
+            else:
+
+                assert isinstance(constraint, LpConstraint)
+                # 7 consecutive slots, so 6 double periods that can happen in each day
+                assert len(constraint) == 6
+                assert constraint.constant == -1  # 1 Double period per day
+
+            constraint_count += 1
+
+        assert constraint_count == (5 * 12) + (1 * 2)  # number days * number lessons

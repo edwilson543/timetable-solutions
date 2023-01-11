@@ -147,7 +147,6 @@ class TimetableSlot(models.Model):
 
     # QUERIES
     @classmethod
-    @lru_cache(maxsize=8)
     def get_timeslot_ids_on_given_day(
         cls, school_id: int, day_of_week: WeekDay
     ) -> list[int]:

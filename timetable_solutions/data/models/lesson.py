@@ -15,6 +15,12 @@ from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet, Wee
 from data.models.year_group import YearGroup
 
 
+class NoPupilsError(Exception):
+    """Raised when a lesson not having any associated pupils causes an error."""
+
+    pass
+
+
 class LessonQuerySet(models.QuerySet):
     """
     Custom queryset manager for the Lesson model
@@ -272,25 +278,26 @@ class Lesson(models.Model):
 
         return double_period_count
 
-    def get_associated_timeslots(self) -> TimetableSlotQuerySet | None:
+    def get_associated_timeslots(self) -> TimetableSlotQuerySet:
         """
         Get the timetable slots associated with a particular Lesson (via its year group).
         We intentionally don't check e.g. whether the lesson already occurs at one of these slots,
         as this is solver domain logic.
         """
-        year_group = self.get_relevant_year_group()
-        if year_group:
-            return year_group.slots.all()
-        return None
+        year_group = self.get_associated_year_group()
+        return year_group.slots.all()
 
-    def get_relevant_year_group(self) -> YearGroup | None:
+    def get_associated_year_group(self) -> YearGroup:
         """
         Get the year group a Lesson will be taught to.
         """
         all_pupils = self.pupils.all()
         if all_pupils.count() > 0:
             return all_pupils.first().year_group
-        return None
+        else:
+            raise NoPupilsError(
+                f"Lesson: {repr(self)} does not have any pupils, therefore cannot retrieve associated year group"
+            )
 
     # QUERIES FOR THE ADMIN SITE
     def get_number_pupils(self) -> int:
@@ -303,10 +310,11 @@ class Lesson(models.Model):
         """
         Method returning the year_group associated with a Lesson.
         """
-        yg = self.get_relevant_year_group()
-        if yg:
+        try:
+            yg = self.get_associated_year_group()
             return yg.year_group
-        return "N/A"
+        except NoPupilsError:
+            return "N/A"
 
     # MISCELLANEOUS METHODS
     def clean(self) -> None:

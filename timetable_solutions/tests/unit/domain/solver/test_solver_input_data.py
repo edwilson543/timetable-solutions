@@ -48,23 +48,6 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         )  # Since the 12 lunch 'lessons' aren't included in the solver input data
 
     # PROPERTIES TESTS
-    def test_available_days_property(self):
-        """
-        Test that the correct list of days, of the correct type, is returned by the available_days property method
-        on the TimetableSolverInputs class.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-
-        # Execute test unit
-        available_days = data.available_days
-
-        # Check outcome
-        assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
-
     def test_timetable_start_property(self):
         """
         Unit test that the timetable start and finish span is correctly calculated.
@@ -155,6 +138,46 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         assert len(consecutive_slots) == 1  # We only created one candidate
         assert consecutive_slots[0][0] == slot_0
         assert consecutive_slots[0][1] == slot_1
+
+    def test_available_days_year_one_lesson(self):
+        """
+        Test the correct list of days is returned for a year one lesson.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=school_access_key, lesson_id="YEAR_ONE_MATHS_A"
+        )
+
+        # Execute test unit
+        available_days = data.get_available_days_for_lesson(lesson)
+
+        # Check outcome
+        assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
+
+    def test_available_days_extra_year_lesson(self):
+        """
+        Test that just Monday is returned for an extra-year lesson, who only have 2 slots.
+        """
+        # Set test parameters
+        management.call_command("loaddata", "extra-year.json")
+
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=school_access_key, lesson_id="extra-year-geography"
+        )
+
+        # Execute test unit
+        available_days = data.get_available_days_for_lesson(lesson)
+
+        # Check outcome
+        assert available_days == [1]
 
     def test_get_time_period_starts_at_from_slot_id(self):
         """

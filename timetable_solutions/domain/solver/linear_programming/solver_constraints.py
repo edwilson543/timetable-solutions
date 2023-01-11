@@ -443,7 +443,8 @@ class TimetableSolverConstraints:
             fixed_contribution = min(
                 existing_singles_on_day - existing_doubles_on_day, 1
             )
-
+            if "extra-year" in lesson.lesson_id:
+                a = 1
             constraint = (
                 periods_on_day - double_periods_on_day + fixed_contribution <= 1,
                 f"no_split_{lesson.lesson_id}_classes_on_day_{day_of_week}",
@@ -453,7 +454,7 @@ class TimetableSolverConstraints:
         constraints = (
             __no_split_classes_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in self._inputs.available_days
+            for day in self._inputs.get_available_days_for_lesson(lesson)
         )
         return constraints
 
@@ -492,8 +493,8 @@ class TimetableSolverConstraints:
                 )
             )
             existing_doubles_on_day = min(
-                existing_doubles_on_day, 1
-            )  # Since user may have broken the rules
+                existing_doubles_on_day, 1  # Since user may have broken the rules
+            )
 
             dp_constraint = (
                 solver_doubles_on_day + existing_doubles_on_day <= 1,
@@ -504,6 +505,6 @@ class TimetableSolverConstraints:
         constraints = (
             __no_two_doubles_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in self._inputs.available_days
+            for day in self._inputs.get_available_days_for_lesson(lesson)
         )
         return constraints

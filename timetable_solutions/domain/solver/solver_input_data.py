@@ -4,7 +4,7 @@ Module defining the data used by the solver, and how this data is accessed from 
 # Standard library imports
 from dataclasses import dataclass
 import datetime as dt
-from functools import cached_property, lru_cache
+from functools import lru_cache
 
 # Local application imports
 from data import models
@@ -78,17 +78,6 @@ class TimetableSolverInputs:
         self._check_specification_aligns_with_input_data()
 
     # PROPERTIES
-    @cached_property
-    def available_days(self) -> list[models.WeekDay]:
-        """
-        Property method to get the weekdays that the user has specified in their timetable structure. Cached since this
-        is called from two of the different constraint on TimetableSolverConstraints.
-        :return - days_list - a list of the days, sorted from lowest to highest.
-        """
-        days = {slot.day_of_week for slot in self.timetable_slots}
-        days_list = sorted(list(days))
-        return days_list
-
     @property
     def timetable_start(self) -> float:
         """
@@ -139,6 +128,18 @@ class TimetableSolverInputs:
 
         return consecutive_slots
 
+    @staticmethod
+    def get_available_days_for_lesson(lesson: models.Lesson) -> list[models.WeekDay]:
+        """
+        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
+        Cached since called in two different constraints.
+        :return - days_list - a list of the days, sorted from lowest to highest.
+        """
+        slots = lesson.get_associated_timeslots()
+        days = {slot.day_of_week for slot in slots}
+        days_list = sorted(list(days))
+        return days_list
+
     def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """
         Method to find the time of day that a period starts at.
@@ -158,16 +159,18 @@ class TimetableSolverInputs:
         resolve directly within this method, but given the different options, the choice is left to the user.
         """
         if not self.solution_specification.allow_split_classes_within_each_day:
-            max_required_distinct_days = max(
-                lesson.total_required_slots - lesson.total_required_double_periods
-                for lesson in self.lessons
-            )
-            available_distinct_days = len(self.available_days)
-            if max_required_distinct_days > available_distinct_days:
-                self.error_messages.append(
-                    "Classes require too many distinct slots to all be on separate days. "
-                    "Please allow this in your solution, or amend your data!"
+            for lesson in self.lessons:
+                required_distinct_days = (
+                    lesson.total_required_slots - lesson.total_required_double_periods
                 )
+                n_available_distinct_days = len(
+                    self.get_available_days_for_lesson(lesson)
+                )
+                if required_distinct_days > n_available_distinct_days:
+                    self.error_messages.append(
+                        "Classes require too many distinct slots to all be on separate days. "
+                        "Please allow this in your solution, or amend your data!"
+                    )
 
         # Check no existing solution
         for lesson in self.lessons:
