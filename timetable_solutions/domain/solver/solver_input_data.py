@@ -81,26 +81,31 @@ class TimetableSolverInputs:
 
     # Properties / methods for objective function
     @property
-    def timetable_start(self) -> float:
+    def timetable_start_hour_as_float(self) -> float:
         """
         Property finding the earliest time of day that the timetable starts, as a float on the 24-hour clock
         :return: e.g. if the timetable starts at 9 AM, 9.0 will be returned. Similarly, 2:30 PM -> 14.5
         """
-        start = min(slot.period_starts_at.hour for slot in self.timetable_slots)
-        return start
+        start_hour = min(
+            slot.period_starts_at.hour + (slot.period_starts_at.minute / 60)
+            for slot in self.timetable_slots
+        )
+        return start_hour
 
     @property
-    def timetable_finish(self) -> float:
+    def timetable_finish_hour_as_float(self) -> float:
         """
         Property finding the latest time of day that the timetable finishes, as a float on the 24-hour clock
         :return: e.g. if the timetable ends at 5 PM, 17.0 will be returned. Similarly, 12:30AM -> 0.5
-        Note: the returned time is the time the last periods ends (as opposed to the time the last periods starts
+        Note: the returned time is the time the last periods ends (as opposed to the time the last periods starts at)
         """
-        finish = max(
-            slot.period_starts_at.hour + (slot.period_duration.total_seconds() / 3600)
+        finish_hour = max(
+            slot.period_starts_at.hour
+            + (slot.period_starts_at.minute / 60)
+            + (slot.period_duration.total_seconds() / 3600)
             for slot in self.timetable_slots
         )
-        return finish
+        return finish_hour % 24
 
     def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """
