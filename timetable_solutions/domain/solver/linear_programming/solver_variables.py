@@ -38,8 +38,13 @@ class TimetableSolverVariables:
     ) -> dict[var_key, lp.LpVariable]:
         """
         Method to get the pulp decision variables used to solve the timetabling problem.
-        For each (lesson, timetable slot) pair, there is a binary variable indicating whether that class happens
-        at that time.
+
+        For each (lesson, associated timetable slot) pair,
+        there is a binary variable indicating whether that class happens at that time.
+
+        By 'associated' here, we mean that the lesson could occur at that timeslot, but
+        may already, in which case that variable will get stripped.
+
         :return - Dictionary of pulp variables, indexed by unique class / timetable slot tuples
         """
         variables = {
@@ -75,8 +80,13 @@ class TimetableSolverVariables:
     def _get_double_period_variables(self) -> dict[doubles_var_key, lp.LpVariable]:
         """
         Method to get the pulp dependent variables used to decide when double-periods should go.
-        For each (lesson, double period) pair, there is a binary variable indicating whether that class has
-        a double period at that time
+
+        For each (lesson, associated consecutive slot) pair, there is a binary variable indicating
+        whether that class has a double period at that time.
+
+        'Associated' here means that the lesson could have a double in the given time slots, and may
+        already have one or more of these slots as user defined.
+
         :return - Dictionary of pulp variables, indexed by class / consecutive period tuples
         """
         variables = {}  # Dict comp a bit too long here
