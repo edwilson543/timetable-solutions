@@ -31,10 +31,13 @@ class TimetableSolverOutcome:
                 for var_key, var in self._decision_variables.items()
                 if (var.varValue == 1.0) and (var_key.lesson_id == lesson.lesson_id)
             ]
+
+            if len(solved_timeslot_ids) < lesson.get_n_solver_slots_required():
+                self.error_messages.append(
+                    f"Could not find solution to fulfill required slots of lesson: {lesson}."
+                )
+
             solved_timeslots = self._input_data.timetable_slots.filter(
                 slot_id__in=solved_timeslot_ids
             )
-            if solved_timeslots.count() == 0:
-                continue
-            else:
-                lesson.add_solver_defined_time_slots(time_slots=solved_timeslots)
+            lesson.add_solver_defined_time_slots(time_slots=solved_timeslots)
