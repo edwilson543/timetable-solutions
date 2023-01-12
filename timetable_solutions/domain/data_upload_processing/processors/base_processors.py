@@ -118,8 +118,8 @@ class BaseFileUploadProcessor:
             except (
                 ValidationError,  # Model does not pass the full_clean checks
                 TypeError,  # Model was missing a required field (via the create_new method)
-                ValueError,
-            ) as debug_only_message:  # A string was passed to int(id_field)
+                ValueError,  # A string was passed to int(id_field)
+            ) as debug_only_message:
 
                 error = (
                     f"Could not interpret values in row {n+1} as a {self.model.Constant.human_string_singular}!"
@@ -140,6 +140,13 @@ class BaseFileUploadProcessor:
                 )
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
+
+            except Exception:
+                # Just in case, catch any other exception that may occur
+                self.upload_error_message = (
+                    f"Could not process {self.model.Constant.human_string_singular} "
+                    f"in row {n + 1} of your file. Please amend!"
+                )
 
     def _get_data_dict_list_for_create_new(
         self, upload_df: pd.DataFrame
