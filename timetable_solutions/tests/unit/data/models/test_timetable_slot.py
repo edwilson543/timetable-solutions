@@ -47,6 +47,90 @@ class TestTimetableSlotQuerySet(test.TestCase):
         # Check outcome
         assert slots.count() == 7
 
+    def test_filter_for_clashes_expecting_two_clash(self):
+        """
+        Test that a queryset of two clashes is returned for a slot clashing with 2 slots in total
+        (in the full queryset of fixture slots).
+        """
+        # Test the 9:00-10:00 monday slot against the full fixture list.
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(nine_to_ten)
+
+        # Check just 2 clashes
+        assert clashes.all().count() == 2
+
+        # Expected clashese are 8:30-9:30 and 9:30-10:30, which both clearly clash with 9-10.
+        eight_30_nine_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=100
+        )
+        assert eight_30_nine_30 in clashes
+        nine_30_ten_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=101
+        )
+        assert nine_30_ten_30 in clashes
+
+        # Note therefore we have that the slot does not clash with itself
+        # We also have that the 10-11 slot did not clash with the 9-10 slot
+
+    def test_filter_for_clashes_expecting_one_clash(self):
+        """
+        Test that a queryset of one clash is returned for a slot clashing with just 1 slot in total
+        (in the full queryset of fixture slots).
+        """
+        # Test the 9:00-10:00 monday slot against the full fixture list.
+        eight_30_nine_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=100
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(eight_30_nine_30)
+
+        # Check just 2 clashes
+        assert clashes.all().count() == 1
+
+        # Expected clash is 9-10, which clearly clashes with 8:30-9:30
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        assert nine_to_ten in clashes
+
+        # Note therefore we have that the slot does not clash with itself
+        # We also have that the 10-11 slot did not clash with the 9:30-10:30 slot
+
+    def test_filter_for_clashes_expecting_no_clash(self):
+        """
+        Test that a slot with no expected clashes returns an empty queryset.
+        """
+        # No clashes on tuesday - extra year just has the two slots on monday
+        tuesday_nine = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=2
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(tuesday_nine)
+
+        # Check just 2 clashes
+        assert clashes.all().count() == 0
+
 
 class TestTimetableSlot(test.TestCase):
     """Unit tests for the TimetableSlot model"""

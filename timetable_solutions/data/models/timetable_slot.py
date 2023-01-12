@@ -57,6 +57,26 @@ class TimetableSlotQuerySet(models.QuerySet):
             & models.Q(relevant_year_groups=year_group)
         )
 
+    # Filters
+
+    def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
+        """
+        Filter a queryset of slots against an individual slot.
+        :return The slots in the queryset (self) that clash with the passed slot, non-inclusively.
+        """
+        clash_range = slot.open_interval
+
+        # Note the django __range filter is inclusive, hence the open interval is essential,
+        # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
+        # Equally essentially, this ensures the filter isn't reflexive (i.e. slots don't clash with themselves)
+        return self.filter(
+            (
+                models.Q(period_starts_at__range=clash_range)
+                | models.Q(period_ends_at__range=clash_range)
+            )
+            & models.Q(day_of_week=slot.day_of_week)
+        )
+
 
 class TimetableSlot(models.Model):
     """Model for stating the unique timetable slots when classes can take place"""
