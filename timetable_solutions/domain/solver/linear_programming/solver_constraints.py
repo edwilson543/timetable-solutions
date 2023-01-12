@@ -135,6 +135,8 @@ class TimetableSolverConstraints:
             Defines a 'one-place-at-a-slot' constraint for an individual pupil, and individual timeslot.
             We sum the decision variables relevant to the pupil, and force this to 0 if the pupil has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+
+            This is a SLOT based constraint, rather than a TIME based one.
             """
             existing_commitment = pupil.check_if_busy_at_timeslot(slot=time_slot)
             possible_commitments = lp.lpSum(
@@ -174,31 +176,36 @@ class TimetableSolverConstraints:
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining the constraints that each teacher can only teach one class at a time, and returning these as a
-        generator that is iterated through once to add each constraint to the LpProblem
+        generator that is iterated through once to add each constraint to the LpProblem.
         """
 
         def __one_place_at_a_time_constraint(
-            teacher: models.Teacher, time_slot: models.TimetableSlot
+            teacher: models.Teacher,
+            time_slot: models.TimetableSlot,
         ) -> tuple[lp.LpConstraint, str]:
             """
             Defines a 'one-place-at-a-time' constraint for an individual teacher, and individual timeslot.
             We sum the decision variables relevant to the teacher, and force this to 0 if the teacher has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+
+            This is a TIME based constraint, rather than a SLOT based one.
             """
             existing_commitment = teacher.check_if_busy_at_timeslot(slot=time_slot)
+
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (teacher == ln.teacher)
+                    for lesson in self._inputs.lessons
+                    if (teacher == lesson.teacher)
                     and (
                         key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
                 ]
             )
+
             if existing_commitment:
                 constraint = (
                     possible_commitments == 0,
