@@ -96,7 +96,7 @@ class TestPupil(test.TestCase):
         lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
-        is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+        is_busy = pup.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert is_busy
@@ -112,13 +112,13 @@ class TestPupil(test.TestCase):
         )
 
         # Execute test unit
-        is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+        is_busy = pup.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert not is_busy
 
     # QUERY METHOD TESTS
-    def test_get_relevant_slots(self):
+    def test_get_associated_timeslots(self):
         """
         Test that the correct TimetableSlots are associated with a pupil.
         """
@@ -129,7 +129,7 @@ class TestPupil(test.TestCase):
         )
 
         # Execute test unit
-        slots = pupil.get_relevant_slots()
+        slots = pupil.get_associated_timeslots()
 
         # Check outcome
         self.assertQuerysetEqual(slots, expected_slots)

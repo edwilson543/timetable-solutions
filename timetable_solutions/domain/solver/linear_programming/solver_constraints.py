@@ -99,19 +99,19 @@ class TimetableSolverConstraints:
         ) -> tuple[lp.LpConstraint, str]:
             """
             States that the passed lesson must be taught for the number of required periods, that have not been
-            defined by the user
+            defined by the user.
             """
-            variables_sum = lp.lpSum(
+            n_solver_slots_variable = lp.lpSum(
                 [
                     var
                     for key, var in self._decision_variables.items()
                     if key.lesson_id == lesson.lesson_id
                 ]
             )
-            additional_slots = lesson.get_n_solver_slots_required()
+            n_solver_slots_required = lesson.get_n_solver_slots_required()
             constraint = (
-                variables_sum == additional_slots,
-                f"{lesson.lesson_id}_taught_for_{additional_slots}_additional_slots",
+                n_solver_slots_variable == n_solver_slots_required,
+                f"{lesson.lesson_id}_taught_for_{n_solver_slots_required}_additional_slots",
             )
             return constraint
 
@@ -128,23 +128,23 @@ class TimetableSolverConstraints:
         generator that is iterated through once to add each constraint to the LpProblem.
         """
 
-        def __one_place_at_a_time_constraint(
+        def __one_place_at_a_slot_constraint(
             pupil: models.Pupil, time_slot: models.TimetableSlot
         ) -> tuple[lp.LpConstraint, str]:
             """
-            Defines a 'one-place-at-a-time' constraint for an individual pupil, and individual timeslot.
+            Defines a 'one-place-at-a-slot' constraint for an individual pupil, and individual timeslot.
             We sum the decision variables relevant to the pupil, and force this to 0 if the pupil has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
             """
-            existing_commitment = pupil.check_if_busy_at_time_slot(slot=time_slot)
+            existing_commitment = pupil.check_if_busy_at_timeslot(slot=time_slot)
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (pupil in ln.pupils.all())
+                    for lesson in self._inputs.lessons
+                    if (pupil in lesson.pupils.all())
                     and (
                         key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
@@ -163,9 +163,9 @@ class TimetableSolverConstraints:
             return constraint
 
         constraints = (
-            __one_place_at_a_time_constraint(pupil=pupil, time_slot=time_slot)
+            __one_place_at_a_slot_constraint(pupil=pupil, time_slot=time_slot)
             for pupil in self._inputs.pupils
-            for time_slot in self._inputs.timetable_slots
+            for time_slot in pupil.get_associated_timeslots()
         )
         return constraints
 
@@ -185,7 +185,7 @@ class TimetableSolverConstraints:
             We sum the decision variables relevant to the teacher, and force this to 0 if the teacher has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
             """
-            existing_commitment = teacher.check_if_busy_at_time_slot(slot=time_slot)
+            existing_commitment = teacher.check_if_busy_at_timeslot(slot=time_slot)
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)

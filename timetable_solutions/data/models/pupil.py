@@ -105,14 +105,13 @@ class Pupil(models.Model):
         return outcome
 
     # FILTER METHODS
-    def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
+    def check_if_busy_at_timeslot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the given pupil has already been assigned a lesson at the given slot.
         :return - True if BUSY at the given timeslot.
         """
-        # noinspection PyUnresolvedReferences
-        slot_classes = self.lessons.filter(user_defined_time_slots=slot)
-        n_commitments = slot_classes.count()
+        user_defined_lessons_at_slot = self.lessons.filter(user_defined_time_slots=slot)
+        n_commitments = user_defined_lessons_at_slot.count()
         if n_commitments == 1:
             return True
         elif n_commitments == 0:
@@ -123,7 +122,7 @@ class Pupil(models.Model):
             )
 
     # QUERY METHODS
-    def get_relevant_slots(self) -> TimetableSlotQuerySet:
+    def get_associated_timeslots(self) -> TimetableSlotQuerySet:
         """
         Method to return the TimetableSlot instances relevant to a pupil
         """
@@ -139,5 +138,5 @@ class Pupil(models.Model):
         """
         Method to get the percentage of time a pupil is occupied (including any lunch slots)
         """
-        n_relevant_slots = self.get_relevant_slots().count()
-        return self.get_lessons_per_week() / n_relevant_slots
+        n_associated_slots = self.get_associated_timeslots().count()
+        return self.get_lessons_per_week() / n_associated_slots

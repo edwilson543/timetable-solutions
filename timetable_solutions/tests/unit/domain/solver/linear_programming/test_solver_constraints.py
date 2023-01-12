@@ -73,29 +73,29 @@ class TestSolverConstraints(test.TestCase):
         pup_constraints = constraint_maker._get_all_pupil_constraints()
 
         # Check outcome
-        existing_commitment_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
-        )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
+
+        # constraints where the LpAffineExpression must always equal 0
+        existing_commitment_count = 0
+
+        # constraints where the LpAffineExpression could equal 1
+        free_constraint_count = 0
+
         for constraint_tuple in pup_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
 
             constant = constraint_tuple[0].constant
             if constant == 0:
-                existing_commitment_count += (
-                    1  # Constraint specifies that the pupil is unavailable at the time
-                )
+                # Constraint specifies that the pupil is unavailable at the time
+                existing_commitment_count += 1
+
             elif constant == -1:
                 free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
 
         assert (
             free_constraint_count + existing_commitment_count == 6 * 35
         )  # = n_pupils * n_timetable_slots
-        assert free_constraint_count == 6 * (
-            35 - 5
-        )  # Since we have 5 fixed lunch slots (deducted per pupil)
+        # We have 5 fixed lunch slots (deducted per pupil)
+        assert free_constraint_count == 6 * (35 - 5)
 
     def test_get_all_teacher_constraints(self):
         """
@@ -236,6 +236,64 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
         "lessons_without_solution.json",
         "extra-year.json",
     ]
+
+    def test_get_all_fulfillment_constraints(self):
+        """
+        Test that the correct set of fulfillment constraints is returned for all the lessons,
+        when some year groups have different timetables.
+        """
+        # Execute test unit
+        constraint_maker = get_constraint_maker()
+        constraints = constraint_maker._get_all_fulfillment_constraints()
+
+        # Check outcome
+        constraint_count = 0
+        for constraint_tuple in constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+            # Constant less than zero indicates that there is something to solver
+            assert constraint.constant < 0
+
+            if "extra_year" in str(constraint):
+                # Extra year only has 2 slots & deision variables, so this is the constraint length
+                assert len(constraint) == 2
+            else:
+                # Each decision variable for the 35 slots is included in the sum
+                assert len(constraint) == 35
+
+            constraint_count += 1
+
+        assert constraint_count == 14
+
+    def test_get_all_pupil_constraints_extra_year(self):
+        """
+        Test that the correct set of constraints is returned for pupils,
+        when some year groups have different timetables.
+        """
+        # Execute test unit
+        constraint_maker = get_constraint_maker()
+        pup_constraints = constraint_maker._get_all_pupil_constraints()
+
+        # Check outcome
+        extra_year_constraints = 0
+        other_constraints = 0
+
+        for constraint_tuple in pup_constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+
+            if "extra_year" in str(constraint):
+                # All pupils are free, so each constraint is just: decision var - 1 <= 0
+                assert len(constraint) == 1
+                assert constraint.constant == -1
+                extra_year_constraints += 1
+
+            else:
+                other_constraints += 1
+
+        # These should just match number of slots * number of pupils
+        assert extra_year_constraints == 2 * 2
+        assert other_constraints == 6 * 35
 
     def test_get_all_no_split_classes_within_day_constraints_constraints(self):
         """
