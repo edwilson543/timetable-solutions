@@ -358,3 +358,17 @@ class TestTimetableSlot(test.TestCase):
 
         # Check outcome
         assert duration == dt.timedelta(hours=1)
+
+    def test_open_interval(self):
+        """
+        Test the correct open start / finish time is returned for a timetable slot.
+        """
+        # Get the test slot
+        slot = models.TimetableSlot.objects.get(pk=1)  # Slot is 9AM - 10AM
+
+        # Get the open interval
+        open_start, open_end = slot.open_interval
+
+        # Check a second is incremented either way
+        assert open_start == dt.time(hour=9, minute=0, second=1)
+        assert open_end == dt.time(hour=9, minute=59, second=59)

@@ -199,6 +199,26 @@ class TimetableSlot(models.Model):
         dur = end - start
         return dur
 
+    @property
+    def open_interval(self) -> tuple[dt.time, dt.time]:
+        """
+        Duration which the slot covers +/- a second (a 'fake' open interval really).
+        This is so that comparing with another slot doesn't give undesired clashes.
+        """
+        one_second = dt.timedelta(seconds=1)
+
+        open_start_time = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
+            + one_second
+        ).time()
+
+        open_end_time = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
+            - one_second
+        ).time()
+
+        return open_start_time, open_end_time
+
     # Checks
     def clean(self) -> None:
         """
