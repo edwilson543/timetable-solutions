@@ -100,31 +100,6 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         # Check outcome
         assert timetable_start == 16  # Corresponds to 16:00
 
-    def test_timetable_finish_as_float_when_duration_tips_over_24_hours(self):
-        """
-        Unit test that the timetable start and finish span is correctly calculated.
-        """
-        # Set test parameters
-        models.TimetableSlot.create_new(
-            # The important parts - will finish at half past midnight, so should return 0.5
-            period_starts_at=dt.time(hour=23, minute=30),
-            period_duration=dt.timedelta(minutes=60),
-            # The irrelevant parts
-            school_id=123456,
-            slot_id=1000,
-            day_of_week=models.WeekDay.MONDAY,
-        )
-
-        data = slvr.TimetableSolverInputs(
-            school_id=123456, solution_specification=self.solution_spec
-        )
-
-        # Execute test unit
-        timetable_start = data.timetable_finish_hour_as_float
-
-        # Check outcome
-        assert timetable_start == 0.5  # Corresponds to 00:30
-
     # Tests for methods for variables
     def test_get_consecutive_slots_for_year_group_one_timetable(self):
         """

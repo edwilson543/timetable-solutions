@@ -96,16 +96,15 @@ class TimetableSolverInputs:
     def timetable_finish_hour_as_float(self) -> float:
         """
         Property finding the latest time of day that the timetable finishes, as a float on the 24-hour clock
-        :return: e.g. if the timetable ends at 5 PM, 17.0 will be returned. Similarly, 12:30AM -> 0.5
-        Note: the returned time is the time the last periods ends (as opposed to the time the last periods starts at)
+        :return: e.g. if the timetable ends at 5 PM, 17.0 will be returned.
+
+        Note: 23:30-00:30 is an invalid slot span (see .clean on TimetableSlot), so we don't take modulo 24 at the end.
         """
         finish_hour = max(
-            slot.period_starts_at.hour
-            + (slot.period_starts_at.minute / 60)
-            + (slot.period_duration.total_seconds() / 3600)
+            slot.period_ends_at.hour + (slot.period_ends_at.minute / 60)
             for slot in self.timetable_slots
         )
-        return finish_hour % 24
+        return finish_hour
 
     def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """

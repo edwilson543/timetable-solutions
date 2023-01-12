@@ -19,9 +19,9 @@
     "pk": 801,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 1,
       "period_starts_at": "09:00:00",
+      "period_ends_at": "10:00:00",
       "school": 888888,
       "relevant_year_groups": [
         801
@@ -33,9 +33,9 @@
     "pk": 802,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 2,
       "period_starts_at": "10:00:00",
+      "period_ends_at": "11:00:00",
       "school": 888888,
       "relevant_year_groups": [
         801
@@ -47,9 +47,9 @@
     "pk": 803,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 3,
       "period_starts_at": "11:00:00",
+      "period_ends_at": "12:00:00",
       "school": 888888,
       "relevant_year_groups": [
         801
@@ -61,9 +61,9 @@
     "pk": 804,
     "fields": {
       "day_of_week": 2,
-      "period_duration": "01:00:00",
       "slot_id": 4,
       "period_starts_at": "09:00:00",
+      "period_ends_at": "10:00:00",
       "school": 888888,
       "relevant_year_groups": [
         801

@@ -72,7 +72,7 @@ class TestTeacher(test.TestCase):
             models.Teacher.delete_all_instances_for_school(school_id=123456)
 
     # FILTER METHOD TESTS
-    def test_check_if_busy_at_time_slot_when_teacher_is_busy(self):
+    def test_check_if_busy_at_timeslot_when_teacher_is_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to"""
         # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(
@@ -90,12 +90,12 @@ class TestTeacher(test.TestCase):
         lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
-        is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+        is_busy = teacher.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert is_busy
 
-    def test_check_if_busy_at_time_slot_when_teacher_is_not_busy(self):
+    def test_check_if_busy_at_timeslot_when_teacher_is_not_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to"""
         # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(
@@ -106,7 +106,7 @@ class TestTeacher(test.TestCase):
         )
 
         # Execute test unit
-        is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+        is_busy = teacher.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert not is_busy

@@ -96,7 +96,7 @@ class Teacher(models.Model):
         return outcome
 
     # FILTER METHODS
-    def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
+    def check_if_busy_at_timeslot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the teacher has already been assigned a lesson at the given slot.
         :return - True if BUSY at the given timeslot.

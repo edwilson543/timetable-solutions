@@ -10,6 +10,7 @@ import pytest
 
 # Django imports
 from django import test
+from django.core import exceptions
 from django.core import management
 from django.db import IntegrityError
 
@@ -63,7 +64,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
         )
 
         # Check outcome
@@ -88,7 +89,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
             relevant_year_groups=year_groups,
         )
 
@@ -116,7 +117,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
             relevant_year_groups=year_group,
         )
 
@@ -141,7 +142,7 @@ class TestTimetableSlot(test.TestCase):
                 slot_id=1,  # Note that slot 1 is already taken
                 day_of_week=models.WeekDay.MONDAY,
                 period_starts_at=dt.time(hour=9),
-                period_duration=dt.timedelta(hours=1),
+                period_ends_at=dt.time(hour=10),
             )
 
     def test_create_new_fails_with_invalid_day_of_week(self):
@@ -156,7 +157,35 @@ class TestTimetableSlot(test.TestCase):
                 slot_id=100,  # Note that slot 100 is available
                 day_of_week=100,  # Invalid day of week
                 period_starts_at=dt.time(hour=9),
-                period_duration=dt.timedelta(hours=1),
+                period_ends_at=dt.time(hour=10),
+            )
+
+    def test_create_new_fails_with_equal_start_and_end(self):
+        """
+        Tests that we can cannot create a Timetable slot with 0s duration.
+        """
+        # Execute test unit
+        with pytest.raises(exceptions.ValidationError):
+            models.TimetableSlot.create_new(
+                school_id=123456,
+                slot_id=100,  # Note that slot 100 is available
+                day_of_week=models.WeekDay.MONDAY,
+                period_starts_at=dt.time(hour=9),
+                period_ends_at=dt.time(hour=9),
+            )
+
+    def test_create_new_fails_with_end_time_before_start_time(self):
+        """
+        Tests that we can cannot create a Timetable slot with end time < start time.
+        """
+        # Execute test unit
+        with pytest.raises(exceptions.ValidationError):
+            models.TimetableSlot.create_new(
+                school_id=123456,
+                slot_id=100,  # Note that slot 100 is available
+                day_of_week=models.WeekDay.MONDAY,
+                period_starts_at=dt.time(hour=9),
+                period_ends_at=dt.time(hour=8),
             )
 
     def test_delete_all_instances_for_school_successful(self):
@@ -236,7 +265,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9, minute=42),  # This is the key data point
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
         )
 
         # Execute test unit
@@ -317,17 +346,15 @@ class TestTimetableSlot(test.TestCase):
         assert (not consecutive_1) and (not consecutive_2)
 
     # PROPERTIES TESTS
-    def test_period_ends_at(self):
+    def test_period_duration(self):
         """
         Tests that the end time property for a timetable slot is working
         """
         # Set test parameters
-        slot = models.TimetableSlot.objects.get(
-            pk=1
-        )  # Starts at 9AM, lasting for 1 Hour
+        slot = models.TimetableSlot.objects.get(pk=1)  # Slot is 9AM - 10AM
 
         # Execute test unit
-        end_time = slot.period_ends_at
+        duration = slot.period_duration
 
         # Check outcome
-        assert end_time == dt.time(hour=10, minute=0, second=0)
+        assert duration == dt.timedelta(hours=1)

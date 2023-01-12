@@ -96,7 +96,7 @@ class BaseFileUploadProcessor:
         # Basic cleaning / checks on file content & structure
         upload_df.fillna(value=self.__nan_handler, inplace=True)
         upload_df.replace(to_replace="", value=self.__nan_handler)
-        upload_df = self._convert_df_to_correct_types(upload_df)
+        upload_df = self.convert_df_to_correct_types(upload_df)
 
         if not self._check_upload_df_structure_and_content(upload_df=upload_df):
             # Note that the error message attribute will be set as appropriate
@@ -220,16 +220,10 @@ class BaseFileUploadProcessor:
 
     # COLUMN-BY-COLUMN PROCESSING
     @staticmethod
-    def _convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
-        """Method to ensure timestamps / timedelta are converted to the correct type"""
-        if Header.PERIOD_DURATION in upload_df.columns:
-            upload_df[Header.PERIOD_DURATION] = pd.to_timedelta(
-                upload_df[Header.PERIOD_DURATION]
-            )
-        if Header.PERIOD_STARTS_AT in upload_df.columns:
-            upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(
-                upload_df[Header.PERIOD_STARTS_AT]
-            )
+    def convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Hook to allow subclasses to implement custom logic for individual columns.
+        """
         return upload_df
 
     # PROPERTIES

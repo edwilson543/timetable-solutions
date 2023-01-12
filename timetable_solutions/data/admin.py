@@ -70,8 +70,8 @@ class PupilAdmin(admin.ModelAdmin):
 
 @admin.register(models.TimetableSlot)
 class TimetableSlotAdmin(admin.ModelAdmin):
-    list_display = ["school", "day_of_week", "period_starts_at"]
-    list_filter = ["school", "day_of_week", "period_starts_at"]
+    list_display = ["school", "day_of_week", "period_starts_at", "period_ends_at"]
+    list_filter = ["school", "day_of_week", "period_starts_at", "period_ends_at"]
     search_fields = ["school__school_access_key"]
     search_help_text = "Search by school access key"
 

@@ -162,7 +162,7 @@ class TestBaseModelAdmin(test.TestCase):
             "slot_id": 100,
             "day_of_week": 1,
             "period_starts_at": "09:00",
-            "period_duration": "01:00",
+            "period_ends_at": "10:00",
             "relevant_year_groups": [1, 2],
         }
 
@@ -194,7 +194,7 @@ class TestBaseModelAdmin(test.TestCase):
             "slot_id": 100,
             "day_of_week": 1,
             "period_starts_at": "09:00",
-            "period_duration": "01:00",
+            "period_ends_at": "10:00",
         }
 
         # Execute test unit

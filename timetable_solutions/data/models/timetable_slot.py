@@ -2,9 +2,9 @@
 
 # Standard library imports
 import datetime as dt
-from functools import lru_cache
 
 # Django imports
+from django.core import exceptions
 from django.db import models
 
 # Local application imports (other models)
@@ -64,8 +64,8 @@ class TimetableSlot(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
     day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
-    period_starts_at = models.TimeField()
-    period_duration = models.DurationField(default=dt.timedelta(hours=1))
+    period_starts_at: dt.time = models.TimeField()
+    period_ends_at: dt.time = models.TimeField()
     relevant_year_groups = models.ManyToManyField(YearGroup, related_name="slots")
 
     # Introduce a custom manager
@@ -107,7 +107,7 @@ class TimetableSlot(models.Model):
         slot_id: int,
         day_of_week: WeekDay,
         period_starts_at: dt.time,
-        period_duration: dt.timedelta,
+        period_ends_at: dt.time,
         relevant_year_groups: YearGroupQuerySet | None = None,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
@@ -124,7 +124,7 @@ class TimetableSlot(models.Model):
             slot_id=slot_id,
             day_of_week=day_of_week,
             period_starts_at=period_starts_at,
-            period_duration=period_duration,
+            period_ends_at=period_ends_at,
         )
         slot.full_clean()
 
@@ -190,12 +190,21 @@ class TimetableSlot(models.Model):
 
     # PROPERTIES
     @property
-    def period_ends_at(self) -> dt.time:
+    def period_duration(self) -> dt.timedelta:
         """
         Property calculating the time at which a timetable slot ends.
         """
-        end_datetime = (
-            dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
-            + self.period_duration
-        )
-        return end_datetime.time()
+        start = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
+        end = dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
+        dur = end - start
+        return dur
+
+    # Checks
+    def clean(self) -> None:
+        """
+        Additional validation on TimetablesLOT instances.
+        """
+        if self.period_ends_at <= self.period_starts_at:
+            raise exceptions.ValidationError(
+                "Period cannot finish before it has started!"
+            )
