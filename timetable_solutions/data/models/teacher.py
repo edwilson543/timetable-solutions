@@ -103,10 +103,9 @@ class Teacher(models.Model):
         """
 
         # Get number of commitments
-        n_commitments = 0
-        for lesson in self.lessons.all():
-            clash_slots = lesson.user_defined_time_slots.filter_for_clashes(slot)
-            n_commitments += clash_slots.count()
+        user_defined_slots = TimetableSlot.objects.filter(user_lessons__teacher=self)
+        clashes = user_defined_slots.filter_for_clashes(slot)
+        n_commitments = clashes.count()
 
         # Decide what should happen
         if n_commitments == 1:
