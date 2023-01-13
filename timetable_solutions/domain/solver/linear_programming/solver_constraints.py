@@ -190,7 +190,9 @@ class TimetableSolverConstraints:
 
             This is a TIME based constraint, rather than a SLOT based one.
             """
-            existing_commitment = teacher.check_if_busy_at_timeslot(slot=time_slot)
+            existing_commitment = teacher.check_if_busy_at_time_of_timeslot(
+                slot=time_slot
+            )
 
             possible_commitments = lp.lpSum(
                 [
