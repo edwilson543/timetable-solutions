@@ -142,9 +142,8 @@ class TimetableSolverConstraints:
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for lesson in self._inputs.lessons
-                    if (pupil in lesson.pupils.all())
-                    and (
+                    for lesson in pupil.lessons.all()
+                    if (
                         key := var_key(
                             lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
@@ -197,9 +196,8 @@ class TimetableSolverConstraints:
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for lesson in self._inputs.lessons
-                    if (teacher == lesson.teacher)
-                    and (
+                    for lesson in teacher.lessons.all()
+                    if (
                         key := var_key(
                             lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
@@ -247,11 +245,10 @@ class TimetableSolverConstraints:
             possible_uses = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (classroom == ln.classroom)
-                    and (
+                    for lesson in classroom.lessons.all()
+                    if (
                         key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
