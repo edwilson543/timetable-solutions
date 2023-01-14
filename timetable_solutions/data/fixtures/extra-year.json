@@ -124,8 +124,8 @@
       "school": 123456,
       "lesson_id": "extra-year-history",
       "subject_name": "HISTORY",
-      "teacher": 100,
-      "classroom": 100,
+      "teacher": 101,
+      "classroom": 101,
       "pupils": [
         101
       ],
