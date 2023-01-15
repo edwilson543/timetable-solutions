@@ -322,6 +322,33 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
         # (extra year teachers + other teachers) * (extra year slots + other slots)
         assert n_constraints == (2 + 11) * (2 + 35)
 
+    def test_get_all_classroom_constraints_extra_year(self):
+        """
+        Test that the correct set of constraints is returned for classrooms,
+        when some year groups have different timetables.
+        """
+        # Execute test unit
+        constraint_maker = get_constraint_maker()
+        teacher_constraints = constraint_maker._get_all_classroom_constraints()
+
+        # Check outcome
+        n_constraints = 0
+
+        for constraint_tuple in teacher_constraints:
+            constraint = constraint_tuple[0]
+            assert isinstance(constraint, LpConstraint)
+
+            if "extra_year" in str(constraint):
+                # Each classroom has just one lesson, so each constraint is just: decision var - 1 <= 0
+                assert len(constraint) == 1
+                assert constraint.constant == -1
+
+            n_constraints += 1
+
+        # These should just match number of classrooms * slots
+        # (extra year classrooms + other classrooms) * (extra year slots + other slots)
+        assert n_constraints == (2 + 12) * (2 + 35)
+
     def test_get_all_no_split_classes_within_day_constraints_constraints(self):
         """
         Test that the correct set of constraints is returned preventing split periods,
