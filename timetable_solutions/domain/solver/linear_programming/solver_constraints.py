@@ -241,7 +241,7 @@ class TimetableSolverConstraints:
             We sum the decision variables relevant to the classroom, and force this to 0 if the teacher has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
             """
-            occupied = classroom.check_if_occupied_at_time_slot(slot=time_slot)
+            occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=time_slot)
             possible_uses = lp.lpSum(
                 [
                     self._decision_variables.get(key)
