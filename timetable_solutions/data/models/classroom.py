@@ -92,21 +92,24 @@ class Classroom(models.Model):
         return outcome
 
     # QUERY METHODS
-    def check_if_occupied_at_time_slot(self, slot: TimetableSlot) -> bool:
+    def check_if_occupied_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
         """
-        Method to check whether the classroom has already been assigned a lesson at the given slot.
-        :return - True if OCCUPIED at the given timeslot.
+        Method to check whether the classroom is occupied AT ANY POINT during the passed timeslot.
+        :return - True if occupied.
         """
-        # noinspection PyUnresolvedReferences
-        slot_classes = self.lessons.filter(user_defined_time_slots=slot)
-        n_commitments = slot_classes.count()
+        # Get number of commitments
+        user_defined_slots = TimetableSlot.objects.filter(user_lessons__classroom=self)
+        clashes = user_defined_slots.filter_for_clashes(slot)
+        n_commitments = clashes.count()
+
+        # Decide what should happen
         if n_commitments == 1:
             return True
         elif n_commitments == 0:
             return False
         else:
             raise ValueError(
-                f"Classroom {self.__str__}, {self.pk} has ended up with more than 1 Lesson at {slot}"
+                f"Classroom {self} has ended up with more than 1 Lesson at {slot}"
             )
 
     def get_lessons_per_week(self) -> int:

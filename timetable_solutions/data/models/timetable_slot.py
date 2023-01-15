@@ -2,9 +2,9 @@
 
 # Standard library imports
 import datetime as dt
-from functools import lru_cache
 
 # Django imports
+from django.core import exceptions
 from django.db import models
 
 # Local application imports (other models)
@@ -45,11 +45,48 @@ class TimetableSlotQuerySet(models.QuerySet):
         )
 
     def get_timeslots_on_given_day(
-        self, school_id: int, day_of_week: WeekDay
+        self, school_id: int, day_of_week: WeekDay, year_group: YearGroup
     ) -> "TimetableSlotQuerySet":
-        """Method returning the timetable slots for the school on the given day of the week"""
+        """
+        Method returning the timetable slots for the school on the given day of the week,
+        relevant to a particular year group.
+        """
         return self.filter(
-            models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week)
+            models.Q(school_id=school_id)
+            & models.Q(day_of_week=day_of_week)
+            & models.Q(relevant_year_groups=year_group)
+        )
+
+    # Filters
+
+    def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
+        """
+        Filter a queryset of slots against an individual slot.
+        :return The slots in the queryset (self) that clash with the passed slot, non-inclusively.
+
+        The use case for this is to check whether teachers / classrooms / (pupil) are busy at a give slot,
+        at any point during that slot.
+        """
+        clash_range = slot.open_interval
+        # Note the django __range filter is inclusive, hence the open interval is essential,
+        # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
+
+        return self.filter(
+            (
+                (
+                    # OVERLAPPING clashes
+                    models.Q(period_starts_at__range=clash_range)
+                    | models.Q(period_ends_at__range=clash_range)
+                )
+                | (
+                    # EXACT MATCH clashes
+                    # We do however want slots to clash with themselves / other slots starting and finishing
+                    # at the same time, since a user may have defined slots covering the same time pan
+                    models.Q(period_starts_at=slot.period_starts_at)
+                    | models.Q(period_ends_at=slot.period_ends_at)
+                )
+            )
+            & models.Q(day_of_week=slot.day_of_week)
         )
 
 
@@ -59,8 +96,8 @@ class TimetableSlot(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
     day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
-    period_starts_at = models.TimeField()
-    period_duration = models.DurationField(default=dt.timedelta(hours=1))
+    period_starts_at: dt.time = models.TimeField()
+    period_ends_at: dt.time = models.TimeField()
     relevant_year_groups = models.ManyToManyField(YearGroup, related_name="slots")
 
     # Introduce a custom manager
@@ -102,7 +139,7 @@ class TimetableSlot(models.Model):
         slot_id: int,
         day_of_week: WeekDay,
         period_starts_at: dt.time,
-        period_duration: dt.timedelta,
+        period_ends_at: dt.time,
         relevant_year_groups: YearGroupQuerySet | None = None,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
@@ -119,7 +156,7 @@ class TimetableSlot(models.Model):
             slot_id=slot_id,
             day_of_week=day_of_week,
             period_starts_at=period_starts_at,
-            period_duration=period_duration,
+            period_ends_at=period_ends_at,
         )
         slot.full_clean()
 
@@ -147,16 +184,15 @@ class TimetableSlot(models.Model):
 
     # QUERIES
     @classmethod
-    @lru_cache(maxsize=8)
     def get_timeslot_ids_on_given_day(
-        cls, school_id: int, day_of_week: WeekDay
+        cls, school_id: int, day_of_week: WeekDay, year_group: YearGroup
     ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
         Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
         """
         timeslots = cls.objects.get_timeslots_on_given_day(
-            school_id=school_id, day_of_week=day_of_week
+            school_id=school_id, day_of_week=day_of_week, year_group=year_group
         )
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids
@@ -186,12 +222,41 @@ class TimetableSlot(models.Model):
 
     # PROPERTIES
     @property
-    def period_ends_at(self) -> dt.time:
+    def period_duration(self) -> dt.timedelta:
         """
         Property calculating the time at which a timetable slot ends.
         """
-        end_datetime = (
+        start = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
+        end = dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
+        dur = end - start
+        return dur
+
+    @property
+    def open_interval(self) -> tuple[dt.time, dt.time]:
+        """
+        Duration which the slot covers +/- a second (a 'fake' open interval really).
+        This is so that comparing with another slot doesn't give undesired clashes.
+        """
+        one_second = dt.timedelta(seconds=1)
+
+        open_start_time = (
             dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
-            + self.period_duration
-        )
-        return end_datetime.time()
+            + one_second
+        ).time()
+
+        open_end_time = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
+            - one_second
+        ).time()
+
+        return open_start_time, open_end_time
+
+    # Checks
+    def clean(self) -> None:
+        """
+        Additional validation on TimetablesLOT instances.
+        """
+        if self.period_ends_at <= self.period_starts_at:
+            raise exceptions.ValidationError(
+                "Period cannot finish before it has started!"
+            )

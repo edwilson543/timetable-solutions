@@ -302,3 +302,81 @@ class TestLesson(test.TestCase):
 
         # Check outcome
         assert year_group == "N/A"
+
+    def test_get_associated_timeslots_year_one_lesson(self):
+        """
+        Test that the corrct set of timeslots for year one is retrieved.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+
+        # Execute test unit
+        slots = lesson.get_associated_timeslots()
+
+        # Check outcome
+        assert slots.count() == 35
+
+    def test_available_days_year_one_lesson(self):
+        """
+        Test the correct list of days is returned for a year one lesson.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+
+        # Execute test unit
+        associated_days = lesson.get_associated_days_of_week()
+
+        # Check outcome
+        assert associated_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
+
+
+class TestLessonExtraYear(test.TestCase):
+    """
+    Unit tests for the Lesson model when the 'extra year' is included'.
+    This means the timetable slots are different for different year groups.
+    """
+
+    fixtures = [
+        "user_school_profile.json",
+        "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
+        "timetable.json",
+        "lessons_with_solution.json",
+        "extra-year.json",
+    ]
+
+    def test_get_associated_timeslots_extra_year_lesson(self):
+        """
+        Test that the corrct set of timeslots for the 'extra year' is retrieved.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="extra-year-history"
+        )
+
+        # Execute test unit
+        slots = lesson.get_associated_timeslots()
+
+        # Check outcome
+        assert slots.count() == 2
+
+    def test_available_days_extra_year_lesson(self):
+        """
+        Test that just Monday is returned for an extra-year lesson, who only have 2 slots.
+        """
+        # Set test parameters
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="extra-year-geography"
+        )
+
+        # Execute test unit
+        associated_days = lesson.get_associated_days_of_week()
+
+        # Check outcome
+        assert associated_days == [1]

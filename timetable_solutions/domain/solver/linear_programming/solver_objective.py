@@ -31,8 +31,8 @@ class TimetableSolverObjective:
         self._decision_variables = variables.decision_variables
 
         # Add some instance attributes for ease of access
-        self._timetable_start = self._inputs.timetable_start
-        self._timetable_finish = self._inputs.timetable_finish
+        self._timetable_start = self._inputs.timetable_start_hour_as_float
+        self._timetable_finish = self._inputs.timetable_finish_hour_as_float
 
     def add_objective_to_problem(self, problem: lp.LpProblem) -> None:
         """

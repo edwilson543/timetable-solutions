@@ -2,6 +2,9 @@
 Unit tests for methods on the Teacher class
 """
 
+# Standard library imports
+import datetime as dt
+
 # Third party imports
 import pytest
 
@@ -72,8 +75,10 @@ class TestTeacher(test.TestCase):
             models.Teacher.delete_all_instances_for_school(school_id=123456)
 
     # FILTER METHOD TESTS
-    def test_check_if_busy_at_time_slot_when_teacher_is_busy(self):
-        """Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to"""
+    def test_check_if_busy_at_time_of_timeslot_when_teacher_is_busy_at_passed_slot(
+        self,
+    ):
+        """Test that a teacher is busy if they're teaching at the exact passed lesson slot"""
         # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(
             school_id=123456, teacher_id=1
@@ -90,12 +95,84 @@ class TestTeacher(test.TestCase):
         lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
-        is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+        is_busy = teacher.check_if_busy_at_time_of_timeslot(slot=slot)
 
         # Check outcome
         assert is_busy
 
-    def test_check_if_busy_at_time_slot_when_teacher_is_not_busy(self):
+    def test_check_if_busy_at_time_of_timeslot_when_teacher_is_busy_at_exact_times_of_passed_slot(
+        self,
+    ):
+        """
+        Test that a teacher is busy if they're teaching at another slot with
+        the exact same times as the passed slot
+        """
+        # Get a teacher to create a clash for
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        lesson.teacher = teacher
+        lesson.add_user_defined_time_slots(time_slots=nine_to_ten)
+
+        # Create a slot to check against
+        another_nine_to_ten = models.TimetableSlot.create_new(
+            school_id=123456,
+            slot_id=1000,
+            period_starts_at=dt.time(hour=9),
+            period_ends_at=dt.time(hour=10),
+            relevant_year_groups=None,
+            day_of_week=models.WeekDay.MONDAY,
+        )
+
+        # Execute test unit
+        is_busy = teacher.check_if_busy_at_time_of_timeslot(slot=another_nine_to_ten)
+
+        # Check outcome
+        assert is_busy
+
+    def test_check_if_busy_at_time_of_timeslot_partially_overlapping_timeslot(self):
+        """
+        Test that a teacher is busy if they're teaching at another slot with
+        slightly overlapping slots
+        """
+        # Get a teacher to create a clash for
+        teacher = models.Teacher.objects.get_individual_teacher(
+            school_id=123456, teacher_id=1
+        )
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        )
+        lesson.teacher = teacher
+        lesson.add_user_defined_time_slots(time_slots=nine_to_ten)
+
+        # Create a slot to check against
+        eight_30_nine_30 = models.TimetableSlot.create_new(
+            school_id=123456,
+            slot_id=1000,
+            period_starts_at=dt.time(hour=8, minute=30),
+            period_ends_at=dt.time(hour=9, minute=30),
+            relevant_year_groups=None,
+            day_of_week=models.WeekDay.MONDAY,
+        )
+
+        # Execute test unit
+        is_busy = teacher.check_if_busy_at_time_of_timeslot(slot=eight_30_nine_30)
+
+        # Check outcome
+        assert is_busy
+
+    def test_check_if_busy_at_time_of_timeslot_when_teacher_is_not_busy(self):
         """Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to"""
         # Set test parameters
         teacher = models.Teacher.objects.get_individual_teacher(
@@ -106,7 +183,7 @@ class TestTeacher(test.TestCase):
         )
 
         # Execute test unit
-        is_busy = teacher.check_if_busy_at_time_slot(slot=slot)
+        is_busy = teacher.check_if_busy_at_time_of_timeslot(slot=slot)
 
         # Check outcome
         assert not is_busy

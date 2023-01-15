@@ -6,6 +6,7 @@ import datetime as dt
 
 # Django imports
 from django import test
+from django.core import management
 
 # Local application imports
 from data import models
@@ -46,11 +47,10 @@ class TestTimetableSolverInputsLoading(test.TestCase):
             len(data.lessons) == 12
         )  # Since the 12 lunch 'lessons' aren't included in the solver input data
 
-    # PROPERTIES TESTS
-    def test_consecutive_slots_property(self):
+    # Tests for properties / methods for objective function
+    def test_timetable_start_as_float(self):
         """
-        Test that the correct list of consecutive slots is returned by the consecutive_slots property method
-        on the TimetableSolverInputs class.
+        Unit test that the timetable start and finish span is correctly calculated.
         """
         # Set test parameters
         school_access_key = 123456
@@ -59,7 +59,66 @@ class TestTimetableSolverInputsLoading(test.TestCase):
         )
 
         # Execute test unit
-        consecutive_slots = data.consecutive_slots
+        timetable_start = data.timetable_start_hour_as_float
+
+        # Check outcome
+        assert timetable_start == 9  # Corresponds to 9:00
+
+    def test_timetable_start_as_float_extra_year(self):
+        """
+        Unit test that the timetable start and finish span is correctly calculated,
+        when different year groups have different timetables.
+        """
+        # Set test parameters
+        management.call_command("loaddata", "extra-year.json")
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+
+        # Execute test unit
+        timetable_start = data.timetable_start_hour_as_float
+
+        # Check outcome
+        assert (
+            timetable_start == 8.5
+        )  # Corresponds to 8:30, the start time of the extra year
+
+    def test_timetable_finish_as_float(self):
+        """
+        Unit test that the timetable start and finish span is correctly calculated.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+
+        # Execute test unit
+        timetable_start = data.timetable_finish_hour_as_float
+
+        # Check outcome
+        assert timetable_start == 16  # Corresponds to 16:00
+
+    # Tests for methods for variables
+    def test_get_consecutive_slots_for_year_group_one_timetable(self):
+        """
+        Test that the correct list of consecutive slots is returned for Year 1,
+        when all year groups share a set of timetable slots.
+        """
+        # Set test parameters
+        school_access_key = 123456
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+        year_one = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
+
+        # Execute test unit
+        consecutive_slots = data.get_consecutive_slots_for_year_group(
+            year_group=year_one
+        )
 
         # Check outcome
         assert len(consecutive_slots) == 30  # 7 slots per day, 5 days a week...
@@ -74,56 +133,40 @@ class TestTimetableSolverInputsLoading(test.TestCase):
             assert slot_0_start + dt.timedelta(hours=1) == slot_1_start
             assert double_slot[0].day_of_week == double_slot[1].day_of_week
 
-    def test_available_days_property(self):
+    def test_get_consecutive_slots_for_year_group_varied_timetables(self):
         """
-        Test that the correct list of days, of the correct type, is returned by the available_days property method
-        on the TimetableSolverInputs class.
+        Test that the correct list of consecutive slots is returned for Year 1,
+        when some year groups have different timetable slots.
         """
         # Set test parameters
-        school_access_key = 123456
+        management.call_command("loaddata", "extra-year.json")
+
+        slot_0 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456,
+            slot_id=100,
+        )
+        slot_1 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456,
+            slot_id=101,
+        )
+        extra_year = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="extra-year"
+        )
+
         data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
+            school_id=123456, solution_specification=self.solution_spec
         )
 
         # Execute test unit
-        available_days = data.available_days
-
-        # Check outcome
-        assert available_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
-
-    def test_timetable_start_property(self):
-        """
-        Unit test that the timetable start and finish span is correctly calculated.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
+        consecutive_slots = data.get_consecutive_slots_for_year_group(
+            year_group=extra_year
         )
 
-        # Execute test unit
-        timetable_start = data.timetable_start
-
         # Check outcome
-        assert timetable_start == 9  # Corresponds to 9:00
+        assert len(consecutive_slots) == 1  # We only created one candidate
+        assert consecutive_slots[0][0] == slot_0
+        assert consecutive_slots[0][1] == slot_1
 
-    def test_timetable_finish_property(self):
-        """
-        Unit test that the timetable start and finish span is correctly calculated.
-        """
-        # Set test parameters
-        school_access_key = 123456
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-
-        # Execute test unit
-        timetable_start = data.timetable_finish
-
-        # Check outcome
-        assert timetable_start == 16  # Correspond to 16:00
-
-    # QUERIES TESTS
     def test_get_time_period_starts_at_from_slot_id(self):
         """
         Test that the correct period start time is looked up from the slot id.

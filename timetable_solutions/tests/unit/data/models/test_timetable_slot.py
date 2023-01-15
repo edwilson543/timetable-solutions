@@ -10,6 +10,8 @@ import pytest
 
 # Django imports
 from django import test
+from django.core import exceptions
+from django.core import management
 from django.db import IntegrityError
 
 # Local application imports
@@ -19,20 +21,122 @@ from data import models
 class TestTimetableSlotQuerySet(test.TestCase):
     """Unit tests for the TimetableSlot QuerySet"""
 
-    fixtures = ["user_school_profile.json", "year_groups.json", "timetable.json"]
+    fixtures = [
+        "user_school_profile.json",
+        "year_groups.json",
+        "timetable.json",
+        "extra-year.json",
+    ]
 
-    def test_get_timeslots_on_given_day(self):
-        """Test that filtering timeslots by school and day is working as expected"""
+    def test_get_timeslots_on_given_day_year_one(self):
+        """
+        Test that filtering timeslots by school and day is working as expected.
+        In particular that only the year groups relevant to year 1 are returned.
+        """
         # Test parameters
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
         monday = models.WeekDay.MONDAY.value
 
         # Execute test unit
         slots = models.TimetableSlot.objects.get_timeslots_on_given_day(
-            school_id=123456, day_of_week=monday
+            school_id=123456, day_of_week=monday, year_group=year_group
         )
 
         # Check outcome
         assert slots.count() == 7
+
+    def test_filter_for_clashes_expecting_three_clash(self):
+        """
+        Test that a queryset of two clashes is returned for a slot clashing with 3 slots in total
+        (in the full queryset of fixture slots).
+        """
+        # Test the 9:00-10:00 monday slot against the full fixture list.
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(nine_to_ten)
+
+        # Check just 3 clashes
+        assert clashes.all().count() == 3
+
+        # Check clashes with self
+        assert nine_to_ten in clashes
+
+        # Expected clashes are 8:30-9:30 and 9:30-10:30, which both clearly clash with 9-10.
+        eight_30_nine_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=100
+        )
+        assert eight_30_nine_30 in clashes
+        nine_30_ten_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=101
+        )
+        assert nine_30_ten_30 in clashes
+
+        # Note we therefore have that the 10-11 slot did not clash with the 9-10 slot
+
+    def test_filter_for_clashes_expecting_two_clash(self):
+        """
+        Test that a queryset of one clash is returned for a slot clashing with just 1 slot in total
+        (in the full queryset of fixture slots).
+        """
+        # Test the 9:00-10:00 monday slot against the full fixture list.
+        eight_30_nine_30 = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=100
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(eight_30_nine_30)
+
+        # Check just 2 clashes
+        assert clashes.all().count() == 2
+
+        # Check clashes with self
+        assert eight_30_nine_30 in clashes
+
+        # Expected clash is 9-10, which clearly clashes with 8:30-9:30
+        nine_to_ten = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=1
+        )
+        assert nine_to_ten in clashes
+
+        # We therefore have that the 10-11 slot did not clash with the 9:30-10:30 slot
+
+    def test_filter_for_clashes_expecting_clash_only_with_self(self):
+        """
+        Test that a slot with no expected clashes returns an empty queryset.
+        """
+        # No clashes on tuesday - extra year just has the two slots on monday
+        tuesday_nine = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=123456, slot_id=2
+        )
+
+        # The full fixture list contains an 8:30-9:30, 9:30-10:30 slots, test against this
+        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=123456
+        )
+
+        # Get the clashes (test unit)
+        clashes = all_slots.filter_for_clashes(tuesday_nine)
+
+        # Check just 1 clash
+        assert clashes.all().count() == 1
+
+        # Check clashes with self
+        assert tuesday_nine in clashes
 
 
 class TestTimetableSlot(test.TestCase):
@@ -51,7 +155,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
         )
 
         # Check outcome
@@ -76,7 +180,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
             relevant_year_groups=year_groups,
         )
 
@@ -104,7 +208,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,  # Slot 100 is available
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9),
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
             relevant_year_groups=year_group,
         )
 
@@ -129,7 +233,7 @@ class TestTimetableSlot(test.TestCase):
                 slot_id=1,  # Note that slot 1 is already taken
                 day_of_week=models.WeekDay.MONDAY,
                 period_starts_at=dt.time(hour=9),
-                period_duration=dt.timedelta(hours=1),
+                period_ends_at=dt.time(hour=10),
             )
 
     def test_create_new_fails_with_invalid_day_of_week(self):
@@ -144,7 +248,35 @@ class TestTimetableSlot(test.TestCase):
                 slot_id=100,  # Note that slot 100 is available
                 day_of_week=100,  # Invalid day of week
                 period_starts_at=dt.time(hour=9),
-                period_duration=dt.timedelta(hours=1),
+                period_ends_at=dt.time(hour=10),
+            )
+
+    def test_create_new_fails_with_equal_start_and_end(self):
+        """
+        Tests that we can cannot create a Timetable slot with 0s duration.
+        """
+        # Execute test unit
+        with pytest.raises(exceptions.ValidationError):
+            models.TimetableSlot.create_new(
+                school_id=123456,
+                slot_id=100,  # Note that slot 100 is available
+                day_of_week=models.WeekDay.MONDAY,
+                period_starts_at=dt.time(hour=9),
+                period_ends_at=dt.time(hour=9),
+            )
+
+    def test_create_new_fails_with_end_time_before_start_time(self):
+        """
+        Tests that we can cannot create a Timetable slot with end time < start time.
+        """
+        # Execute test unit
+        with pytest.raises(exceptions.ValidationError):
+            models.TimetableSlot.create_new(
+                school_id=123456,
+                slot_id=100,  # Note that slot 100 is available
+                day_of_week=models.WeekDay.MONDAY,
+                period_starts_at=dt.time(hour=9),
+                period_ends_at=dt.time(hour=8),
             )
 
     def test_delete_all_instances_for_school_successful(self):
@@ -174,18 +306,38 @@ class TestTimetableSlot(test.TestCase):
         assert all_ygs.count() == 3
 
     # QUERY METHOD TESTS
-    def test_get_timeslots_on_given_day(self):
+    def test_get_timeslots_on_given_day_year_one(self):
         """Test that filtering timeslots by school and day to get the slot ids is working as expected"""
         # Test parameters
         monday = models.WeekDay.MONDAY
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="1"
+        )
 
         # Execute test unit
         slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
-            school_id=123456, day_of_week=monday
+            school_id=123456, day_of_week=monday, year_group=year_group
         )
 
         # Check outcome
         assert set(slots) == {1, 6, 11, 16, 21, 26, 31}
+
+    def test_get_timeslots_on_given_day_extra_year(self):
+        """Test that filtering timeslots by school and day to get the slot ids is working as expected"""
+        # Test parameters
+        management.call_command("loaddata", "extra-year.json")
+        monday = models.WeekDay.MONDAY
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group="extra-year"
+        )
+
+        # Execute test unit
+        slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
+            school_id=123456, day_of_week=monday, year_group=year_group
+        )
+
+        # Check outcome
+        assert set(slots) == {100, 101}
 
     def test_get_unique_start_hours(self):
         """
@@ -204,7 +356,7 @@ class TestTimetableSlot(test.TestCase):
             slot_id=100,
             day_of_week=models.WeekDay.MONDAY,
             period_starts_at=dt.time(hour=9, minute=42),  # This is the key data point
-            period_duration=dt.timedelta(hours=1),
+            period_ends_at=dt.time(hour=10),
         )
 
         # Execute test unit
@@ -285,17 +437,29 @@ class TestTimetableSlot(test.TestCase):
         assert (not consecutive_1) and (not consecutive_2)
 
     # PROPERTIES TESTS
-    def test_period_ends_at(self):
+    def test_period_duration(self):
         """
         Tests that the end time property for a timetable slot is working
         """
         # Set test parameters
-        slot = models.TimetableSlot.objects.get(
-            pk=1
-        )  # Starts at 9AM, lasting for 1 Hour
+        slot = models.TimetableSlot.objects.get(pk=1)  # Slot is 9AM - 10AM
 
         # Execute test unit
-        end_time = slot.period_ends_at
+        duration = slot.period_duration
 
         # Check outcome
-        assert end_time == dt.time(hour=10, minute=0, second=0)
+        assert duration == dt.timedelta(hours=1)
+
+    def test_open_interval(self):
+        """
+        Test the correct open start / finish time is returned for a timetable slot.
+        """
+        # Get the test slot
+        slot = models.TimetableSlot.objects.get(pk=1)  # Slot is 9AM - 10AM
+
+        # Get the open interval
+        open_start, open_end = slot.open_interval
+
+        # Check a second is incremented either way
+        assert open_start == dt.time(hour=9, minute=0, second=1)
+        assert open_end == dt.time(hour=9, minute=59, second=59)

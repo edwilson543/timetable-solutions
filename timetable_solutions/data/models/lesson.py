@@ -12,6 +12,13 @@ from data.models.pupil import Pupil, PupilQuerySet
 from data.models.school import School
 from data.models.teacher import Teacher
 from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
+from data.models.year_group import YearGroup
+
+
+class NoPupilsError(Exception):
+    """Raised when a lesson not having any associated pupils causes an error."""
+
+    pass
 
 
 class LessonQuerySet(models.QuerySet):
@@ -220,6 +227,7 @@ class Lesson(models.Model):
             .order_by("day_of_week", "period_starts_at")
         )
 
+    # QUERIES FOR THE SOLVER
     def get_n_solver_slots_required(self) -> int:
         """
         Method to calculate the total additional number of slots that the solver must produce.
@@ -250,10 +258,13 @@ class Lesson(models.Model):
         :return - an integer specifying how many double periods the Lesson instance has on the given day
         """
 
+        year_group = self.get_associated_year_group()
         # Note that slots will be ordered in time, using the TimetableSlot Meta class
         user_slots_on_day = (
             self.user_defined_time_slots.all().get_timeslots_on_given_day(
-                school_id=self.school.school_access_key, day_of_week=day_of_week
+                school_id=self.school.school_access_key,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
         )
 
@@ -270,6 +281,38 @@ class Lesson(models.Model):
 
         return double_period_count
 
+    def get_associated_timeslots(self) -> TimetableSlotQuerySet:
+        """
+        Get the timetable slots associated with a particular Lesson (via its year group).
+        We intentionally don't check e.g. whether the lesson already occurs at one of these slots,
+        as this is solver domain logic.
+        """
+        year_group = self.get_associated_year_group()
+        return year_group.slots.all()
+
+    def get_associated_days_of_week(self) -> list[WeekDay]:
+        """
+        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
+        :return - days_list - a list of the days, sorted from lowest to highest.
+        """
+        slots = self.get_associated_timeslots()
+        days = {slot.day_of_week for slot in slots}  # We only want unique days
+        days_list = sorted(list(days))
+        return days_list
+
+    def get_associated_year_group(self) -> YearGroup:
+        """
+        Get the year group a Lesson will be taught to.
+        """
+        all_pupils = self.pupils.all()
+        if all_pupils.count() > 0:
+            return all_pupils.first().year_group
+        else:
+            raise NoPupilsError(
+                f"Lesson: {repr(self)} does not have any pupils, therefore cannot retrieve associated year group"
+            )
+
+    # QUERIES FOR THE ADMIN SITE
     def get_number_pupils(self) -> int:
         """
         Method returning the number of pupils associated with this Lesson instance.
@@ -280,9 +323,10 @@ class Lesson(models.Model):
         """
         Method returning the year_group associated with a Lesson.
         """
-        if self.pupils.all().exists():
-            return self.pupils.first().year_group.year_group
-        else:
+        try:
+            yg = self.get_associated_year_group()
+            return yg.year_group
+        except NoPupilsError:
             return "N/A"
 
     # MISCELLANEOUS METHODS
@@ -296,7 +340,7 @@ class Lesson(models.Model):
             # the instance. Since the additional cleaning performed by the clean method includes checks on the m2m
             # fields, an error is thrown, because the m2m fields require the instance to be saved before they can be
             # used. This if condition therefore bypasses the custom cleaning when calling full_clean from a ModelForm
-            return
+            return None
 
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
             raise ValidationError(
