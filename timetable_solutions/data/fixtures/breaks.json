@@ -27,5 +27,121 @@
         2
       ]
     }
+  },
+    {
+    "model": "data.break",
+    "pk": 2,
+    "fields": {
+      "school": 123456,
+      "break_id": "2",
+      "break_name": "Lunch",
+      "day_of_week": 2,
+      "break_starts_at": "13:00:00",
+      "break_ends_at": "14:00:00",
+      "teachers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relevant_year_groups": [
+        1,
+        2
+      ]
+    }
+  },
+    {
+    "model": "data.break",
+    "pk": 3,
+    "fields": {
+      "school": 123456,
+      "break_id": "3",
+      "break_name": "Lunch",
+      "day_of_week": 3,
+      "break_starts_at": "13:00:00",
+      "break_ends_at": "14:00:00",
+      "teachers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relevant_year_groups": [
+        1,
+        2
+      ]
+    }
+  },
+    {
+    "model": "data.break",
+    "pk": 4,
+    "fields": {
+      "school": 123456,
+      "break_id": "4",
+      "break_name": "Lunch",
+      "day_of_week": 4,
+      "break_starts_at": "13:00:00",
+      "break_ends_at": "14:00:00",
+      "teachers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relevant_year_groups": [
+        1,
+        2
+      ]
+    }
+  },
+    {
+    "model": "data.break",
+    "pk": 5,
+    "fields": {
+      "school": 123456,
+      "break_id": "5",
+      "break_name": "Lunch",
+      "day_of_week": 5,
+      "break_starts_at": "13:00:00",
+      "break_ends_at": "14:00:00",
+      "teachers": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "relevant_year_groups": [
+        1,
+        2
+      ]
+    }
   }
 ]
