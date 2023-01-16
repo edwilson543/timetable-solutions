@@ -11,6 +11,7 @@ from django.db import models
 # Local application imports
 from data.models import constants
 from data.models.teacher import Teacher, TeacherQuerySet
+from data.models.timetable_slot import TimetableSlot
 from data.models.school import School
 from data.models.year_group import YearGroup, YearGroupQuerySet
 
@@ -23,6 +24,36 @@ class BreakQuerySet(models.QuerySet):
     def get_all_instances_for_school(self, school_id: int) -> "BreakQuerySet":
         """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
+
+    # Filters
+
+    def filter_for_clashes(self, slot: TimetableSlot) -> bool:
+        """
+        Filter a queryset of breaks against an individual TimetableSlot.
+        :return The breaks in the queryset (self) that clash with the passed slot, non-inclusively.
+
+        See also filter_for_clashes on TimetableSlot.
+        """
+        clash_interval = slot.open_interval
+
+        clashes = self.filter(
+            (
+                (
+                    # OVERLAPPING clashes
+                    models.Q(break_starts_at__range=clash_interval)
+                    | models.Q(break_ends_at__range=clash_interval)
+                )
+                | (
+                    # EXACT MATCH clashes
+                    # We do however want slots to clash with themselves / other slots starting and finishing
+                    # at the same time, since a user may have defined slots covering the same time pan
+                    models.Q(break_starts_at=slot.period_starts_at)
+                    | models.Q(break_ends_at=slot.period_ends_at)
+                )
+            )
+            & models.Q(day_of_week=slot.day_of_week)
+        )
+        return clashes
 
 
 class Break(models.Model):

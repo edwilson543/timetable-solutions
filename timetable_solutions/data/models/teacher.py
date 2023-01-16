@@ -104,8 +104,11 @@ class Teacher(models.Model):
 
         # Get number of commitments
         user_defined_slots = TimetableSlot.objects.filter(user_lessons__teacher=self)
-        clashes = user_defined_slots.filter_for_clashes(slot)
-        n_commitments = clashes.count()
+        lesson_clashes = user_defined_slots.filter_for_clashes(slot)
+
+        teacher_break_clashes = self.breaks.filter_for_clashes(slot)
+
+        n_commitments = lesson_clashes.count() + teacher_break_clashes.count()
 
         # Decide what should happen
         if n_commitments == 1:
@@ -114,7 +117,7 @@ class Teacher(models.Model):
             return False
         else:
             raise ValueError(
-                f"Teacher {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
+                f"Teacher {self}, {self.pk} has ended up with more than 1 lesson at {slot}"
             )
 
     # QUERY METHODS
