@@ -437,19 +437,6 @@ class TestTimetableSlot(test.TestCase):
         assert (not consecutive_1) and (not consecutive_2)
 
     # PROPERTIES TESTS
-    def test_period_duration(self):
-        """
-        Tests that the end time property for a timetable slot is working
-        """
-        # Set test parameters
-        slot = models.TimetableSlot.objects.get(pk=1)  # Slot is 9AM - 10AM
-
-        # Execute test unit
-        duration = slot.period_duration
-
-        # Check outcome
-        assert duration == dt.timedelta(hours=1)
-
     def test_open_interval(self):
         """
         Test the correct open start / finish time is returned for a timetable slot.

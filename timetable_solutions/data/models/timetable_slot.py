@@ -222,16 +222,6 @@ class TimetableSlot(models.Model):
 
     # PROPERTIES
     @property
-    def period_duration(self) -> dt.timedelta:
-        """
-        Property calculating the time at which a timetable slot ends.
-        """
-        start = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
-        end = dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
-        dur = end - start
-        return dur
-
-    @property
     def open_interval(self) -> tuple[dt.time, dt.time]:
         """
         Duration which the slot covers +/- a second (a 'fake' open interval really).
