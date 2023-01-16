@@ -7,11 +7,12 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 # Local application imports (other models)
+from data.models import constants
 from data.models.classroom import Classroom
 from data.models.pupil import Pupil, PupilQuerySet
 from data.models.school import School
 from data.models.teacher import Teacher
-from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet, WeekDay
+from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet
 from data.models.year_group import YearGroup
 
 
@@ -240,7 +241,7 @@ class Lesson(models.Model):
         """
         total_user_defined = sum(
             self.get_user_defined_double_period_count_on_day(day_of_week=day)
-            for day in WeekDay.values
+            for day in constants.WeekDay.values
         )
         return self.total_required_double_periods - total_user_defined
 
@@ -251,7 +252,9 @@ class Lesson(models.Model):
         """
         return self.get_n_solver_slots_required() > 0
 
-    def get_user_defined_double_period_count_on_day(self, day_of_week: WeekDay) -> int:
+    def get_user_defined_double_period_count_on_day(
+        self, day_of_week: constants.WeekDay
+    ) -> int:
         """
         Method to count the number of user-defined double periods on the given day
         To achieve this, we iterate through the full set of ordered TimeTable Slot
@@ -290,7 +293,7 @@ class Lesson(models.Model):
         year_group = self.get_associated_year_group()
         return year_group.slots.all()
 
-    def get_associated_days_of_week(self) -> list[WeekDay]:
+    def get_associated_days_of_week(self) -> list[constants.WeekDay]:
         """
         Get the weekdays that a lesson may be taught on, based on its associated timeslots.
         :return - days_list - a list of the days, sorted from lowest to highest.

@@ -7,19 +7,10 @@ import datetime as dt
 from django.core import exceptions
 from django.db import models
 
-# Local application imports (other models)
+# Local application imports
+from data.models import constants
 from data.models.school import School
 from data.models.year_group import YearGroup, YearGroupQuerySet
-
-
-class WeekDay(models.IntegerChoices):
-    """Choices for the different days of the week a lesson can take place at"""
-
-    MONDAY = 1, "Monday"
-    TUESDAY = 2, "Tuesday"
-    WEDNESDAY = 3, "Wednesday"
-    THURSDAY = 4, "Thursday"
-    FRIDAY = 5, "Friday"
 
 
 class TimetableSlotQuerySet(models.QuerySet):
@@ -45,7 +36,7 @@ class TimetableSlotQuerySet(models.QuerySet):
         )
 
     def get_timeslots_on_given_day(
-        self, school_id: int, day_of_week: WeekDay, year_group: YearGroup
+        self, school_id: int, day_of_week: constants.WeekDay, year_group: YearGroup
     ) -> "TimetableSlotQuerySet":
         """
         Method returning the timetable slots for the school on the given day of the week,
@@ -95,7 +86,7 @@ class TimetableSlot(models.Model):
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
-    day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
+    day_of_week = models.SmallIntegerField(choices=constants.WeekDay.choices)
     period_starts_at: dt.time = models.TimeField()
     period_ends_at: dt.time = models.TimeField()
     relevant_year_groups = models.ManyToManyField(YearGroup, related_name="slots")
@@ -121,13 +112,13 @@ class TimetableSlot(models.Model):
 
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        day_of_week = WeekDay(self.day_of_week).label
+        day_of_week = constants.WeekDay(self.day_of_week).label
         start_time = self.period_starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
     def __repr__(self) -> str:
         """String representation of the model for debugging"""
-        day_of_week = WeekDay(self.day_of_week).label
+        day_of_week = constants.WeekDay(self.day_of_week).label
         start_time = self.period_starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
@@ -137,14 +128,14 @@ class TimetableSlot(models.Model):
         cls,
         school_id: int,
         slot_id: int,
-        day_of_week: WeekDay,
+        day_of_week: constants.WeekDay,
         period_starts_at: dt.time,
         period_ends_at: dt.time,
         relevant_year_groups: YearGroupQuerySet | None = None,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
-            day_of_week = WeekDay(day_of_week).value
+            day_of_week = constants.WeekDay(day_of_week).value
         except ValueError:
             raise ValueError(
                 f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
@@ -185,7 +176,7 @@ class TimetableSlot(models.Model):
     # QUERIES
     @classmethod
     def get_timeslot_ids_on_given_day(
-        cls, school_id: int, day_of_week: WeekDay, year_group: YearGroup
+        cls, school_id: int, day_of_week: constants.WeekDay, year_group: YearGroup
     ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
@@ -221,16 +212,6 @@ class TimetableSlot(models.Model):
         return same_day and contiguous_time
 
     # PROPERTIES
-    @property
-    def period_duration(self) -> dt.timedelta:
-        """
-        Property calculating the time at which a timetable slot ends.
-        """
-        start = dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
-        end = dt.datetime.combine(date=dt.datetime.min, time=self.period_ends_at)
-        dur = end - start
-        return dur
-
     @property
     def open_interval(self) -> tuple[dt.time, dt.time]:
         """
