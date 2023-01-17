@@ -70,7 +70,10 @@ class Pupil(models.Model):
         """String representation of the model for debugging"""
         return f"{self.surname}, {self.firstname}"
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls,
@@ -104,7 +107,10 @@ class Pupil(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # FILTER METHODS
+    # --------------------
+    # Queries
+    # --------------------
+
     def check_if_busy_at_timeslot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the given pupil has already been assigned a lesson at the given slot.
@@ -121,7 +127,6 @@ class Pupil(models.Model):
                 f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
             )
 
-    # QUERY METHODS
     def get_associated_timeslots(self) -> TimetableSlotQuerySet:
         """
         Method to return the TimetableSlot instances relevant to a pupil

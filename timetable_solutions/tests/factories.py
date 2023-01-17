@@ -73,13 +73,14 @@ class Pupil(factory.django.DjangoModelFactory):
     pupil_id = factory.Sequence(lambda n: n + 1)
     firstname = factory.Faker("first_name")
     surname = factory.Faker("last_name")
-    year_group = factory.SubFactory(YearGroup)
+    # Ensure all 'school' foreign keys are shared
+    year_group = factory.SubFactory(YearGroup, school=factory.SelfAttribute("..school"))
 
 
 class TimetableSlot(factory.django.DjangoModelFactory):
     """
     Factory for the TimetableSlot model.
-    The slots come out as Mon 8-9, ... , Fri 8-9, Tues 8-9, ... , Fri 8-9, ...
+    The slots come out as Mon 8-9, ... , Fri 8-9, Tues 9-10, ... , Fri 9-10, ...
     """
 
     class Meta:
@@ -111,12 +112,89 @@ class TimetableSlot(factory.django.DjangoModelFactory):
         self,
         create: bool,
         extracted: tuple[models.YearGroup, ...] | None,
-        **kwargs: Any
+        **kwargs: Any,
     ) -> None:
-        """Add hte option to relate some year groups"""
+        """Add the option to relate some year groups."""
         if not create:
             # Simple build (no db access) - so do nothing
             return None
         elif extracted:
             for year_group in extracted:
+                if year_group.school != self.school:
+                    raise ValueError(
+                        "Cannot add year group from different school to timetable slot."
+                    )
                 self.relevant_year_groups.add(year_group)
+
+
+class Teacher(factory.django.DjangoModelFactory):
+    """Factory for the Teacher model."""
+
+    class Meta:
+        model = models.Teacher
+
+    school = factory.SubFactory(School)
+    teacher_id = factory.Sequence(lambda n: n + 1)
+    firstname = factory.Faker("first_name")
+    surname = factory.Faker("last_name")
+    title = factory.Faker("prefix")
+
+
+class Classroom(factory.django.DjangoModelFactory):
+    """Factory for the Classroom model."""
+
+    class Meta:
+        model = models.Classroom
+
+    school = factory.SubFactory(School)
+    classroom_id = factory.Sequence(lambda n: n + 1)
+    building = "Maths building"
+    room_number = factory.Sequence(lambda n: n + 1)
+
+
+class Lesson(factory.django.DjangoModelFactory):
+    """Factory for the Lesson model."""
+
+    class Meta:
+        model = models.Lesson
+
+    school = factory.SubFactory(School)
+    lesson_id = factory.Sequence(lambda n: f"lesson-{n}")
+    subject_name = "Maths"
+    teacher = factory.SubFactory(Teacher, school=factory.SelfAttribute("..school"))
+    classroom = factory.SubFactory(Classroom, school=factory.SelfAttribute("..school"))
+    total_required_slots = 7
+    total_required_double_periods = 2
+
+    @factory.post_generation
+    def pupils(
+        self, create: bool, extracted: tuple[models.Pupil, ...] | None, **kwargs: Any
+    ) -> None:
+        """Add the option to add some pupils."""
+        if not create:
+            # Simple build (no db access) - so do nothing
+            return None
+        elif extracted:
+            for pupil in extracted:
+                if pupil.school != self.school:
+                    raise ValueError(
+                        "Cannot add pupil from different school to lesson."
+                    )
+                self.pupils.add(pupil)
+
+    @factory.post_generation
+    def user_defined_time_slots(
+        self,
+        create: bool,
+        extracted: tuple[models.TimetableSlot, ...] | None,
+        **kwargs: Any,
+    ) -> None:
+        """Add the option to force some slots."""
+        if not create:
+            # Simple build (no db access) - so do nothing
+            return None
+        elif extracted:
+            for slot in extracted:
+                if slot.school != self.school:
+                    raise ValueError("Cannot fix slot from different school to lesson.")
+                self.user_defined_time_slots.add(slot)
