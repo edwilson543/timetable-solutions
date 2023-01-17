@@ -50,7 +50,7 @@ class TestBaseModelAdmin:
         unapproved_profile = models.Profile.objects.get(
             user__username=unapproved_profile.username
         )
-        assert unapproved_profile.approved_by_school_admin is True
+        assert unapproved_profile.approved_by_school_admin
 
     def test_get_actions(self):
         """
