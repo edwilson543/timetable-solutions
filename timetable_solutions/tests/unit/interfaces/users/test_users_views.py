@@ -42,7 +42,7 @@ class TestRegistration(TestCase):
         user = User.objects.create_user(
             username="dummy_teacher2", password="dt123dt123"
         )
-        models.Profile.create_and_save_new(
+        models.Profile.create_new(
             user=user,
             school_id=123456,
             role=models.UserRole.TEACHER.value,

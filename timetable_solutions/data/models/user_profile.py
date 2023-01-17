@@ -59,7 +59,7 @@ class Profile(models.Model):
     responsible for generating their school_id's timetables.
     """
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user: User = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN)
     approved_by_school_admin = models.BooleanField(default=False)
@@ -75,9 +75,10 @@ class Profile(models.Model):
         """String representation of the model for debugging"""
         return f"{self.user} profile"
 
-    # FACTORY METHODS
+    # Factories
+
     @classmethod
-    def create_and_save_new(
+    def create_new(
         cls,
         user: User,
         school_id: int,
@@ -95,3 +96,8 @@ class Profile(models.Model):
         )
         profile.full_clean()
         return profile
+
+    # Properties
+    @property
+    def username(self) -> str:
+        return self.user.username

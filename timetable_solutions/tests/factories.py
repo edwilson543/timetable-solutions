@@ -9,8 +9,21 @@ from typing import Any
 # Third party imports
 import factory
 
+# Django imports
+from django.contrib.auth import models as auth_models
+
 # Local application imports
 from data import models
+
+
+class User(factory.django.DjangoModelFactory):
+    """Factory for the default django User model."""
+
+    class Meta:
+        model = auth_models.User
+
+    username = factory.Faker("user_name")
+    password = factory.Faker("password")
 
 
 class School(factory.django.DjangoModelFactory):
@@ -21,6 +34,23 @@ class School(factory.django.DjangoModelFactory):
 
     school_access_key = factory.Sequence(lambda n: n + 1)
     school_name = "Fake school"
+
+
+class Profile(factory.django.DjangoModelFactory):
+    """Factory for the Profile model."""
+
+    class Meta:
+        model = models.Profile
+
+    class Params:
+        school_admin = factory.Trait(
+            role=models.UserRole.SCHOOL_ADMIN, approved_by_school_admin=True
+        )
+
+    user = factory.SubFactory(User)
+    school = factory.SubFactory(School)
+    role = models.UserRole.TEACHER
+    approved_by_school_admin = False
 
 
 class YearGroup(factory.django.DjangoModelFactory):
