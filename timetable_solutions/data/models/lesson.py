@@ -35,13 +35,27 @@ class LessonQuerySet(models.QuerySet):
         """Method to return an individual Lesson instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(lesson_id=lesson_id))
 
+    def get_lessons_requiring_solving(self, school_id: int) -> "LessonQuerySet":
+        """
+        Get a school's lessons where the total required slots is greater than the user defined slots count.
+        """
+        return self.annotate(
+            n_user_slots=models.Count("user_defined_time_slots")
+        ).filter(
+            models.Q(school_id=school_id)
+            & models.Q(total_required_slots__gt=models.F("n_user_slots"))
+        )
+
 
 class Lesson(models.Model):
     """
     Model representing a school lesson occurring at multiple timeslots every week
     """
 
-    # MODEL FIELDS
+    # --------------------
+    # Model fields
+    # --------------------
+
     # Basic fixed value fields
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     lesson_id = models.CharField(max_length=20)
@@ -54,9 +68,9 @@ class Lesson(models.Model):
         Classroom,
         on_delete=models.PROTECT,
         related_name="lessons",
-        blank=True,
+        blank=True,  # Null for e.g. sport
         null=True,
-    )  # Null for e.g. sport
+    )
 
     # Fulfillment fields
     user_defined_time_slots = models.ManyToManyField(
@@ -101,7 +115,10 @@ class Lesson(models.Model):
         """String representation of the model for debugging"""
         return f"{self.school}: {self.lesson_id}"
 
-    # FACTORIES
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls,
@@ -172,7 +189,10 @@ class Lesson(models.Model):
         for lesson in lessons:
             lesson.solver_defined_time_slots.clear()
 
-    # MUTATORS
+    # --------------------
+    # Mutators
+    # --------------------
+
     def add_pupils(self, pupils: PupilQuerySet | Pupil) -> None:
         """Method adding a queryset of pupils to the Lesson instance's many-to-many pupils field"""
         if isinstance(pupils, PupilQuerySet):
@@ -196,18 +216,9 @@ class Lesson(models.Model):
         elif isinstance(time_slots, TimetableSlot):
             self.solver_defined_time_slots.add(time_slots)
 
-    # QUERIES
-    @classmethod
-    def get_lessons_requiring_solving(cls, school_id: int) -> LessonQuerySet:
-        """
-        Method to retrieve the lessons where the total required slots is greater than the user defined slots count.
-        """
-        all_lessons = cls.objects.get_all_instances_for_school(school_id=school_id)
-        filtered_lesson_pks = [
-            lesson.pk for lesson in all_lessons if lesson.requires_solving()
-        ]
-        lessons = cls.objects.filter(pk__in=filtered_lesson_pks)
-        return lessons
+    # --------------------
+    # Queries - view timetables logic
+    # --------------------
 
     @classmethod
     def get_lesson_by_pk(cls, pk: int) -> "Lesson":
@@ -228,7 +239,10 @@ class Lesson(models.Model):
             .order_by("day_of_week", "period_starts_at")
         )
 
-    # QUERIES FOR THE SOLVER
+    # --------------------
+    # Queries - solver logic
+    # --------------------
+
     def get_n_solver_slots_required(self) -> int:
         """
         Method to calculate the total additional number of slots that the solver must produce.
@@ -244,13 +258,6 @@ class Lesson(models.Model):
             for day in constants.WeekDay.values
         )
         return self.total_required_double_periods - total_user_defined
-
-    def requires_solving(self) -> bool:
-        """
-        Method to check whether a lesson requires solving, or if it is solved by the user.
-        To require solving, the user must have specified more total slots than they have themselves specified
-        """
-        return self.get_n_solver_slots_required() > 0
 
     def get_user_defined_double_period_count_on_day(
         self, day_of_week: constants.WeekDay

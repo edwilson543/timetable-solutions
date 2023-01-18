@@ -83,7 +83,7 @@ class TestCreateTimetableFormView(test.TestCase):
         # Check that a solution has been produced
         lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
         for lesson in lessons:
-            if lesson.requires_solving():
+            if lesson.get_n_solver_slots_required() > 0:
                 assert lesson.solver_defined_time_slots.count() in [
                     8,
                     9,

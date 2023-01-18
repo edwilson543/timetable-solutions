@@ -154,7 +154,9 @@ class TestLesson(test.TestCase):
         Method to check that the correct subset of lessons is extracted for the solver.
         """
         # Execute test unit
-        solver_lessons = models.Lesson.get_lessons_requiring_solving(school_id=123456)
+        solver_lessons = models.Lesson.objects.get_lessons_requiring_solving(
+            school_id=123456
+        )
 
         # Check outcome
         assert solver_lessons.count() == 12
@@ -196,38 +198,6 @@ class TestLesson(test.TestCase):
 
         # Check outcome
         assert n_doubles == 2
-
-    def test_requires_solving_true(self):
-        """
-        Method to check that a lesson with unfulfilled slots requires solving
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
-        lesson.user_defined_time_slots.add(*additional_slots)
-
-        # Execute test unit
-        requires_solving = lesson.requires_solving()
-
-        # Check outcome
-        assert requires_solving
-
-    def test_requires_solving_false(self):
-        """
-        Method to check that a lesson with unfulfilled slots requires solving
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="LUNCH_PUPILS"
-        )
-
-        # Execute test unit
-        requires_solving = lesson.requires_solving()
-
-        # Check outcome
-        assert not requires_solving
 
     def test_get_user_defined_double_period_count_on_day_one_double_expected(self):
         """
