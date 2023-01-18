@@ -45,11 +45,8 @@ class TestBaseModelAdmin:
             request=request, queryset=profile_queryset
         )
 
-        # Check the unapproved profile is now approved - note the instance in memory will not have been updated,
-        # so we need to retrieve from the db
-        unapproved_profile = models.Profile.objects.get(
-            user__username=unapproved_profile.username
-        )
+        # Check the unapproved profile is now approved
+        unapproved_profile.refresh_from_db()
         assert unapproved_profile.approved_by_school_admin
 
     def test_get_actions(self):
