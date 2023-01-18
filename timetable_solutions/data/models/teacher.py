@@ -69,7 +69,10 @@ class Teacher(models.Model):
         """String representation of the model for debugging"""
         return f"{self.title} {self.surname}, {self.firstname}"
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str
@@ -95,7 +98,10 @@ class Teacher(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # FILTER METHODS
+    # --------------------
+    # Queries
+    # --------------------
+
     def check_if_busy_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the teacher is busy AT ANY POINT during the passed time slot.
@@ -120,7 +126,6 @@ class Teacher(models.Model):
                 f"Teacher {self}, {self.pk} has ended up with more than 1 lesson at {slot}"
             )
 
-    # QUERY METHODS
     def get_lessons_per_week(self) -> int:
         """
         Method to get the number of lessons a teacher has per week.
