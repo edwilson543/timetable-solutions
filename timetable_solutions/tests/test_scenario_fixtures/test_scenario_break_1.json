@@ -1,0 +1,137 @@
+[
+  {
+    "model": "data.school",
+    "pk": 111111,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
+    "model": "data.yeargroup",
+    "pk": 101,
+    "fields": {
+      "year_group": "1",
+      "school": 111111
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 101,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 1,
+      "period_starts_at": "09:00:00",
+      "period_ends_at": "10:00:00",
+      "school": 111111,
+      "relevant_year_groups": [
+        101
+      ]
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 102,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 2,
+      "period_starts_at": "11:30:00",
+      "period_ends_at": "12:30:00",
+      "school": 111111,
+      "relevant_year_groups": [
+        101
+      ]
+    }
+  },
+    {
+    "model": "data.timetableslot",
+    "pk": 103,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 3,
+      "period_starts_at": "13:00:00",
+      "period_ends_at": "14:00:00",
+      "school": 111111,
+      "relevant_year_groups": [
+        101
+      ]
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 101,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 101,
+      "pupil_id": 1,
+      "school": 111111
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 101,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 1,
+      "school": 111111
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 101,
+    "fields": {
+      "building": "MB",
+      "room_number": 47,
+      "classroom_id": 1,
+      "school": 111111
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 102,
+    "fields": {
+      "building": "MB",
+      "room_number": 14,
+      "classroom_id": 2,
+      "school": 111111
+    }
+  },
+    {
+    "model": "data.break",
+    "pk": 101,
+    "fields": {
+      "school": 111111,
+      "break_id": "1",
+      "break_name": "Lunch",
+      "day_of_week": 1,
+      "break_starts_at": "11:15:00",
+      "break_ends_at": "12:00:00",
+      "teachers": [
+        101
+      ],
+      "relevant_year_groups": [
+        101
+      ]
+    }
+  },
+  {
+    "model": "data.lesson",
+    "pk": 101,
+    "fields": {
+      "lesson_id": "MATHS",
+      "subject_name": "MATHS",
+      "teacher": 101,
+      "pupils": [
+        101
+      ],
+      "classroom": 101,
+      "user_defined_time_slots": [],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 2,
+      "total_required_double_periods": 0,
+      "school": 111111
+    }
+  }
+]

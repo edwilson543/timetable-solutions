@@ -1,12 +1,5 @@
 """
 Integration tests for the TimetableSolver class.
-
-The following three test classes are present in this module:
-    1) TestSolver - simply checks the solver can find a solution using the default fixtures
-    2) TestSolverScenarioSolutionsNoObjective - checks for specific solutions in some manufactured scenarios, all of
-      which DO NOT include an objective function
-    3) TestSolverScenarioSolutionsWithObjective - checks for specific solutions in some manufactured scenarios, all of
-      which include an objective function
 """
 
 # Standard library imports
@@ -93,7 +86,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
     Tests where we are after a specific solution. See individual docstrings for scenario setups.
     'ConstraintDriven': The constraints are what determines the solution
-    'RandomObjective': The objective is randomly generated, and as such should not drive the solution
+    'RandomObjective': The objective is randomly generated, and as such should not affect the solution
     """
 
     fixtures = [
@@ -768,6 +761,60 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
             ].varValue
             == 0
         )  # Aft
+
+
+class TestSolverScenarioSolutionsBreaks(test.TestCase):
+    """
+    Tests for specific solutions, where a Break instance drives the solution.
+    """
+
+    fixtures = ["test_scenario_break_1.json"]
+    solution_spec = slvr.SolutionSpecification(
+        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+    )
+
+    def test_scenario_break_1(self):
+        """
+        Test scenario targeted at the teacher one-place-at-a-time constraint,
+        when a break clashes with a potential slot.
+        A teacher teaches 1 lesson, which requires 2 slots.
+        There are 3 slots, the middle one clashes with a break.
+        None of the slots are consecutive so there is no need to worry about double periods.
+        """
+        # Set test parameters
+        school_access_key = 111111
+        data = slvr.TimetableSolverInputs(
+            school_id=school_access_key, solution_specification=self.solution_spec
+        )
+        solver = slvr.TimetableSolver(input_data=data)
+
+        # Execute test unit
+        solver.solve()
+
+        # Check outcome
+        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        # We should have a decision variable for each of our 3 slots
+        assert len(solver.variables.decision_variables) == 3
+
+        # Slots 1 & 3 does not clash with the teacher's break, whereas slot 2 does.
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="MATHS", slot_id=1)
+            ].varValue
+            == 1
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="MATHS", slot_id=2)
+            ].varValue
+            == 0
+        )
+        assert (
+            solver.variables.decision_variables[
+                slvr.var_key(lesson_id="MATHS", slot_id=3)
+            ].varValue
+            == 1
+        )
 
 
 class TestSolverScenarioSolutionsDifferentTimetablesForYearGroups(test.TestCase):
