@@ -349,7 +349,10 @@ class TestTimetableSlot:
         # Check outcome
         assert (not consecutive_1) and (not consecutive_2)
 
-    # PROPERTIES TESTS
+    # --------------------
+    # Properties tests
+    # --------------------
+
     def test_open_interval(self):
         """
         Test the correct open start / finish time is returned for a timetable slot.

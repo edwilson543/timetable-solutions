@@ -13,7 +13,9 @@ from tests import factories
 @pytest.mark.django_db
 class TestSchool:
 
+    # --------------------
     # Factories tests
+    # --------------------
 
     def test_create_new_no_access_key_given_no_schools_in_db(self):
         """

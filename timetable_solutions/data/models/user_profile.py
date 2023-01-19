@@ -75,7 +75,9 @@ class Profile(models.Model):
         """String representation of the model for debugging"""
         return f"{self.user} profile"
 
-    # Factories
+    # --------------------
+    # Factories tests
+    # --------------------
 
     @classmethod
     def create_new(
@@ -97,7 +99,10 @@ class Profile(models.Model):
         profile.full_clean()
         return profile
 
-    # Properties
+    # --------------------
+    # Properties tests
+    # --------------------
+
     @property
     def username(self) -> str:
         return self.user.username

@@ -11,9 +11,35 @@ from tests import factories
 
 
 @pytest.mark.django_db
+class TestYearGroupQuerySet:
+    def test_get_all_year_groups_with_pupils_excludes_no_pupil_ygs(self):
+        school = factories.School()
+
+        # Create a year group with at least one pupil
+        yg_1 = factories.YearGroup(school=school)
+        factories.Pupil(year_group=yg_1, school=school)
+
+        # Create a year group with no pupils
+        factories.YearGroup(school=school)
+
+        # Execute test unit
+        ygs_with_pupils = models.YearGroup.objects.get_all_year_groups_with_pupils(
+            school_id=school.school_access_key
+        )
+
+        # Check only yg_1 included in queryset
+        assert ygs_with_pupils.count() == 1
+        assert yg_1 in ygs_with_pupils
+        # Therefore we have that the other year group isn't in ygs_with_pupils
+
+
+@pytest.mark.django_db
 class TestYearGroup:
 
-    # FACTORY METHOD TESTS
+    # --------------------
+    # Factories tests
+    # --------------------
+
     @pytest.mark.parametrize("year_group", [10, "10"])
     def test_create_new_valid_year_group_from_string(self, year_group):
         """
@@ -104,26 +130,3 @@ class TestYearGroup:
         all_slots = models.TimetableSlot.objects.all()
         assert all_slots.count() == 1
         assert all_slots.first() == slot
-
-
-@pytest.mark.django_db
-class TestYearGroupQuerySet:
-    def test_get_all_year_groups_with_pupils_excludes_no_pupil_ygs(self):
-        school = factories.School()
-
-        # Create a year group with at least one pupil
-        yg_1 = factories.YearGroup(school=school)
-        factories.Pupil(year_group=yg_1, school=school)
-
-        # Create a year group with no pupils
-        factories.YearGroup(school=school)
-
-        # Execute test unit
-        ygs_with_pupils = models.YearGroup.objects.get_all_year_groups_with_pupils(
-            school_id=school.school_access_key
-        )
-
-        # Check only yg_1 included in queryset
-        assert ygs_with_pupils.count() == 1
-        assert yg_1 in ygs_with_pupils
-        # Therefore we have that the other year group isn't in ygs_with_pupils

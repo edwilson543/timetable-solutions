@@ -27,7 +27,10 @@ class School(models.Model):
         """String representation of the model for the django admin site"""
         return str(self.school_name)
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories tests
+    # --------------------
+
     @classmethod
     def create_new(cls, school_name: str) -> "School":
         """
@@ -37,7 +40,10 @@ class School(models.Model):
         school.full_clean()
         return school
 
-    # PROPERTIES
+    # --------------------
+    # Properties tests
+    # --------------------
+
     @property
     def number_users(self) -> int:
         """Method to get the number of users associated with a school"""

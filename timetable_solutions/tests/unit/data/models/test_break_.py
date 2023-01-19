@@ -80,7 +80,7 @@ class TestBreak:
     """
 
     # --------------------
-    # Factories
+    # Factories tests
     # --------------------
 
     def test_create_new_for_valid_break(self):

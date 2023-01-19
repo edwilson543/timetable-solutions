@@ -95,7 +95,7 @@ class Classroom(models.Model):
         return outcome
 
     # --------------------
-    # Queries tests
+    # Queries
     # --------------------
 
     def check_if_occupied_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
