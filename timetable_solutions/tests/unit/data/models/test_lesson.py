@@ -131,7 +131,7 @@ class TestLesson:
             school_id=lesson.school.school_access_key
         )
 
-        # Check lesson wasn't deleted
+        # Check lesson was deleted
         all_lessons = models.Lesson.objects.all()
         assert all_lessons.count() == 0
 
