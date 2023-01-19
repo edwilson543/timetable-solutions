@@ -65,7 +65,10 @@ class Classroom(models.Model):
         """String representation of the model for debugging"""
         return f"{self.building},  {self.room_number}"
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls, school_id: int, classroom_id: int, building: str, room_number: int
@@ -91,7 +94,10 @@ class Classroom(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # QUERY METHODS
+    # --------------------
+    # Queries
+    # --------------------
+
     def check_if_occupied_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
         """
         Method to check whether the classroom is occupied AT ANY POINT during the passed timeslot.

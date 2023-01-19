@@ -464,7 +464,7 @@ class TimetableSolverConstraints:
         constraints = (
             __no_split_classes_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in lesson.get_associated_days_of_week()
+            for day in lesson.get_usable_days_of_week()
         )
         return constraints
 
@@ -518,6 +518,6 @@ class TimetableSolverConstraints:
         constraints = (
             __no_two_doubles_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in lesson.get_associated_days_of_week()
+            for day in lesson.get_usable_days_of_week()
         )
         return constraints

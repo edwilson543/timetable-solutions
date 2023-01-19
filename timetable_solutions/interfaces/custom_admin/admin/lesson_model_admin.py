@@ -78,6 +78,7 @@ class LessonAdmin(CustomModelAdminBase):
     list_display = [
         "format_lesson_id",
         "format_subject_name",
+        # TODO - add year group
         "format_teacher",
         "number_pupils",
         "format_total_required_slots",

@@ -87,7 +87,10 @@ class YearGroup(models.Model):
         """String representation of the model for debugging"""
         return self.__str__()
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories tests
+    # --------------------
+
     @classmethod
     def create_new(cls, school_id: int, year_group: str | int) -> "YearGroup":
         """
@@ -104,7 +107,10 @@ class YearGroup(models.Model):
         outcome = year_groups.delete()
         return outcome
 
-    # QUERY METHODS
+    # --------------------
+    # Queries tests
+    # --------------------
+
     def get_number_pupils(self) -> int:
         """Method querying for how many pupils there are in a year group"""
         return self.pupils.all().count()

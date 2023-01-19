@@ -6,249 +6,252 @@ Unit tests for the Lesson model and its manager, LessonQuerySet.
 import pytest
 
 # Django imports
-from django import test
 from django.db import IntegrityError
 
 # Local application imports
 from data import models
+from tests import factories
 
 
-class TestLesson(test.TestCase):
+@pytest.mark.django_db
+class TestLessonQuerySet:
     """
-    Unit tests for the Lesson model
+    Unit tests for the LessonQuerySet.
     """
 
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-        "lessons_with_solution.json",
-    ]
+    def test_get_lessons_requiring_solving(self):
+        """
+        Check that the correct subset of lessons is extracted for the solver.
+        """
+        # Make one lesson requiring solving...
+        school = factories.School()
+        unsolved_lesson = factories.Lesson(school=school, total_required_slots=1)
 
-    # FACTORY METHOD TESTS
+        # ...and one lesson not requiring solving
+        solved_slot = factories.TimetableSlot(school=school)
+        factories.Lesson(
+            school=school,
+            total_required_slots=1,
+            user_defined_time_slots=(solved_slot,),
+        )
+
+        # Filter by the lessons requiring solving
+        lessons_needing_solving = models.Lesson.objects.get_lessons_requiring_solving(
+            school_id=school.school_access_key
+        )
+
+        # Check only unsolved lesson is in the lessons needing solving
+        assert lessons_needing_solving.count() == 1
+        assert lessons_needing_solving.first() == unsolved_lesson
+        # Therefore we have that the other lesson doesn't need solving
+
+
+@pytest.mark.django_db
+class TestLesson:
+    """
+    Unit tests for the Lesson model.
+    """
+
+    # --------------------
+    # Factories tests
+    # --------------------
+
     def test_create_new_valid_lesson(self):
         """
-        Tests that we can create and save a Lesson via the create_new method
+        Tests that we can create and save a Lesson via the create_new method.
         """
-        # Set test parameters
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
+        # Get some data to make the lesson with
+        school = factories.School()
+        teacher = factories.Teacher(school=school)
+        classroom = factories.Classroom(school=school)
+        pupil = factories.Pupil(school=school)
+        user_defined_slot = factories.TimetableSlot(
+            school=school, relevant_year_groups=(pupil.year_group,)
         )
 
-        # Execute test unit
+        # Try creating the lesson
         lesson = models.Lesson.create_new(
-            school_id=123456,
-            lesson_id="TEST-A",
-            subject_name="TEST",
-            teacher_id=1,
-            classroom_id=1,
-            pupils=all_pupils,
-            user_defined_time_slots=all_slots[1:3],
-            solver_defined_time_slots=all_slots[11:13],
+            school_id=school.school_access_key,
+            lesson_id="test",
+            subject_name="test",
             total_required_slots=4,
             total_required_double_periods=2,
+            teacher_id=teacher.teacher_id,
+            classroom_id=classroom.classroom_id,
+            pupils=pupil,
+            user_defined_time_slots=user_defined_slot,
         )
 
-        # Check outcome
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        assert lesson in all_lessons
-        self.assertQuerysetEqual(all_pupils, lesson.pupils.all(), ordered=False)
-        self.assertQuerysetEqual(
-            all_slots[1:3], lesson.user_defined_time_slots.all(), ordered=False
-        )
-        self.assertQuerysetEqual(
-            all_slots[11:13], lesson.solver_defined_time_slots.all(), ordered=False
-        )
+        # Check lesson was created
+        all_lessons = models.Lesson.objects.all()
+        assert all_lessons.count() == 1
+        assert all_lessons.first() == lesson
 
-    def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
+        # Check lesson fields are as expected
+        assert lesson.school == school
+        assert lesson.teacher == teacher
+        assert lesson.classroom == classroom
+        assert pupil in lesson.pupils.all()
+        assert user_defined_slot in lesson.user_defined_time_slots.all()
+
+    def test_create_new_fails_when_lesson_id_not_unique_for_school(self):
         """
         Tests that we can cannot create two Lessons with the same (lesson_id, school) combination,
-        due to unique_together on the Meta class
+        due to unique_together constraint.
         """
-        # Execute test unit
+        # Make a lesson to block uniqueness
+        lesson = factories.Lesson()
+        school = lesson.school
+
+        # Create a spare teacher / classroom for the lesson
+        spare_teacher = factories.Teacher(school=school)
+        spare_classroom = factories.Classroom(school=school)
+
+        # Try creating another lesson with the same id / school
         with pytest.raises(IntegrityError):
             models.Lesson.create_new(
-                school_id=123456,
-                lesson_id="YEAR_ONE_MATHS_A",  # This combo is already in the fixture
-                subject_name="TEST",
-                teacher_id=1,
-                classroom_id=1,
+                school_id=lesson.school.school_access_key,
+                lesson_id=lesson.lesson_id,
+                subject_name="test",
                 total_required_slots=4,
                 total_required_double_periods=2,
+                teacher_id=spare_teacher.teacher_id,
+                classroom_id=spare_classroom.classroom_id,
             )
 
-    def test_delete_all_instances_for_school_successful(self):
+    def test_delete_all_lessons_for_school_successful(self):
         """
-        Test that we can delete all the lessons associated with a school
+        Test that we can delete all the lessons associated with a school.
         """
-        # Initial check
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(
-            school_id=123456
+        # Make a lesson
+        lesson = factories.Lesson()
+
+        # Try deleting the lesson
+        models.Lesson.delete_all_lessons_for_school(
+            school_id=lesson.school.school_access_key
         )
-        assert all_lessons.count() == 24
 
-        # Execute test unit
-        models.Lesson.delete_all_lessons_for_school(school_id=123456)
-
-        # Check outcome
+        # Check lesson was deleted
+        all_lessons = models.Lesson.objects.all()
         assert all_lessons.count() == 0
 
     def test_delete_solver_solution_for_school_successful(self):
         """
-        Test that we can delete the solver produced solution for a school
+        Test that we can delete the solver produced solution for a school.
         """
-        # Initial check
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        all_solver_slots = sum(
-            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
-        )
-        assert all_solver_slots == 100
+        # Make a lesson with some solver slots (simulating having been solved)
+        school = factories.School()
+        slot = factories.TimetableSlot(school=school)
+        lesson = factories.Lesson(school=school, solver_defined_time_slots=(slot,))
 
-        # Execute test unit
-        models.Lesson.delete_solver_solution_for_school(school_id=123456)
-
-        # Check outcome
-        all_solver_slots = sum(
-            lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
+        # Delete the solver solution for the lesson's school
+        models.Lesson.delete_solver_solution_for_school(
+            school_id=school.school_access_key
         )
-        assert all_solver_slots == 0
 
-        # Check no slots deleted
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        assert all_slots.count() == 35
+        # Check the lesson no longer has any solver defined time slots
+        lesson.refresh_from_db()
+        assert lesson.solver_defined_time_slots.count() == 0
 
-    # QUERY METHOD TESTS
-    def test_get_all_timeslots_for_lesson_with_user_and_solver(self):
+    # --------------------
+    # Queries - view timetables logic tests
+    # --------------------
+
+    def test_get_all_time_slots_for_lesson_with_user_and_solver_defined_slots(self):
         """
         Test that the get all timeslots method correctly combines the solver / user time slot querysets
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        # Make a lesson with both user and solver defined slots
+        school = factories.School()
+        user_defined_slot = factories.TimetableSlot(school=school)
+        solver_defined_slot = factories.TimetableSlot(school=school)
+        lesson = factories.Lesson(
+            school=school,
+            user_defined_time_slots=(user_defined_slot,),
+            solver_defined_time_slots=(solver_defined_slot,),
         )
-        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
-        lesson.user_defined_time_slots.add(*additional_slots)
 
-        # Execute test unit
+        # Get all slots associated with the lesson
         all_slots = lesson.get_all_time_slots()
 
-        # Check outcome
-        expected_total = (
-            lesson.user_defined_time_slots.all().count()
-            + lesson.solver_defined_time_slots.all().count()
-        )
-        assert all_slots.count() == expected_total
+        # Check all slots includes the user and solver defined slot
+        assert all_slots.count() == 2
+        assert user_defined_slot in all_slots
+        assert solver_defined_slot in all_slots
 
-    def test_get_lessons_requiring_solving(self):
-        """
-        Method to check that the correct subset of lessons is extracted for the solver.
-        """
-        # Execute test unit
-        solver_lessons = models.Lesson.get_lessons_requiring_solving(school_id=123456)
-
-        # Check outcome
-        assert solver_lessons.count() == 12
-        for subject_name in {lesson.subject_name for lesson in solver_lessons}:
-            assert "LUNCH" not in subject_name  # We know when lunch is
+    # --------------------
+    # Queries - solver logic tests
+    # --------------------
 
     def test_get_n_solver_slots_required(self):
         """
         Method to check that the correct number of solver slots is calculated for a lesson
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        # Make a lesson with a non-zero delta between defined / required slots
+        school = factories.School()
+        user_defined_slot = factories.TimetableSlot(school=school)
+        lesson = factories.Lesson(
+            school=school,
+            user_defined_time_slots=(user_defined_slot,),
+            total_required_slots=2,
         )
-        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
-        lesson.user_defined_time_slots.add(*additional_slots)
 
         # Execute test unit
         n_slots = lesson.get_n_solver_slots_required()
 
-        # Check outcome
-        assert n_slots == 5  # = 8 - 3, since we added 3 in the setup
+        # Check the difference between required / user defined slots has been picked up
+        assert n_slots == 1
 
     def test_get_n_solver_double_periods_required(self):
         """
         Method to check that the correct number of solver double periods is calculated for a lesson
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        # Make a lesson with one user-defined double, and one further double required
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
+
+        slot_1 = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+
+        pupil = factories.Pupil(school=school, year_group=yg)
+        lesson = factories.Lesson(
+            school=school,
+            user_defined_time_slots=(slot_1, slot_2),  # User defined double
+            total_required_double_periods=2,
+            pupils=(pupil,),
         )
-        additional_slots = models.TimetableSlot.objects.filter(
-            slot_id__in=[1, 6]
-        )  # Add a double, to reduce count
-        lesson.user_defined_time_slots.add(*additional_slots)
 
         # Execute test unit
         n_doubles = lesson.get_n_solver_double_periods_required()
 
-        # Check outcome
-        assert n_doubles == 2
-
-    def test_requires_solving_true(self):
-        """
-        Method to check that a lesson with unfulfilled slots requires solving
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        additional_slots = models.TimetableSlot.objects.filter(slot_id__in=[3, 4, 5])
-        lesson.user_defined_time_slots.add(*additional_slots)
-
-        # Execute test unit
-        requires_solving = lesson.requires_solving()
-
-        # Check outcome
-        assert requires_solving
-
-    def test_requires_solving_false(self):
-        """
-        Method to check that a lesson with unfulfilled slots requires solving
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="LUNCH_PUPILS"
-        )
-
-        # Execute test unit
-        requires_solving = lesson.requires_solving()
-
-        # Check outcome
-        assert not requires_solving
+        # Check one further double needed from solver
+        assert n_doubles == 1
 
     def test_get_user_defined_double_period_count_on_day_one_double_expected(self):
         """
         Unit test that the method for counting the number of double periods defined by the user for a Lesson
         with ONE double period is correct.
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        lesson.user_defined_time_slots.add(
-            *lesson.solver_defined_time_slots.all()
-        )  # Manually give some user slots
-        monday = models.WeekDay.MONDAY.value
+        # Make a lesson with one user-defined double
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
 
-        # Execute test unit
+        slot_1 = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+
+        pupil = factories.Pupil(school=school, year_group=yg)
+        lesson = factories.Lesson(
+            school=school,
+            user_defined_time_slots=(slot_1, slot_2),  # User defined double
+            total_required_double_periods=2,
+            pupils=(pupil,),
+        )
+
+        # Get double period count on Monday and check equal to 1
         double_period_count = lesson.get_user_defined_double_period_count_on_day(
-            day_of_week=monday
+            day_of_week=slot_1.day_of_week
         )
 
-        # Check outcome
         assert double_period_count == 1
 
     def test_get_user_defined_double_period_count_on_day_no_doubles_expected(self):
@@ -256,127 +259,87 @@ class TestLesson(test.TestCase):
         Unit test that the method for counting the number of double periods defined by the user for a Lesson
         with ZERO double periods is correct.
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        lesson.user_defined_time_slots.add(
-            *lesson.solver_defined_time_slots.all()
-        )  # Manually give some user slots
-        tuesday = models.WeekDay.TUESDAY.value
+        # Make a lesson with one double on Tuesday
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
 
-        # Execute test unit
+        slot_1 = factories.TimetableSlot(
+            school=school,
+            relevant_year_groups=(yg,),
+            day_of_week=models.WeekDay.TUESDAY,
+        )
+        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+
+        pupil = factories.Pupil(school=school, year_group=yg)
+        lesson = factories.Lesson(
+            school=school,
+            user_defined_time_slots=(slot_1, slot_2),  # User defined double
+            total_required_double_periods=2,
+            pupils=(pupil,),
+        )
+
+        # Get doubles on MONDAY - note our doubles are on TUESDAY
         double_period_count = lesson.get_user_defined_double_period_count_on_day(
-            day_of_week=tuesday
+            day_of_week=models.WeekDay.MONDAY
         )
 
-        # Check outcome
+        # Check no doubles
         assert double_period_count == 0
 
-    def test_get_year_group_str_for_lesson_with_pupils(self):
-        """
-        Test that the correct year group for a lesson (with pupils and therefore a year group) is returned.
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-
-        # Execute test unit
-        year_group = lesson.get_year_group_str()
-
-        # Check outcome
-        assert year_group == "1"
-
-    def test_get_year_group_str_for_lesson_without_pupils(self):
-        """
-        Test that N/A is returned as the year group when a lesson has no pupils.
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="LUNCH_1"
-        )
-
-        # Execute test unit
-        year_group = lesson.get_year_group_str()
-
-        # Check outcome
-        assert year_group == "N/A"
-
-    def test_get_associated_timeslots_year_one_lesson(self):
-        """
-        Test that the corrct set of timeslots for year one is retrieved.
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-
-        # Execute test unit
-        slots = lesson.get_associated_timeslots()
-
-        # Check outcome
-        assert slots.count() == 35
-
-    def test_available_days_year_one_lesson(self):
+    def test_usable_days_year_one_lesson(self):
         """
         Test the correct list of days is returned for a year one lesson.
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        # Make a lesson with a slot
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
+
+        # Add a pupil for getting the year group (and therefore slots)
+        pupil = factories.Pupil(school=school, year_group=yg)
+
+        # And a slot for getting the days
+        slot = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+
+        lesson = factories.Lesson(
+            school=school,
+            pupils=(pupil,),
         )
 
+        # Make a dummy slot at a different school
+        factories.TimetableSlot(day_of_week=models.WeekDay.TUESDAY)
+
         # Execute test unit
-        associated_days = lesson.get_associated_days_of_week()
+        associated_days = lesson.get_usable_days_of_week()
 
-        # Check outcome
-        assert associated_days == [1, 2, 3, 4, 5]  # Represents Monday - Friday
+        # Check outcome (and dummy not in answer)
+        assert associated_days == [slot.day_of_week]
 
-
-class TestLessonExtraYear(test.TestCase):
-    """
-    Unit tests for the Lesson model when the 'extra year' is included'.
-    This means the timetable slots are different for different year groups.
-    """
-
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-        "lessons_with_solution.json",
-        "extra-year.json",
-    ]
-
-    def test_get_associated_timeslots_extra_year_lesson(self):
+    def test_associated_timeslots_for_single_slot(self):
         """
-        Test that the corrct set of timeslots for the 'extra year' is retrieved.
+        Test the correct list of days is returned for a year one lesson.
         """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="extra-year-history"
+        # Make a lesson with a slot
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
+
+        # Add a pupil for getting the year group (and therefore slots)
+        pupil = factories.Pupil(school=school, year_group=yg)
+
+        # And a slot for getting the days
+        slot = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+
+        lesson = factories.Lesson(
+            school=school,
+            pupils=(pupil,),
         )
 
-        # Execute test unit
-        slots = lesson.get_associated_timeslots()
-
-        # Check outcome
-        assert slots.count() == 2
-
-    def test_available_days_extra_year_lesson(self):
-        """
-        Test that just Monday is returned for an extra-year lesson, who only have 2 slots.
-        """
-        # Set test parameters
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="extra-year-geography"
-        )
+        # Make a dummy slot at a different school
+        factories.TimetableSlot(day_of_week=models.WeekDay.TUESDAY)
 
         # Execute test unit
-        associated_days = lesson.get_associated_days_of_week()
+        associated_slots = lesson.get_associated_timeslots()
 
         # Check outcome
-        assert associated_days == [1]
+        assert associated_slots.count() == 1
+        assert slot in associated_slots
+        # We therefore have that the dummy wasn't associated

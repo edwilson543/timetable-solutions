@@ -25,7 +25,9 @@ class BreakQuerySet(models.QuerySet):
         """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
 
+    # --------------------
     # Filters
+    # --------------------
 
     def filter_for_clashes(self, slot: TimetableSlot) -> bool:
         """
@@ -102,7 +104,10 @@ class Break(models.Model):
         """String representation of the model for debugging"""
         return f"{self.school}: {self.break_id}"
 
+    # --------------------
     # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls,
@@ -133,7 +138,17 @@ class Break(models.Model):
 
         return break_
 
+    @classmethod
+    def delete_all_breaks_for_school(cls, school_id: int) -> tuple:
+        """Method deleting all entries for a school in the Break table"""
+        breaks = cls.objects.get_all_instances_for_school(school_id=school_id)
+        outcome = breaks.delete()
+        return outcome
+
+    # --------------------
     # Mutators
+    # --------------------
+
     def add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
         """
         Add one or more teachers to a break instance.

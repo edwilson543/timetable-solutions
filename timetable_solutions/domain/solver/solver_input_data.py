@@ -71,7 +71,7 @@ class TimetableSolverInputs:
 
         # Note this filter is vital, as throughout solving it's assumed
         # that lesson instances have the data (e.g. some pupils) needed.
-        self.lessons = models.Lesson.get_lessons_requiring_solving(
+        self.lessons = models.Lesson.objects.get_lessons_requiring_solving(
             school_id=self.school_id
         )
 
@@ -154,7 +154,7 @@ class TimetableSolverInputs:
                 required_distinct_days = (
                     lesson.total_required_slots - lesson.total_required_double_periods
                 )
-                n_available_distinct_days = len(lesson.get_associated_days_of_week())
+                n_available_distinct_days = len(lesson.get_usable_days_of_week())
                 if required_distinct_days > n_available_distinct_days:
                     self.error_messages.append(
                         f"Lesson: {lesson} requires too many distinct slots for the solution timetables to all be "
