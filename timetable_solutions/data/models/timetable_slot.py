@@ -48,7 +48,9 @@ class TimetableSlotQuerySet(models.QuerySet):
             & models.Q(relevant_year_groups=year_group)
         )
 
+    # --------------------
     # Filters
+    # --------------------
 
     def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
         """
@@ -122,7 +124,10 @@ class TimetableSlot(models.Model):
         start_time = self.period_starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
-    # FACTORIES
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls,
@@ -131,7 +136,7 @@ class TimetableSlot(models.Model):
         day_of_week: constants.WeekDay,
         period_starts_at: dt.time,
         period_ends_at: dt.time,
-        relevant_year_groups: YearGroupQuerySet | None = None,
+        relevant_year_groups: YearGroupQuerySet,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
@@ -165,7 +170,10 @@ class TimetableSlot(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # MUTATORS
+    # --------------------
+    # Mutators
+    # --------------------
+
     def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
         """Method adding a queryset of / yeargroup instance to a TimetableSlot instance"""
         if isinstance(year_groups, YearGroupQuerySet):
@@ -173,14 +181,16 @@ class TimetableSlot(models.Model):
         elif isinstance(year_groups, YearGroup):
             self.relevant_year_groups.add(year_groups)
 
-    # QUERIES
+    # --------------------
+    # Queries
+    # --------------------
+
     @classmethod
     def get_timeslot_ids_on_given_day(
         cls, school_id: int, day_of_week: constants.WeekDay, year_group: YearGroup
     ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
-        Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
         """
         timeslots = cls.objects.get_timeslots_on_given_day(
             school_id=school_id, day_of_week=day_of_week, year_group=year_group
@@ -211,7 +221,10 @@ class TimetableSlot(models.Model):
         )
         return same_day and contiguous_time
 
-    # PROPERTIES
+    # --------------------
+    # Properties
+    # --------------------
+
     @property
     def open_interval(self) -> tuple[dt.time, dt.time]:
         """
@@ -232,7 +245,10 @@ class TimetableSlot(models.Model):
 
         return open_start_time, open_end_time
 
-    # Checks
+    # --------------------
+    # Validation
+    # --------------------
+
     def clean(self) -> None:
         """
         Additional validation on TimetablesLOT instances.
