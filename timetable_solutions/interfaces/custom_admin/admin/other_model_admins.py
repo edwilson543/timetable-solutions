@@ -12,6 +12,7 @@ from django.contrib import admin
 # Local application imports
 from .custom_admin_site import user_admin
 from .base_model_admin import CustomModelAdminBase
+from data import constants
 from data import models
 
 
@@ -122,7 +123,7 @@ class TimetableSlotAdmin(CustomModelAdminBase):
             + "-"
             + obj.period_ends_at.strftime("%H:%M")
         )
-        return models.WeekDay(obj.day_of_week).label + ", " + time
+        return constants.WeekDay(obj.day_of_week).label + ", " + time
 
     @admin.display(description="Year Groups")
     def get_year_groups(self, obj: models.TimetableSlot) -> str:

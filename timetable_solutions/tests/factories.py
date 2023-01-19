@@ -13,6 +13,7 @@ import factory
 from django.contrib.auth import models as auth_models
 
 # Local application imports
+from data import constants
 from data import models
 
 
@@ -44,12 +45,12 @@ class Profile(factory.django.DjangoModelFactory):
 
     class Params:
         school_admin = factory.Trait(
-            role=models.UserRole.SCHOOL_ADMIN, approved_by_school_admin=True
+            role=constants.UserRole.SCHOOL_ADMIN, approved_by_school_admin=True
         )
 
     user = factory.SubFactory(User)
     school = factory.SubFactory(School)
-    role = models.UserRole.TEACHER
+    role = constants.UserRole.TEACHER
     approved_by_school_admin = False
 
 
@@ -92,13 +93,13 @@ class TimetableSlot(factory.django.DjangoModelFactory):
     school = factory.SubFactory(School)
     slot_id = factory.Sequence(lambda n: n + 1)
     day_of_week = factory.Sequence(
-        lambda n: models.WeekDay((n % len(models.WeekDay)) + 1)
+        lambda n: constants.WeekDay((n % len(constants.WeekDay)) + 1)
     )
 
     @factory.sequence
     def period_starts_at(n: int) -> dt.time:
         hour = (
-            (n // len(models.WeekDay)) % 8
+            (n // len(constants.WeekDay)) % 8
         ) + 8  # So we have 8, 8, ..., 8, 9, ... , 9, ...
         return dt.time(hour=hour)
 
@@ -242,7 +243,7 @@ class Break(factory.django.DjangoModelFactory):
     break_id = factory.Sequence(lambda n: f"break-{n}")
     break_name = "Lunch"
     day_of_week = factory.Sequence(
-        lambda n: models.WeekDay((n % len(models.WeekDay)) + 1)
+        lambda n: constants.WeekDay((n % len(constants.WeekDay)) + 1)
     )
     break_starts_at = dt.time(hour=12)
 

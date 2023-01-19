@@ -13,6 +13,7 @@ from django.db import IntegrityError
 from django.db.models import ProtectedError
 
 # Local application imports
+from data import constants
 from data import models
 from tests import factories
 
@@ -185,7 +186,7 @@ class TestTeacher:
         # make the teacher constantly 'busy'
         teacher = factories.Teacher()
         busy_slot = factories.TimetableSlot(
-            school=teacher.school, day_of_week=models.WeekDay.MONDAY
+            school=teacher.school, day_of_week=constants.WeekDay.MONDAY
         )
         factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
@@ -193,7 +194,7 @@ class TestTeacher:
 
         # Make another slot, which has a different day
         check_slot = factories.TimetableSlot(
-            school=teacher.school, day_of_week=models.WeekDay.TUESDAY
+            school=teacher.school, day_of_week=constants.WeekDay.TUESDAY
         )
 
         # Call test function

@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Local application imports (other models)
+from data import constants
 from data.models.school import School
 
 
@@ -40,18 +41,6 @@ class ProfileQuerySet(models.QuerySet):
         self.update(approved_by_school_admin=True)
 
 
-class UserRole(models.IntegerChoices):
-    """
-    Choices for the different roles that users can have with respect to the site.
-    Note there is no interaction with the default Django authentication tiers (staff / superuser), these roles only
-    relate to the custom admin.
-    """
-
-    SCHOOL_ADMIN = 1, "Administrator"  # Only role with access to the custom admin site
-    TEACHER = 2, "Teacher"
-    PUPIL = 3, "Pupil"
-
-
 class Profile(models.Model):
     """
     Adds information to each User to provide additional profile data.
@@ -61,7 +50,9 @@ class Profile(models.Model):
 
     user: User = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN)
+    role = models.IntegerField(
+        choices=constants.UserRole.choices, default=constants.UserRole.SCHOOL_ADMIN
+    )
     approved_by_school_admin = models.BooleanField(default=False)
 
     # Introduce a custom admin
@@ -84,12 +75,12 @@ class Profile(models.Model):
         cls,
         user: User,
         school_id: int,
-        role: str | UserRole,
+        role: str | constants.UserRole,
         approved_by_school_admin: bool,
     ) -> "Profile":
         """Method to create a new Profile instance, and then save it into the database"""
         if isinstance(role, str):
-            role = UserRole(int(role))
+            role = constants.UserRole(int(role))
         profile = cls.objects.create(
             user=user,
             school_id=school_id,

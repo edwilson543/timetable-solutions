@@ -6,6 +6,7 @@ Module providing summary stats for the view timetable app's dashboard
 from typing import TypedDict, Literal
 
 # Local application imports
+from data import constants
 from data import models
 
 
@@ -21,8 +22,8 @@ class _StatsSummary(TypedDict):
     n_solved_lessons: int
     n_solved_slots: int
 
-    daily_solver_lessons: dict[models.WeekDay, int]
-    daily_user_lessons: dict[models.WeekDay, int]
+    daily_solver_lessons: dict[constants.WeekDay, int]
+    daily_user_lessons: dict[constants.WeekDay, int]
 
 
 class _NoStatsSummary(TypedDict):
@@ -122,7 +123,7 @@ class SummaryStats:
         return self._all_teachers.count()
 
     @property
-    def _daily_solver_lessons(self) -> dict[models.WeekDay, int]:
+    def _daily_solver_lessons(self) -> dict[constants.WeekDay, int]:
         """
         Get the total number of lesson slots produced by the solver on each day.
         """
@@ -132,11 +133,11 @@ class SummaryStats:
                 for slot in self._all_slots
             )
             # mypy doesn't recognise IntegerChoices as an iterable
-            for day in models.WeekDay  # type: ignore
+            for day in constants.WeekDay  # type: ignore
         }
 
     @property
-    def _daily_user_lessons(self) -> dict[models.WeekDay, int]:
+    def _daily_user_lessons(self) -> dict[constants.WeekDay, int]:
         """
         Get the total number of lesson slots defined by the user on each day.
         Note includes things like break and lunch.
@@ -147,5 +148,5 @@ class SummaryStats:
                 for slot in self._all_slots
             )
             # mypy doesn't recognise IntegerChoices as an iterable
-            for day in models.WeekDay  # type: ignore
+            for day in constants.WeekDay  # type: ignore
         }

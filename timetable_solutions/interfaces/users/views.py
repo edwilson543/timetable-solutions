@@ -25,6 +25,7 @@ from django.urls import reverse
 
 # Local application imports
 from constants.url_names import UrlName
+from data import constants
 from data import models
 from . import forms
 
@@ -104,7 +105,7 @@ class SchoolRegistration(View):
             models.Profile.create_new(
                 user=request.user,
                 school_id=new_school.school_access_key,
-                role=models.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
+                role=constants.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
                 approved_by_school_admin=True,
             )
 

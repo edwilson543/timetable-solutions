@@ -7,7 +7,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 
 # Local application imports (other models)
-from data.models import constants
+from data import constants
 from data.models.classroom import Classroom
 from data.models.pupil import Pupil, PupilQuerySet
 from data.models.school import School

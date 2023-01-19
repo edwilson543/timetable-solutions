@@ -9,6 +9,7 @@ import pytest
 from django.db import IntegrityError
 
 # Local application imports
+from data import constants
 from data import models
 from tests import factories
 
@@ -266,7 +267,7 @@ class TestLesson:
         slot_1 = factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
-            day_of_week=models.WeekDay.TUESDAY,
+            day_of_week=constants.WeekDay.TUESDAY,
         )
         slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
 
@@ -280,7 +281,7 @@ class TestLesson:
 
         # Get doubles on MONDAY - note our doubles are on TUESDAY
         double_period_count = lesson.get_user_defined_double_period_count_on_day(
-            day_of_week=models.WeekDay.MONDAY
+            day_of_week=constants.WeekDay.MONDAY
         )
 
         # Check no doubles
@@ -306,7 +307,7 @@ class TestLesson:
         )
 
         # Make a dummy slot at a different school
-        factories.TimetableSlot(day_of_week=models.WeekDay.TUESDAY)
+        factories.TimetableSlot(day_of_week=constants.WeekDay.TUESDAY)
 
         # Execute test unit
         associated_days = lesson.get_usable_days_of_week()
@@ -334,7 +335,7 @@ class TestLesson:
         )
 
         # Make a dummy slot at a different school
-        factories.TimetableSlot(day_of_week=models.WeekDay.TUESDAY)
+        factories.TimetableSlot(day_of_week=constants.WeekDay.TUESDAY)
 
         # Execute test unit
         associated_slots = lesson.get_associated_timeslots()

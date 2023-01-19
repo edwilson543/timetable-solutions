@@ -14,6 +14,7 @@ from django.utils.text import capfirst
 
 # Local application imports
 from constants.url_names import UrlName
+from data import constants
 from data import models
 
 
@@ -60,7 +61,7 @@ class CustomAdminSite(admin.AdminSite):
         """
         if hasattr(request.user, "profile"):
             return request.user.is_active and (
-                request.user.profile.role == models.UserRole.SCHOOL_ADMIN
+                request.user.profile.role == constants.UserRole.SCHOOL_ADMIN
             )
         else:
             return False

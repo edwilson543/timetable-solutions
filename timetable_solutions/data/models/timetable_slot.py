@@ -8,7 +8,7 @@ from django.core import exceptions
 from django.db import models
 
 # Local application imports
-from data.models import constants
+from data import constants
 from data.models.school import School
 from data.models.year_group import YearGroup, YearGroupQuerySet
 

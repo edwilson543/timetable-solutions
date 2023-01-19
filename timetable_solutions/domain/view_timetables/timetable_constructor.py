@@ -11,6 +11,7 @@ from string import ascii_uppercase
 import pandas as pd
 
 # Local application imports
+from data import constants
 from data import models
 from domain.view_timetables.timetable_colours import TimetableColourAssigner
 
@@ -193,8 +194,8 @@ def get_timetable_slot_indexed_timetable(
             {}
         )  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
 
-        for day in models.WeekDay.values:
-            day_label = models.WeekDay(day).label
+        for day in constants.WeekDay.values:
+            day_label = constants.WeekDay(day).label
             for lesson, time_slots in lesson_indexed_timetable.items():
                 queryset = time_slots.filter(
                     day_of_week=day, period_starts_at=start_time

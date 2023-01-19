@@ -15,10 +15,8 @@ from .pupil import Pupil, PupilQuerySet
 from .teacher import Teacher, TeacherQuerySet
 from .school import School, SchoolQuerySet
 from .timetable_slot import TimetableSlot, TimetableSlotQuerySet
-from .user_profile import Profile, ProfileQuerySet, UserRole
+from .user_profile import Profile, ProfileQuerySet
 from .year_group import YearGroup, YearGroupQuerySet
-
-from .constants import WeekDay
 
 # Type hints
 ModelSubclass = Union[

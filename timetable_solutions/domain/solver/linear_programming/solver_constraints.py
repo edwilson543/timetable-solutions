@@ -9,6 +9,7 @@ from typing import Generator
 import pulp as lp
 
 # Local application imports
+from data import constants
 from data import models
 from domain.solver.solver_input_data import TimetableSolverInputs
 from domain.solver.linear_programming.solver_variables import (
@@ -400,7 +401,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_split_classes_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: models.WeekDay
+            lesson: models.Lesson, day_of_week: constants.WeekDay
         ) -> tuple[lp.LpConstraint, str]:
             """
             We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
@@ -479,7 +480,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_two_doubles_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: models.WeekDay
+            lesson: models.Lesson, day_of_week: constants.WeekDay
         ) -> tuple[lp.LpConstraint, str]:
             """
             States that the given lesson can only have one double period on the given day.
