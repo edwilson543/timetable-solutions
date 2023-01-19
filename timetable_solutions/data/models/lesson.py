@@ -132,7 +132,6 @@ class Lesson(models.Model):
         | None = None,  # ID for classroom & teacher since they're foreign keys
         pupils: PupilQuerySet | None = None,
         user_defined_time_slots: TimetableSlotQuerySet | None = None,
-        solver_defined_time_slots: TimetableSlotQuerySet | None = None,
     ) -> "Lesson":
         """
         Method to create a new Lesson instance.
@@ -170,8 +169,6 @@ class Lesson(models.Model):
             lesson.add_pupils(pupils=pupils)
         if user_defined_time_slots is not None:
             lesson.add_user_defined_time_slots(time_slots=user_defined_time_slots)
-        if solver_defined_time_slots is not None:
-            lesson.add_solver_defined_time_slots(time_slots=solver_defined_time_slots)
 
         return lesson
 
@@ -255,7 +252,7 @@ class Lesson(models.Model):
         """
         total_user_defined = sum(
             self.get_user_defined_double_period_count_on_day(day_of_week=day)
-            for day in constants.WeekDay.values
+            for day in constants.WeekDay.values  # Note will just be 0, so no need to restrict
         )
         return self.total_required_double_periods - total_user_defined
 
@@ -291,6 +288,18 @@ class Lesson(models.Model):
 
         return double_period_count
 
+    def get_usable_days_of_week(self) -> list[constants.WeekDay]:
+        """
+        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
+        :return - days_list - a list of the days, sorted from lowest to highest.
+        """
+        associated_slots = self.get_associated_timeslots()
+        days = {
+            slot.day_of_week for slot in associated_slots
+        }  # We only want unique days
+        days_list = sorted(list(days))
+        return days_list
+
     def get_associated_timeslots(self) -> TimetableSlotQuerySet:
         """
         Get the timetable slots associated with a particular Lesson (via its year group).
@@ -299,16 +308,6 @@ class Lesson(models.Model):
         """
         year_group = self.get_associated_year_group()
         return year_group.slots.all()
-
-    def get_associated_days_of_week(self) -> list[constants.WeekDay]:
-        """
-        Get the weekdays that a lesson may be taught on, based on its associated timeslots.
-        :return - days_list - a list of the days, sorted from lowest to highest.
-        """
-        slots = self.get_associated_timeslots()
-        days = {slot.day_of_week for slot in slots}  # We only want unique days
-        days_list = sorted(list(days))
-        return days_list
 
     def get_associated_year_group(self) -> YearGroup:
         """
@@ -322,24 +321,20 @@ class Lesson(models.Model):
                 f"Lesson: {repr(self)} does not have any pupils, therefore cannot retrieve associated year group"
             )
 
-    # QUERIES FOR THE ADMIN SITE
+    # --------------------
+    # Queries - admin site logic
+    # --------------------
+
     def get_number_pupils(self) -> int:
         """
         Method returning the number of pupils associated with this Lesson instance.
         """
         return self.pupils.all().count()
 
-    def get_year_group_str(self) -> str:
-        """
-        Method returning the year_group associated with a Lesson.
-        """
-        try:
-            yg = self.get_associated_year_group()
-            return yg.year_group
-        except NoPupilsError:
-            return "N/A"
+    # --------------------
+    # Validation
+    # --------------------
 
-    # MISCELLANEOUS METHODS
     def clean(self) -> None:
         """
         Additional validation on Lesson instances. Note that we cannot imply a number of double periods that

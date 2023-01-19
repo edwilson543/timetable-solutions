@@ -126,6 +126,18 @@ class TimetableSlot(factory.django.DjangoModelFactory):
                     )
                 self.relevant_year_groups.add(year_group)
 
+    @classmethod
+    def get_next_consecutive_slot(
+        cls, slot: models.TimetableSlot
+    ) -> models.TimetableSlot:
+        """Create a slot that is consecutive to the passed slot"""
+        return cls(
+            school=slot.school,
+            day_of_week=slot.day_of_week,
+            period_starts_at=slot.period_ends_at,  # Therefore consecutive
+            relevant_year_groups=slot.relevant_year_groups.all(),
+        )
+
 
 class Teacher(factory.django.DjangoModelFactory):
     """Factory for the Teacher model."""
@@ -189,7 +201,7 @@ class Lesson(factory.django.DjangoModelFactory):
         extracted: tuple[models.TimetableSlot, ...] | None,
         **kwargs: Any,
     ) -> None:
-        """Add the option to force some slots."""
+        """Add the option to force some user defined slots."""
         if not create:
             # Simple build (no db access) - so do nothing
             return None
@@ -198,3 +210,20 @@ class Lesson(factory.django.DjangoModelFactory):
                 if slot.school != self.school:
                     raise ValueError("Cannot fix slot from different school to lesson.")
                 self.user_defined_time_slots.add(slot)
+
+    @factory.post_generation
+    def solver_defined_time_slots(
+        self,
+        create: bool,
+        extracted: tuple[models.TimetableSlot, ...] | None,
+        **kwargs: Any,
+    ) -> None:
+        """Add the option to force some solver defined slots."""
+        if not create:
+            # Simple build (no db access) - so do nothing
+            return None
+        elif extracted:
+            for slot in extracted:
+                if slot.school != self.school:
+                    raise ValueError("Cannot add slot from different school to lesson.")
+                self.solver_defined_time_slots.add(slot)

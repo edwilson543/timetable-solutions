@@ -154,7 +154,7 @@ class TimetableSolverInputs:
                 required_distinct_days = (
                     lesson.total_required_slots - lesson.total_required_double_periods
                 )
-                n_available_distinct_days = len(lesson.get_associated_days_of_week())
+                n_available_distinct_days = len(lesson.get_usable_days_of_week())
                 if required_distinct_days > n_available_distinct_days:
                     self.error_messages.append(
                         f"Lesson: {lesson} requires too many distinct slots for the solution timetables to all be "
