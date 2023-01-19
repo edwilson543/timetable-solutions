@@ -105,7 +105,7 @@ class TimetableSlot(factory.django.DjangoModelFactory):
     @factory.lazy_attribute
     def period_ends_at(self) -> dt.time:
         hour = self.period_starts_at.hour + self.slot_duration_hours
-        return dt.time(hour=hour)
+        return dt.time(hour=hour, minute=self.period_starts_at.minute)
 
     @factory.post_generation
     def relevant_year_groups(
@@ -227,3 +227,61 @@ class Lesson(factory.django.DjangoModelFactory):
                 if slot.school != self.school:
                     raise ValueError("Cannot add slot from different school to lesson.")
                 self.solver_defined_time_slots.add(slot)
+
+
+class Break(factory.django.DjangoModelFactory):
+    """Factory for the Break model."""
+
+    class Meta:
+        model = models.Break
+
+    class Params:
+        break_duration_hours = 1
+
+    school = factory.SubFactory(School)
+    break_id = factory.Sequence(lambda n: f"break-{n}")
+    break_name = "Lunch"
+    day_of_week = factory.Sequence(
+        lambda n: models.WeekDay((n % len(models.WeekDay)) + 1)
+    )
+    break_starts_at = dt.time(hour=12)
+
+    @factory.lazy_attribute
+    def break_ends_at(self) -> dt.time:
+        hour = self.break_starts_at.hour + self.break_duration_hours
+        return dt.time(hour=hour, minute=self.break_starts_at.minute)
+
+    @factory.post_generation
+    def teachers(
+        self, create: bool, extracted: tuple[models.Teacher, ...] | None, **kwargs: Any
+    ) -> None:
+        """Add the option to add some teachers."""
+        if not create:
+            # Simple build (no db access) - so do nothing
+            return None
+        elif extracted:
+            for teacher in extracted:
+                if teacher.school != self.school:
+                    raise ValueError(
+                        "Cannot add teacher from different school to break."
+                    )
+                self.teachers.add(teacher)
+
+    @factory.post_generation
+    def relevant_year_groups(
+        self,
+        create: bool,
+        extracted: tuple[models.YearGroup, ...] | None,
+        **kwargs: Any,
+    ) -> None:
+        """Add the option to relate some year groups."""
+        if not create:
+            # Simple build (no db access) - so do nothing
+            return None
+        elif extracted:
+            for year_group in extracted:
+                if year_group.school != self.school:
+                    raise ValueError(
+                        "Cannot add year group from different school to break."
+                    )
+                self.relevant_year_groups.add(year_group)
