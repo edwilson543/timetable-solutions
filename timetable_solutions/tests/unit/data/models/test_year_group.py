@@ -7,7 +7,7 @@ import pytest
 
 # Local application imports
 from data import models
-from tests import factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
