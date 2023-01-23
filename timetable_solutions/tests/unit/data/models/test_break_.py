@@ -100,7 +100,7 @@ class TestBreak:
             break_name="Morning break",
             break_starts_at=dt.time(hour=11, minute=30),
             break_ends_at=dt.time(hour=12),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
             teachers=teacher,
             relevant_year_groups=yg,
         )
@@ -133,7 +133,7 @@ class TestBreak:
                 break_name="test",
                 break_starts_at=dt.time(hour=11, minute=30),
                 break_ends_at=dt.time(hour=12),
-                day_of_week=constants.WeekDay.MONDAY,
+                day_of_week=constants.Day.MONDAY,
                 teachers=models.Teacher.objects.none(),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )

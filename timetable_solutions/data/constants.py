@@ -13,7 +13,7 @@ class UserRole(models.IntegerChoices):
     PUPIL = 3, "Pupil"
 
 
-class WeekDay(models.IntegerChoices):
+class Day(models.IntegerChoices):
     """Choices for the different days of the week a lesson can take place at"""
 
     MONDAY = 1, "Monday"
@@ -21,3 +21,5 @@ class WeekDay(models.IntegerChoices):
     WEDNESDAY = 3, "Wednesday"
     THURSDAY = 4, "Thursday"
     FRIDAY = 5, "Friday"
+    SATURDAY = 6, "Saturday"
+    SUNDAY = 7, "Sunday"

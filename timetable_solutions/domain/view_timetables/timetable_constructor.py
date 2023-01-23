@@ -194,8 +194,8 @@ def get_timetable_slot_indexed_timetable(
             {}
         )  # specific times as indexes to nested dicts, indexed by days: {9AM: {Monday: [...]}...}
 
-        for day in constants.WeekDay.values:
-            day_label = constants.WeekDay(day).label
+        for day in constants.Day.values:
+            day_label = constants.Day(day).label
             for lesson, time_slots in lesson_indexed_timetable.items():
                 queryset = time_slots.filter(
                     day_of_week=day, period_starts_at=start_time

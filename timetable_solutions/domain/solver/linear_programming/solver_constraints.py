@@ -401,7 +401,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_split_classes_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: constants.WeekDay
+            lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
             We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
@@ -480,7 +480,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_two_doubles_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: constants.WeekDay
+            lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
             States that the given lesson can only have one double period on the given day.

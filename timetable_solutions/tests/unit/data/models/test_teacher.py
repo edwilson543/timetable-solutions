@@ -186,7 +186,7 @@ class TestTeacher:
         # make the teacher constantly 'busy'
         teacher = factories.Teacher()
         busy_slot = factories.TimetableSlot(
-            school=teacher.school, day_of_week=constants.WeekDay.MONDAY
+            school=teacher.school, day_of_week=constants.Day.MONDAY
         )
         factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
@@ -194,7 +194,7 @@ class TestTeacher:
 
         # Make another slot, which has a different day
         check_slot = factories.TimetableSlot(
-            school=teacher.school, day_of_week=constants.WeekDay.TUESDAY
+            school=teacher.school, day_of_week=constants.Day.TUESDAY
         )
 
         # Call test function

@@ -252,12 +252,12 @@ class Lesson(models.Model):
         """
         total_user_defined = sum(
             self.get_user_defined_double_period_count_on_day(day_of_week=day)
-            for day in constants.WeekDay.values  # Note will just be 0, so no need to restrict
+            for day in constants.Day.values  # Note will just be 0, so no need to restrict
         )
         return self.total_required_double_periods - total_user_defined
 
     def get_user_defined_double_period_count_on_day(
-        self, day_of_week: constants.WeekDay
+        self, day_of_week: constants.Day
     ) -> int:
         """
         Method to count the number of user-defined double periods on the given day
@@ -288,7 +288,7 @@ class Lesson(models.Model):
 
         return double_period_count
 
-    def get_usable_days_of_week(self) -> list[constants.WeekDay]:
+    def get_usable_days_of_week(self) -> list[constants.Day]:
         """
         Get the weekdays that a lesson may be taught on, based on its associated timeslots.
         :return - days_list - a list of the days, sorted from lowest to highest.

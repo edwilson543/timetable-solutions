@@ -199,7 +199,7 @@ class TestClassroom:
         classroom = factories.Classroom()
         school = classroom.school
         busy_slot = factories.TimetableSlot(
-            school=school, day_of_week=constants.WeekDay.MONDAY
+            school=school, day_of_week=constants.Day.MONDAY
         )
         factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
@@ -207,7 +207,7 @@ class TestClassroom:
 
         # Make another slot, which has a different day
         check_slot = factories.TimetableSlot(
-            school=school, day_of_week=constants.WeekDay.TUESDAY
+            school=school, day_of_week=constants.Day.TUESDAY
         )
 
         # Call test function

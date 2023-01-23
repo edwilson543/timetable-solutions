@@ -89,11 +89,11 @@ class TestTimetableConstruction(TestCase):
         )
 
         # Test assertions
-        monday_period_one = timetable["09:00-10:00"][constants.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][constants.Day.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.Lesson)
         self.assertEqual(monday_period_one.subject_name, "MATHS")
         self.assertEqual(monday_period_one.classroom.building, "MB")
-        free_period = timetable["12:00-13:00"][constants.WeekDay.THURSDAY.label]
+        free_period = timetable["12:00-13:00"][constants.Day.THURSDAY.label]
         # For free periods, the dictionary value is a string as opposed to a Lesson instance
         self.assertEqual(
             free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name
@@ -118,10 +118,10 @@ class TestTimetableConstruction(TestCase):
         )
 
         # Test assertions
-        monday_period_one = timetable["09:00-10:00"][constants.WeekDay.MONDAY.label]
+        monday_period_one = timetable["09:00-10:00"][constants.Day.MONDAY.label]
         self.assertIsInstance(monday_period_one, models.Lesson)
         self.assertEqual(monday_period_one.subject_name, "FRENCH")
-        free_period = timetable["10:00-11:00"][constants.WeekDay.MONDAY.label]
+        free_period = timetable["10:00-11:00"][constants.Day.MONDAY.label]
         self.assertEqual(
             free_period, view_timetables.TimetableColourAssigner.Colour.FREE.name
         )
