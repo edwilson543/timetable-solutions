@@ -15,7 +15,7 @@ from django.db.models import ProtectedError
 # Local application imports
 from data import constants
 from data import models
-from tests import data_factories
+from tests import data_factories as factories
 
 
 @pytest.mark.django_db
