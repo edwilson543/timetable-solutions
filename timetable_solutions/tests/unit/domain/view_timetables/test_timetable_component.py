@@ -5,7 +5,10 @@ import datetime as dt
 import pytest
 
 # Local application imports
+from data import constants as data_constants
+from domain.view_timetables import constants as view_timetables_constants
 from domain.view_timetables.timetable_component import TimetableComponent
+from tests import data_factories
 from tests import domain_factories
 
 
@@ -13,7 +16,69 @@ class TestTimetableComponent:
     """Unit tests on the TimetableComponent class"""
 
     # --------------------
-    # Properties
+    # Factories tests
+    # --------------------
+    def test_from_lesson_slot_is_valid_constructor(self):
+        """Ensure we can make a component direct from a lesson/slot."""
+        # Make some fake db content for the component
+        school = data_factories.School.build()
+        slot = data_factories.TimetableSlot.build(school=school)
+        lesson = data_factories.Lesson.build(
+            solver_defined_time_slots=(slot,), school=school
+        )
+
+        component = TimetableComponent.from_lesson_slot(
+            lesson=lesson, slot=slot, colour_code=""
+        )
+
+        # Check attributes correctly set
+        assert component.model_instance == lesson
+        assert component.starts_at == slot.period_starts_at
+        assert component.ends_at == slot.period_ends_at
+        assert component.day_of_week == slot.day_of_week
+
+        # Check properties are as expected
+        assert component.display_name.upper() == lesson.subject_name.upper()
+        assert component.is_lesson
+
+    def test_from_break_is_valid_constructor(self):
+        """Ensure we can make a component direct from a break."""
+        # Make some fake db content for the component
+        break_ = data_factories.Break.build()
+
+        component = TimetableComponent.from_break(break_=break_, colour_code="")
+
+        # Check attributes correctly set
+        assert component.model_instance == break_
+        assert component.starts_at == break_.break_starts_at
+        assert component.ends_at == break_.break_ends_at
+        assert component.day_of_week == break_.day_of_week
+
+        # Check properties are as expected
+        assert component.display_name.upper() == break_.break_name.upper()
+        assert component.is_break
+
+    def test_free_period_is_valid_constructor(self):
+        """Ensure we can make a component direct from a lesson/slot"""
+        component = TimetableComponent.free_period(
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+            colour_code="",
+        )
+
+        # Check attributes correctly set
+        assert component.model_instance is None
+        assert component.starts_at == dt.time(hour=8)
+        assert component.ends_at == dt.time(hour=9)
+        assert component.day_of_week == data_constants.Day.MONDAY
+
+        # Check properties are as expected
+        assert component.display_name == view_timetables_constants.FREE
+        assert component.is_free_period
+
+    # --------------------
+    # Properties tests
     # --------------------
 
     @pytest.mark.parametrize(
