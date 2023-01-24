@@ -8,7 +8,7 @@ from data import models
 from domain.view_timetables import constants as view_timetables_constants
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class TimetableComponent:
     """Generalised component of a timetable that will be shown in the UI."""
 
@@ -68,8 +68,8 @@ class TimetableComponent:
     # --------------------
     # Mutators
     # --------------------
-    def set_percentage_of_days_timetable(self) -> None:
-        pass
+    def set_percentage_of_days_timetable(self, value: float) -> None:
+        self.percentage_of_days_timetable = value
 
     # --------------------
     # Properties
