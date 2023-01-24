@@ -8,6 +8,12 @@ from data import models
 from domain.view_timetables import constants as view_timetables_constants
 
 
+class CannotMergeError(Exception):
+    """Raised when two timetable components are incompatible for merging."""
+
+    pass
+
+
 @dataclasses.dataclass
 class TimetableComponent:
     """Generalised component of a timetable that will be shown in the UI."""
@@ -63,6 +69,40 @@ class TimetableComponent:
             ends_at=ends_at,
             day_of_week=day_of_week,
             hexadecimal_color_code=colour_code,
+        )
+
+    @classmethod
+    def merge(
+        cls, first: "TimetableComponent", other: "TimetableComponent"
+    ) -> "TimetableComponent":
+        """Merge two consecutive components into one new component spanning their duration."""
+        if first.model_instance != other.model_instance:
+            raise CannotMergeError(
+                "Cannot merge two timetable components that do not share the same model instance."
+            )
+
+        middles = {
+            max(first.starts_at, other.starts_at),
+            min(first.ends_at, other.ends_at),
+        }
+        if len(middles) > 1:
+            raise CannotMergeError(
+                "Timetable components must be consecutive to be merged."
+            )
+
+        if first.day_of_week != other.day_of_week:
+            raise CannotMergeError(
+                "Cannot merge two timetable components on different days."
+            )
+
+        starts_at = min(first.starts_at, other.starts_at)
+        ends_at = max(first.ends_at, other.ends_at)
+        return TimetableComponent(
+            model_instance=first.model_instance,
+            starts_at=starts_at,
+            ends_at=ends_at,
+            day_of_week=first.day_of_week,
+            hexadecimal_color_code=first.hexadecimal_color_code,
         )
 
     # --------------------

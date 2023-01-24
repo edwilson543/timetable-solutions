@@ -7,7 +7,10 @@ import pytest
 # Local application imports
 from data import constants as data_constants
 from domain.view_timetables import constants as view_timetables_constants
-from domain.view_timetables.timetable_component import TimetableComponent
+from domain.view_timetables.timetable_component import (
+    TimetableComponent,
+    CannotMergeError,
+)
 from tests import data_factories
 from tests import domain_factories
 
@@ -59,7 +62,7 @@ class TestTimetableComponent:
         assert component.is_break
 
     def test_free_period_is_valid_constructor(self):
-        """Ensure we can make a component direct from a lesson/slot"""
+        """Ensure we can make a component direct from a lesson/slot."""
         component = TimetableComponent.free_period(
             starts_at=dt.time(hour=8),
             ends_at=dt.time(hour=9),
@@ -76,6 +79,96 @@ class TestTimetableComponent:
         # Check properties are as expected
         assert component.display_name == view_timetables_constants.FREE
         assert component.is_free_period
+
+    def test_merge_is_valid_constructor(self):
+        """Ensure we can make a new component from the merge constructor."""
+        # Get a lesson for them to share
+        lesson = data_factories.Lesson.build()
+
+        component = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+        other = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+
+        new_component = TimetableComponent.merge(component, other)
+
+        # Check attributes correctly set
+        assert new_component.model_instance == lesson
+        assert new_component.starts_at == dt.time(hour=8)
+        assert new_component.ends_at == dt.time(hour=10)
+        assert new_component.day_of_week == data_constants.Day.MONDAY
+
+    def test_merge_fails_for_components_from_different_lessons(self):
+        # Get a lesson for them to share
+        lesson = data_factories.Lesson.build()
+        other_lesson = data_factories.Lesson.build()
+
+        # Put the slots at the same time
+        component = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+        other = domain_factories.TimetableComponent(
+            model_instance=other_lesson,
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+
+        with pytest.raises(CannotMergeError):
+            TimetableComponent.merge(component, other)
+
+    def test_merge_fails_for_components_that_arent_consecutive(self):
+        # Get a lesson for them to share
+        lesson = data_factories.Lesson.build()
+
+        # Put the slots at non-consecutive times
+        component = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+        other = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=9, minute=15),
+            ends_at=dt.time(hour=10),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+
+        with pytest.raises(CannotMergeError):
+            TimetableComponent.merge(component, other)
+
+    def test_merge_fails_for_components_that_are_on_different_days(self):
+        # Get a lesson for them to share
+        lesson = data_factories.Lesson.build()
+
+        # Put the slots at consecutive times but on different days
+        component = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
+            day_of_week=data_constants.Day.MONDAY,
+        )
+        other = domain_factories.TimetableComponent(
+            model_instance=lesson,
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
+            day_of_week=data_constants.Day.TUESDAY,
+        )
+
+        with pytest.raises(CannotMergeError):
+            TimetableComponent.merge(component, other)
 
     # --------------------
     # Properties tests
