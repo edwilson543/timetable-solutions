@@ -9,6 +9,7 @@ import pytest
 # Local application imports
 from data import constants as data_constants
 from data import models
+from domain.view_timetables import constants as view_timetable_constants
 from domain.view_timetables import timetable
 from tests import data_factories
 
@@ -71,9 +72,8 @@ class TestTimetableMakeTimetableMergeConsecutive:
         expected_end_hour = 8 + 1 + n_consecutive_lessons
         assert merged_lesson.ends_at == dt.time(hour=expected_end_hour)
         assert merged_lesson.model_instance == lesson
-        assert (
-            mon[0].percentage_of_days_timetable == 1.0
-        )  # Since this is the only lesson
+        # This is the only lesson so we expect it to occupy 100% of the day
+        assert mon[0].percentage_of_days_timetable == 1.0
 
     def test_make_timetable_from_back_to_back_but_different_lessons(self):
         """Expect the lesson(s) to remain distinct."""
@@ -269,3 +269,57 @@ class TestTimetableMakeTimetableFreePeriods:
         break_component = mon[2]
         assert break_component.model_instance == break_
         assert break_component.percentage_of_days_timetable == 1 / 3
+
+
+@pytest.mark.django_db
+class TestTimetableMakeTimetableColouring:
+    """Tests for the free period colouring in functionality of make_timetable."""
+
+    def test_lessons_with_more_slots_have_lower_colour_rank_than_lesson_with_fewer(
+        self,
+    ):
+        school = data_factories.School()
+
+        slot_0 = data_factories.TimetableSlot(school=school)
+        slot_1 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
+        slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+
+        # Make some lessons with a varying number of slots
+        # Note the ordering is done by *required lessons*, so no need to give them more than 1 slot
+        lesson_0 = data_factories.Lesson(
+            total_required_slots=10, user_defined_time_slots=(slot_0,), school=school
+        )
+        lesson_1 = data_factories.Lesson(
+            total_required_slots=5, user_defined_time_slots=(slot_1,), school=school
+        )
+        lesson_2 = data_factories.Lesson(
+            total_required_slots=2, user_defined_time_slots=(slot_2,), school=school
+        )
+
+        # Make the timetable for these lessons
+        lessons = models.Lesson.objects.filter(
+            pk__in=[lesson_0.pk, lesson_1.pk, lesson_2.pk]
+        )
+        tt_object = timetable.Timetable(lessons=lessons, breaks=None)
+        tt_dict = tt_object.make_timetable()
+
+        lesson_0_slot = tt_dict[slot_0.day_of_week][0]
+        assert lesson_0_slot.model_instance == lesson_0
+        assert (
+            lesson_0_slot.hexadecimal_color_code
+            == view_timetable_constants.Colour.get_colour(rank=0)
+        )
+
+        lesson_1_slot = tt_dict[slot_1.day_of_week][1]
+        assert lesson_1_slot.model_instance == lesson_1
+        assert (
+            lesson_1_slot.hexadecimal_color_code
+            == view_timetable_constants.Colour.get_colour(rank=1)
+        )
+
+        lesson_2_slot = tt_dict[slot_0.day_of_week][2]
+        assert lesson_2_slot.model_instance == lesson_2
+        assert (
+            lesson_2_slot.hexadecimal_color_code
+            == view_timetable_constants.Colour.get_colour(rank=2)
+        )
