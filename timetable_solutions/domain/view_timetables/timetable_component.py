@@ -32,7 +32,7 @@ class TimetableComponent:
     # --------------------
     @classmethod
     def from_lesson_slot(
-        cls, lesson: models.Lesson, slot: models.TimetableSlot, colour_code: str
+        cls, lesson: models.Lesson, slot: models.TimetableSlot, colour_code: str | None
     ) -> "TimetableComponent":
         """Make a component from a slot at which a lesson occurs."""
         return cls(
