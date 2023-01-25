@@ -206,7 +206,10 @@ def _fill_gaps_with_free_periods(
 def _set_percentage_of_days_timetable(
     components: list[TimetableComponent],
 ) -> list[TimetableComponent]:
-    # TODO
+    total_duration = sum(component.duration_hours for component in components)
+    for component in components:
+        percentage = component.duration_hours / total_duration
+        component.set_percentage_of_days_timetable(percentage)
     return components
 
 

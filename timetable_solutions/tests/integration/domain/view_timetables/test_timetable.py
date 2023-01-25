@@ -71,6 +71,9 @@ class TestTimetableMakeTimetableMergeConsecutive:
         expected_end_hour = 8 + 1 + n_consecutive_lessons
         assert merged_lesson.ends_at == dt.time(hour=expected_end_hour)
         assert merged_lesson.model_instance == lesson
+        assert (
+            mon[0].percentage_of_days_timetable == 1.0
+        )  # Since this is the only lesson
 
     def test_make_timetable_from_back_to_back_but_different_lessons(self):
         """Expect the lesson(s) to remain distinct."""
@@ -79,12 +82,12 @@ class TestTimetableMakeTimetableMergeConsecutive:
         # Make the distinct lessons, with the second starting when the other finishes
         lesson_0 = get_lesson_with_slot(
             starts_at=dt.time(hour=8),
-            ends_at=dt.time(hour=9),
+            ends_at=dt.time(hour=8, minute=45),
             day_of_week=data_constants.Day.MONDAY,
             school=school,
         )
         lesson_1 = get_lesson_with_slot(
-            starts_at=dt.time(hour=9),
+            starts_at=dt.time(hour=8, minute=45),
             ends_at=dt.time(hour=10),
             day_of_week=data_constants.Day.MONDAY,
             school=school,
@@ -100,6 +103,10 @@ class TestTimetableMakeTimetableMergeConsecutive:
         assert len(mon) == 2
         assert mon[0].model_instance == lesson_0
         assert mon[1].model_instance == lesson_1
+
+        # Check the percentages - the split is 45m versus 1h 15m
+        assert mon[0].percentage_of_days_timetable == 0.375
+        assert mon[1].percentage_of_days_timetable == 0.625
 
 
 @pytest.mark.django_db
@@ -174,6 +181,10 @@ class TestTimetableMakeTimetableFreePeriods:
         lesson_component_1 = mon[2]
         assert lesson_component_1.starts_at == dt.time(hour=10)
 
+        # Check the percentages - the split is 45m versus 1h 15m
+        percentages = {comp.percentage_of_days_timetable for comp in mon}
+        assert percentages == {1 / 3}
+
     def test_make_timetable_from_two_lessons_on_different_days_at_different_times(self):
         """Expect free periods to be used to make the days the same length."""
         school = data_factories.School()
@@ -210,11 +221,13 @@ class TestTimetableMakeTimetableFreePeriods:
         assert mon_free.is_free_period
         assert mon_free.starts_at == dt.time(hour=9)
         assert mon_free.ends_at == dt.time(hour=10)
+        assert mon_free.percentage_of_days_timetable == 0.5
 
         tue_free = tue[0]
         assert tue_free.is_free_period
         assert tue_free.starts_at == dt.time(hour=8)
         assert tue_free.ends_at == dt.time(hour=9)
+        assert tue_free.percentage_of_days_timetable == 0.5
 
     def test_make_timetable_from_lesson_and_break_same_day_with_gap(self):
         """Expect the gap to be filled with a free period."""
@@ -246,10 +259,13 @@ class TestTimetableMakeTimetableFreePeriods:
 
         lesson_component = mon[0]
         assert lesson_component.model_instance == lesson
+        assert lesson_component.percentage_of_days_timetable == 1 / 3
 
         free_period = mon[1]
         assert free_period.starts_at == dt.time(hour=9)
         assert free_period.ends_at == dt.time(hour=10)
+        assert free_period.percentage_of_days_timetable == 1 / 3
 
         break_component = mon[2]
         assert break_component.model_instance == break_
+        assert break_component.percentage_of_days_timetable == 1 / 3
