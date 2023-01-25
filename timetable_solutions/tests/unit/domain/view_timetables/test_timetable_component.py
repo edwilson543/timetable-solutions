@@ -49,7 +49,7 @@ class TestTimetableComponent:
         # Make some fake db content for the component
         break_ = data_factories.Break.build()
 
-        component = TimetableComponent.from_break(break_=break_, colour_code="")
+        component = TimetableComponent.from_break(break_=break_)
 
         # Check attributes correctly set
         assert component.model_instance == break_
@@ -67,7 +67,6 @@ class TestTimetableComponent:
             starts_at=dt.time(hour=8),
             ends_at=dt.time(hour=9),
             day_of_week=data_constants.Day.MONDAY,
-            colour_code="",
         )
 
         # Check attributes correctly set

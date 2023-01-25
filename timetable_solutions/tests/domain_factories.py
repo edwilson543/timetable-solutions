@@ -26,6 +26,7 @@ class TimetableComponent(factory.Factory):
     day_of_week = factory.Sequence(
         lambda n: constants.Day((n % len(constants.Day)) + 1)
     )
+    hexadecimal_color_code = ""
 
     @factory.sequence
     def starts_at(n: int) -> dt.time:

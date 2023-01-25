@@ -44,14 +44,14 @@ class TimetableComponent:
         )
 
     @classmethod
-    def from_break(cls, break_: models.Break, colour_code: str) -> "TimetableComponent":
+    def from_break(cls, break_: models.Break) -> "TimetableComponent":
         """Make a component from a Break instance."""
         return cls(
             model_instance=break_,
             starts_at=break_.break_starts_at,
             ends_at=break_.break_ends_at,
             day_of_week=break_.day_of_week,
-            hexadecimal_color_code=colour_code,
+            hexadecimal_color_code=view_timetables_constants.Colour.BREAK,
         )
 
     @classmethod
@@ -60,7 +60,6 @@ class TimetableComponent:
         starts_at: dt.time,
         ends_at: dt.time,
         day_of_week: data_constants.Day,
-        colour_code: str,
     ) -> "TimetableComponent":
         """Make a component to fill a free period with."""
         return cls(
@@ -68,7 +67,7 @@ class TimetableComponent:
             starts_at=starts_at,
             ends_at=ends_at,
             day_of_week=day_of_week,
-            hexadecimal_color_code=colour_code,
+            hexadecimal_color_code=view_timetables_constants.Colour.FREE,
         )
 
     @classmethod
