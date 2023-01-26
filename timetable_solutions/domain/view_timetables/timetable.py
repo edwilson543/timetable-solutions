@@ -9,16 +9,6 @@ from domain.view_timetables import timetable_component
 from domain.view_timetables import constants as view_timetable_constants
 
 
-def get_timetable(
-    entity: models.Pupil | models.Teacher | models.Classroom,
-) -> OrderedDict[data_constants.Day, list[timetable_component.TimetableComponent]]:
-    # TODO -> to become an entrypoint / use case
-    # Get their lessons
-    # Get their breaks
-    # Instantiate a Timetable
-    pass
-
-
 class Timetable:
     """Class to store and construct timetables."""
 
