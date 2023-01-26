@@ -73,7 +73,7 @@ class TestTimetableMakeTimetableMergeConsecutive:
         assert merged_lesson.ends_at == dt.time(hour=expected_end_hour)
         assert merged_lesson.model_instance == lesson
         # This is the only lesson so we expect it to occupy 100% of the day
-        assert mon[0].percentage_of_days_timetable == 1.0
+        assert mon[0].percentage_of_days_timetable == 100
 
     def test_make_timetable_from_back_to_back_but_different_lessons(self):
         """Expect the lesson(s) to remain distinct."""
@@ -105,8 +105,8 @@ class TestTimetableMakeTimetableMergeConsecutive:
         assert mon[1].model_instance == lesson_1
 
         # Check the percentages - the split is 45m versus 1h 15m
-        assert mon[0].percentage_of_days_timetable == 0.375
-        assert mon[1].percentage_of_days_timetable == 0.625
+        assert mon[0].percentage_of_days_timetable == 37.5
+        assert mon[1].percentage_of_days_timetable == 62.5
 
 
 @pytest.mark.django_db
@@ -182,8 +182,9 @@ class TestTimetableMakeTimetableFreePeriods:
         assert lesson_component_1.starts_at == dt.time(hour=10)
 
         # Check the percentages - the split is 45m versus 1h 15m
-        percentages = {comp.percentage_of_days_timetable for comp in mon}
-        assert percentages == {1 / 3}
+        percentages = list({comp.percentage_of_days_timetable for comp in mon})
+        assert len(percentages) == 1
+        assert list(percentages)[0] == pytest.approx(100 / 3)
 
     def test_make_timetable_from_two_lessons_on_different_days_at_different_times(self):
         """Expect free periods to be used to make the days the same length."""
@@ -221,13 +222,13 @@ class TestTimetableMakeTimetableFreePeriods:
         assert mon_free.is_free_period
         assert mon_free.starts_at == dt.time(hour=9)
         assert mon_free.ends_at == dt.time(hour=10)
-        assert mon_free.percentage_of_days_timetable == 0.5
+        assert mon_free.percentage_of_days_timetable == 50
 
         tue_free = tue[0]
         assert tue_free.is_free_period
         assert tue_free.starts_at == dt.time(hour=8)
         assert tue_free.ends_at == dt.time(hour=9)
-        assert tue_free.percentage_of_days_timetable == 0.5
+        assert tue_free.percentage_of_days_timetable == 50
 
     def test_make_timetable_from_lesson_and_break_same_day_with_gap(self):
         """Expect the gap to be filled with a free period."""
@@ -259,16 +260,16 @@ class TestTimetableMakeTimetableFreePeriods:
 
         lesson_component = mon[0]
         assert lesson_component.model_instance == lesson
-        assert lesson_component.percentage_of_days_timetable == 1 / 3
+        assert lesson_component.percentage_of_days_timetable == pytest.approx(100 / 3)
 
         free_period = mon[1]
         assert free_period.starts_at == dt.time(hour=9)
         assert free_period.ends_at == dt.time(hour=10)
-        assert free_period.percentage_of_days_timetable == 1 / 3
+        assert free_period.percentage_of_days_timetable == pytest.approx(100 / 3)
 
         break_component = mon[2]
         assert break_component.model_instance == break_
-        assert break_component.percentage_of_days_timetable == 1 / 3
+        assert break_component.percentage_of_days_timetable == pytest.approx(100 / 3)
 
 
 @pytest.mark.django_db

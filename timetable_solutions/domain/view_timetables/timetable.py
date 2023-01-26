@@ -197,7 +197,7 @@ def _set_percentage_of_days_timetable(
     """Divide each component's duration by the length of the day"""
     total_duration = sum(component.duration_hours for component in components)
     for component in components:
-        percentage = component.duration_hours / total_duration
+        percentage = (component.duration_hours / total_duration) * 100
         component.set_percentage_of_days_timetable(percentage)
     return components
 
