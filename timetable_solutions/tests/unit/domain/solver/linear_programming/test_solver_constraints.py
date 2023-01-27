@@ -55,12 +55,10 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 35
-            )  # Since each decision variable is included in the sum
-            assert (
-                constraint.constant < 0
-            )  # Even if fixed lessons occupy the slots, should still be some free vars
+            # Since each decision variable is included in the sum
+            assert len(constraint) == 30
+            # Even if fixed lessons occupy the slots, should still be some free vars
+            assert constraint.constant < 0
             constraint_count += 1
         assert constraint_count == 12
 
@@ -74,28 +72,15 @@ class TestSolverConstraints(test.TestCase):
 
         # Check outcome
 
-        # constraints where the LpAffineExpression must always equal 0
-        existing_commitment_count = 0
-
         # constraints where the LpAffineExpression could equal 1
-        free_constraint_count = 0
+        constraint_count = 0
 
         for constraint_tuple in pup_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
+            constraint_count += 1
 
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                # Constraint specifies that the pupil is unavailable at the time
-                existing_commitment_count += 1
-
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_commitment_count == 6 * 35
-        )  # = n_pupils * n_timetable_slots
-        # We have 5 fixed lunch slots (deducted per pupil)
-        assert free_constraint_count == 6 * (35 - 5)
+        # = n_pupils * n_timetable_slots
+        assert constraint_count == 6 * 30
 
     def test_get_all_teacher_constraints(self):
         """
@@ -106,27 +91,14 @@ class TestSolverConstraints(test.TestCase):
         teacher_constraints = constraint_maker._get_all_teacher_constraints()
 
         # Check outcome
-        existing_commitment_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
-        )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
+        constraint_count = 0
+
         for constraint_tuple in teacher_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
+            constraint_count += 1
 
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                existing_commitment_count += 1  # Constraint specifies that the teacher is unavailable at the time
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_commitment_count == 11 * 35
-        )  # = n_teachers * n_timetable_slots
-        assert free_constraint_count == 11 * (
-            35 - 5
-        )  # Since we have 5 fixed lunch slots (deducted per teacher)
+            # = n_teachers * n_timetable_slots
+        assert constraint_count == 11 * 30
 
     def test_get_all_classroom_constraints(self):
         """
@@ -137,27 +109,14 @@ class TestSolverConstraints(test.TestCase):
         classroom_constraints = constraint_maker._get_all_classroom_constraints()
 
         # Check outcome
-        existing_occupied_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
-        )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
+        constraint_count = 0
+
         for constraint_tuple in classroom_constraints:
             assert isinstance(constraint_tuple[0], LpConstraint)
+            constraint_count += 1
 
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                existing_occupied_count += (
-                    1  # Constraint specifies that the classroom is occupied at the time
-                )
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_occupied_count == 12 * 35
-        )  # = n_classrooms * n_timetable_slots
-        assert free_constraint_count == 12 * 35  # No lunch hall in fixture for now...
+        # = n_classrooms * n_timetable_slots
+        assert constraint_count == 12 * 30
 
     def test_get_all_double_period_fulfillment_constraints(self):
         """
@@ -175,9 +134,9 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in dp_fulfillment_constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 30
-            )  # Since each double-period variable is included in the sum
+            # Since each double-period variable is included in the sum
+            # And we have 5 days * 4 double period options
+            assert len(constraint) == 5 * 4
             constraint_count += 1
         assert constraint_count == 12
 
@@ -199,8 +158,8 @@ class TestSolverConstraints(test.TestCase):
             assert isinstance(constraint, LpConstraint)
             assert len(constraint) == 2
             constraint_count += 1
-        # Note that we haveL 12 lessons; 6 double options / day / class; 5 days; 2 related decision variables
-        assert constraint_count == 12 * 6 * 5 * 2
+        # Note that we have 12 lessons; 6 double options / day / class; 5 days; 2 related decision variables
+        assert constraint_count == 12 * 4 * 5 * 2
 
     def test_get_all_no_two_doubles_in_a_day_constraint(self):
         """
@@ -216,9 +175,8 @@ class TestSolverConstraints(test.TestCase):
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
             assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 6
-            )  # Since there are 6 double periods that can happen in each day
+            # Can have 2 double periods before, and 2 doubler periods after lunch
+            assert len(constraint) == 4
             assert constraint.constant == -1  # 1 Double period per day
             constraint_count += 1
         assert constraint_count == 5 * 12  # number days * number lessons
@@ -258,8 +216,8 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
                 # Extra year only has 2 slots & deision variables, so this is the constraint length
                 assert len(constraint) == 2
             else:
-                # Each decision variable for the 35 slots is included in the sum
-                assert len(constraint) == 35
+                # Each decision variable for the 30 slots is included in the sum
+                assert len(constraint) == 30
 
             constraint_count += 1
 
@@ -291,9 +249,9 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
             else:
                 other_constraints += 1
 
-        # These should just match number of slots * number of pupils
+        # These should just match n_pupils * n_slots
         assert extra_year_constraints == 2 * 2
-        assert other_constraints == 6 * 35
+        assert other_constraints == 6 * 30
 
     def test_get_all_teacher_constraints_extra_year(self):
         """
@@ -320,7 +278,7 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
 
         # These should just match number of teachers * slots
         # (extra year teachers + other teachers) * (extra year slots + other slots)
-        assert n_constraints == (2 + 11) * (2 + 35)
+        assert n_constraints == (2 + 11) * (2 + 30)
 
     def test_get_all_classroom_constraints_extra_year(self):
         """
@@ -347,7 +305,7 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
 
         # These should just match number of classrooms * slots
         # (extra year classrooms + other classrooms) * (extra year slots + other slots)
-        assert n_constraints == (2 + 12) * (2 + 35)
+        assert n_constraints == (2 + 12) * (2 + 30)
 
     def test_get_all_no_split_classes_within_day_constraints_constraints(self):
         """
@@ -370,8 +328,8 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
 
             else:
                 assert isinstance(constraint, LpConstraint)
-                # We have 7 decision variables and 6 double period variables in the mix
-                assert len(constraint) == 13
+                # We have 6 decision variables and 4 double period variables in the mix
+                assert len(constraint) == 10
                 assert constraint.constant == -1
 
             constraint_count += 1
@@ -401,8 +359,8 @@ class TestSolverConstraintsWithExtraYear(test.TestCase):
             else:
 
                 assert isinstance(constraint, LpConstraint)
-                # 7 consecutive slots, so 6 double periods that can happen in each day
-                assert len(constraint) == 6
+                # 2 triplets of consecutive slots, so 4 possible double periods
+                assert len(constraint) == 4
                 assert constraint.constant == -1  # 1 Double period per day
 
             constraint_count += 1
