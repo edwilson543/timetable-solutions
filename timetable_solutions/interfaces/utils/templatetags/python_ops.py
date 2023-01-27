@@ -20,11 +20,16 @@ class Addable(Protocol):
 
 
 @register.simple_tag(name="add")
-def add(x: Addable, y: Addable) -> Addable:
+def add(x: Addable | None, y: Addable | None) -> Addable | None:
     """
     Implement python addition for integers, floats and strings.
     """
-    return x + y
+    if x is None:
+        return y
+    elif y is None:
+        return x
+    else:
+        return x + y
 
 
 K = TypeVar("K")
