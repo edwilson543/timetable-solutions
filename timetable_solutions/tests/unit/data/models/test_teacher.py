@@ -104,7 +104,7 @@ class TestTeacher:
     # Queries tests
     # --------------------
 
-    def test_check_if_busy_at_time_of_timeslot_when_teacher_is_busy_at_passed_slot(
+    def test_check_if_busy_at_time_of_timeslot_when_teacher_in_lesson_at_passed_slot(
         self,
     ):
         """Test that a teacher is busy if they're teaching at the exact passed lesson slot"""
@@ -113,6 +113,26 @@ class TestTeacher:
         slot = factories.TimetableSlot(school=teacher.school)
         factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(slot,)
+        )
+
+        # Call test function
+        is_busy = teacher.check_if_busy_at_time_of_timeslot(slot=slot)
+
+        # Check teacher successfully made busy
+        assert is_busy
+
+    def test_check_if_busy_at_time_of_timeslot_when_teacher_in_break_at_passed_slot(
+        self,
+    ):
+        """Test that a teacher is busy if they're on a break at the exact passed lesson slot"""
+        # Make a teacher who teaches a lesson fixed at some slot
+        teacher = factories.Teacher()
+        slot = factories.TimetableSlot(school=teacher.school)
+        factories.Break(
+            school=teacher.school,
+            teachers=models.Teacher.objects.filter(pk=teacher.pk),
+            break_starts_at=slot.period_starts_at,
+            break_ends_at=slot.period_ends_at,
         )
 
         # Call test function
