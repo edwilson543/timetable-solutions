@@ -11,6 +11,7 @@ import factory
 # Local application imports
 from data import constants
 from domain.view_timetables import timetable_component
+from domain import solver
 
 
 class TimetableComponent(factory.Factory):
@@ -39,3 +40,16 @@ class TimetableComponent(factory.Factory):
     def ends_at(self) -> dt.time:
         hour = self.starts_at.hour + self.duration_hours
         return dt.time(hour=hour, minute=self.starts_at.minute)
+
+
+class SolutionSpecification(factory.Factory):
+    """Factory of the SolutionSpecification class."""
+
+    allow_split_classes_within_each_day = True
+    allow_triple_periods_and_above = True
+    optimal_free_period_time_of_day = (
+        solver.SolutionSpecification.OptimalFreePeriodOptions.NONE
+    )
+
+    class Meta:
+        model = solver.SolutionSpecification

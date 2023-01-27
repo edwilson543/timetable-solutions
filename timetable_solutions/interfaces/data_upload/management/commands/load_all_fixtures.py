@@ -51,6 +51,7 @@ class Command(management.base.BaseCommand):
         management.call_command("loaddata", "year_groups.json")
         management.call_command("loaddata", "pupils.json")
         management.call_command("loaddata", "timetable.json")
+        management.call_command("loaddata", "breaks.json")
 
         if kwargs["include_solution"]:  # store_true ensures this is always present
             management.call_command("loaddata", "lessons_with_solution.json")

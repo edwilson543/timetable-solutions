@@ -3,63 +3,60 @@
 # Standard library imports
 import datetime as dt
 
-# Django imports
-from django import test
-
 # Third party imports
 import pulp as lp
+import pytest
 
 # Local application imports
 from domain import solver as slvr
+from tests import data_factories
 
 
-class TestSolverConstraints(test.TestCase):
-
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-        "lessons_without_solution",
-    ]
-
+@pytest.mark.django_db
+class TestSolverObjective:
     def test_add_objective_to_problem(self):
-        """
-        Test that the total objective function of the timetabling problem is added to the LpProblem instance.
-        No need to test how every possible SolutionSpecification configuration leads to a different objective here,
-        since this is done in the unit tests.
-        """
-        # Set test parameters
-        school_access_key = 123456
+        # Make some test data
+        school = data_factories.School()
+
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        data_factories.Lesson(
+            school=school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            pupils=(pupil,),
+        )
+        slot_0 = data_factories.TimetableSlot(
+            school=school, relevant_year_groups=(yg,), period_starts_at=dt.time(hour=10)
+        )
+        data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
+
+        # Set our solution specification
         spec = slvr.SolutionSpecification(
             allow_split_classes_within_each_day=False,
             allow_triple_periods_and_above=False,
-            optimal_free_period_time_of_day=dt.time(hour=9),
+            # Ensure the optimal time isn't near our consecutive slots, to get 2 objective components
+            optimal_free_period_time_of_day=dt.time(hour=17),
         )
+
+        # Gather our solver components
         data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
+            school_id=school.school_access_key, solution_specification=spec
         )
         variables = slvr.TimetableSolverVariables(inputs=data)
         objective_maker = slvr.TimetableSolverObjective(
             inputs=data, variables=variables
         )
+        dummy_problem = lp.LpProblem()
 
-        dummy_problem = (
-            lp.LpProblem()
-        )  # In real life, will be the LpProblem subclass carried by TimetableSolver
-
-        # Execute test unit
+        # Make and add the objective
         objective_maker.add_objective_to_problem(problem=dummy_problem)
 
         # Check outcome - note the dummy_problem is modified in-place
         objective = dummy_problem.objective
 
-        assert isinstance(objective, lp.LpAffineExpression)
-        # The slot which occurs at the free period slot has 0 zero coefficients so isn't included, hence:
-        assert (
-            len(objective) == (7 - 1) * 5 * 12
-        )  # =  (slots per day - 1) * days of week * unsolved classes
+        # We made 2 slots, so expect the objective to be length 2
+        assert len(objective) == 2
         assert objective.constant == 0.0
         assert objective.name == "total_timetabling_objective"
