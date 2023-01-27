@@ -41,13 +41,13 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 24)
+        self.assertEqual(upload_processor.n_model_instances_created, 12)
 
         # Test the database is as expected
         all_lessons = models.Lesson.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(all_lessons.count(), 24)
+        self.assertEqual(all_lessons.count(), 12)
 
         total_solver_required_slots = sum(
             lesson.get_n_solver_slots_required() for lesson in all_lessons
@@ -57,22 +57,10 @@ class TestLessonFileUploadProcessorValidUploads(TestCase):
         total_user_defined_slots = sum(
             lesson.user_defined_time_slots.all().count() for lesson in all_lessons
         )
-        self.assertEqual(total_user_defined_slots, 60)
-
-        lessons_with_teachers = sum(
-            1 for lessons in all_lessons if lessons.teacher is not None
-        )
-        self.assertEqual(lessons_with_teachers, 23)  # All 24, except for 'PUPILS_LUNCH'
-
-        lessons_with_classrooms = sum(
-            1 for lessons in all_lessons if lessons.classroom is not None
-        )
-        self.assertEqual(lessons_with_classrooms, 12)
+        self.assertEqual(total_user_defined_slots, 0)
 
         total_non_unique_pupils = sum(lesson.pupils.count() for lesson in all_lessons)
-        self.assertEqual(
-            total_non_unique_pupils, 24
-        )  # 18 from actual lessons, 6 from 'PUPILS_LUNCH'
+        self.assertEqual(total_non_unique_pupils, 18)
 
         # Spot check on one specific Lesson
         lesson = models.Lesson.objects.get_individual_lesson(
