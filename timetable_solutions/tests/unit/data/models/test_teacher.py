@@ -131,6 +131,7 @@ class TestTeacher:
         factories.Break(
             school=teacher.school,
             teachers=models.Teacher.objects.filter(pk=teacher.pk),
+            day_of_week=slot.day_of_week,
             break_starts_at=slot.period_starts_at,
             break_ends_at=slot.period_ends_at,
         )
