@@ -10,11 +10,21 @@ import pytest
 # Local application imports
 from domain import solver as slvr
 from tests import data_factories
+from tests import domain_factories
 
 
 @pytest.mark.django_db
 class TestSolverObjective:
-    def test_add_objective_to_problem(self):
+    @pytest.mark.parametrize(
+        "optimal_free_period_time",
+        [
+            slvr.SolutionSpecification.OptimalFreePeriodOptions.NONE,
+            slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING,
+            slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON,
+            dt.time(hour=17),
+        ],
+    )
+    def test_add_objective_to_problem(self, optimal_free_period_time):
         # Make some test data
         school = data_factories.School()
 
@@ -33,11 +43,8 @@ class TestSolverObjective:
         data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
 
         # Set our solution specification
-        spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=False,
-            allow_triple_periods_and_above=False,
-            # Ensure the optimal time isn't near our consecutive slots, to get 2 objective components
-            optimal_free_period_time_of_day=dt.time(hour=17),
+        spec = domain_factories.SolutionSpecification(
+            optimal_free_period_time_of_day=optimal_free_period_time
         )
 
         # Gather our solver components
