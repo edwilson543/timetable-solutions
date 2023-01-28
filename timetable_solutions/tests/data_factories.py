@@ -229,6 +229,17 @@ class Lesson(factory.django.DjangoModelFactory):
                     raise ValueError("Cannot add slot from different school to lesson.")
                 self.solver_defined_time_slots.add(slot)
 
+    @classmethod
+    def with_n_pupils(cls, n_pupils: int, **kwargs: Any) -> models.Lesson:
+        """Get a lesson with n associated pupils."""
+        try:
+            school = kwargs.pop("school")
+        except KeyError:
+            school = School()
+        yg = YearGroup(school=school)
+        pupils = [Pupil(school=school, year_group=yg) for _ in range(0, n_pupils)]
+        return cls(school=school, pupils=pupils, **kwargs)
+
 
 class Break(factory.django.DjangoModelFactory):
     """Factory for the Break model."""

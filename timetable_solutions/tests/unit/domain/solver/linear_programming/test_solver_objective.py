@@ -28,24 +28,6 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
     # Helpers
     # --------------------
 
-    def get_objective_maker(
-        self,
-        solution_spec: slvr.SolutionSpecification,
-    ) -> slvr.TimetableSolverObjective:
-        """
-        Method used to instantiate the 'maker' of the objective components. Would use pytest fixtures, but this does not
-        work since the test class subclasses the Django TestCase.
-        """
-        data = slvr.TimetableSolverInputs(
-            school_id=self.school.school_access_key,
-            solution_specification=solution_spec,
-        )
-        variables = slvr.TimetableSolverVariables(inputs=data)
-        objective_maker = slvr.TimetableSolverObjective(
-            inputs=data, variables=variables
-        )
-        return objective_maker
-
     def set_single_lesson_for_school(self) -> None:
         """
         Create one lesson for a school, with the necessary pupil and year group.
@@ -65,6 +47,21 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
             total_required_double_periods=0,
             pupils=(self.pupil,),
         )
+
+    def get_objective_maker(
+        self,
+        solution_spec: slvr.SolutionSpecification,
+    ) -> slvr.TimetableSolverObjective:
+        """Method used to instantiate the 'maker' of the objective components."""
+        data = slvr.TimetableSolverInputs(
+            school_id=self.school.school_access_key,
+            solution_specification=solution_spec,
+        )
+        variables = slvr.TimetableSolverVariables(inputs=data)
+        objective_maker = slvr.TimetableSolverObjective(
+            inputs=data, variables=variables
+        )
+        return objective_maker
 
     # --------------------
     # Tests
