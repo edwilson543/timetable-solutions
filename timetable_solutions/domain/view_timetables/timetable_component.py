@@ -145,3 +145,15 @@ class TimetableComponent:
         ) - dt.timedelta(hours=self.starts_at.hour, minutes=self.starts_at.minute)
         seconds_per_hour = 3600
         return dur_delta.seconds / seconds_per_hour
+
+    @property
+    def css_class(self) -> str:
+        """Suffix for the css class used to display this component."""
+        pct = int(round(self.percentage_of_days_timetable or 0, 0))
+        if self.is_lesson:
+            middle = self.model_instance.lesson_id.replace(" ", "-")  # type: ignore[union-attr]
+        elif self.is_break:
+            middle = self.model_instance.break_name.replace(" ", "-")  # type: ignore[union-attr]
+        else:
+            middle = view_timetables_constants.FREE
+        return f"component-{middle}-{pct}"

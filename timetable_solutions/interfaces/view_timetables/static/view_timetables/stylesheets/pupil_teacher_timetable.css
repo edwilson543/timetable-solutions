@@ -24,10 +24,8 @@ Container for the timetable (html table that goes in the center of the page)
 
     /* Display */
     width: 80%;
-    height: 80%;
+    height: 100%;
     padding: 10px;
-    margin-top: 10px;
-    margin-bottom: 40px;
 
     /* Background and border */
     background-color: white;
@@ -161,6 +159,7 @@ Download buttons
     width: 100%;
     align-items: center;
     justify-content: center;
+    margin-top: 5px;
 }
 
 .download_button {

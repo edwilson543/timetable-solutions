@@ -1,10 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<!--Context: component: TimetableComponent -->
+
+<style>
+/* ====================
+Shared component styling
+==================== */
+.component {
+    /* Display */
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 0;
+
+    /* Background and border */
+    border: 1px solid black;
+    border-radius: 3px;
+
+    /* Typography */
+    text-align: center;
+    vertical-align: middle;
+    overflow-y: scroll;
+}
+.component:hover {
+
+}
+
+/* ====================
+Component specific styling (by model instance x height)
+==================== */
+.{{ component.css_class }} {
+    min-height: {{ component.percentage_of_days_timetable }}%;
+    flex: 1 1 {{ component.percentage_of_days_timetable }}%;
+    background-color: {{ component.hexadecimal_color_code }};
+}
+{% if component.is_lesson %}
+    .{{ component.css_class }}:hover {
+        filter: brightness(80%);
+        cursor: pointer;
+    }
+{% endif %}
+
+/* ====================
+Text styling
+==================== */
+.component-display-name {
+    font-size: 15px;
+    font-weight: bold;
+    font-family: georgia;
+}
+.component-sub-text {
+    font-size: 12px;
+}
+
+</style>
+
+<div
+    class="component {{ component.css_class }}"
+    {% if component.is_lesson %}
+        hx-get="{% url 'lesson-detail' component.model_instance.pk %}"
+        hx-trigger="click"
+        hx-target="#modal-htmx-handle"
+        hx-swap="innerHTML"
+    {% endif %}
+>
+    <div>
+        <div class="component-display-name">
+            {{ component.display_name }}
+        </div>
+        {% if component.percentage_of_days_timetable > 10 %}
+            <div class="component-sub-text">
+                {{ component.starts_at | time:"H:i" }} - {{ component.ends_at | time:"H:i" }}
+            </div>
+            {% if component.is_lesson %}
+                <div>
+                    <i class="component-sub-text">
+                        {{ component.model_instance.teacher.title }} {{ component.model_instance.teacher.surname }},
+                        {{ component.model_instance.classroom.building}} {{ component.model_instance.classroom.room_number}}
+                    </i>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

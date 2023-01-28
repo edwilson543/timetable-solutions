@@ -13,7 +13,10 @@ from django.contrib.auth.decorators import login_required
 from django import http
 from django.template import loader
 
+import data.models
+
 # Local application imports
+from data import models
 from domain import view_timetables
 
 
@@ -61,15 +64,15 @@ def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpRespon
     and so different users will see different content at the requested url.
     """
     school_id = request.user.profile.school.school_access_key
-    pupil, timetable, timetable_colours = view_timetables.get_pupil_timetable_context(
-        pupil_id=pupil_id, school_id=school_id
+    pupil = data.models.Pupil.objects.get_individual_pupil(
+        school_id=school_id, pupil_id=pupil_id
     )
+    timetable = view_timetables.get_pupil_timetable(pupil)
 
     template = loader.get_template("view_timetables/pupil_timetable.html")
     context = {
         "pupil": pupil,
         "timetable": timetable,
-        "class_colours": timetable_colours,
     }
     return http.HttpResponse(template.render(context, request))
 
