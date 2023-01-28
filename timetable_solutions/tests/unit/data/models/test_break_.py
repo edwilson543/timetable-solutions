@@ -42,6 +42,7 @@ class TestBreakQuerySet:
             period_ends_at=dt.time(
                 hour=(period_starts_at.hour + 1), minute=period_starts_at.minute
             ),
+            day_of_week=break_.day_of_week,
         )
 
         # Get clashes and check break in them
