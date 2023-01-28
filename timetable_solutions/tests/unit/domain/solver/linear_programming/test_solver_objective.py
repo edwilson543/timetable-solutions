@@ -171,13 +171,13 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
         self.set_single_lesson_for_school()
 
         # Make one slot in the morning, one in the afternoon
-        data_factories.TimetableSlot(
+        morning_slot = data_factories.TimetableSlot(
             period_starts_at=dt.time(hour=9),
             period_ends_at=dt.time(hour=10),
             school=self.school,
             relevant_year_groups=(self.yg,),
         )
-        data_factories.TimetableSlot(
+        afternoon_slot = data_factories.TimetableSlot(
             period_starts_at=dt.time(hour=15),
             period_ends_at=dt.time(hour=16),
             school=self.school,
@@ -198,13 +198,23 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
         assert len(objective_component) == 2
         assert objective_component.constant == 0.0
 
-        contributions = list(objective_component.values())
+        morning_slot_contribution = [
+            coeff
+            for var, coeff in objective_component.items()
+            if str(morning_slot.slot_id) in var.name
+        ][0]
+        afternoon_slot_contribution = [
+            coeff
+            for var, coeff in objective_component.items()
+            if str(afternoon_slot.slot_id) in var.name
+        ][0]
+
         # Check the slot at the time of day which isn't optimal had the higher contribution
         morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
         if optimal_free_period_time == morning:
-            assert contributions[0] < contributions[1]
+            assert morning_slot_contribution < afternoon_slot_contribution
         else:
-            assert contributions[0] > contributions[1]
+            assert afternoon_slot_contribution < morning_slot_contribution
 
 
 class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
