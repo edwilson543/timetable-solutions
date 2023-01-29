@@ -85,19 +85,15 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
     and so different users will see different content at the requested url.
     """
     school_id = request.user.profile.school.school_access_key
-    (
-        teacher,
-        timetable,
-        year_group_colours,
-    ) = view_timetables.get_teacher_timetable_context(
-        teacher_id=teacher_id, school_id=school_id
+    teacher = data.models.Teacher.objects.get_individual_teacher(
+        school_id=school_id, teacher_id=teacher_id
     )
+    timetable = view_timetables.get_teacher_timetable(teacher)
 
     template = loader.get_template("view_timetables/teacher_timetable.html")
     context = {
         "teacher": teacher,
         "timetable": timetable,
-        "year_group_colours": year_group_colours,
     }
     return http.HttpResponse(template.render(context, request))
 
