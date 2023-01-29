@@ -24,14 +24,15 @@ class TimetableSolverVariables:
     Class to define the PuLP variables, and implement the methods needed to instantiate and process them.
     """
 
-    def __init__(self, inputs: TimetableSolverInputs):
+    def __init__(self, inputs: TimetableSolverInputs, set_variables: bool = True):
         """
         :param inputs: data used to create the data - one decision variable is created per unique (class, slot)
         """
         self._inputs = inputs
 
-        self.decision_variables = self._get_decision_variables()
-        self.double_period_variables = self._get_double_period_variables()
+        if set_variables:
+            self.decision_variables = self._get_decision_variables()
+            self.double_period_variables = self._get_double_period_variables()
 
     def _get_decision_variables(
         self, strip: bool = True
