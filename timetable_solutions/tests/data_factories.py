@@ -230,7 +230,7 @@ class Lesson(factory.django.DjangoModelFactory):
                 self.solver_defined_time_slots.add(slot)
 
     @classmethod
-    def with_n_pupils(cls, n_pupils: int, **kwargs: Any) -> models.Lesson:
+    def with_n_pupils(cls, n_pupils: int = 1, **kwargs: Any) -> models.Lesson:
         """Get a lesson with n associated pupils."""
         try:
             school = kwargs.pop("school")
