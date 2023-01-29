@@ -63,34 +63,7 @@
 </head>
 
 <body>
-<table id="timetable">
 
-    {% for time, day_dict in timetable.items %}
+{% include 'partials/timetable.html' with timetable=timetable %}
 
-    <tr>
-        {% if forloop.first %}
-        <th id="period_time"><i>Period time</i></th>
-        {% for day in day_dict %}
-        <th class="perimeter" style="width:18%;">{{ day|title }}</th>
-        {% endfor %}
-        {% endif %}
-    </tr>
-    <tr>
-        <td class="perimeter">{{time}}</td>
-        {% for day, lesson in day_dict.items %}
-          {% if lesson == "FREE" %}
-            <td class="color_{{lesson}} timetable_slot"><b>{{ lesson|title }}</b></td>
-          {% elif lesson.subject_name == "LUNCH" %}
-            <td class="color_{{lesson.subject_name}} timetable_slot"><b>{{ lesson.subject_name|title}}</b></td>
-          {% else %}
-            <td class="color_{{ lesson.get_year_group_str }} timetable_slot">
-                <b>{{ lesson.subject_name|title}}</b><br>
-              <i>Year {{ lesson.get_year_group_str }}</i><br>
-              <i>{{ lesson.classroom.building }} {{ lesson.classroom.room_number }}</i>
-            </td>
-          {% endif %}
-        {% endfor %}
-    </tr>
-    {% endfor %}
-</table>
 </body>

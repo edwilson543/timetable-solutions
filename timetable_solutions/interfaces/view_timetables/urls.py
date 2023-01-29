@@ -22,11 +22,6 @@ urlpatterns = [
         name=UrlName.PUPIL_TIMETABLE.value,
     ),
     path(
-        "pupils/<int:pupil_id>/csv_download/",
-        views.pupil_timetable_download_csv,
-        name=UrlName.PUPIL_TT_CSV_DOWNLOAD.value,
-    ),
-    path(
         "pupils/<int:pupil_id>/pdf_download",
         views.pupil_timetable_download_pdf,
         name=UrlName.PUPIL_TT_PDF_DOWNLOAD.value,
@@ -37,11 +32,6 @@ urlpatterns = [
         "teachers/<int:teacher_id>",
         views.teacher_timetable,
         name=UrlName.TEACHER_TIMETABLE.value,
-    ),
-    path(
-        "teachers/<int:teacher_id>/csv_download/",
-        views.teacher_timetable_download_csv,
-        name=UrlName.TEACHER_TT_CSV_DOWNLOAD.value,
     ),
     path(
         "teachers/<int:teacher_id>/pdf_download/",

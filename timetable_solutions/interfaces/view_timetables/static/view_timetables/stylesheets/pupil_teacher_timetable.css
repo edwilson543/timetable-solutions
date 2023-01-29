@@ -35,64 +35,6 @@ Container for the timetable (html table that goes in the center of the page)
 }
 
 /* ====================
-Formatting of the timetable (a html table) itself, and its components
-==================== */
-#timetable {
-    width: 100%;
-}
-
-.timetable_slot {
-    /* Display */
-    height: 50px;
-    padding: 3px;
-
-    /* Typography */
-    font-size: 15px;
-    text-align: center;
-
-    /* Background and border */
-    background-color: var(--default_timetable_slot); /* default colour if no subject is given */
-    border: 1px solid black;
-    border-collapse: collapse;
-    border-radius: 3px;
-}
-.timetable_slot:hover {
-  color: white;
-  background-color: var(--timetable_slot_hover_blue);
-}
-
-.timetable_slot_lesson:hover {
-    /* Slots which are lessons, and not lunch / free */
-    cursor: pointer;
-}
-
-.perimeter {
-    /* Display */
-    height: 30px;
-
-    /* Typography */
-    color: white;
-    text-align: center;
-
-    /* Background and border */
-    background-color: var(--perimeter_grey_purple);
-    border-radius: 3px;
-}
-
-#period_time {
-    /* Display */
-    width: 10%;
-
-    /* Typography */
-    color: white;
-    text-align: center;
-
-    /* Background and border */
-    background-color: var(--period_time_grey_lilac);
-    border-radius: 3px;
-}
-
-/* ====================
 Timetable header and back button styling
 ==================== */
 #heading_back_wrapper {

@@ -37,7 +37,11 @@ class TestCreateTimetableFormView(test.TestCase):
 
         # Check outcome
         available_slots = kwargs["available_time_slots"]
-        assert available_slots == [dt.time(hour=hour) for hour in range(9, 16)]
+        assert available_slots == [
+            dt.time(hour=hour) for hour in range(9, 13)
+        ] + [  # Lunch break (note that 13-14 isn't include since range s right-open)
+            dt.time(hour=hour) for hour in range(14, 16)
+        ]
 
     def test_get_context_dictionary_ready_to_create_false_as_fixtures_are_sparse(self):
         """

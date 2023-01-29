@@ -51,13 +51,8 @@ class TestTimetableSummaryStats(TestCase):
             "Friday": 20,
         }
 
-        assert summary["daily_user_lessons"] == {
-            "Monday": 12,
-            "Tuesday": 12,
-            "Wednesday": 12,
-            "Thursday": 12,
-            "Friday": 12,
-        }
+        # No user defined lessons in the fixture
+        assert summary["daily_user_lessons"] == {}
 
     def test_summary_stats_unavailable_when_solver_not_run_but_lessons_defined(self):
         """
