@@ -193,14 +193,17 @@ class TimetableSolverConstraints:
             existing_commitment = teacher.check_if_busy_at_time_of_timeslot(
                 slot=time_slot
             )
+            # Need to constrain against ALL slots clashing with this one
+            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
 
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
                     for lesson in teacher.lessons.all()
+                    for clash_slot in clashing_slots
                     if (
                         key := var_key(
-                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=clash_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
@@ -243,14 +246,15 @@ class TimetableSolverConstraints:
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
             """
             occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=time_slot)
+            # Need to constrain against ALL slots clashing with this one
+            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
             possible_uses = lp.lpSum(
                 [
                     self._decision_variables.get(key)
                     for lesson in classroom.lessons.all()
+                    for slot in clashing_slots
                     if (
-                        key := var_key(
-                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
-                        )
+                        key := var_key(lesson_id=lesson.lesson_id, slot_id=slot.slot_id)
                     )
                     in self._decision_variables.keys()
                 ]
