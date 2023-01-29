@@ -105,8 +105,8 @@ class TestFileUploadIntegration(test.TestCase):
         assert all_pupils.count() == 6 * should_be_populated
         assert all_teachers.count() == 11 * should_be_populated
         assert all_classrooms.count() == 12 * should_be_populated
-        assert all_slots.count() == 35 * should_be_populated
-        assert all_lessons.count() == 24 * should_be_populated
+        assert all_slots.count() == 30 * should_be_populated
+        assert all_lessons.count() == 12 * should_be_populated
 
     def test_upload_reset_upload_all_school_data(self):
         """
