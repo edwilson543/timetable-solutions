@@ -19,7 +19,7 @@ from django.views.generic import View
 from django import urls
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 

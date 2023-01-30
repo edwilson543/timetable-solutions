@@ -13,7 +13,7 @@ from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import constants
 from data import models
 

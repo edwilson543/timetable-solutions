@@ -13,7 +13,7 @@ from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from interfaces.data_upload import forms
 from data import models
 from tests.input_settings import TEST_DATA_DIR

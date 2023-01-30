@@ -7,7 +7,7 @@ from django import test
 from django import urls
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import models
 
 

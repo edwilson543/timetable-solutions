@@ -8,7 +8,7 @@ from django import urls
 
 # Local application imports
 from domain.data_upload_processing.constants import ExampleFile
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 
 
 class TestExampleFileDownloads(test.TestCase):

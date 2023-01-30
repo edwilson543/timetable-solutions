@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import models
 from interfaces.data_upload import forms
 from tests.input_settings import TEST_DATA_DIR

@@ -4,7 +4,7 @@
 from django.urls import path
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from . import views
 
 urlpatterns = [

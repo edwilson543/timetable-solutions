@@ -8,7 +8,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 
 
 class TestViews(TestCase):

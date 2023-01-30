@@ -24,7 +24,7 @@ from django.views import View
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import constants
 from data import models
 from . import forms

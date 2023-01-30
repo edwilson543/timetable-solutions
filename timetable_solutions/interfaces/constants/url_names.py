@@ -5,6 +5,9 @@ Module defining constants relating to urls.
 # Standard library imports
 from enum import StrEnum
 
+# Django import
+from django import urls
+
 
 class UrlName(StrEnum):
     """
@@ -15,6 +18,18 @@ class UrlName(StrEnum):
     Note however that some django html templates access the string versions via the {% url <url_name> %} tag, so these
     would need updating.
     """
+
+    def url(self, **kwargs: str | int | None) -> str:
+        """
+        Get the url of one of the enum members.
+        raises: NoReverseMatch if incorrect kwargs supplied.
+        """
+        try:
+            return urls.reverse(self, kwargs=kwargs)
+        except urls.exceptions.NoReverseMatch:
+            raise urls.exceptions.NoReverseMatch(
+                f"Invalid kwargs: {kwargs}, for url alias: {self}"
+            )
 
     # Users app
     DASHBOARD = "dashboard"
@@ -60,15 +75,11 @@ class UrlName(StrEnum):
 
     # View timetables app
     PUPILS_NAVIGATOR = "pupils_navigator"
-    PUPIL_TIMETABLE = "pupil_timetable"  # |---------->
-    PUPIL_TT_CSV_DOWNLOAD = "pupil_tt_csv"  # Note reverse also requires a pupil id
-    PUPIL_TT_PDF_DOWNLOAD = "pupil_tt_pdf"  # <----------|
+    PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id
+    PUPIL_TT_PDF_DOWNLOAD = "pupil_tt_pdf"  # kwargs: pupil_id
     TEACHERS_NAVIGATOR = "teachers_navigator"
-    TEACHER_TIMETABLE = "teacher_timetable"  # |---------->
-    TEACHER_TT_CSV_DOWNLOAD = (
-        "teacher_tt_csv"  # Note reverse also requires a teacher id
-    )
-    TEACHER_TT_PDF_DOWNLOAD = "teacher_tt_pdf"  # <----------|
+    TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id
+    TEACHER_TT_PDF_DOWNLOAD = "teacher_tt_pdf"  # kwargs: teacher_id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 
     # Custom admin app

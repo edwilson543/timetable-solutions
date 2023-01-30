@@ -7,7 +7,7 @@ from django import urls
 from django import test
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from interfaces.users import htmx_views
 
 

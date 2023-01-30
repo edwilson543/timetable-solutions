@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.views.generic import TemplateView
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 

@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django import urls
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from interfaces.create_timetables import views
 
 
