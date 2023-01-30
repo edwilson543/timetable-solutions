@@ -14,18 +14,18 @@ from tests import data_factories
 
 
 @pytest.mark.django_db
-class TestPupilTimetable:
+class TestTeacherTimetable:
     @staticmethod
-    def get_pupil_with_timetable() -> models.Pupil:
-        """Make sufficient data for retrieving a pupil's timetable to be viable"""
+    def get_teacher_with_timetable() -> models.Teacher:
+        """Make sufficient data for retrieving a teacher's timetable to be viable"""
         # Constants
         slot_duration = 1
         days = [Day.MONDAY, Day.TUESDAY, Day.WEDNESDAY, Day.THURSDAY, Day.FRIDAY]
 
         # Make the basic school data
         school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
         yg = data_factories.YearGroup(school=school)
-        pupil = data_factories.Pupil(school=school, year_group=yg)
 
         # Make 6 slots per day, with a free period and break
         slots = []
@@ -40,12 +40,12 @@ class TestPupilTimetable:
                 )
                 slots.append(slot)
 
-        # Make 3 lessons for the pupil
+        # Make 3 lessons for the teacher
         n_lessons = 3
         for m in range(0, n_lessons):
             data_factories.Lesson(
                 school=school,
-                pupils=(pupil,),
+                teacher=teacher,
                 user_defined_time_slots=slots[m::n_lessons],
             )
 
@@ -53,27 +53,29 @@ class TestPupilTimetable:
         for day in days:
             data_factories.Break(
                 school=school,
-                relevant_year_groups=(yg,),
+                teachers=(teacher,),
                 day_of_week=day,
                 break_starts_at=dt.time(hour=13),
                 break_ends_at=dt.time(hour=13 + slot_duration),
             )
 
-        return pupil
+        return teacher
 
-    def test_access_pupil_timetable_page_contains_correct_timetable(self):
-        pupil = self.get_pupil_with_timetable()
+    def test_access_teacher_timetable_page_contains_correct_timetable(self):
+        teacher = self.get_teacher_with_timetable()
 
         # Create a user associated with the school and log them in
         user = auth_models.User.objects.create_user(
             username="testing", password="unhashed"
         )
-        data_factories.Profile(school=pupil.school, user=user)
+        data_factories.Profile(school=teacher.school, user=user)
         client = test.Client()
         client.login(username=user.username, password="unhashed")
 
-        # Access the pupil's timetable with our client
-        url = interfaces_constants.UrlName.PUPIL_TIMETABLE.url(pupil_id=pupil.pupil_id)
+        # Access the teacher's timetable with our client
+        url = interfaces_constants.UrlName.TEACHER_TIMETABLE.url(
+            teacher_id=teacher.teacher_id
+        )
         response = client.get(url)
 
         assert response.status_code == 200
