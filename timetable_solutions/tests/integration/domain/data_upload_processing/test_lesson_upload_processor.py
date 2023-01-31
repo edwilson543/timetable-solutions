@@ -1,148 +1,491 @@
 """Module containing integration tests for the LessonFileUploadProcessor"""
 
+# Standard library imports
+import io
+
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+
+# Third party imports
+import pytest
 
 # Local application imports
 from data import models
 from domain import data_upload_processing
-from tests.input_settings import TEST_DATA_DIR
+from tests import utils
+from tests import data_factories
 
 
-class TestLessonFileUploadProcessorValidUploads(TestCase):
-    """
-    Tests for the file uploads that depend on existing data in the database, hence requiring fixtures.
-    All tests in this class use files with valid content / structure.
-    """
+@pytest.mark.django_db
+class TestLessonFileUploadProcessorValidUploads:
+    """Test that 'lesson' files can be processed into the db successfully."""
 
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-    ]
-    valid_uploads = TEST_DATA_DIR / "valid_uploads"
+    def test_two_lessons_no_user_defined_slots_successful(self):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
 
-    def test_upload_lessons_file_to_database_valid_upload(self):
-        """
-        Test that the LessonFileUploadProcessor can upload the lessons.cv csv file and use it to populate database
-        """
-        # Set test parameters
-        with open(self.valid_uploads / "lessons.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        teacher_a = data_factories.Teacher(school=school)
+        teacher_b = data_factories.Teacher(school=school)
+
+        classroom_a = data_factories.Classroom(school=school)
+        classroom_b = data_factories.Classroom(school=school)
+
+        yg = data_factories.YearGroup(school=school)
+        pupil_0 = data_factories.Pupil(school=school, year_group=yg)
+        pupil_1 = data_factories.Pupil(school=school, year_group=yg)
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    teacher_a.teacher_id,
+                    f"{pupil_0.pupil_id}; {pupil_1.pupil_id}",
+                    classroom_a.classroom_id,
+                    3,
+                    0,
+                    None,  # No user defined slots (default)
+                ],
+                [
+                    "english-b",
+                    "English",
+                    teacher_b.teacher_id,
+                    f"{pupil_0.pupil_id}; {pupil_1.pupil_id}",
+                    classroom_b.classroom_id,
+                    5,
+                    1,
+                    None,  # No user defined slots (default)
+                ],
+            ]
+        )
 
         # Upload the file
+        upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
         upload_processor = data_upload_processing.LessonFileUploadProcessor(
-            csv_file=upload_file, school_access_key=123456
+            csv_file=upload_file, school_access_key=school.school_access_key
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 12)
+        # Check basic outcome of upload
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 2
 
-        # Test the database is as expected
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(
-            school_id=123456
+        # Check saved to db
+        lessons = models.Lesson.objects.filter(school=school)
+        assert lessons.count() == 2
+
+        # Check each lesson instance
+        lesson_a = lessons.get(lesson_id="maths-a")
+        assert lesson_a.subject_name == "Maths"
+        assert lesson_a.teacher == teacher_a
+        assert lesson_a.classroom == classroom_a
+        pupils = lesson_a.pupils.all()
+        assert pupils.count() == 2 and pupil_0 in pupils and pupil_1 in pupils
+        assert lesson_a.total_required_slots == 3
+        assert lesson_a.total_required_double_periods == 0
+        assert lesson_a.user_defined_time_slots.all().count() == 0
+
+        lesson_b = lessons.get(lesson_id="english-b")
+        assert lesson_b.subject_name == "English"
+        assert lesson_b.teacher == teacher_b
+        assert lesson_b.classroom == classroom_b
+        pupils = lesson_b.pupils.all()
+        assert pupils.count() == 2 and pupil_0 in pupils and pupil_1 in pupils
+        assert lesson_b.total_required_slots == 5
+        assert lesson_b.total_required_double_periods == 1
+        assert lesson_b.user_defined_time_slots.all().count() == 0
+
+    def test_one_lesson_with_user_defined_slots_successful(self):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        classroom = data_factories.Classroom(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        # Make some slots that will be 'user defined' for the given lesson
+        slots = [
+            data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+            for _ in range(0, 3)
+        ]
+        slot_id_string = "".join(f"{slot.slot_id};" for slot in slots)
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    teacher.teacher_id,
+                    f"{pupil.pupil_id};",
+                    classroom.classroom_id,
+                    5,
+                    1,
+                    slot_id_string,
+                ],
+            ]
         )
-        self.assertEqual(all_lessons.count(), 12)
-
-        total_solver_required_slots = sum(
-            lesson.get_n_solver_slots_required() for lesson in all_lessons
-        )
-        self.assertEqual(total_solver_required_slots, 100)  # = (8 * 8) + (9 * 4)
-
-        total_user_defined_slots = sum(
-            lesson.user_defined_time_slots.all().count() for lesson in all_lessons
-        )
-        self.assertEqual(total_user_defined_slots, 0)
-
-        total_non_unique_pupils = sum(lesson.pupils.count() for lesson in all_lessons)
-        self.assertEqual(total_non_unique_pupils, 18)
-
-        # Spot check on one specific Lesson
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        self.assertQuerysetEqual(
-            lesson.pupils.all(),
-            models.Pupil.objects.filter(pupil_id__in={1, 2}),
-            ordered=False,
-        )
-        self.assertEqual(
-            lesson.teacher,
-            models.Teacher.objects.get_individual_teacher(
-                school_id=123456, teacher_id=1
-            ),
-        )
-
-
-class TestLessonFileUploadProcessorInvalidUploads(TestCase):
-    """
-    Tests for invalid lesson file uploads with invalid content / structure.
-    """
-
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "timetable.json",
-        "year_groups.json",
-        "pupils.json",
-        "classrooms.json",
-    ]
-    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
-
-    def run_test_for_lesson_file_with_error(self, filename: str) -> str:
-        """
-        Utility test that can be run for different files, all with different types of error in row n.
-        Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
-        processed into the database.
-        :return the error message produced by the processor
-        """
-        # Set test parameters
-        with open(self.invalid_uploads / filename, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
+        upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
         upload_processor = data_upload_processing.LessonFileUploadProcessor(
-            csv_file=upload_file, school_access_key=123456
+            csv_file=upload_file, school_access_key=school.school_access_key
         )
 
-        # Check the outcome
-        all_lessons = models.Lesson.objects.get_all_instances_for_school(
-            school_id=123456
+        # Check basic outcome of upload
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 1
+
+        # Check saved to db
+        lessons = models.Lesson.objects.filter(school=school)
+        assert lessons.count() == 1
+
+        lesson = lessons.first()
+        assert lesson.subject_name == "Maths"
+        assert lesson.teacher == teacher
+        assert lesson.classroom == classroom
+        pupils = lesson.pupils.all()
+        assert pupils.count() == 1 and pupil in pupils
+        assert lesson.total_required_slots == 5
+        assert lesson.total_required_double_periods == 1
+        user_defined_slots = lesson.user_defined_time_slots.all()
+        assert user_defined_slots.count() == 3
+        for slot in slots:
+            assert slot in user_defined_slots
+
+    def test_lesson_without_classroom_successful(self):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    teacher.teacher_id,
+                    f"{pupil.pupil_id};",
+                    None,  # No classroom
+                    7,
+                    2,
+                    None,  # No user defined slots (default)
+                ],
+            ]
         )
-        self.assertEqual(all_lessons.count(), 0)
-        self.assertFalse(upload_processor.upload_successful)
+
+        # Upload the file
+        upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
+        upload_processor = data_upload_processing.LessonFileUploadProcessor(
+            csv_file=upload_file, school_access_key=school.school_access_key
+        )
+
+        # Check basic outcome of upload
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 1
+
+        # Check saved to db
+        lessons = models.Lesson.objects.filter(school=school)
+        assert lessons.count() == 1
+
+        lesson = lessons.first()
+        assert lesson.subject_name == "Maths"
+        assert lesson.teacher == teacher
+        assert lesson.classroom is None
+        pupils = lesson.pupils.all()
+        assert pupils.count() == 1 and pupil in pupils
+        assert lesson.total_required_slots == 7
+        assert lesson.total_required_double_periods == 2
+        assert lesson.user_defined_time_slots.all().count() == 0
+
+    def test_lesson_without_teacher_successful(self):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
+        classroom = data_factories.Classroom(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    None,  # No teacher
+                    f"{pupil.pupil_id};",
+                    classroom.classroom_id,
+                    7,
+                    2,
+                    None,  # No user defined slots (default)
+                ],
+            ]
+        )
+
+        # Upload the file
+        upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
+        upload_processor = data_upload_processing.LessonFileUploadProcessor(
+            csv_file=upload_file, school_access_key=school.school_access_key
+        )
+
+        # Check basic outcome of upload
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 1
+
+        # Check saved to db
+        lessons = models.Lesson.objects.filter(school=school)
+        assert lessons.count() == 1
+
+        lesson = lessons.first()
+        assert lesson.subject_name == "Maths"
+        assert lesson.teacher is None
+        assert lesson.classroom == classroom
+        pupils = lesson.pupils.all()
+        assert pupils.count() == 1 and pupil in pupils
+        assert lesson.total_required_slots == 7
+        assert lesson.total_required_double_periods == 2
+        assert lesson.user_defined_time_slots.all().count() == 0
+
+
+@pytest.mark.django_db
+class TestLessonFileUploadProcessorInvalidUploads:
+    """Tests for uploading 'lesson' files we expect to fail."""
+
+    @staticmethod
+    def run_test_for_lesson_file_with_error(
+        csv_file: io.BytesIO, school: models.School
+    ) -> str:
+        """
+        Run a boilerplate upload for a file we expect to error.
+        :param csv_file: The file-like object we are going to try and upload.
+        :param school: The school that this data will be associated with.
+        :return: The error message produced by the processor.
+        """
+        # Upload the file
+        upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
+        upload_processor = data_upload_processing.LessonFileUploadProcessor(
+            csv_file=upload_file, school_access_key=school.school_access_key
+        )
+
+        # Run some basic checks
+        all_lessons = models.Lesson.objects.filter(school_id=school.school_access_key)
+        assert all_lessons.count() == 0
+        assert not upload_processor.upload_successful
 
         return upload_processor.upload_error_message
 
-    def test_upload_lessons_file_which_references_a_non_existent_pupil(self):
-        """
-        Unit test that a lessons file which references a non-existent pupil is rejected
-        """
-        # Set test parameters
-        filename = "lessons_non_existent_pupil.csv"
+    def test_file_referencing_non_existent_pupil_is_unsuccessful(self):
+        # Make some data - note we do not make a pupil
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        classroom = data_factories.Classroom(school=school)
+
+        non_existent_pupil_id = "1"
+
+        # Make the erroneous csv file
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    teacher.teacher_id,
+                    f"{non_existent_pupil_id};",
+                    classroom.classroom_id,
+                    7,
+                    2,
+                    None,  # No user defined slots (default)
+                ],
+            ]
+        )
 
         # Execute test
-        error_message = self.run_test_for_lesson_file_with_error(filename=filename)
+        error_message = self.run_test_for_lesson_file_with_error(
+            csv_file, school=school
+        )
 
         # Check outcome
-        self.assertIn("No pupil", error_message)
-        self.assertIn("7", error_message)  # The non-existent pupil
+        assert "No pupil" in error_message
+        assert non_existent_pupil_id in error_message
 
-    def test_upload_lessons_file_which_references_a_non_existent_classroom(self):
-        """
-        Unit test that a lessons file which references a non-existent classroom is rejected
-        """
-        # Set test parameters
-        filename = "lessons_non_existent_classroom.csv"
+    def test_file_referencing_non_existent_teacher_is_unsuccessful(self):
+        # Make some data - note we do not make a pupil
+        school = data_factories.School()
+        classroom = data_factories.Classroom(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        non_existent_teacher_id = "1"
+
+        # Make the erroneous csv file
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    f"{non_existent_teacher_id};",
+                    f"{pupil.pupil_id};",
+                    classroom.classroom_id,
+                    7,
+                    2,
+                    None,  # No user defined slots (default)
+                ],
+            ]
+        )
 
         # Execute test
-        error_message = self.run_test_for_lesson_file_with_error(filename=filename)
+        error_message = self.run_test_for_lesson_file_with_error(
+            csv_file, school=school
+        )
 
         # Check outcome
-        self.assertIn("Row 2", error_message)
-        self.assertIn("does not exist", error_message)
+        assert "does not exist" in error_message
+        assert "Row 1" in error_message
+
+    def test_file_referencing_non_existent_classroom_is_unsuccessful(self):
+        # Make some data - note we do not make a pupil
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        non_existent_classroom_id = "1"
+
+        # Make the erroneous csv file
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    f"{teacher.teacher_id};",
+                    f"{pupil.pupil_id};",
+                    f"{non_existent_classroom_id};",
+                    7,
+                    2,
+                    None,  # No user defined slots (default)
+                ],
+            ]
+        )
+
+        # Execute test
+        error_message = self.run_test_for_lesson_file_with_error(
+            csv_file, school=school
+        )
+
+        # Check outcome
+        assert "does not exist" in error_message
+        assert "Row 1" in error_message
+
+    def test_file_referencing_non_existent_slot_is_unsuccessful(self):
+        # Make some data - note we do not make a pupil
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        classroom = data_factories.Classroom(school=school)
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        non_existent_slot_id = "1"
+
+        # Make the erroneous csv file
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    "lesson_id",
+                    "subject_name",
+                    "teacher_id",
+                    "pupil_ids",
+                    "classroom_id",
+                    "total_required_slots",
+                    "total_required_double_periods",
+                    "user_defined_slot_ids",
+                ],
+                [
+                    "maths-a",
+                    "Maths",
+                    f"{teacher.teacher_id};",
+                    f"{pupil.pupil_id};",
+                    f"{classroom.classroom_id};",
+                    7,
+                    2,
+                    f"{non_existent_slot_id};",
+                ],
+            ]
+        )
+
+        # Execute test
+        error_message = self.run_test_for_lesson_file_with_error(
+            csv_file, school=school
+        )
+
+        # Check outcome
+        assert "No timetable slot(s) with ids: {1} were found!" in error_message

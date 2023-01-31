@@ -154,8 +154,6 @@ class Lesson(models.Model):
         else:
             classroom = None
 
-        subject_name = subject_name.upper()
-
         lesson = cls.objects.create(
             school_id=school_id,
             lesson_id=lesson_id,
@@ -351,11 +349,17 @@ class Lesson(models.Model):
 
         if self.user_defined_time_slots.all().count() > self.total_required_slots:
             raise ValidationError(
-                f"User has defined more slots for {self.__repr__()} than the total requirement"
+                f"User has defined more slots for {repr(self)} than the total requirement"
+            )
+
+        if self.total_required_slots < self.total_required_double_periods * 2:
+            raise ValidationError(
+                f"Number of double periods required is not feasible for {repr(self)}. "
+                f"({self.total_required_double_periods} > 2 * {self.total_required_slots}"
             )
 
         for slot in self.solver_defined_time_slots.all():
             if slot in self.user_defined_time_slots.all():
                 raise ValidationError(
-                    f"{slot} appears in both user and solver slots for {self.__repr__}"
+                    f"{slot} appears in both user and solver slots for {repr(self)}"
                 )
