@@ -60,15 +60,17 @@ class Lesson(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     lesson_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
+    pupils = models.ManyToManyField(Pupil, related_name="lessons")
+
+    # Teacher & classroom can be null for sport / not classroom lessons
     teacher = models.ForeignKey(
         Teacher, on_delete=models.PROTECT, related_name="lessons", blank=True, null=True
-    )  # Null for e.g. lunch
-    pupils = models.ManyToManyField(Pupil, related_name="lessons")
+    )
     classroom = models.ForeignKey(
         Classroom,
         on_delete=models.PROTECT,
         related_name="lessons",
-        blank=True,  # Null for e.g. sport
+        blank=True,
         null=True,
     )
 

@@ -116,8 +116,19 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                     f"No pupil(s) with ids: {missing_slots} were found!"
                 )
                 return None
+
+            elif pupils.count() == 0:
+                self.upload_error_message = (
+                    f"Could not retrieve pupils {pupil_ids_raw} for lesson in row {row_number}. "
+                    "All lessons must have some pupils."
+                )
             else:
                 return pupils
+
+        self.upload_error_message = (
+            f"Could not interpret {pupil_ids_raw} for lesson in row {row_number}. "
+            "All lessons must have some pupils."
+        )
         return None
 
     def _get_timetable_slots_from_raw_slot_ids_string(
