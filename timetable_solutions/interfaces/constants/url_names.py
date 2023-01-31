@@ -76,10 +76,8 @@ class UrlName(StrEnum):
     # View timetables app
     PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id
-    PUPIL_TT_PDF_DOWNLOAD = "pupil_tt_pdf"  # kwargs: pupil_id
     TEACHERS_NAVIGATOR = "teachers_navigator"
     TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id
-    TEACHER_TT_PDF_DOWNLOAD = "teacher_tt_pdf"  # kwargs: teacher_id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 
     # Custom admin app

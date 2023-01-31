@@ -28,14 +28,6 @@
     </div>
 
     {% include 'partials/timetable.html' with timetable=timetable %}
-
-    <div id="download_button_panel">
-        <form action="{% url 'pupil_tt_pdf' pupil.pupil_id %}" method="get">
-            <button class="download_button" type="submit">
-                Download PDF
-            </button>
-        </form>
-    </div>
 </div>
 {% endblock %}
 </body>
