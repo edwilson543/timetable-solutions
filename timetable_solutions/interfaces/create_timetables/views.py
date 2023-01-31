@@ -14,7 +14,7 @@ from django.http import HttpResponse
 from django.views.generic.edit import FormView
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import models
 from domain.data_upload_processing import UploadStatusTracker
 from domain import solver

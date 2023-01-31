@@ -79,7 +79,10 @@ class TimetableSolverInputs:
         self.error_messages: list[str] = []
         self._check_specification_aligns_with_input_data()
 
-    # Properties / methods for objective function
+    # --------------------
+    # Helper properties / methods for TimetableSolverObjective
+    # --------------------
+
     @property
     def timetable_start_hour_as_float(self) -> float:
         """
@@ -116,7 +119,10 @@ class TimetableSolverInputs:
         period_starts_at = slot.period_starts_at
         return period_starts_at
 
-    # Methods for variables
+    # --------------------
+    # Helper methods for TimetableSolverVariables
+    # --------------------
+
     @staticmethod
     def get_consecutive_slots_for_year_group(
         year_group: models.YearGroup,
@@ -141,7 +147,10 @@ class TimetableSolverInputs:
 
         return consecutive_slots
 
-    # CHECKS
+    # --------------------
+    # Validation methods
+    # --------------------
+
     def _check_specification_aligns_with_input_data(self) -> None:
         """
         Method to check whether it's possible to find a solution which disallows split classes within each day, before

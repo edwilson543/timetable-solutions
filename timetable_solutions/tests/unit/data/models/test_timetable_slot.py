@@ -15,7 +15,7 @@ from django.db import IntegrityError
 # Local application imports
 from data import constants
 from data import models
-from tests import factories
+from tests import data_factories as factories
 
 
 @pytest.mark.django_db
@@ -33,18 +33,18 @@ class TestTimetableSlotQuerySet:
         slot = factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
 
         # Make some dummy slots that we don't expect in the outcome
         factories.TimetableSlot()  # Dummy slot at different school
         factories.TimetableSlot(
             school=school,
-            day_of_week=constants.WeekDay.TUESDAY,  # Dummy slot on different day
+            day_of_week=constants.Day.TUESDAY,  # Dummy slot on different day
         )
         factories.TimetableSlot(  # Dummy slot not for this year group
             school=school,
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
 
         # Get slots and check only 1 was retrieved
@@ -65,7 +65,7 @@ class TestTimetableSlotQuerySet:
         (including itself).
         """
         school = factories.School()
-        monday = constants.WeekDay.MONDAY
+        monday = constants.Day.MONDAY
 
         # Make the following slots: 8:30-9:30; 9:00-10:00; 9:30-10:30, 10:00-11:00
         if n_expected_clashes > 1:
@@ -124,7 +124,7 @@ class TestTimetableSlot:
         slot = models.TimetableSlot.create_new(
             school_id=school.school_access_key,
             slot_id=1,
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
             period_starts_at=dt.time(hour=9),
             period_ends_at=dt.time(hour=10),
             relevant_year_groups=models.YearGroup.objects.all(),
@@ -152,7 +152,7 @@ class TestTimetableSlot:
             models.TimetableSlot.create_new(
                 school_id=slot.school.school_access_key,
                 slot_id=slot.slot_id,
-                day_of_week=constants.WeekDay.TUESDAY,
+                day_of_week=constants.Day.TUESDAY,
                 period_starts_at=dt.time(hour=10),
                 period_ends_at=dt.time(hour=11),
                 relevant_year_groups=models.YearGroup.objects.none(),
@@ -189,7 +189,7 @@ class TestTimetableSlot:
             models.TimetableSlot.create_new(
                 school_id=school.school_access_key,
                 slot_id=1,
-                day_of_week=constants.WeekDay.MONDAY,
+                day_of_week=constants.Day.MONDAY,
                 period_starts_at=dt.time(hour=9),
                 period_ends_at=dt.time(hour=9),
                 relevant_year_groups=models.YearGroup.objects.none(),
@@ -207,7 +207,7 @@ class TestTimetableSlot:
             models.TimetableSlot.create_new(
                 school_id=school.school_access_key,
                 slot_id=1,
-                day_of_week=constants.WeekDay.MONDAY,
+                day_of_week=constants.Day.MONDAY,
                 period_starts_at=dt.time(hour=9),
                 period_ends_at=dt.time(hour=8),
                 relevant_year_groups=models.YearGroup.objects.none(),
@@ -248,24 +248,24 @@ class TestTimetableSlot:
         slot = factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
 
         # Make some dummy slots that we don't expect in the outcome
         factories.TimetableSlot()  # Dummy slot at different school
         factories.TimetableSlot(
             school=school,
-            day_of_week=constants.WeekDay.TUESDAY,  # Dummy slot on different day
+            day_of_week=constants.Day.TUESDAY,  # Dummy slot on different day
         )
         factories.TimetableSlot(  # Dummy slot not for this year group
             school=school,
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
 
         # Execute test unit
         slots = models.TimetableSlot.get_timeslot_ids_on_given_day(
             school_id=school.school_access_key,
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
             year_group=yg,
         )
 
@@ -316,12 +316,12 @@ class TestTimetableSlot:
         slot_1 = factories.TimetableSlot(
             period_starts_at=dt.time(hour=9),
             period_ends_at=dt.time(hour=10),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
         slot_2 = factories.TimetableSlot(
             period_starts_at=dt.time(hour=10),
             period_ends_at=dt.time(hour=11),
-            day_of_week=constants.WeekDay.TUESDAY,
+            day_of_week=constants.Day.TUESDAY,
         )
 
         # Execute test unit
@@ -339,12 +339,12 @@ class TestTimetableSlot:
         slot_1 = factories.TimetableSlot(
             period_starts_at=dt.time(hour=9),
             period_ends_at=dt.time(hour=10),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
         slot_2 = factories.TimetableSlot(
             period_starts_at=dt.time(hour=10, minute=1),
             period_ends_at=dt.time(hour=11),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
         )
 
         # Execute test unit

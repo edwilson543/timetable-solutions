@@ -67,7 +67,7 @@ class Break(models.Model):
     break_id = models.CharField(max_length=20)
     break_name = models.CharField(max_length=20)
 
-    day_of_week = models.SmallIntegerField(choices=constants.WeekDay.choices)
+    day_of_week = models.SmallIntegerField(choices=constants.Day.choices)
     break_starts_at: dt.time = models.TimeField()
     break_ends_at: dt.time = models.TimeField()
 
@@ -114,7 +114,7 @@ class Break(models.Model):
         school_id: int,
         break_id: str,
         break_name: str,
-        day_of_week: constants.WeekDay,
+        day_of_week: constants.Day,
         break_starts_at: dt.time,
         break_ends_at: dt.time,
         teachers: TeacherQuerySet,

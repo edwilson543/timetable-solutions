@@ -1,6 +1,4 @@
-"""
-Integration tests for the TimetableSolver class.
-"""
+"""Integration tests looking for specific timetable solutions from the TimetableSolver class."""
 
 # Standard library imports
 import datetime as dt

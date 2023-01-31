@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import models
 from interfaces.data_upload import forms
 from tests.input_settings import TEST_DATA_DIR
@@ -202,7 +202,7 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(all_slots.count(), 35)
+        self.assertEqual(all_slots.count(), 30)
 
         # Check a random individual slot
         slot = models.TimetableSlot.objects.get_individual_timeslot(
@@ -251,7 +251,7 @@ class TestLessonFileUpload(TestCaseWithUpload):
         all_lessons = models.Lesson.objects.get_all_instances_for_school(
             school_id=123456
         )
-        assert all_lessons.count() == 24
+        assert all_lessons.count() == 12
 
         # Check a random specific class
         lesson = models.Lesson.objects.get_individual_lesson(

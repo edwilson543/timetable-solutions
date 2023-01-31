@@ -8,7 +8,7 @@ from django import urls
 
 # Local application imports
 from data import models
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 
 
 class TestLessonDetailModal(test.TestCase):

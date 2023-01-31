@@ -116,8 +116,13 @@ class Pupil(models.Model):
         Method to check whether the given pupil has already been assigned a lesson at the given slot.
         :return - True if BUSY at the given timeslot.
         """
-        user_defined_lessons_at_slot = self.lessons.filter(user_defined_time_slots=slot)
-        n_commitments = user_defined_lessons_at_slot.count()
+        user_defined_slots = TimetableSlot.objects.filter(user_lessons__pupils=self)
+        lesson_clashes = user_defined_slots.filter_for_clashes(slot)
+
+        break_clashes = self.year_group.breaks.filter_for_clashes(slot)
+
+        n_commitments = lesson_clashes.count() + break_clashes.count()
+
         if n_commitments == 1:
             return True
         elif n_commitments == 0:

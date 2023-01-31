@@ -11,7 +11,7 @@ from django import test
 # Local application imports
 from data import models
 from interfaces.custom_admin import admin
-from tests import factories
+from tests import data_factories as factories
 
 
 @pytest.mark.django_db

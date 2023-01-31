@@ -1,185 +1,160 @@
-"""
-Unit tests for the instantiation of solver variables
-"""
+"""Unit tests for the instantiation of solver variables."""
 
-# Standard library imports
-from unittest import mock
-
-# Django imports
-from django import test
+# Third party imports
+import pytest
 
 # Local application imports
 from data import models
 from domain import solver as slvr
+from tests import data_factories
+from tests import domain_factories
 
 
-def get_variables_maker() -> slvr.TimetableSolverVariables:
-    """
-    Utility method used to return an instance of the class holding the timetable variables.
-    Note that we patch the methods called at instantiation, to avoid silently testing that they work
-    """
-    solution_spec = slvr.SolutionSpecification(
-        allow_split_classes_within_each_day=True,
-        allow_triple_periods_and_above=True,
-    )
+def get_variables_maker(school: models.School) -> slvr.TimetableSolverVariables:
+    """Utility method used to return an instance of the class holding the timetable variables."""
+    spec = domain_factories.SolutionSpecification()
     input_data = slvr.TimetableSolverInputs(
-        school_id=123456, solution_specification=solution_spec
+        school_id=school.school_access_key, solution_specification=spec
     )
-    with mock.patch.object(
-        slvr.TimetableSolverVariables, "_get_decision_variables", return_value=None
-    ), mock.patch.object(
-        slvr.TimetableSolverVariables,
-        "_get_double_period_variables",
-        return_value=None,
-    ):
-        variables_maker = slvr.TimetableSolverVariables(inputs=input_data)
+    variables_maker = slvr.TimetableSolverVariables(
+        inputs=input_data, set_variables=False
+    )
     return variables_maker
 
 
-class TestTimetableSolverVariables(test.TestCase):
-
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-        "lessons_without_solution.json",
-    ]
-
-    def test_get_decision_variables(self):
+@pytest.mark.django_db
+class TestTimetableSolverVariables:
+    @pytest.mark.parametrize("m_lessons", [1, 5])
+    @pytest.mark.parametrize("n_slots", [1, 7])
+    @pytest.mark.parametrize("dummy_slots", [True, False])
+    def test_get_decision_variables_one_per_lesson_and_slot(
+        self, m_lessons: int, n_slots: int, dummy_slots: bool
+    ):
         """
-        Test for the decision variable instantiation.
+        :param dummy_slots: If set to True then we add some random slots that we
+        do not expect to appear in the inspected variables.
         """
-        # Set parameters
-        variables_maker = get_variables_maker()
+        # Make a school with m lessons and n slots
+        school = data_factories.School()
+        lessons = [
+            data_factories.Lesson.with_n_pupils(school=school)
+            for _ in range(0, m_lessons)
+        ]
+
+        all_year_groups = [lesson.pupils.first().year_group for lesson in lessons]
+
+        for _ in range(0, n_slots):
+            data_factories.TimetableSlot(
+                school=school, relevant_year_groups=all_year_groups
+            )
+
+        if dummy_slots:
+            # Make some slots irrelevant to any year groups (and therefore) lessons
+            data_factories.TimetableSlot(school=school)
+            data_factories.TimetableSlot(school=school)
 
         # Execute test unit
+        variables_maker = get_variables_maker(school=school)
         variables = variables_maker._get_decision_variables()
 
-        # Test the outcome - we expect one variable per lesson / timetable slot pair
-        assert len(variables) == 12 * 35
-        random_var_key = slvr.var_key(lesson_id="YEAR_ONE_FRENCH_A", slot_id=19)
-        random_var = variables[random_var_key]
-        assert random_var.lowBound == 0
-        assert random_var.upBound == 1
-        assert random_var.cat == "Integer"
-        assert random_var.varValue is None
+        # Ensure we have the right number of decision variables
+        assert len(variables) == m_lessons * n_slots
 
-    def test_strip_decision_variables(self):
-        """
-        Test for the method removing irrelevant variables from the variables dict.
-        """
-        # Set parameters - we add two user defined slots at monday at 9AM, so that this variable gets stripped
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        # Ensure all are vars are well-formed
+        for var in variables.values():
+            assert var.lowBound == 0
+            assert var.upBound == 1
+            assert var.cat == "Integer"
+            assert var.varValue is None
+
+    def test_strip_decision_variables_removes_any_user_defined_slots(self):
+        # Make a school with 1 lesson requiring 5 slots
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        slots = [
+            data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+            for _ in range(0, 5)
+        ]
+
+        # Make one slot user defined so that it gets stripped
+        data_factories.Lesson(
+            school=school,
+            total_required_slots=5,
+            total_required_double_periods=0,
+            pupils=(pupil,),
+            user_defined_time_slots=(slots[0],),
         )
-        two_slots = models.TimetableSlot.objects.filter(slot_id__in=[1, 2])
-        lesson.add_user_defined_time_slots(time_slots=two_slots)
-
-        to_strip_variable_key_1 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=1)
-        to_strip_variable_key_2 = slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)
-
-        variables_maker = get_variables_maker()
-        variables = variables_maker._get_decision_variables(strip=False)
-
-        # Execute the test unit
-        assert to_strip_variable_key_1 in variables.keys()
-        assert to_strip_variable_key_2 in variables.keys()
-        variables_maker._strip_decision_variables(variables=variables)
-
-        # Test the outcome
-        assert to_strip_variable_key_1 not in variables.keys()
-        assert to_strip_variable_key_2 not in variables.keys()
-
-    def test_get_double_period_variables(self):
-        """
-        Test of the dependent, double period variables instantiation.
-        """
-        # Set parameters
-        variables_maker = get_variables_maker()
 
         # Execute test unit
+        variables_maker = get_variables_maker(school=school)
+        variables = variables_maker._get_decision_variables(strip=True)
+
+        # Ensure one variable was stripped
+        assert len(variables) == 4
+        slot_ids = {key.slot_id for key in variables.keys()}
+        assert slot_ids == {slot.slot_id for slot in slots[1:]}
+
+        # Ensure all are vars are well-formed
+        for var in variables.values():
+            assert var.lowBound == 0
+            assert var.upBound == 1
+            assert var.cat == "Integer"
+            assert var.varValue is None
+
+    @pytest.mark.parametrize("dummy_slots", [True, False])
+    def test_get_double_period_variables(self, dummy_slots: bool):
+        """
+        :param dummy_slots: If set to True then we add some random slots that we
+        do not expect to appear in the inspected variables.
+        """
+        # Make a school with 1 lesson and 3 consecutive slots
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+
+        slot_0 = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot_1 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
+        slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+
+        lesson = data_factories.Lesson(
+            school=school,
+            total_required_slots=5,
+            total_required_double_periods=2,
+            pupils=(pupil,),
+        )
+
+        if dummy_slots:
+            # Make some consecutive slots irrelevant to any year groups (and therefore) lessons
+            dummy_slot_0 = data_factories.TimetableSlot(school=school)
+            data_factories.TimetableSlot.get_next_consecutive_slot(dummy_slot_0)
+
+        # Execute test unit
+        variables_maker = get_variables_maker(school=school)
         variables = variables_maker._get_double_period_variables()
 
-        # Test the outcome - we expect one variable per consecutive period
-        assert (
-            len(variables)
-            == 12 * 6 * 5  # 12 lessons, 6 consecutive periods / day, 5 days / week
-        )
-        random_var_key = slvr.doubles_var_key(
-            lesson_id="YEAR_ONE_FRENCH_B", slot_1_id=7, slot_2_id=12
-        )
-        random_var = variables[random_var_key]
-        assert random_var.lowBound == 0
-        assert random_var.upBound == 1
-        assert random_var.cat == "Integer"
-        assert random_var.varValue is None
+        # We expect 2 double period variables since the doubles could go at either
+        # of the pairs of periods (because there are 3 in a row).
+        assert len(variables) == 2
 
+        variable_keys = {key for key in variables.keys()}
+        assert variable_keys == {
+            slvr.doubles_var_key(
+                lesson_id=lesson.lesson_id,
+                slot_1_id=slot_0.slot_id,
+                slot_2_id=slot_1.slot_id,
+            ),
+            slvr.doubles_var_key(
+                lesson_id=lesson.lesson_id,
+                slot_1_id=slot_1.slot_id,
+                slot_2_id=slot_2.slot_id,
+            ),
+        }
 
-class TestTimetableSolverVariablesExtraYear(test.TestCase):
-    """
-    Test for solve variables when different year groups have different timetables.
-    """
-
-    fixtures = [
-        "user_school_profile.json",
-        "teachers.json",
-        "classrooms.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-        "lessons_without_solution.json",
-        "extra-year.json",  # Now include this
-    ]
-
-    def test_get_decision_variables_extra_year(self):
-        """
-        Test for the decision variable instantiation,
-        in the case where different year groups have different timetable slots.
-        """
-        # Set parameters
-        variables_maker = get_variables_maker()
-
-        # Execute test unit
-        variables = variables_maker._get_decision_variables()
-
-        # Expect one variable per lesson / timetable slot pair
-        # The extra year carries 2 timetable slots and 2 lessons
-        assert len(variables) == (12 * 35) + (2 * 2)
-
-    def test_get_double_period_variables_varied_timetables(self):
-        """
-        Test of the dependent, double period variables instantiation,
-        when some year groups have different timetable slots.
-        """
-        # Set parameters
-        variables_maker = get_variables_maker()
-
-        # Execute test unit
-        variables = variables_maker._get_double_period_variables()
-
-        # Test the outcome - we expect one variable per consecutive period
-        assert (
-            # 360 is for the year groups 1 and 2, and then PLUS TWO for extra-year lessons
-            len(variables)
-            == 360 + 2
-        )
-        geog_double = slvr.doubles_var_key(
-            lesson_id="extra-year-geography", slot_1_id=100, slot_2_id=101
-        )
-        random_var = variables[geog_double]
-        assert random_var.lowBound == 0
-        assert random_var.upBound == 1
-        assert random_var.cat == "Integer"
-        assert random_var.varValue is None
-
-        history_double = slvr.doubles_var_key(
-            lesson_id="extra-year-history", slot_1_id=100, slot_2_id=101
-        )
-        random_var = variables[history_double]
-        assert random_var.lowBound == 0
-        assert random_var.upBound == 1
-        assert random_var.cat == "Integer"
-        assert random_var.varValue is None
+        # Ensure all are vars are well-formed
+        for var in variables.values():
+            assert var.lowBound == 0
+            assert var.upBound == 1
+            assert var.cat == "Integer"
+            assert var.varValue is None

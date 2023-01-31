@@ -123,7 +123,7 @@ class TimetableSlotAdmin(CustomModelAdminBase):
             + "-"
             + obj.period_ends_at.strftime("%H:%M")
         )
-        return constants.WeekDay(obj.day_of_week).label + ", " + time
+        return constants.Day(obj.day_of_week).label + ", " + time
 
     @admin.display(description="Year Groups")
     def get_year_groups(self, obj: models.TimetableSlot) -> str:

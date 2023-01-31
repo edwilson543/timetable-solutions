@@ -32,10 +32,11 @@ class TestLoadAllFixturesCommand(test.TestCase):
         assert models.Classroom.objects.all().count() == 12
         assert models.Pupil.objects.all().count() == 6
         assert models.Teacher.objects.all().count() == 11
-        assert models.TimetableSlot.objects.all().count() == 35
+        assert models.TimetableSlot.objects.all().count() == 30
+        assert models.Break.objects.all().count() == 5
 
         all_lessons = models.Lesson.objects.all()
-        assert all_lessons.count() == 24
+        assert all_lessons.count() == 12
 
         total_solver_produced_slots = sum(
             lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
@@ -57,10 +58,11 @@ class TestLoadAllFixturesCommand(test.TestCase):
         assert models.Classroom.objects.all().count() == 12
         assert models.Pupil.objects.all().count() == 6
         assert models.Teacher.objects.all().count() == 11
-        assert models.TimetableSlot.objects.all().count() == 35
+        assert models.TimetableSlot.objects.all().count() == 30
+        assert models.Break.objects.all().count() == 5
 
         all_lessons = models.Lesson.objects.all()
-        assert all_lessons.count() == 24
+        assert all_lessons.count() == 12
 
         total_solver_produced_slots = sum(
             lesson.solver_defined_time_slots.all().count() for lesson in all_lessons
@@ -84,10 +86,11 @@ class TestLoadAllFixturesCommand(test.TestCase):
         assert models.Classroom.objects.all().count() == 12
         assert models.Pupil.objects.all().count() == 6
         assert models.Teacher.objects.all().count() == 11
-        assert models.TimetableSlot.objects.all().count() == 35
+        assert models.TimetableSlot.objects.all().count() == 30
+        assert models.Break.objects.all().count() == 5
 
         all_lessons = models.Lesson.objects.all()
-        assert all_lessons.count() == 24
+        assert all_lessons.count() == 12
 
         total_solver_produced_slots = sum(
             lesson.solver_defined_time_slots.all().count() for lesson in all_lessons

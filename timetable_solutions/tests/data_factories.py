@@ -93,13 +93,13 @@ class TimetableSlot(factory.django.DjangoModelFactory):
     school = factory.SubFactory(School)
     slot_id = factory.Sequence(lambda n: n + 1)
     day_of_week = factory.Sequence(
-        lambda n: constants.WeekDay((n % len(constants.WeekDay)) + 1)
+        lambda n: constants.Day((n % len(constants.Day)) + 1)
     )
 
     @factory.sequence
     def period_starts_at(n: int) -> dt.time:
         hour = (
-            (n // len(constants.WeekDay)) % 8
+            (n // len(constants.Day)) % 8
         ) + 8  # So we have 8, 8, ..., 8, 9, ... , 9, ...
         return dt.time(hour=hour)
 
@@ -229,6 +229,17 @@ class Lesson(factory.django.DjangoModelFactory):
                     raise ValueError("Cannot add slot from different school to lesson.")
                 self.solver_defined_time_slots.add(slot)
 
+    @classmethod
+    def with_n_pupils(cls, n_pupils: int = 1, **kwargs: Any) -> models.Lesson:
+        """Get a lesson with n associated pupils."""
+        try:
+            school = kwargs.pop("school")
+        except KeyError:
+            school = School()
+        yg = YearGroup(school=school)
+        pupils = [Pupil(school=school, year_group=yg) for _ in range(0, n_pupils)]
+        return cls(school=school, pupils=pupils, **kwargs)
+
 
 class Break(factory.django.DjangoModelFactory):
     """Factory for the Break model."""
@@ -243,7 +254,7 @@ class Break(factory.django.DjangoModelFactory):
     break_id = factory.Sequence(lambda n: f"break-{n}")
     break_name = "Lunch"
     day_of_week = factory.Sequence(
-        lambda n: constants.WeekDay((n % len(constants.WeekDay)) + 1)
+        lambda n: constants.Day((n % len(constants.Day)) + 1)
     )
     break_starts_at = dt.time(hour=12)
 

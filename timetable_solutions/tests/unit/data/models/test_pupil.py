@@ -10,7 +10,7 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import models
-from tests import factories
+from tests import data_factories as factories
 
 
 @pytest.mark.django_db
@@ -94,9 +94,9 @@ class TestPupil:
     # Queries tests
     # --------------------
 
-    def test_check_if_busy_at_time_slot_when_pupil_is_busy(self):
+    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_lesson(self):
         """
-        Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to
+        Pupil should be busy if they're in another lesson at passed slot.
         """
         # Make a pupil and ensure they are busy for some slot
         pupil = factories.Pupil()
@@ -105,6 +105,29 @@ class TestPupil:
         )
         factories.Lesson(
             school=pupil.school, pupils=(pupil,), user_defined_time_slots=(slot,)
+        )
+
+        # Execute test unit
+        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
+
+        # Check outcome
+        assert is_busy
+
+    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_break(self):
+        """
+        Pupil should be busy if they're in a break at passed slot.
+        """
+        # Make a pupil and ensure they are busy for some slot
+        pupil = factories.Pupil()
+        slot = factories.TimetableSlot(
+            school=pupil.school, relevant_year_groups=(pupil.year_group,)
+        )
+        factories.Break(
+            school=pupil.school,
+            relevant_year_groups=(pupil.year_group,),
+            break_starts_at=slot.period_starts_at,
+            break_ends_at=slot.period_ends_at,
+            day_of_week=slot.day_of_week,
         )
 
         # Execute test unit

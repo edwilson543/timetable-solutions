@@ -10,7 +10,7 @@ from django.db import IntegrityError
 # Local application imports
 from data import constants
 from data import models
-from tests import factories
+from tests import data_factories as factories
 
 
 @pytest.mark.django_db
@@ -42,6 +42,7 @@ class TestBreakQuerySet:
             period_ends_at=dt.time(
                 hour=(period_starts_at.hour + 1), minute=period_starts_at.minute
             ),
+            day_of_week=break_.day_of_week,
         )
 
         # Get clashes and check break in them
@@ -100,7 +101,7 @@ class TestBreak:
             break_name="Morning break",
             break_starts_at=dt.time(hour=11, minute=30),
             break_ends_at=dt.time(hour=12),
-            day_of_week=constants.WeekDay.MONDAY,
+            day_of_week=constants.Day.MONDAY,
             teachers=teacher,
             relevant_year_groups=yg,
         )
@@ -133,7 +134,7 @@ class TestBreak:
                 break_name="test",
                 break_starts_at=dt.time(hour=11, minute=30),
                 break_ends_at=dt.time(hour=12),
-                day_of_week=constants.WeekDay.MONDAY,
+                day_of_week=constants.Day.MONDAY,
                 teachers=models.Teacher.objects.none(),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )

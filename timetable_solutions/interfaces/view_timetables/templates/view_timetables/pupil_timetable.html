@@ -8,16 +8,6 @@
 <link rel="stylesheet" href="{% static 'view_timetables/stylesheets/pupil_teacher_timetable.css' %}">
 {% endblock %}
 
-<style>
-{% block style_block %}
-{% for subject, colour in class_colours.items %}
-.colour_{{ subject }} {
-  background-color: {{colour}};
-}
-{% endfor %}
-{% endblock %}
-</style>
-
 </head>
 
 <body>
@@ -37,56 +27,7 @@
         </form>
     </div>
 
-    <table id="timetable">
-
-    {% for time, day_dict in timetable.items %}
-
-    <tr>
-        {% if forloop.first %}
-            <th id="period_time"><i>Period time</i></th>
-        {% for day in day_dict %}
-            <th class="perimeter" style="width:18%;">{{ day|title }}</th>
-        {% endfor %}
-        {% endif %}
-    </tr>
-    <tr>
-        <td class="perimeter"><i>{{ time }}</i></td>
-        {% for day, lesson in day_dict.items %}
-            {% if lesson == "FREE" %}
-              <td class="colour_{{lesson}} timetable_slot"><b>{{ lesson|title }}</b></td>
-            {% elif lesson.subject_name == "LUNCH" %}
-              <td class="colour_{{lesson.subject_name}} timetable_slot"><b>{{ lesson.subject_name|title}}</b></td>
-            {% else %}
-              <td
-                  hx-get="{% url 'lesson-detail' lesson.pk %}"
-                  hx-trigger="click"
-                  hx-target="#modal-htmx-handle"
-                  hx-swap="innerHTML"
-
-                  class="colour_{{lesson.subject_name}} timetable_slot timetable_slot_lesson"
-              >
-                  <b>{{ lesson.subject_name|title}}</b><br>
-                  <i>{{ lesson.teacher.title }} {{ lesson.teacher.surname }}</i><br>
-                  <i>{{ lesson.classroom.building}} {{lesson.classroom.room_number}}</i>
-              </td>
-            {% endif %}
-
-        {% endfor %}
-    </tr>
-    {% endfor %}
-    </table>
-    <div id="download_button_panel">
-        <form action="{% url 'pupil_tt_csv' pupil.pupil_id %}" method="get">
-            <button class="download_button" type="submit">
-                Download CSV
-            </button>
-        </form>
-        <form action="{% url 'pupil_tt_pdf' pupil.pupil_id %}" method="get">
-            <button class="download_button" type="submit">
-                Download PDF
-            </button>
-        </form>
-    </div>
+    {% include 'partials/timetable.html' with timetable=timetable %}
 </div>
 {% endblock %}
 </body>

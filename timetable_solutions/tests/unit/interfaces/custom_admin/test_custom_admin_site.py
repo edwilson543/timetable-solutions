@@ -12,7 +12,7 @@ from django import urls
 from django.contrib.auth.models import User
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from interfaces.custom_admin import admin
 
 

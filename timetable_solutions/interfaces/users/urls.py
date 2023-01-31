@@ -2,7 +2,7 @@
 from django.urls import include, re_path, path
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from . import htmx_views
 from . import views
 

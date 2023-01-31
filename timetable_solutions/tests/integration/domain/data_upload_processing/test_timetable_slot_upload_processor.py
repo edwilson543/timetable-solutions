@@ -42,13 +42,13 @@ class TestTimetableSlotFileUploadProcessor(TestCase):
 
         # Test the upload was successful
         self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 35)
+        self.assertEqual(upload_processor.n_model_instances_created, 30)
 
         # Test that the database is as expected
         all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
             school_id=123456
         )
-        self.assertEqual(all_slots.count(), 35)
+        self.assertEqual(all_slots.count(), 30)
 
         # Check a random individual slot
         slot = models.TimetableSlot.objects.get_individual_timeslot(

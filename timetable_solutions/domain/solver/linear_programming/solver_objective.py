@@ -73,7 +73,6 @@ class TimetableSolverObjective:
 
         return objective_component
 
-    # ANCILLARY METHODS
     def _get_optimal_free_period_time(self) -> float:
         """
         Method to get the optimal free period times - the times at which we avoid putting classes at, because we want
@@ -119,7 +118,6 @@ class TimetableSolverObjective:
             )
         return optimal_free_period_time
 
-    # METHODS PROVIDING THE LOGIC TO GET THE OPTIMAL FREE PERIOD IN EACH SOLUTION SPECIFICATION SCENARIO
     def _get_optimal_free_period_time_no_specified_time(self) -> float:
         """
         Method randomly generating a time between timetable_start-timetable_finish to avoid putting classes at,

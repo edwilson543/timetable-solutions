@@ -1,0 +1,51 @@
+<!--Context: components: list[TimetableComponent], day: constants.Day -->
+
+<style>
+.days-with-header-container {
+    /* Display and box model */
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+    row-gap: 10px;
+    width: 100%;
+}
+
+.days-container {
+    /* Display and box model */
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: stretch;
+
+    min-height: 40vh;
+    height: 90%;
+    width: 100%;
+}
+
+.day-header {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+
+    /* Typography */
+    font-size: 20px;
+    color: white;
+    text-align: center;
+
+    /* Background and border */
+    background-color: var(--perimeter_grey_purple);
+    border-radius: 3px;
+}
+</style>
+
+<div class="days-with-header-container">
+    <div class="day-header">
+        {{ day.label | title }}
+    </div>
+    <div class="days-container">
+        {% for component in components %}
+            {% include 'partials/timetable-component.html' with component=component %}
+        {% endfor %}
+    </div>
+</div>
