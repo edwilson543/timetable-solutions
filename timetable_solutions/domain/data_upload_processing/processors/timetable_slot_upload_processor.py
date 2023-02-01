@@ -97,14 +97,3 @@ class TimetableSlotFileUploadProcessor(
             return None
 
         return year_groups
-
-    @staticmethod
-    def convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Ensure the period starts / ends at columns are interpreted as timestamps.
-        """
-        if Header.STARTS_AT in upload_df.columns:
-            upload_df[Header.STARTS_AT] = pd.to_datetime(upload_df[Header.STARTS_AT])
-        if Header.ENDS_AT in upload_df.columns:
-            upload_df[Header.ENDS_AT] = pd.to_datetime(upload_df[Header.ENDS_AT])
-        return upload_df

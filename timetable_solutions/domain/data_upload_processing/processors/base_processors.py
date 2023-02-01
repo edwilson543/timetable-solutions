@@ -230,7 +230,12 @@ class BaseFileUploadProcessor:
     def convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
         """
         Hook to allow subclasses to implement custom logic for individual columns.
+        Shared implementation provided.
         """
+        if Header.STARTS_AT in upload_df.columns:
+            upload_df[Header.STARTS_AT] = pd.to_datetime(upload_df[Header.STARTS_AT])
+        if Header.ENDS_AT in upload_df.columns:
+            upload_df[Header.ENDS_AT] = pd.to_datetime(upload_df[Header.ENDS_AT])
         return upload_df
 
     # PROPERTIES
