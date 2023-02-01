@@ -12,6 +12,7 @@ import pytest
 # Local application imports
 from data import models
 from domain import data_upload_processing
+from domain.data_upload_processing.constants import Header
 from tests import utils
 from tests import data_factories
 
@@ -38,14 +39,14 @@ class TestLessonFileUploadProcessorValidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -124,14 +125,14 @@ class TestLessonFileUploadProcessorValidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -184,14 +185,14 @@ class TestLessonFileUploadProcessorValidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -241,14 +242,14 @@ class TestLessonFileUploadProcessorValidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -327,14 +328,14 @@ class TestLessonFileUploadProcessorInvalidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -371,14 +372,14 @@ class TestLessonFileUploadProcessorInvalidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -415,14 +416,14 @@ class TestLessonFileUploadProcessorInvalidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
@@ -460,14 +461,14 @@ class TestLessonFileUploadProcessorInvalidUploads:
         csv_file = utils.get_csv_from_lists(
             [
                 [
-                    "lesson_id",
-                    "subject_name",
-                    "teacher_id",
-                    "pupil_ids",
-                    "classroom_id",
-                    "total_required_slots",
-                    "total_required_double_periods",
-                    "user_defined_slot_ids",
+                    Header.LESSON_ID,
+                    Header.SUBJECT_NAME,
+                    Header.TEACHER_ID,
+                    Header.PUPIL_IDS,
+                    Header.CLASSROOM_ID,
+                    Header.TOTAL_SLOTS,
+                    Header.TOTAL_DOUBLES,
+                    Header.USER_DEFINED_SLOTS,
                 ],
                 [
                     "maths-a",
