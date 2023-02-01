@@ -5,230 +5,291 @@ Module containing integration tests for:
 - YearGroupFileUploadProcessor
 - PupilFileUploadProcessor
 """
+import io
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
+# Third party imports
+import pytest
 
 # Local application imports
 from base_files.settings.base_settings import BASE_DIR
 from data import models
 from domain import data_upload_processing
-from tests.input_settings import TEST_DATA_DIR
+from domain.data_upload_processing.constants import Header
+from tests import data_factories
+from tests import utils
 
 
-class TestFileUploadProcessorIndependentFilesValidUploads(TestCase):
-    """
-    Tests for the file uploads that depend on no existing data in the database,
-    using files with valid content / structure.
-    These are:
-        - Teacher, Classroom, YearGroup
-    """
+@pytest.mark.django_db
+class TestTeacherFileUploadProcessor:
+    def test_valid_teachers_file_creates_teachers_in_db(self):
+        # Create a school to upload the file to
+        school = data_factories.School()
 
-    fixtures = ["user_school_profile.json"]
-    valid_uploads = TEST_DATA_DIR / "valid_uploads"
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
+                [1, "Nims", "Purja", "Mr"],
+                [2, "Theresa", "May", "Mrs"],
+                [3, "Greg", "Thebaker", "Mr"],
+            ]
+        )
 
-    # TESTS FOR VALID FILE UPLOADS
-    def test_upload_teachers_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the teacher csv file and use it to populate database"""
-        # Set test parameters
-        with open(self.valid_uploads / "teachers.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-
-        # Upload the file
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="teachers.csv", content=csv_file.read())
         upload_processor = data_upload_processing.TeacherFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 11)
+        # Check the upload was successful
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 3
 
-        # Test the database is as expected
-        all_teachers = models.Teacher.objects.get_all_instances_for_school(
-            school_id=123456
+        # Inspect the db
+        teachers = models.Teacher.objects.filter(school=school)
+        assert teachers.count() == 3
+
+        greg = teachers.get(teacher_id=3)
+        assert greg.firstname == "Greg"
+        assert greg.surname == "Thebaker"
+        assert greg.title == "Mr"
+
+    @pytest.mark.parametrize("invalid_id", [1, "invalid"])
+    def test_teacher_invalid_id_rejected(self, invalid_id: int | str):
+        """
+        :param invalid_id: The value to insert into the second row to cause an error.
+        The first param value is a duplicate of the first row, and the second is an invalid type.
+        """
+        # Create a school to upload the file to
+        school = data_factories.School()
+
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
+                [1, "Nims", "Purja", "Mr"],
+                [invalid_id, "Theresa", "May", "Mrs"],  # Uses same id
+            ]
         )
-        self.assertEqual(all_teachers.count(), 11)
-        greg = models.Teacher.objects.get_individual_teacher(
-            school_id=123456, teacher_id=6
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="teachers.csv", content=csv_file.read())
+        upload_processor = data_upload_processing.TeacherFileUploadProcessor(
+            csv_file=upload_file,
+            school_access_key=school.school_access_key,
         )
-        self.assertIsInstance(greg, models.Teacher)
-        self.assertEqual(greg.firstname, "Greg")
-        self.assertEqual(greg.surname, "Thebaker")
 
-    def test_upload_classrooms_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the classroom csv file and use it to populate database"""
+        # Check the upload was unsuccessful
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
 
-        # Set test parameters
-        with open(self.valid_uploads / "classrooms.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        # Inspect the db
+        teachers = models.Teacher.objects.filter(school=school)
+        assert teachers.count() == 0
 
-        # Upload the file
+
+@pytest.mark.django_db
+class TestClassroomUploadProcessor:
+    def test_valid_classroom_file_creates_teachers_in_db(self):
+        # Create a school to upload the file to
+        school = data_factories.School()
+
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
+                [1, "MB", 10],
+                [2, "MB", 11],
+                [3, "TB", 33],
+            ]
+        )
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="classrooms.csv", content=csv_file.read())
         upload_processor = data_upload_processing.ClassroomFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 12)
+        # Check the upload was successful
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 3
 
-        # Test that the database is as expected
-        all_classrooms = models.Classroom.objects.get_all_instances_for_school(
-            school_id=123456
+        # Inspect the db
+        classrooms = models.Classroom.objects.filter(school=school)
+        assert classrooms.count() == 3
+
+        greg = classrooms.get(classroom_id=3)
+        assert greg.building == "TB"
+        assert greg.room_number == 33
+
+    def test_classroom_file_duplicating_classrooom_rejected(self):
+        # Create a school to upload the file to
+        school = data_factories.School()
+
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
+                [1, "MB", 10],
+                [2, "MB", 10],  # Same classroom as row above
+                [3, "TB", 33],
+            ]
         )
-        self.assertEqual(all_classrooms.count(), 12)
-        room = models.Classroom.objects.get_individual_classroom(
-            school_id=123456, classroom_id=11
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="classrooms.csv", content=csv_file.read())
+        upload_processor = data_upload_processing.ClassroomFileUploadProcessor(
+            csv_file=upload_file,
+            school_access_key=school.school_access_key,
         )
-        self.assertEqual(room.room_number, 40)
 
-    def test_upload_year_groups_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the year_group csv file and use it to populate database"""
+        # Check the upload was unsuccessful
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
+        assert "not unique" in upload_processor.upload_error_message
 
-        # Set test parameters
-        with open(self.valid_uploads / "year_groups.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        # Inspect the db
+        classrooms = models.Classroom.objects.filter(school=school)
+        assert classrooms.count() == 0
 
-        # Upload the file
+
+@pytest.mark.django_db
+class TestYearGroupUploadProcessor:
+    def test_valid_year_group_file_creates_year_groups_in_db(self):
+        # Create a school to upload the file to
+        school = data_factories.School()
+
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.YEAR_GROUP],
+                ["1"],
+                [2],
+                ["three"],
+                ["Reception"],
+            ]
+        )
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(
+            name="year_groups.csv", content=csv_file.read()
+        )
         upload_processor = data_upload_processing.YearGroupFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 3)
+        # Check the upload was successful
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 4
 
-        # Test that the database is as expected
-        all_ygs = models.YearGroup.objects.get_all_instances_for_school(
-            school_id=123456
+        # Inspect the db
+        ygs = models.YearGroup.objects.filter(school=school)
+        assert ygs.count() == 4
+
+        assert ygs.get(year_group="1").year_group == "1"
+        assert ygs.get(year_group="2").year_group == "2"
+        assert ygs.get(year_group="three").year_group == "three"
+        assert ygs.get(year_group="Reception").year_group == "Reception"
+
+
+@pytest.mark.django_db
+class TestPupilFileUploadProcessor:
+    def test_valid_pupil_file_creates_pupils_in_db(self):
+        # Create a school & year group to associate the pupils with
+        school = data_factories.School()
+        year_group_a = data_factories.YearGroup(school=school)
+        year_group_b = data_factories.YearGroup(school=school)
+
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+                [1, "Wether", "Spoon", year_group_a.year_group],
+                [2, "Wesley", "Hoolahan", year_group_b.year_group],
+                [3, "David", "Wagner", year_group_a.year_group],
+            ]
         )
-        self.assertEqual(all_ygs.count(), 3)
 
-        expected_year_groups = ["1", "2", "Reception"]
-        actual_year_groups = list(all_ygs.values_list("year_group", flat=True))
-        self.assertEqual(expected_year_groups, actual_year_groups)
-
-
-class TestPupilFileUploadProcessor(TestCase):
-    """
-    Test for pupil file uploads, which needs the YearGroup database table populated.
-    """
-
-    fixtures = ["user_school_profile.json", "year_groups.json"]
-    valid_uploads = TEST_DATA_DIR / "valid_uploads"
-
-    def test_upload_pupils_to_database_valid_upload(self):
-        """Test that the FileUploadProcessor can upload the pupil csv file and use it to populate database"""
-        # Set test parameters
-        with open(self.valid_uploads / "pupils.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-
-        # Upload the file
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="pupils.csv", content=csv_file.read())
         upload_processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 6)
+        # Check the upload was successful
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 3
 
-        # Test that the database is as expected
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 6)
-        teemu = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=5)
-        self.assertEqual(teemu.firstname, "Teemu")
-        self.assertEqual(teemu.surname, "Pukki")
+        # Inspect the db
+        pupils = models.Pupil.objects.filter(school=school)
+        assert pupils.count() == 3
 
+        wether = pupils.get(pupil_id=1)
+        assert wether.firstname == "Wether"
+        assert wether.surname == "Spoon"
+        assert wether.year_group == year_group_a
 
-class TestFileUploadProcessorInvalidPupilUploads(TestCase):
-    """
-    Tests for pupil file uploads with invalid content / structure.
-    """
+        wes = pupils.get(pupil_id=2)
+        assert wes.firstname == "Wesley"
+        assert wes.surname == "Hoolahan"
+        assert wes.year_group == year_group_b
 
-    fixtures = ["user_school_profile.json", "year_groups.json"]
-    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
+    @pytest.mark.parametrize("missing_data_column", [0, 1, 2, 3])
+    def test_file_missing_id_unsuccessful(self, missing_data_column: int):
+        # Create a school & year group to associate the pupils with
+        school = data_factories.School()
+        year_group = data_factories.YearGroup(school=school)
 
-    def run_test_for_pupils_with_error_in_row_n(
-        self,
-        filename: str,
-        row_n: int,
-        expected_error_snippet: str | None = None,
-    ) -> None:
-        """
-        Utility test that can be run for different files, all with different types of error in row n.
-        Note we always test the atomicity of uploads - we want none or all rows of the uploaded file to be
-        processed into the database.
-        """
-        # Set test parameters
-        with open(self.invalid_uploads / filename, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        # Crate a valid second row, then mutate it to be invalid
+        second_row = [2, "Wesley", "Hoolahan", year_group.year_group]
+        second_row[missing_data_column] = None
 
-        # Upload the file
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+                [1, "Wether", "Spoon", year_group.year_group],
+                second_row,
+            ]
+        )
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="pupils.csv", content=csv_file.read())
         upload_processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
-        # Check the outcome
-        self.assertFalse(upload_processor.upload_successful)
-        if expected_error_snippet is None:
-            expected_error_snippet = f"Could not interpret values in row {row_n}"
-        self.assertIn(expected_error_snippet, upload_processor.upload_error_message)
+        # Check the upload was successful
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
+        assert models.Pupil.objects.filter(school=school).count() == 0
+        assert "row 2" in upload_processor.upload_error_message
 
-        # Check NO pupils have been uploaded to the database
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 0)
+    def test_file_referencing_non_existent_year_group_fails(self):
+        # Create a school to associate the pupils with
+        school = data_factories.School()
 
-    def test_upload_pupils_file_missing_id(self):
-        """
-        Unit test that a pupils file whose only error is a missing id halfway down will be rejected for processing.
-        """
-        # Set test parameters
-        filename = "pupils_missing_id.csv"
-
-        # Execute test
-        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=4)
-
-    def test_upload_pupils_file_missing_surname(self):
-        """
-        Unit test that a pupils file whose only error is a missing surname will be rejected for processing.
-        Note that the missing surname initially gets replace by the nan-handler, and later filtered out before trying
-        to create a Pupil instance.
-        """
-        # Set test parameters
-        filename = "pupils_missing_surname.csv"
-
-        # Execute test
-        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=4)
-
-    def test_upload_pupils_file_invalid_type_string_instead_of_int(self):
-        """
-        Unit test that a pupils file with a STRING in the id column is rejected
-        """
-        # Set test parameters
-        filename = "pupils_string_in_id_column.csv"
-
-        # Execute test
-        self.run_test_for_pupils_with_error_in_row_n(filename=filename, row_n=6)
-
-    def test_upload_pupils_file_non_existent_year_group(self):
-        """
-        Unit test that a pupils file with a non-existent year group (3.8) is rejected
-        """
-        # Set test parameters
-        filename = "pupils_non_existent_year_group.csv"
-
-        # Execute test
-        self.run_test_for_pupils_with_error_in_row_n(
-            filename=filename,
-            row_n=6,
-            expected_error_snippet="Row 6 of your file referenced a",  # ...
+        csv_file = utils.get_csv_from_lists(
+            [
+                [Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+                [1, "Wether", "Spoon", "10"],  # Year group "10" does not exist
+            ]
         )
+
+        # Try uploading the file
+        upload_file = SimpleUploadedFile(name="pupils.csv", content=csv_file.read())
+        upload_processor = data_upload_processing.PupilFileUploadProcessor(
+            csv_file=upload_file,
+            school_access_key=school.school_access_key,
+        )
+
+        # Check the upload was successful
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
+        assert models.Pupil.objects.filter(school=school).count() == 0
+        assert "does not exist" in upload_processor.upload_error_message
 
 
 class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
@@ -239,88 +300,61 @@ class TestFileUploadProcessorInvalidMiscellaneous(TestCase):
         - Simulate a resubmitted form -> should not upload the same data twice
     """
 
-    fixtures = ["user_school_profile.json", "year_groups.json"]
-    valid_uploads = TEST_DATA_DIR / "valid_uploads"
-    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
-
     def test_uploading_a_png_file(self):
-        """
-        Unit test that the upload processor will reject a file that does not have the csv extension
-        """
-        # Set test parameters
+        """Test that the upload processor will reject a file that does not have the csv extension."""
+        school = data_factories.School()
+
+        # Get some random file from the codebase to upload
         png_filepath = BASE_DIR / "interfaces" / "base_static" / "img" / "favicon.png"
         with open(png_filepath, "rb") as png_file:
             upload_file = SimpleUploadedFile(png_file.name, png_file.read())
 
         # Execute test unit
-        processor = data_upload_processing.PupilFileUploadProcessor(
+        upload_processor = data_upload_processing.PupilFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
+            school_access_key=school.school_access_key,
         )
 
         # Check outcome
-        self.assertIsNotNone(processor.upload_error_message)
-        self.assertIn(".png", processor.upload_error_message)
+        assert not upload_processor.upload_successful
+        assert ".png" in upload_processor.upload_error_message
 
         # Check no pupils were created...
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 0)
-
-    def test_uploading_a_bad_csv_file(self):
-        """
-        Test that a file that has random values is undefined columns gets rejected
-        """
-        # Set test parameters
-        test_filepath = self.invalid_uploads / "pupils_bad_column_structure.csv"
-        with open(test_filepath, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-
-        # Execute test unit
-        processor = data_upload_processing.PupilFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
-        )
-
-        # Check outcome
-        self.assertIsNotNone(processor.upload_error_message)
-        self.assertIn("Bad file structure", processor.upload_error_message)
-
-        # Check no pupils were created...
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 0)
+        assert models.Pupil.objects.filter(school=school).count() == 0
 
     def test_resubmitted_upload_is_rejected(self):
-        """
-        Test that if we successfully upload a pupils file, if we then 'resubmit the form', the data is the
-        processed twice.
-        """
-        # Set test parameters
-        test_filepath = self.valid_uploads / "pupils.csv"
-        with open(test_filepath, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        """Test that submitting a file twice gives an error the second time."""
+        # Create a school to upload the file to
+        school = data_factories.School()
 
-        processor = data_upload_processing.PupilFileUploadProcessor(
+        def csv_file() -> io.BytesIO:
+            return utils.get_csv_from_lists(
+                [
+                    [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
+                    [1, "MB", 10],
+                    [2, "MB", 25],
+                    [3, "TB", 33],
+                ]
+            )
+
+        # Upload the file the first time
+        upload_file = SimpleUploadedFile(
+            name="classrooms.csv", content=csv_file().read()
+        )
+        first_upload_processor = data_upload_processing.ClassroomFileUploadProcessor(
             csv_file=upload_file,
-            school_access_key=123456,
-            attempt_upload=False,
+            school_access_key=school.school_access_key,
         )
 
-        # Execute test unit one
-        processor._upload_file_content(file=upload_file)
+        assert first_upload_processor.upload_successful
 
-        # Check outcome one
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 6)
-        self.assertIsNone(processor.upload_error_message)
+        # Upload the file again
+        second_upload_file = SimpleUploadedFile(
+            name="classrooms.csv", content=csv_file().read()
+        )
+        second_upload_processor = data_upload_processing.ClassroomFileUploadProcessor(
+            csv_file=second_upload_file,
+            school_access_key=school.school_access_key,
+        )
 
-        # Execute test unit two - 'resubmit the form'
-        # Note 1 mangles the file (only in test) so we re-read it
-        with open(test_filepath, "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-        processor._upload_file_content(file=upload_file)
-
-        # Check outcome one
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        self.assertEqual(all_pupils.count(), 6)
-        self.assertIsNotNone(processor.upload_error_message)
-        self.assertIn("not unique", processor.upload_error_message)
+        assert not second_upload_processor.upload_successful
