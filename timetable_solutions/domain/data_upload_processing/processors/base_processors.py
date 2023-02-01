@@ -256,7 +256,56 @@ class M2MUploadProcessorMixin:
     called 'pupil_ids' in the Lesson file.
     """
 
+    _school_access_key: int
     upload_error_message: str | None = None
+
+    # --------------------
+    # Processing of columns shared across files
+    # --------------------
+
+    def _get_year_groups_from_raw_year_group_string(
+        self,
+        raw_year_group_string: str,
+        row_number: int,
+    ) -> models.YearGroupQuerySet | None:
+        """
+        Method providing a reduced entry point to M2MUploadProcessorMixin's get_id_set_from_string method,
+        by only offering 2 of the arguments (which is what we always want for this processor.
+
+        :return A set of ids, representing pupil ids or timetable slot ids.
+        """
+
+        year_group_string_set = self.get_id_set_from_string(
+            raw_string_of_ids=raw_year_group_string,
+            row_number=row_number,
+            target_id_type=str,
+        )
+        if year_group_string_set is None or len(year_group_string_set) == 0:
+            self.upload_error_message = (
+                f"Invalid year groups: {raw_year_group_string} in row: {row_number}. "
+                f"Please amend!"
+            )
+            return None
+
+        year_groups = models.YearGroup.objects.get_specific_year_groups(
+            school_id=self._school_access_key, year_groups=year_group_string_set
+        )
+
+        if year_groups.count() < len(year_group_string_set):
+            missing_year_groups = year_group_string_set - {
+                yg.year_group for yg in year_groups
+            }
+            self.upload_error_message = (
+                f"No year_group(s) with ids: {missing_year_groups} were found, "
+                f"referenced in row {row_number}!"
+            )
+            return None
+
+        return year_groups
+
+    # --------------------
+    # Generic logic for processing M2M columns
+    # --------------------
 
     @overload
     def get_id_set_from_string(
