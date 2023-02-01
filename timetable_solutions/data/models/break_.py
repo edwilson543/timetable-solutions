@@ -93,7 +93,7 @@ class Break(models.Model):
         human_string_plural = "breaks"
 
         # M2M field names
-        pupils = "teachers"
+        teachers = "teachers"
         relevant_year_groups = "relevant_year_groups"
 
     def __str__(self) -> str:

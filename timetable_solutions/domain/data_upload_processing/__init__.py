@@ -10,9 +10,14 @@ from domain.data_upload_processing.processors.other_upload_processors import (
     YearGroupFileUploadProcessor,
     PupilFileUploadProcessor,
 )
-from .processors.timetable_slot_upload_processor import TimetableSlotFileUploadProcessor
+from domain.data_upload_processing.processors.timetable_slot_upload_processor import (
+    TimetableSlotFileUploadProcessor,
+)
 from domain.data_upload_processing.processors.lesson_upload_processor import (
     LessonFileUploadProcessor,
+)
+from domain.data_upload_processing.processors.break_upload_processor import (
+    BreakFileUploadProcessor,
 )
 
 # Upload status tracking
