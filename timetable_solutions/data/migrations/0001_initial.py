@@ -76,8 +76,8 @@ class Migration(migrations.Migration):
                         ]
                     ),
                 ),
-                ("period_starts_at", models.TimeField()),
-                ("period_ends_at", models.TimeField()),
+                ("starts_at", models.TimeField()),
+                ("ends_at", models.TimeField()),
                 (
                     "relevant_year_groups",
                     models.ManyToManyField(related_name="slots", to="data.yeargroup"),
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
                 ),
             ],
             options={
-                "ordering": ["day_of_week", "period_starts_at"],
+                "ordering": ["day_of_week", "starts_at"],
                 "unique_together": {("school", "slot_id")},
             },
         ),
@@ -311,8 +311,8 @@ class Migration(migrations.Migration):
                         ]
                     ),
                 ),
-                ("break_starts_at", models.TimeField()),
-                ("break_ends_at", models.TimeField()),
+                ("starts_at", models.TimeField()),
+                ("ends_at", models.TimeField()),
                 (
                     "relevant_year_groups",
                     models.ManyToManyField(related_name="breaks", to="data.yeargroup"),

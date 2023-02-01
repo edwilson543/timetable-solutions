@@ -37,8 +37,8 @@ class TimetableComponent:
         """Make a component from a slot at which a lesson occurs."""
         return cls(
             model_instance=lesson,
-            starts_at=slot.period_starts_at,
-            ends_at=slot.period_ends_at,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
             day_of_week=slot.day_of_week,
             hexadecimal_color_code=colour_code,
         )
@@ -48,8 +48,8 @@ class TimetableComponent:
         """Make a component from a Break instance."""
         return cls(
             model_instance=break_,
-            starts_at=break_.break_starts_at,
-            ends_at=break_.break_ends_at,
+            starts_at=break_.starts_at,
+            ends_at=break_.ends_at,
             day_of_week=break_.day_of_week,
             hexadecimal_color_code=view_timetables_constants.Colour.BREAK,
         )

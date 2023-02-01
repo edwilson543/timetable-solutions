@@ -153,8 +153,8 @@ class TestClassroom:
         check_slot = factories.TimetableSlot(
             school=school,
             day_of_week=busy_slot.day_of_week,
-            period_starts_at=busy_slot.period_starts_at,
-            period_ends_at=busy_slot.period_ends_at,
+            starts_at=busy_slot.starts_at,
+            ends_at=busy_slot.ends_at,
         )
 
         # Call test function
@@ -170,8 +170,8 @@ class TestClassroom:
         school = classroom.school
         busy_slot = factories.TimetableSlot(
             school=school,
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
         )
         factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
@@ -181,8 +181,8 @@ class TestClassroom:
         check_slot = factories.TimetableSlot(
             school=school,
             day_of_week=busy_slot.day_of_week,
-            period_starts_at=dt.time(hour=9, minute=30),
-            period_ends_at=dt.time(hour=10, minute=30),
+            starts_at=dt.time(hour=9, minute=30),
+            ends_at=dt.time(hour=10, minute=30),
         )
 
         # Call test function

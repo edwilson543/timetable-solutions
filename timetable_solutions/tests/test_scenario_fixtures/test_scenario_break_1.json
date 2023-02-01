@@ -20,8 +20,8 @@
     "fields": {
       "day_of_week": 1,
       "slot_id": 1,
-      "period_starts_at": "09:00:00",
-      "period_ends_at": "10:00:00",
+      "starts_at": "09:00:00",
+      "ends_at": "10:00:00",
       "school": 111111,
       "relevant_year_groups": [
         101
@@ -34,8 +34,8 @@
     "fields": {
       "day_of_week": 1,
       "slot_id": 2,
-      "period_starts_at": "11:30:00",
-      "period_ends_at": "12:30:00",
+      "starts_at": "11:30:00",
+      "ends_at": "12:30:00",
       "school": 111111,
       "relevant_year_groups": [
         101
@@ -48,8 +48,8 @@
     "fields": {
       "day_of_week": 1,
       "slot_id": 3,
-      "period_starts_at": "13:00:00",
-      "period_ends_at": "14:00:00",
+      "starts_at": "13:00:00",
+      "ends_at": "14:00:00",
       "school": 111111,
       "relevant_year_groups": [
         101
@@ -106,8 +106,8 @@
       "break_id": "1",
       "break_name": "Lunch",
       "day_of_week": 1,
-      "break_starts_at": "11:15:00",
-      "break_ends_at": "12:00:00",
+      "starts_at": "11:15:00",
+      "ends_at": "12:00:00",
       "teachers": [
         101
       ],

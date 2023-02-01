@@ -72,8 +72,8 @@ class TestTimetableSlotQuerySet:
             clash_slot_1 = factories.TimetableSlot(
                 school=school,
                 day_of_week=monday,
-                period_starts_at=dt.time(hour=8, minute=30),
-                period_ends_at=dt.time(hour=9, minute=30),
+                starts_at=dt.time(hour=8, minute=30),
+                ends_at=dt.time(hour=9, minute=30),
             )
             if n_expected_clashes > 2:
                 clash_slot_2 = factories.TimetableSlot.get_next_consecutive_slot(
@@ -83,8 +83,8 @@ class TestTimetableSlotQuerySet:
         check_slot = factories.TimetableSlot(
             school=school,
             day_of_week=monday,
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
         )
         # This slot shouldn't appear in the clashes
         factories.TimetableSlot.get_next_consecutive_slot(check_slot)
@@ -125,8 +125,8 @@ class TestTimetableSlot:
             school_id=school.school_access_key,
             slot_id=1,
             day_of_week=constants.Day.MONDAY,
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
             relevant_year_groups=models.YearGroup.objects.all(),
         )
 
@@ -153,8 +153,8 @@ class TestTimetableSlot:
                 school_id=slot.school.school_access_key,
                 slot_id=slot.slot_id,
                 day_of_week=constants.Day.TUESDAY,
-                period_starts_at=dt.time(hour=10),
-                period_ends_at=dt.time(hour=11),
+                starts_at=dt.time(hour=10),
+                ends_at=dt.time(hour=11),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
@@ -172,8 +172,8 @@ class TestTimetableSlot:
                 school_id=school.school_access_key,
                 slot_id=1,
                 day_of_week=100,
-                period_starts_at=dt.time(hour=9),
-                period_ends_at=dt.time(hour=10),
+                starts_at=dt.time(hour=9),
+                ends_at=dt.time(hour=10),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
@@ -190,8 +190,8 @@ class TestTimetableSlot:
                 school_id=school.school_access_key,
                 slot_id=1,
                 day_of_week=constants.Day.MONDAY,
-                period_starts_at=dt.time(hour=9),
-                period_ends_at=dt.time(hour=9),
+                starts_at=dt.time(hour=9),
+                ends_at=dt.time(hour=9),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
@@ -208,8 +208,8 @@ class TestTimetableSlot:
                 school_id=school.school_access_key,
                 slot_id=1,
                 day_of_week=constants.Day.MONDAY,
-                period_starts_at=dt.time(hour=9),
-                period_ends_at=dt.time(hour=8),
+                starts_at=dt.time(hour=9),
+                ends_at=dt.time(hour=8),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
@@ -278,12 +278,10 @@ class TestTimetableSlot:
         """
         # Make some slots with different start times
         school = factories.School()
-        factories.TimetableSlot(period_starts_at=dt.time(hour=9), school=school)
-        factories.TimetableSlot(period_starts_at=dt.time(hour=10), school=school)
-        factories.TimetableSlot(period_starts_at=dt.time(hour=14), school=school)
-        factories.TimetableSlot(
-            period_starts_at=dt.time(hour=9, minute=15), school=school
-        )
+        factories.TimetableSlot(starts_at=dt.time(hour=9), school=school)
+        factories.TimetableSlot(starts_at=dt.time(hour=10), school=school)
+        factories.TimetableSlot(starts_at=dt.time(hour=14), school=school)
+        factories.TimetableSlot(starts_at=dt.time(hour=9, minute=15), school=school)
 
         # Execute test unit
         timeslots = models.TimetableSlot.get_unique_start_hours(
@@ -314,13 +312,13 @@ class TestTimetableSlot:
         """
         # Get two slots at the same time but on different days
         slot_1 = factories.TimetableSlot(
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
             day_of_week=constants.Day.MONDAY,
         )
         slot_2 = factories.TimetableSlot(
-            period_starts_at=dt.time(hour=10),
-            period_ends_at=dt.time(hour=11),
+            starts_at=dt.time(hour=10),
+            ends_at=dt.time(hour=11),
             day_of_week=constants.Day.TUESDAY,
         )
 
@@ -337,13 +335,13 @@ class TestTimetableSlot:
         """
         # Get two slots at the same time but on different days
         slot_1 = factories.TimetableSlot(
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
             day_of_week=constants.Day.MONDAY,
         )
         slot_2 = factories.TimetableSlot(
-            period_starts_at=dt.time(hour=10, minute=1),
-            period_ends_at=dt.time(hour=11),
+            starts_at=dt.time(hour=10, minute=1),
+            ends_at=dt.time(hour=11),
             day_of_week=constants.Day.MONDAY,
         )
 
@@ -364,7 +362,7 @@ class TestTimetableSlot:
         """
         # Get the test slot
         slot = factories.TimetableSlot(
-            period_starts_at=dt.time(hour=9), period_ends_at=dt.time(hour=10)
+            starts_at=dt.time(hour=9), ends_at=dt.time(hour=10)
         )
 
         # Get the open interval

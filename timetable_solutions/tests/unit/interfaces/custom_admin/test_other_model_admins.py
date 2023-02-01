@@ -161,8 +161,8 @@ class TestBaseModelAdmin(test.TestCase):
         form_data = {
             "slot_id": 100,
             "day_of_week": 1,
-            "period_starts_at": "09:00",
-            "period_ends_at": "10:00",
+            "starts_at": "09:00",
+            "ends_at": "10:00",
             "relevant_year_groups": [1, 2],
         }
 
@@ -193,8 +193,8 @@ class TestBaseModelAdmin(test.TestCase):
         form_data = {
             "slot_id": 100,
             "day_of_week": 1,
-            "period_starts_at": "09:00",
-            "period_ends_at": "10:00",
+            "starts_at": "09:00",
+            "ends_at": "10:00",
         }
 
         # Execute test unit

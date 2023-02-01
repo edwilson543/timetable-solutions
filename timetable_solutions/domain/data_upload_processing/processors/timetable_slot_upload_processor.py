@@ -103,12 +103,8 @@ class TimetableSlotFileUploadProcessor(
         """
         Ensure the period starts / ends at columns are interpreted as timestamps.
         """
-        if Header.PERIOD_STARTS_AT in upload_df.columns:
-            upload_df[Header.PERIOD_STARTS_AT] = pd.to_datetime(
-                upload_df[Header.PERIOD_STARTS_AT]
-            )
-        if Header.PERIOD_ENDS_AT in upload_df.columns:
-            upload_df[Header.PERIOD_ENDS_AT] = pd.to_datetime(
-                upload_df[Header.PERIOD_ENDS_AT]
-            )
+        if Header.STARTS_AT in upload_df.columns:
+            upload_df[Header.STARTS_AT] = pd.to_datetime(upload_df[Header.STARTS_AT])
+        if Header.ENDS_AT in upload_df.columns:
+            upload_df[Header.ENDS_AT] = pd.to_datetime(upload_df[Header.ENDS_AT])
         return upload_df

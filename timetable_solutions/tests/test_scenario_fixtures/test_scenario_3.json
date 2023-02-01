@@ -20,8 +20,8 @@
     "fields": {
       "day_of_week": 1,
       "slot_id": 1,
-      "period_starts_at": "09:00:00",
-      "period_ends_at": "10:00:00",
+      "starts_at": "09:00:00",
+      "ends_at": "10:00:00",
       "school": 333333,
       "relevant_year_groups": [
         301
@@ -34,8 +34,8 @@
     "fields": {
       "day_of_week": 2,
       "slot_id": 2,
-      "period_starts_at": "09:00:00",
-      "period_ends_at": "10:00:00",
+      "starts_at": "09:00:00",
+      "ends_at": "10:00:00",
       "school": 333333,
       "relevant_year_groups": [
         301

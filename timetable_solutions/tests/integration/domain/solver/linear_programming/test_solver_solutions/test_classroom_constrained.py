@@ -53,19 +53,19 @@ class TestSolverSolutionClassroomConstraintDriven:
         slot_1_clash = data_factories.TimetableSlot(
             relevant_year_groups=(yg_2,),
             school=classroom.school,
-            period_starts_at=dt.time(
-                hour=slot_1.period_starts_at.hour, minute=clash_slot_overlap_minutes
+            starts_at=dt.time(
+                hour=slot_1.starts_at.hour, minute=clash_slot_overlap_minutes
             ),
-            period_ends_at=dt.time(
-                hour=slot_1.period_ends_at.hour, minute=clash_slot_overlap_minutes
+            ends_at=dt.time(
+                hour=slot_1.ends_at.hour, minute=clash_slot_overlap_minutes
             ),
             day_of_week=data_constants.Day.MONDAY,
         )
         lesson_2_forced_slot = data_factories.TimetableSlot(
             relevant_year_groups=(yg_2,),
             school=classroom.school,
-            period_starts_at=slot_1.period_starts_at,
-            period_ends_at=slot_1.period_ends_at,
+            starts_at=slot_1.starts_at,
+            ends_at=slot_1.ends_at,
             day_of_week=data_constants.Day.TUESDAY,  # Note different day
         )
 

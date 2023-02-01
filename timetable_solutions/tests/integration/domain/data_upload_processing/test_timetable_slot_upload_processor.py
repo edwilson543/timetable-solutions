@@ -55,8 +55,8 @@ class TestTimetableSlotFileUploadProcessor(TestCase):
             school_id=123456, slot_id=1
         )
         self.assertEqual(slot.day_of_week, 1)
-        self.assertEqual(slot.period_starts_at, dt.time(hour=9))
-        self.assertEqual(slot.period_ends_at, dt.time(hour=10))
+        self.assertEqual(slot.starts_at, dt.time(hour=9))
+        self.assertEqual(slot.ends_at, dt.time(hour=10))
 
         # Check that all timetable slots have been associated with the correct year groups
         expected_year_groups = models.YearGroup.objects.get_specific_year_groups(

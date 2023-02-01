@@ -233,7 +233,7 @@ class Lesson(models.Model):
         return (
             (self.user_defined_time_slots.all() | self.solver_defined_time_slots.all())
             .distinct()
-            .order_by("day_of_week", "period_starts_at")
+            .order_by("day_of_week", "starts_at")
         )
 
     # --------------------

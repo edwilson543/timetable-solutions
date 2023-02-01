@@ -25,8 +25,8 @@ def get_lesson_with_slot(
     It creates a lesson with a single user defined slot.
     """
     slot = data_factories.TimetableSlot(
-        period_starts_at=starts_at,
-        period_ends_at=ends_at,
+        starts_at=starts_at,
+        ends_at=ends_at,
         day_of_week=day_of_week,
         school=school,
     )
@@ -44,8 +44,8 @@ class TestTimetableMakeTimetableMergeConsecutive:
 
         # Make the first of the consecutive slots
         slot_0 = data_factories.TimetableSlot(
-            period_starts_at=dt.time(hour=8),
-            period_ends_at=dt.time(hour=9),
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
             day_of_week=data_constants.Day.MONDAY,
             school=school,
         )
@@ -242,8 +242,8 @@ class TestTimetableMakeTimetableFreePeriods:
             school=school,
         )
         break_ = data_factories.Break(
-            break_starts_at=dt.time(hour=10),
-            break_ends_at=dt.time(hour=11),
+            starts_at=dt.time(hour=10),
+            ends_at=dt.time(hour=11),
             day_of_week=data_constants.Day.MONDAY,
             school=school,
         )

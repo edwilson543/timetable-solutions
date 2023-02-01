@@ -36,8 +36,8 @@ class TestTimetableComponent:
 
         # Check attributes correctly set
         assert component.model_instance == lesson
-        assert component.starts_at == slot.period_starts_at
-        assert component.ends_at == slot.period_ends_at
+        assert component.starts_at == slot.starts_at
+        assert component.ends_at == slot.ends_at
         assert component.day_of_week == slot.day_of_week
 
         # Check properties are as expected
@@ -53,8 +53,8 @@ class TestTimetableComponent:
 
         # Check attributes correctly set
         assert component.model_instance == break_
-        assert component.starts_at == break_.break_starts_at
-        assert component.ends_at == break_.break_ends_at
+        assert component.starts_at == break_.starts_at
+        assert component.ends_at == break_.ends_at
         assert component.day_of_week == break_.day_of_week
 
         # Check properties are as expected

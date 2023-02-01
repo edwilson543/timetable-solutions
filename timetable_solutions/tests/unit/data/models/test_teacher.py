@@ -132,8 +132,8 @@ class TestTeacher:
             school=teacher.school,
             teachers=models.Teacher.objects.filter(pk=teacher.pk),
             day_of_week=slot.day_of_week,
-            break_starts_at=slot.period_starts_at,
-            break_ends_at=slot.period_ends_at,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
         )
 
         # Call test function
@@ -160,8 +160,8 @@ class TestTeacher:
         check_slot = factories.TimetableSlot(
             school=teacher.school,
             day_of_week=busy_slot.day_of_week,
-            period_starts_at=busy_slot.period_starts_at,
-            period_ends_at=busy_slot.period_ends_at,
+            starts_at=busy_slot.starts_at,
+            ends_at=busy_slot.ends_at,
         )
 
         # Call test function
@@ -179,8 +179,8 @@ class TestTeacher:
         teacher = factories.Teacher()
         busy_slot = factories.TimetableSlot(
             school=teacher.school,
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
         )
         factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
@@ -190,8 +190,8 @@ class TestTeacher:
         check_slot = factories.TimetableSlot(
             school=teacher.school,
             day_of_week=busy_slot.day_of_week,
-            period_starts_at=dt.time(hour=9, minute=30),
-            period_ends_at=dt.time(hour=10, minute=30),
+            starts_at=dt.time(hour=9, minute=30),
+            ends_at=dt.time(hour=10, minute=30),
         )
 
         # Call test function

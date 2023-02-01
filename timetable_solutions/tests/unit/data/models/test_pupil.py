@@ -125,8 +125,8 @@ class TestPupil:
         factories.Break(
             school=pupil.school,
             relevant_year_groups=(pupil.year_group,),
-            break_starts_at=slot.period_starts_at,
-            break_ends_at=slot.period_ends_at,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
             day_of_week=slot.day_of_week,
         )
 

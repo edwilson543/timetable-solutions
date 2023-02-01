@@ -34,8 +34,8 @@ class Header:
     BUILDING = "building"
     ROOM_NUMBER = "room_number"
     DAY_OF_WEEK = "day_of_week"
-    PERIOD_STARTS_AT = "period_starts_at"
-    PERIOD_ENDS_AT = "period_ends_at"
+    STARTS_AT = "starts_at"
+    ENDS_AT = "ends_at"
     SUBJECT_NAME = "subject_name"
     TOTAL_SLOTS = "total_required_slots"
     TOTAL_DOUBLES = "total_required_double_periods"
@@ -86,8 +86,8 @@ class UploadFileStructure:
         headers=[
             Header.SLOT_ID,
             Header.DAY_OF_WEEK,
-            Header.PERIOD_STARTS_AT,
-            Header.PERIOD_ENDS_AT,
+            Header.STARTS_AT,
+            Header.ENDS_AT,
             Header.RELEVANT_YEAR_GROUPS,
         ],
         id_column=Header.SLOT_ID,

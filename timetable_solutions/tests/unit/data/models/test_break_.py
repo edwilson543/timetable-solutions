@@ -20,27 +20,27 @@ class TestBreakQuerySet:
     """
 
     @pytest.mark.parametrize(
-        "break_starts_at,period_starts_at",
+        "break_starts_at,slot_starts_at",
         [
             (dt.time(hour=9), dt.time(hour=9)),
             (dt.time(hour=8, minute=30), dt.time(hour=9)),
             (dt.time(hour=9), dt.time(hour=8, minute=30)),
         ],
     )
-    def test_filter_for_clashes_gives_clash(self, break_starts_at, period_starts_at):
+    def test_filter_for_clashes_gives_clash(self, break_starts_at, slot_starts_at):
         """Test that a slot and break at the exact same time clash."""
         # The break and slot are both 1 hour long, defined according to parameters
         break_ = factories.Break(
-            break_starts_at=break_starts_at,
-            break_ends_at=dt.time(
+            starts_at=break_starts_at,
+            ends_at=dt.time(
                 hour=(break_starts_at.hour + 1), minute=break_starts_at.minute
             ),
         )
         slot = factories.TimetableSlot(
             school=break_.school,
-            period_starts_at=period_starts_at,
-            period_ends_at=dt.time(
-                hour=(period_starts_at.hour + 1), minute=period_starts_at.minute
+            starts_at=slot_starts_at,
+            ends_at=dt.time(
+                hour=(slot_starts_at.hour + 1), minute=slot_starts_at.minute
             ),
             day_of_week=break_.day_of_week,
         )
@@ -51,22 +51,20 @@ class TestBreakQuerySet:
         assert clashes.count() == 1
         assert break_ in clashes
 
-    @pytest.mark.parametrize("break_starts_at", [dt.time(hour=9), dt.time(hour=10)])
+    @pytest.mark.parametrize("starts_at", [dt.time(hour=9), dt.time(hour=10)])
     def test_filter_for_clashes_break_at_different_time_to_slot_gives_no_clashes(
-        self, break_starts_at
+        self, starts_at
     ):
         """Test that a slot and break at different times don't clash."""
         # Make a break and slot at different times
         break_ = factories.Break(
-            break_starts_at=break_starts_at,
-            break_ends_at=dt.time(
-                hour=(break_starts_at.hour + 1), minute=break_starts_at.minute
-            ),
+            starts_at=starts_at,
+            ends_at=dt.time(hour=(starts_at.hour + 1), minute=starts_at.minute),
         )
         slot = factories.TimetableSlot(
             school=break_.school,
-            period_starts_at=dt.time(hour=8),
-            period_ends_at=dt.time(hour=9),
+            starts_at=dt.time(hour=8),
+            ends_at=dt.time(hour=9),
         )
 
         # Get clashes and check break in them
@@ -99,8 +97,8 @@ class TestBreak:
             school_id=school.school_access_key,
             break_id="1",
             break_name="Morning break",
-            break_starts_at=dt.time(hour=11, minute=30),
-            break_ends_at=dt.time(hour=12),
+            starts_at=dt.time(hour=11, minute=30),
+            ends_at=dt.time(hour=12),
             day_of_week=constants.Day.MONDAY,
             teachers=teacher,
             relevant_year_groups=yg,
@@ -132,8 +130,8 @@ class TestBreak:
                 school_id=break_.school.school_access_key,
                 break_id=break_.break_id,
                 break_name="test",
-                break_starts_at=dt.time(hour=11, minute=30),
-                break_ends_at=dt.time(hour=12),
+                starts_at=dt.time(hour=11, minute=30),
+                ends_at=dt.time(hour=12),
                 day_of_week=constants.Day.MONDAY,
                 teachers=models.Teacher.objects.none(),
                 relevant_year_groups=models.YearGroup.objects.none(),
