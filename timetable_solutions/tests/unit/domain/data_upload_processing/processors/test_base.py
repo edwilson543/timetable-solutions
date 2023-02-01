@@ -9,7 +9,7 @@ import pandas as pd
 from django import test
 
 # Local application imports
-from domain.data_upload_processing.processors.base_processors import (
+from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
     M2MUploadProcessorMixin,
 )

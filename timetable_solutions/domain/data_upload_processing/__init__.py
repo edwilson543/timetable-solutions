@@ -4,19 +4,19 @@ Convenience imports. Within the interfaces layer we simply import data_upload_pr
 from typing import Union
 
 # File upload processors
-from domain.data_upload_processing.processors.other_upload_processors import (
+from domain.data_upload_processing.processors._other_models import (
     TeacherFileUploadProcessor,
     ClassroomFileUploadProcessor,
     YearGroupFileUploadProcessor,
     PupilFileUploadProcessor,
 )
-from domain.data_upload_processing.processors.timetable_slot_upload_processor import (
+from domain.data_upload_processing.processors._timetable_slot import (
     TimetableSlotFileUploadProcessor,
 )
-from domain.data_upload_processing.processors.lesson_upload_processor import (
+from domain.data_upload_processing.processors._lesson import (
     LessonFileUploadProcessor,
 )
-from domain.data_upload_processing.processors.break_upload_processor import (
+from domain.data_upload_processing.processors._break import (
     BreakFileUploadProcessor,
 )
 

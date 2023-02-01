@@ -6,7 +6,7 @@ import pandas as pd
 
 from data import models
 from domain.data_upload_processing.constants import UploadFileStructure, Header
-from domain.data_upload_processing.processors.base_processors import (
+from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
     M2MUploadProcessorMixin,
 )

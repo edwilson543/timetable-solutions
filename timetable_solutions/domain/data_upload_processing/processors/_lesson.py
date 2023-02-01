@@ -13,7 +13,7 @@ from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
 from domain.data_upload_processing.constants import Header, UploadFileStructure
-from domain.data_upload_processing.processors.base_processors import (
+from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
     M2MUploadProcessorMixin,
 )
