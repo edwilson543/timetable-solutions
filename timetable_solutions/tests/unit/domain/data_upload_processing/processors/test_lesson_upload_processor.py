@@ -140,7 +140,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit (for each string, effectively redo the test)
         for valid_string in valid_strings:
-            integer_set = processor._get_integer_set_from_string(
+            integer_set = processor.get_integer_set_from_string(
                 raw_string_of_ids=valid_string, row_number=1
             )
 
@@ -169,7 +169,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit (for each string, effectively redo the test)
         for invalid_string in invalid_strings:
-            integer_set = processor._get_integer_set_from_string(
+            integer_set = processor.get_integer_set_from_string(
                 raw_string_of_ids=invalid_string, row_number=1
             )
 

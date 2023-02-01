@@ -103,7 +103,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
         :return either a queryset of Pupils if pupil_ids_raw is in the correct format; otherwise None
         Note that nans / self.__nan_handler will NOT be passed to this method.
         """
-        pupil_ids = self._get_integer_set_from_string(
+        pupil_ids = super().get_integer_set_from_string(
             raw_string_of_ids=pupil_ids_raw, row_number=row_number
         )
         if pupil_ids is not None:
@@ -139,7 +139,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
         :return either a queryset of TimetableSlot if slot_ids_raw is in the correct format; otherwise None
         Note that nans / self.__nan_handler will NOT be passed to this method.
         """
-        slot_ids = self._get_integer_set_from_string(
+        slot_ids = super().get_integer_set_from_string(
             raw_string_of_ids=slot_ids_raw, row_number=row_number
         )
         if slot_ids is not None:
@@ -162,7 +162,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
     ) -> int | None:
         """
         Method to clean a string the user has entered which should just be a single number (or None).
-        We use _get_integer_set_from_string, and then return the single integer or None, in the case where the user
+        We use get_integer_set_from_string, and then return the single integer or None, in the case where the user
         has not given a valid value (which may not be an issue, since some id fields are nullable).
         """
         if user_input_id is not None:
@@ -170,7 +170,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
             user_input_id_no_floats = re.sub(
                 r"[.].+", "", user_input_id  # User's id may be read-in as '10.0'
             )
-            id_set = self._get_integer_set_from_string(
+            id_set = super().get_integer_set_from_string(
                 raw_string_of_ids=user_input_id_no_floats,
                 row_number=row_number,
             )
@@ -185,21 +185,3 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                     cleaned_id = next(iter(id_set))
                     return cleaned_id
         return None
-
-    def _get_integer_set_from_string(
-        self,
-        raw_string_of_ids: str,
-        row_number: int,
-    ) -> frozenset[int] | None:
-        """
-        Method providing a reduced entry point to M2MUploadProcessorMixin's get_id_set_from_string method,
-        by only offering 2 of the arguments (which is what we always want for this processor.
-
-        :return A set of ids, representing pupil ids or timetable slot ids.
-        """
-        return super().get_id_set_from_string(
-            raw_string_of_ids=raw_string_of_ids,
-            row_number=row_number,
-            target_id_type=int,
-            valid_id_chars=",0123456789",
-        )

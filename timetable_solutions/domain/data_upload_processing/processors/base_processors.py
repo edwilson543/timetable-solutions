@@ -304,8 +304,25 @@ class M2MUploadProcessorMixin:
         return year_groups
 
     # --------------------
-    # Generic logic for processing M2M columns
+    # Generic logic for processing related columns
     # --------------------
+    def get_integer_set_from_string(
+        self,
+        raw_string_of_ids: str,
+        row_number: int,
+    ) -> frozenset[int] | None:
+        """
+        Method providing a reduced entry point to M2MUploadProcessorMixin's get_id_set_from_string method,
+        by only offering 2 of the arguments (which is what we always want for this processor.
+
+        :return A set of ids, representing pupil ids or timetable slot ids.
+        """
+        return self.get_id_set_from_string(
+            raw_string_of_ids=raw_string_of_ids,
+            row_number=row_number,
+            target_id_type=int,
+            valid_id_chars=",0123456789",
+        )
 
     @overload
     def get_id_set_from_string(
