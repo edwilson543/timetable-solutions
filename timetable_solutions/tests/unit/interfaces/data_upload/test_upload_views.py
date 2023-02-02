@@ -215,7 +215,7 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
 
         # Check that all timetable slots have been associated with the correct year groups
         expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
-            school_id=123456, year_groups={"1", "2"}
+            school_id=123456, year_group_ids={"1", "2"}
         )
         for slot in all_slots:
             self.assertQuerysetEqual(

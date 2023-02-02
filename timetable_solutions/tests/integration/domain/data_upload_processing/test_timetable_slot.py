@@ -3,187 +3,165 @@ Module containing integration tests for the TimetableFileUploadProcessor
 """
 
 # Standard library imports
+import copy
 import datetime as dt
 
 # Django imports
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+
+# Third party imports
+import pytest
 
 
 # Local application imports
 from data import models
+from data import constants as data_constants
 from domain import data_upload_processing
-from tests.input_settings import TEST_DATA_DIR
+from domain.data_upload_processing.constants import Header
+from tests import data_factories
+from tests import utils
 
 
-class TestTimetableSlotFileUploadProcessor(TestCase):
-    """
-    Test for timetable slot file uploads, which needs the YearGroup database table populated.
-    """
+@pytest.mark.django_db
+class TestTimetableSlotFileUploadProcessor:
+    def test_two_slots_successful_and_processed_to_db(self):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
 
-    fixtures = ["user_school_profile.json", "year_groups.json"]
-    valid_uploads = TEST_DATA_DIR / "valid_uploads"
-    invalid_uploads = TEST_DATA_DIR / "invalid_uploads"
+        yg_1 = data_factories.YearGroup(school=school)
+        yg_2 = data_factories.YearGroup(school=school)
 
-    def test_upload_timetable_structure_to_database_valid_upload(self):
-        """
-        Test that the TimetableSlotFileUploadProcessor can upload the
-        timetable csv file and use it to populate database.
-        """
-        # Set test parameters
-        with open(self.valid_uploads / "timetable.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    Header.SLOT_ID,
+                    Header.DAY_OF_WEEK,
+                    Header.STARTS_AT,
+                    Header.ENDS_AT,
+                    Header.RELEVANT_YEAR_GROUP_IDS,
+                ],
+                [
+                    1,
+                    data_constants.Day.MONDAY.value,
+                    "09:00",
+                    "10:00",
+                    yg_1.year_group_id,
+                ],
+                [
+                    2,
+                    data_constants.Day.MONDAY.value,
+                    "10:00",
+                    "11:00",
+                    f"{yg_1.year_group_id} & {yg_2.year_group_id}",
+                ],
+            ]
+        )
 
         # Upload the file
+        upload_file = SimpleUploadedFile("timetable.csv", csv_file.read())
         upload_processor = data_upload_processing.TimetableSlotFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
+            csv_file=upload_file, school_access_key=school.school_access_key
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 30)
+        # Check basic outcome of upload
+        assert upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 2
 
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
+        # Check saved to db
+        slots = models.TimetableSlot.objects.filter(school=school)
+        assert slots.count() == 2
+
+        # Check each TimetableSlot instance
+        slot_1 = slots.get(slot_id=1)
+        assert slot_1.day_of_week == data_constants.Day.MONDAY
+        assert slot_1.starts_at == dt.time(hour=9)
+        assert slot_1.ends_at == dt.time(hour=10)
+        ygs = slot_1.relevant_year_groups.all()
+        assert ygs.count() == 1 and ygs.first() == yg_1
+
+        slot_2 = slots.get(slot_id=2)
+        assert slot_2.day_of_week == data_constants.Day.MONDAY
+        assert slot_2.starts_at == dt.time(hour=10)
+        assert slot_2.ends_at == dt.time(hour=11)
+        ygs = slot_2.relevant_year_groups.all()
+        assert ygs.count() == 2 and (yg_1 in ygs) and (yg_2 in ygs)
+
+    @pytest.mark.parametrize("missing_column_index", [0, 1, 2, 3, 4])
+    def test_two_file_with_missing_column_unsuccessful(self, missing_column_index: int):
+        # Make some data that the csv file will need to reference
+        school = data_factories.School()
+
+        yg = data_factories.YearGroup(school=school)
+
+        valid_row = [
+            1,
+            data_constants.Day.MONDAY.value,
+            "09:00",
+            "10:00",
+            yg.year_group_id,
+        ]
+        invalid_row = copy.copy(valid_row)
+        invalid_row[missing_column_index] = None
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    Header.SLOT_ID,
+                    Header.DAY_OF_WEEK,
+                    Header.STARTS_AT,
+                    Header.ENDS_AT,
+                    Header.RELEVANT_YEAR_GROUP_IDS,
+                ],
+                valid_row,
+                invalid_row,
+            ]
         )
-        self.assertEqual(all_slots.count(), 30)
-
-        # Check a random individual slot
-        slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=1
-        )
-        self.assertEqual(slot.day_of_week, 1)
-        self.assertEqual(slot.starts_at, dt.time(hour=9))
-        self.assertEqual(slot.ends_at, dt.time(hour=10))
-
-        # Check that all timetable slots have been associated with the correct year groups
-        expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
-            school_id=123456, year_groups={"1", "2"}
-        )
-        for slot in all_slots:
-            self.assertQuerysetEqual(
-                slot.relevant_year_groups.all(), expected_year_groups
-            )
-
-    def test_upload_timetable_with_exciting_year_group_column_successful(self):
-        """
-        Test for uploading the timetable file when there are lots of combinations of
-        raw relevant_year_group strings in the upload file.
-        """
-        # Set test parameters
-        with open(self.valid_uploads / "timetable-mixed-ygs.csv", "rb") as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
 
         # Upload the file
+        upload_file = SimpleUploadedFile("timetable.csv", csv_file.read())
         upload_processor = data_upload_processing.TimetableSlotFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
+            csv_file=upload_file, school_access_key=school.school_access_key
         )
 
-        # Test the upload was successful
-        self.assertTrue(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 6)
+        # Check basic outcome of upload
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
+        assert upload_processor.upload_error_message is not None
 
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        self.assertEqual(all_slots.count(), 6)
-
-        # Check year groups are as expected
-        slot_1 = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=1
-        )
-        y_1 = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="1"
-        )
-        self.assertEqual(slot_1.relevant_year_groups.all().first(), y_1)
-
-        slot_2 = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=2
-        )
-        y_2 = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="2"
-        )
-        self.assertEqual(slot_2.relevant_year_groups.all().first(), y_2)
-
-        slot_3 = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=3
-        )
-        reception = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="Reception"
-        )
-        self.assertEqual(slot_3.relevant_year_groups.all().first(), reception)
-
-        all_yg_slots = models.TimetableSlot.objects.get_specific_timeslots(
-            school_id=123456, slot_ids={4, 6}
-        )
-        all_ygs = models.YearGroup.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        for slot in all_yg_slots:
-            self.assertQuerysetEqual(slot.relevant_year_groups.all(), all_ygs)
-
-    def test_upload_timetable_with_empty_year_group_column_unsuccessful(self):
-        """
-        Users should receive an error message if their relevant_year_group column has a missing value
-        """
-        # Set test parameters
-        with open(
-            self.invalid_uploads / "timetable-missing-year-groups.csv", "rb"
-        ) as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
-
-        # Upload the file
-        upload_processor = data_upload_processing.TimetableSlotFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
-        )
-
-        # Test the upload was unsuccessful
-        self.assertFalse(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 0)
-
-        self.assertEqual(
-            "No year groups were referenced in row 3!",
-            upload_processor.upload_error_message,
-        )
-
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        self.assertEqual(all_slots.count(), 0)
+        # Check saved to db
+        assert models.TimetableSlot.objects.filter(school=school).count() == 0
 
     def test_upload_timetable_referencing_invalid_year_group_unsuccessful(self):
-        """
-        Users should receive an error message if they try to refer to a non-existent year_group.
-        """
-        # Set test parameters
-        with open(
-            self.invalid_uploads / "timetable-invalid-year-group.csv", "rb"
-        ) as csv_file:
-            upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
+        # Make some data that the csv file will need to reference (but intentionally no year group_
+        school = data_factories.School()
+
+        # Get a csv file-like object
+        csv_file = utils.get_csv_from_lists(
+            [
+                [
+                    Header.SLOT_ID,
+                    Header.DAY_OF_WEEK,
+                    Header.STARTS_AT,
+                    Header.ENDS_AT,
+                    Header.RELEVANT_YEAR_GROUP_IDS,
+                ],
+                # Year group 10 is just some random number - not a valid id
+                [1, data_constants.Day.MONDAY.value, "09:00", "10:00", 10],
+            ]
+        )
 
         # Upload the file
+        upload_file = SimpleUploadedFile("timetable.csv", csv_file.read())
         upload_processor = data_upload_processing.TimetableSlotFileUploadProcessor(
-            csv_file=upload_file,
-            school_access_key=123456,
+            csv_file=upload_file, school_access_key=school.school_access_key
         )
 
-        # Test the upload was unsuccessful
-        self.assertFalse(upload_processor.upload_successful)
-        self.assertEqual(upload_processor.n_model_instances_created, 0)
+        # Check basic outcome of upload
+        assert not upload_processor.upload_successful
+        assert upload_processor.n_model_instances_created == 0
+        assert "Invalid year groups" in upload_processor.upload_error_message
 
-        self.assertEqual(
-            "Invalid year groups: 1;2;3 in row: 3. Please amend!",
-            upload_processor.upload_error_message,
-        )
-
-        # Test that the database is as expected
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        self.assertEqual(all_slots.count(), 0)
+        # Check saved to db
+        assert models.TimetableSlot.objects.filter(school=school).count() == 0

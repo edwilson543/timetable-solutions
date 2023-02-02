@@ -7,6 +7,7 @@ from io import StringIO
 import re
 
 # Third party imports
+from dateutil import parser as dateutil_parser
 import pandas as pd
 
 # Django imports
@@ -225,16 +226,23 @@ class BaseFileUploadProcessor:
         return True
 
     # COLUMN-BY-COLUMN PROCESSING
-    @staticmethod
-    def convert_df_to_correct_types(upload_df: pd.DataFrame) -> pd.DataFrame:
+    def convert_df_to_correct_types(self, upload_df: pd.DataFrame) -> pd.DataFrame:
         """
         Hook to allow subclasses to implement custom logic for individual columns.
         Shared implementation provided.
         """
-        if Header.STARTS_AT in upload_df.columns:
-            upload_df[Header.STARTS_AT] = pd.to_datetime(upload_df[Header.STARTS_AT])
-        if Header.ENDS_AT in upload_df.columns:
-            upload_df[Header.ENDS_AT] = pd.to_datetime(upload_df[Header.ENDS_AT])
+        try:
+            if Header.STARTS_AT in upload_df.columns:
+                upload_df[Header.STARTS_AT] = pd.to_datetime(
+                    upload_df[Header.STARTS_AT]
+                )
+            if Header.ENDS_AT in upload_df.columns:
+                upload_df[Header.ENDS_AT] = pd.to_datetime(upload_df[Header.ENDS_AT])
+        except dateutil_parser.ParserError:
+            self.upload_error_message = (
+                "Could not interpret given start / end times as valid times. "
+                "Please supply them in the format: 'HH:MM' e.g. 08:00; 15:00"
+            )
         return upload_df
 
     # PROPERTIES
@@ -257,6 +265,8 @@ class RelationalUploadProcessorMixin:
 
     _school_access_key: int
     upload_error_message: str | None = None
+
+    allowed_id_join_characters = r"[:;&-]"  # i.e. multi-id column could be: 1;2 etc.
 
     # --------------------
     # Processing of columns shared across files
@@ -320,7 +330,7 @@ class RelationalUploadProcessorMixin:
         """
         # Clean up the string and make it into a list
         raw_string_of_ids = re.sub(
-            r"[:;&-]", ",", raw_string_of_ids  # standardise allowed join characters
+            self.allowed_id_join_characters, ",", str(raw_string_of_ids)
         )
 
         # Prune out any invalid characters

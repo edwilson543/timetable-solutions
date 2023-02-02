@@ -44,7 +44,9 @@ class TimetableSlotFileUploadProcessor(
                 raw_year_group_string=raw_year_group_string, row_number=row_number
             )
             if year_groups:
-                create_new_dict[Header.RELEVANT_YEAR_GROUP_IDS] = year_groups
+                create_new_dict[
+                    models.TimetableSlot.Constant.relevant_year_groups
+                ] = year_groups
                 return create_new_dict
             else:
                 self.upload_error_message = (

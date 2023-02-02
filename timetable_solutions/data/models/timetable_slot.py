@@ -112,6 +112,9 @@ class TimetableSlot(models.Model):
         human_string_singular = "timetable slot"
         human_string_plural = "timetable slots"
 
+        # Field names
+        relevant_year_groups = "relevant_year_groups"
+
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         day_of_week = constants.Day(self.day_of_week).label
