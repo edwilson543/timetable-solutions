@@ -5,7 +5,6 @@ Module containing utility class used to do the processing of the uploaded csv fi
 # Standard library imports
 from io import StringIO
 import re
-from typing import overload
 
 # Third party imports
 import pandas as pd
@@ -80,7 +79,7 @@ class BaseFileUploadProcessor:
             file_stream = StringIO(file_bytes)
 
             # noinspection PyTypeChecker
-            upload_df = pd.read_csv(file_stream, sep=",", dtype=Header.AMBIGUOUS_DTYPES)
+            upload_df = pd.read_csv(file_stream, sep=",")
         except UnicodeDecodeError:
             self.upload_error_message = (
                 "Please check that your file is encoded using UTF-8!"
@@ -248,12 +247,12 @@ class BaseFileUploadProcessor:
         return self.n_model_instances_created > 0
 
 
-class M2MUploadProcessorMixin:
+class RelationalUploadProcessorMixin:
     """
-    Mixin allowing processing of columns representing a many-to-many relationship.
+    Mixin allowing processing of columns representing foreign key and many-to-many relationships.
 
     For example, extracting the pupil ids the user is trying to reference via the string '1; 2; 3' in a column
-    called 'pupil_ids' in the Lesson file.
+    called 'pupil_ids', or the teacher id from a 'teacher_id' column
     """
 
     _school_access_key: int
@@ -275,12 +274,11 @@ class M2MUploadProcessorMixin:
         :return A set of ids, representing pupil ids or timetable slot ids.
         """
 
-        year_group_string_set = self.get_id_set_from_string(
+        year_group_ids = self.get_integer_set_from_string(
             raw_string_of_ids=raw_year_group_string,
             row_number=row_number,
-            target_id_type=str,
         )
-        if year_group_string_set is None or len(year_group_string_set) == 0:
+        if year_group_ids is None or len(year_group_ids) == 0:
             self.upload_error_message = (
                 f"Invalid year groups: {raw_year_group_string} in row: {row_number}. "
                 f"Please amend!"
@@ -288,13 +286,11 @@ class M2MUploadProcessorMixin:
             return None
 
         year_groups = models.YearGroup.objects.get_specific_year_groups(
-            school_id=self._school_access_key, year_groups=year_group_string_set
+            school_id=self._school_access_key, year_group_ids=year_group_ids
         )
 
-        if year_groups.count() < len(year_group_string_set):
-            missing_year_groups = year_group_string_set - {
-                yg.year_group for yg in year_groups
-            }
+        if year_groups.count() < len(year_group_ids):
+            missing_year_groups = year_group_ids - {yg.year_group for yg in year_groups}
             self.upload_error_message = (
                 f"No year_group(s) with ids: {missing_year_groups} were found, "
                 f"referenced in row {row_number}!"
@@ -306,62 +302,21 @@ class M2MUploadProcessorMixin:
     # --------------------
     # Generic logic for processing related columns
     # --------------------
+
     def get_integer_set_from_string(
         self,
         raw_string_of_ids: str,
         row_number: int,
     ) -> frozenset[int] | None:
         """
-        Method providing a reduced entry point to M2MUploadProcessorMixin's get_id_set_from_string method,
-        by only offering 2 of the arguments (which is what we always want for this processor.
-
-        :return A set of ids, representing pupil ids or timetable slot ids.
-        """
-        return self.get_id_set_from_string(
-            raw_string_of_ids=raw_string_of_ids,
-            row_number=row_number,
-            target_id_type=int,
-            valid_id_chars=",0123456789",
-        )
-
-    @overload
-    def get_id_set_from_string(
-        self,
-        raw_string_of_ids: str,
-        row_number: int,
-        target_id_type: type[int],
-        valid_id_chars: str | None = None,
-    ) -> frozenset[int] | None:
-        ...
-
-    @overload
-    def get_id_set_from_string(
-        self,
-        raw_string_of_ids: str,
-        row_number: int,
-        target_id_type: type[str],
-        valid_id_chars: str | None = None,
-    ) -> frozenset[str] | None:
-        ...
-
-    def get_id_set_from_string(
-        self,
-        raw_string_of_ids: str,
-        row_number: int,
-        target_id_type: type[int] | type[str],
-        valid_id_chars: str | None = None,
-    ) -> frozenset[int] | frozenset[str] | None:
-        """
-        Method to get a set of ids from a raw string take from the user's uploaded file
+        Method to get a set of integer ids from a raw string take from the user's uploaded file
 
         :param raw_string_of_ids: The raw content of a cell in the user's csv file.
         :param row_number: The row the raw string originated from (for error messages).
-        :param target_id_type: The type the ids should be converted to.
-        :param valid_id_chars: Any restriction on the characters which are allowed.
 
-        :return - a set of strings or integers, or None if an error occurred.
+        :return A set of ids, representing e.g. some pupil or teacher ids.
 
-        :side effects - to set the upload_error_message instance attribute, if an error is encountered.
+        :side effects: To set the upload_error_message instance attribute, if an error is encountered.
         """
         # Clean up the string and make it into a list
         raw_string_of_ids = re.sub(
@@ -369,14 +324,14 @@ class M2MUploadProcessorMixin:
         )
 
         # Prune out any invalid characters
-        if valid_id_chars is not None:
-            raw_string_of_ids = "".join(
-                [
-                    character
-                    for character in raw_string_of_ids
-                    if character in valid_id_chars
-                ]
-            )
+        valid_id_chars = ",0123456789"
+        raw_string_of_ids = "".join(
+            [
+                character
+                for character in raw_string_of_ids
+                if character in valid_id_chars
+            ]
+        )
 
         # Remove double commas
         raw_string_of_ids = re.sub(r",+", ",", raw_string_of_ids)
@@ -393,9 +348,8 @@ class M2MUploadProcessorMixin:
             id_list = self._process_string_to_list(
                 comma_separated_string=raw_string_of_ids,
             )
-            unique_id_set = frozenset(target_id_type(value) for value in id_list)
-            # mypy thinks this can be a mixed set of integers / strings, which it can't
-            return unique_id_set  # type: ignore
+            unique_id_set = frozenset(value for value in id_list)
+            return unique_id_set
 
         except ValueError:
             error = f"Could not interpret contents of: {row_number} as integers! Please use the format: '1; 2; 3;'"
@@ -403,30 +357,55 @@ class M2MUploadProcessorMixin:
 
         return None
 
+    def get_clean_id_from_file_field_value(
+        self, user_input_id: str | int | float | None, row_number: int, field_name: str
+    ) -> int | None:
+        """
+        Method to clean a string the user has entered which should just be a single number (or None).
+        We use get_integer_set_from_string, and then return the single integer or None, in the case where the user
+        has not given a valid value (which may not be an issue, since some id fields are nullable).
+        """
+        if user_input_id is not None:
+            user_input_id = str(user_input_id)
+            user_input_id_no_floats = re.sub(
+                r"[.].+", "", user_input_id  # User's id may be read-in as '10.0'
+            )
+            id_set = self.get_integer_set_from_string(
+                raw_string_of_ids=user_input_id_no_floats,
+                row_number=row_number,
+            )
+            if id_set is not None:
+                if len(id_set) > 1:
+                    self.upload_error_message = (
+                        f"Cannot currently have multiple {field_name} for a single class!\n"
+                        f"Multiple ids were given in row: {row_number} - {user_input_id}"
+                    )
+                    return None
+                else:
+                    cleaned_id = next(iter(id_set))
+                    return cleaned_id
+        return None
+
     @staticmethod
-    def _process_string_to_list(comma_separated_string: str) -> list[str]:
+    def _process_string_to_list(comma_separated_string: str) -> list[int]:
         """
         Method to create a list from a comma separated string.
 
         :param comma_separated_string: A string originating from a single entry of the user's uploaded file
 
         e.g. take: '1,2,3,4' and return ['1', '2', '3', '4']
-        e.g take: '1,2,3,reception' and return ['1', '2', '3', 'reception']
-
-        Note that if we just wanted to process to integer, ast.literal_eval() would be sufficient,
-        but this is not capable of creating a list of strings.
         """
         lis = []
         current_component = ""
         for character in comma_separated_string:
             if character == ",":
-                lis.append(current_component.replace(" ", ""))
+                lis.append(int(current_component.replace(" ", "")))
                 current_component = ""
             else:
                 current_component += character
 
         # Ensure the final current component gets added to the list
         if current_component not in lis and current_component != "":
-            lis.append(current_component.replace(" ", ""))
+            lis.append(int(current_component.replace(" ", "")))
 
         return lis

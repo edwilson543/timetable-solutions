@@ -128,5 +128,5 @@ class TimetableSlotAdmin(CustomModelAdminBase):
         Method to provide a string representation of the year groups associated with a TimetableSlot.
         """
         ygs = obj.relevant_year_groups.all()
-        yg_list = [f"{yg.year_group}, " for yg in ygs]
+        yg_list = [f"{yg.year_group_name}, " for yg in ygs]
         return "".join(yg_list)[:-2]

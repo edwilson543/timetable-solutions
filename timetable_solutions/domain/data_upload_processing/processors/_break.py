@@ -11,12 +11,12 @@ from django.core.files.uploadedfile import UploadedFile
 from domain.data_upload_processing.constants import Header, UploadFileStructure
 from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
-    M2MUploadProcessorMixin,
+    RelationalUploadProcessorMixin,
 )
 from data import models
 
 
-class BreakFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin):
+class BreakFileUploadProcessor(BaseFileUploadProcessor, RelationalUploadProcessorMixin):
     """Processing class for a user file upload defining 'Break' data."""
 
     model = models.Break
@@ -54,8 +54,8 @@ class BreakFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin)
             if teachers and not self.upload_error_message:
                 create_new_dict[models.Break.Constant.teachers] = teachers
 
-        if Header.RELEVANT_YEAR_GROUPS in create_new_dict:
-            raw_year_group_string = create_new_dict.pop(Header.RELEVANT_YEAR_GROUPS)
+        if Header.RELEVANT_YEAR_GROUP_IDS in create_new_dict:
+            raw_year_group_string = create_new_dict.pop(Header.RELEVANT_YEAR_GROUP_IDS)
             year_groups = super()._get_year_groups_from_raw_year_group_string(
                 raw_year_group_string=raw_year_group_string, row_number=row_number
             )

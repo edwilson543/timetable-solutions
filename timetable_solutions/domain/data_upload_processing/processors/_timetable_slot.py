@@ -8,12 +8,12 @@ from data import models
 from domain.data_upload_processing.constants import UploadFileStructure, Header
 from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
-    M2MUploadProcessorMixin,
+    RelationalUploadProcessorMixin,
 )
 
 
 class TimetableSlotFileUploadProcessor(
-    BaseFileUploadProcessor, M2MUploadProcessorMixin
+    BaseFileUploadProcessor, RelationalUploadProcessorMixin
 ):
     """
     Processor of csv files containing teacher data
@@ -38,13 +38,13 @@ class TimetableSlotFileUploadProcessor(
                     f"Could not process data in row: {row_number}, please amend!"
                 )
 
-        if Header.RELEVANT_YEAR_GROUPS in create_new_dict.keys():
-            raw_year_group_string = create_new_dict.pop(Header.RELEVANT_YEAR_GROUPS)
+        if Header.RELEVANT_YEAR_GROUP_IDS in create_new_dict.keys():
+            raw_year_group_string = create_new_dict.pop(Header.RELEVANT_YEAR_GROUP_IDS)
             year_groups = super()._get_year_groups_from_raw_year_group_string(
                 raw_year_group_string=raw_year_group_string, row_number=row_number
             )
             if year_groups:
-                create_new_dict[Header.RELEVANT_YEAR_GROUPS] = year_groups
+                create_new_dict[Header.RELEVANT_YEAR_GROUP_IDS] = year_groups
                 return create_new_dict
             else:
                 self.upload_error_message = (

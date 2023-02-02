@@ -26,7 +26,7 @@ class Header:
     PUPIL_ID = "pupil_id"
     SLOT_ID = "slot_id"
     TEACHER_ID = "teacher_id"
-    YEAR_GROUP = "year_group"
+    YEAR_GROUP_ID = "year_group_id"
 
     # Headers specific to individual files
     BREAK_NAME = "break_name"
@@ -41,17 +41,13 @@ class Header:
     TITLE = "title"
     TOTAL_DOUBLES = "total_required_double_periods"
     TOTAL_SLOTS = "total_required_slots"
+    YEAR_GROUP_NAME = "year_group_name"
 
     # Headers in files containing many-to-many relationships
     PUPIL_IDS = "pupil_ids"
     TEACHER_IDS = "teacher_ids"
-    RELEVANT_YEAR_GROUPS = "relevant_year_groups"
+    RELEVANT_YEAR_GROUP_IDS = "relevant_year_group_ids"
     USER_DEFINED_SLOTS = "user_defined_slot_ids"
-
-    # Type reference - where pandas.read_csv() doesn't always get it right
-    AMBIGUOUS_DTYPES = {
-        YEAR_GROUP: str,
-    }
 
 
 @dataclass(frozen=True)
@@ -71,7 +67,12 @@ class UploadFileStructure:
     """
 
     PUPILS = FileStructure(
-        headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+        headers=[
+            Header.PUPIL_ID,
+            Header.FIRSTNAME,
+            Header.SURNAME,
+            Header.YEAR_GROUP_ID,
+        ],
         id_column=Header.PUPIL_ID,
     )
     TEACHERS = FileStructure(
@@ -83,7 +84,8 @@ class UploadFileStructure:
         id_column=Header.CLASSROOM_ID,
     )
     YEAR_GROUPS = FileStructure(
-        headers=[Header.YEAR_GROUP], id_column=Header.YEAR_GROUP
+        headers=[Header.YEAR_GROUP_ID, Header.YEAR_GROUP_NAME],
+        id_column=Header.YEAR_GROUP_ID,
     )
 
     # Files with relations
@@ -93,7 +95,7 @@ class UploadFileStructure:
             Header.DAY_OF_WEEK,
             Header.STARTS_AT,
             Header.ENDS_AT,
-            Header.RELEVANT_YEAR_GROUPS,
+            Header.RELEVANT_YEAR_GROUP_IDS,
         ],
         id_column=Header.SLOT_ID,
     )
@@ -118,7 +120,7 @@ class UploadFileStructure:
             Header.STARTS_AT,
             Header.ENDS_AT,
             Header.TEACHER_IDS,
-            Header.RELEVANT_YEAR_GROUPS,
+            Header.RELEVANT_YEAR_GROUP_IDS,
         ],
         id_column=Header.BREAK_ID,
     )

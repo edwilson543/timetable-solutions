@@ -8,8 +8,8 @@ from domain.data_upload_processing.processors._other_models import (
     TeacherFileUploadProcessor,
     ClassroomFileUploadProcessor,
     YearGroupFileUploadProcessor,
-    PupilFileUploadProcessor,
 )
+from domain.data_upload_processing.processors._pupil import PupilFileUploadProcessor
 from domain.data_upload_processing.processors._timetable_slot import (
     TimetableSlotFileUploadProcessor,
 )

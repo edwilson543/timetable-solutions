@@ -15,12 +15,14 @@ from django.core.files.uploadedfile import UploadedFile
 from domain.data_upload_processing.constants import Header, UploadFileStructure
 from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
-    M2MUploadProcessorMixin,
+    RelationalUploadProcessorMixin,
 )
 from data import models
 
 
-class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin):
+class LessonFileUploadProcessor(
+    BaseFileUploadProcessor, RelationalUploadProcessorMixin
+):
     """
     Processing class for the user's file upload defining Lesson data.
     This model is a 'special case' and hence gets its own class (due to the foreign keys and many-to-many fields,
@@ -57,7 +59,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
             raw_teacher_id = create_new_dict.pop(Header.TEACHER_ID)
             create_new_dict[
                 Header.TEACHER_ID
-            ] = self._get_clean_id_from_file_field_value(
+            ] = super().get_clean_id_from_file_field_value(
                 user_input_id=raw_teacher_id,
                 row_number=row_number,
                 field_name="teachers",
@@ -67,7 +69,7 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
             raw_classroom_id = create_new_dict.pop(Header.CLASSROOM_ID)
             create_new_dict[
                 Header.CLASSROOM_ID
-            ] = self._get_clean_id_from_file_field_value(
+            ] = super().get_clean_id_from_file_field_value(
                 user_input_id=raw_classroom_id,
                 row_number=row_number,
                 field_name="classrooms",
@@ -154,34 +156,4 @@ class LessonFileUploadProcessor(BaseFileUploadProcessor, M2MUploadProcessorMixin
                 return None
             else:
                 return slots
-        return None
-
-    # STRING CLEANING METHODS
-    def _get_clean_id_from_file_field_value(
-        self, user_input_id: str | int | float | None, row_number: int, field_name: str
-    ) -> int | None:
-        """
-        Method to clean a string the user has entered which should just be a single number (or None).
-        We use get_integer_set_from_string, and then return the single integer or None, in the case where the user
-        has not given a valid value (which may not be an issue, since some id fields are nullable).
-        """
-        if user_input_id is not None:
-            user_input_id = str(user_input_id)
-            user_input_id_no_floats = re.sub(
-                r"[.].+", "", user_input_id  # User's id may be read-in as '10.0'
-            )
-            id_set = super().get_integer_set_from_string(
-                raw_string_of_ids=user_input_id_no_floats,
-                row_number=row_number,
-            )
-            if id_set is not None:
-                if len(id_set) > 1:
-                    self.upload_error_message = (
-                        f"Cannot currently have multiple {field_name} for a single class!\n"
-                        f"Multiple ids were given in row: {row_number} - {user_input_id}"
-                    )
-                    return None
-                else:
-                    cleaned_id = next(iter(id_set))
-                    return cleaned_id
         return None

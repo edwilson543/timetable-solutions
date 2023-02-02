@@ -3,7 +3,8 @@
     "model": "data.yeargroup",
     "pk": 1,
     "fields": {
-      "year_group": "1",
+      "year_group_id": 1,
+      "year_group_name": "1",
       "school": 123456
     }
   },
@@ -11,7 +12,8 @@
     "model": "data.yeargroup",
     "pk": 2,
     "fields": {
-      "year_group": "2",
+      "year_group_id": 2,
+      "year_group_name": "2",
       "school": 123456
     }
   },
@@ -19,7 +21,8 @@
     "model": "data.yeargroup",
     "pk": 3,
     "fields": {
-      "year_group": "Reception",
+      "year_group_id": 3,
+      "year_group_name": "Reception",
       "school": 123456
     }
   }

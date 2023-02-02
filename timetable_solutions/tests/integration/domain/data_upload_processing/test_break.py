@@ -42,7 +42,7 @@ class TestBreakFileUploadProcessorValidUploads:
                     Header.STARTS_AT,
                     Header.ENDS_AT,
                     Header.TEACHER_IDS,
-                    Header.RELEVANT_YEAR_GROUPS,
+                    Header.RELEVANT_YEAR_GROUP_IDS,
                 ],
                 [
                     "mon-lunch",
@@ -51,7 +51,7 @@ class TestBreakFileUploadProcessorValidUploads:
                     "12:00",
                     "13:00:00",
                     f"{teacher_a.teacher_id}; {teacher_b.teacher_id}",
-                    f"{yg_a.year_group}; {yg_b.year_group}",
+                    f"{yg_a.year_group_id}; {yg_b.year_group_id}",
                 ],
                 [
                     "tue-lunch",
@@ -60,7 +60,7 @@ class TestBreakFileUploadProcessorValidUploads:
                     "12:00",
                     "13:00:00",
                     f"{teacher_a.teacher_id}; {teacher_b.teacher_id}",
-                    f"{yg_a.year_group}; {yg_b.year_group}",
+                    f"{yg_a.year_group_id}; {yg_b.year_group_id}",
                 ],
             ]
         )

@@ -5,38 +5,29 @@ Module containing unit tests for the FileUploadProcessor
 # Third party imports
 import pandas as pd
 
-# Django imports
-from django import test
-
 # Local application imports
 from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
-    M2MUploadProcessorMixin,
+    RelationalUploadProcessorMixin,
 )
 from domain.data_upload_processing.constants import FileStructure
 
 
-class TestBaseFileUploadProcessor(test.TestCase):
+class TestBaseFileUploadProcessor:
     """
     Unit test class for the methods on FileUploadProcessor.
     """
-
-    fixtures = [
-        "user_school_profile.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-    ]
 
     @staticmethod
     def _get_file_agnostic_processor() -> BaseFileUploadProcessor:
         """
         Fixture for a FileUploadProcessor that is not specific to any of the upload files.
         """
+        # None of the parameters are relevant to these tests
         # noinspection PyTypeChecker
         processor = BaseFileUploadProcessor(
-            csv_file=None,  # Not relevant to these tests
-            school_access_key=123456,
+            csv_file=None,
+            school_access_key=None,
             attempt_upload=False,
         )
         return processor
@@ -110,17 +101,10 @@ class TestBaseFileUploadProcessor(test.TestCase):
         assert "repeated ids" in processor.upload_error_message
 
 
-class TestM2MUploadProcessorMixin(test.TestCase):
+class TestM2MUploadProcessorMixin:
     """
     Unit test class for the methods on M2MUploadProcessorMixin.
     """
-
-    fixtures = [
-        "user_school_profile.json",
-        "year_groups.json",
-        "pupils.json",
-        "timetable.json",
-    ]
 
     def test_get_id_set_from_string_valid_input_to_ints(self):
         """
@@ -130,11 +114,9 @@ class TestM2MUploadProcessorMixin(test.TestCase):
         raw_string = "1;2;3;4;5"
 
         # Execute test unit
-        id_list = M2MUploadProcessorMixin().get_id_set_from_string(
+        id_list = RelationalUploadProcessorMixin().get_integer_set_from_string(
             raw_string_of_ids=raw_string,
             row_number=1,
-            target_id_type=int,
-            valid_id_chars=",0123456789",
         )
 
         # Check outcome
@@ -149,29 +131,10 @@ class TestM2MUploadProcessorMixin(test.TestCase):
 
         for raw_string in raw_strings:
             # Execute test unit
-            id_list = M2MUploadProcessorMixin().get_id_set_from_string(
+            id_list = RelationalUploadProcessorMixin().get_integer_set_from_string(
                 raw_string_of_ids=raw_string,
                 row_number=1,
-                target_id_type=int,
-                valid_id_chars=",0123456789",
             )
 
             # Check outcome
             assert id_list is None
-
-    def test_get_id_set_from_string_valid_input_to_strs(self):
-        """
-        Test that the mm processor can convert a raw string of ids to a list of integers.
-        """
-        # Set test parameters
-        raw_string = "reception, 1, 2, 3, year 10"
-
-        # Execute test unit
-        id_list = M2MUploadProcessorMixin().get_id_set_from_string(
-            raw_string_of_ids=raw_string,
-            row_number=1,
-            target_id_type=str,
-        )
-
-        # Check outcome
-        assert set(id_list) == {"reception", "1", "2", "3", "year10"}
