@@ -26,6 +26,7 @@ class TestUploadStatusTracker(test.TestCase):
         "teachers.json",
     ]
 
+    # TODO -> USE FACTORIES
     def test_get_upload_status_matches_the_loaded_fixtures(self):
         """
         Unit test for he get_upload_status method, which instantiates an UploadStatusTracker by querying the database.
@@ -47,6 +48,8 @@ class TestUploadStatusTracker(test.TestCase):
         assert upload_status.timetable.status == UploadStatus.INCOMPLETE
         assert upload_status.lessons.status == UploadStatus.DISALLOWED
 
+
+class TestUploadStatusTracking:
     # Tests for UploadStatusTracker instantiation
     def test_instantiation_with_all_uploads_as_true_all_converted_to_complete(self):
         """
@@ -61,6 +64,7 @@ class TestUploadStatusTracker(test.TestCase):
             classrooms=True,
             timetable=True,
             lessons=True,
+            breaks=True,
         )
 
         # Check outcome
@@ -69,6 +73,7 @@ class TestUploadStatusTracker(test.TestCase):
         assert full_status.teachers.status == UploadStatus.COMPLETE
         assert full_status.classrooms.status == UploadStatus.COMPLETE
         assert full_status.timetable.status == UploadStatus.COMPLETE
+        assert full_status.lessons.status == UploadStatus.COMPLETE
         assert full_status.lessons.status == UploadStatus.COMPLETE
 
     def test_instantiation_with_all_uploads_as_false_gives_incomplete_and_disallowed(
@@ -86,6 +91,7 @@ class TestUploadStatusTracker(test.TestCase):
             classrooms=False,
             timetable=False,
             lessons=False,
+            breaks=False,
         )
 
         # Check outcome
@@ -95,6 +101,7 @@ class TestUploadStatusTracker(test.TestCase):
 
         assert full_status.pupils.status == UploadStatus.DISALLOWED
         assert full_status.timetable.status == UploadStatus.DISALLOWED
+        assert full_status.lessons.status == UploadStatus.DISALLOWED
         assert full_status.lessons.status == UploadStatus.DISALLOWED
 
     def test_instantiation_with_single_upload_as_false_disallows_lessons(
@@ -112,18 +119,20 @@ class TestUploadStatusTracker(test.TestCase):
             classrooms=True,
             timetable=False,
             lessons=False,
+            breaks=False,
         )
 
         # Check outcome
         assert full_status.year_groups.status == UploadStatus.COMPLETE
-        assert full_status.pupils.status == UploadStatus.COMPLETE.value
-        assert full_status.teachers.status == UploadStatus.COMPLETE.value
-        assert full_status.classrooms.status == UploadStatus.COMPLETE.value
-        assert (
-            full_status.timetable.status == UploadStatus.INCOMPLETE.value
-        )  # This file being incomplete forces the lesson file to be disallowed
+        assert full_status.pupils.status == UploadStatus.COMPLETE
+        assert full_status.teachers.status == UploadStatus.COMPLETE
+        assert full_status.classrooms.status == UploadStatus.COMPLETE
+        assert full_status.breaks.status == UploadStatus.INCOMPLETE
 
-        assert full_status.lessons.status == UploadStatus.DISALLOWED.value
+        # This file being incomplete forces the lesson file to be disallowed
+        assert full_status.timetable.status == UploadStatus.INCOMPLETE
+
+        assert full_status.lessons.status == UploadStatus.DISALLOWED
 
     def test_instantiation_with_year_groups_as_false_gives_incomplete_and_disallowe(
         self,
@@ -140,20 +149,21 @@ class TestUploadStatusTracker(test.TestCase):
             timetable=False,
             pupils=False,
             lessons=False,
+            breaks=False,
         )
 
         # Check outcome
-        assert full_status.teachers.status == UploadStatus.COMPLETE.value
-        assert full_status.classrooms.status == UploadStatus.COMPLETE.value
+        assert full_status.teachers.status == UploadStatus.COMPLETE
+        assert full_status.classrooms.status == UploadStatus.COMPLETE
 
-        assert (
-            full_status.year_groups.status == UploadStatus.INCOMPLETE
-        )  # This file being incomplete forces disallowed
+        # This file being incomplete forces disallowed
+        assert full_status.year_groups.status == UploadStatus.INCOMPLETE
 
-        assert full_status.pupils.status == UploadStatus.DISALLOWED.value
-        assert full_status.timetable.status == UploadStatus.DISALLOWED.value
+        assert full_status.pupils.status == UploadStatus.DISALLOWED
+        assert full_status.timetable.status == UploadStatus.DISALLOWED
 
-        assert full_status.lessons.status == UploadStatus.DISALLOWED.value
+        assert full_status.breaks.status == UploadStatus.DISALLOWED
+        assert full_status.lessons.status == UploadStatus.DISALLOWED
 
     def test_instantiation_with_only_lesson_uploads_as_false_gives_complete_and_incomplete(
         self,
@@ -171,6 +181,7 @@ class TestUploadStatusTracker(test.TestCase):
             classrooms=True,
             timetable=True,
             lessons=False,
+            breaks=False,
         )
 
         # Check outcome
@@ -180,4 +191,5 @@ class TestUploadStatusTracker(test.TestCase):
         assert full_status.classrooms.status == UploadStatus.COMPLETE
         assert full_status.timetable.status == UploadStatus.COMPLETE
 
+        assert full_status.breaks.status == UploadStatus.INCOMPLETE
         assert full_status.lessons.status == UploadStatus.INCOMPLETE

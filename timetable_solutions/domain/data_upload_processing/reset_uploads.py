@@ -25,6 +25,7 @@ class ResetUploads:
         year_groups: bool,
         pupils: bool,
         lessons: bool,
+        breaks: bool,
     ):
 
         self._school_access_key = school_access_key
@@ -38,6 +39,10 @@ class ResetUploads:
         self._pupils = pupils or year_groups
         self._timetable = timetable or year_groups
 
+        # Allow breaks to live beyond the year groups / teachers they were for
+        # As someone may want to delete teachers and keep breaks for year groups, & vice-versa
+        self._breaks = breaks
+
         # Lesson needs resetting if any of the other tables are wiped
         self._lessons = (
             year_groups or pupils or teachers or classrooms or timetable or lessons
@@ -50,11 +55,14 @@ class ResetUploads:
         Function used to reset the school's data as relevant, depending on the dataclass field values.
         Note that the ORDER in which the models are deleted is very important.
         """
-        # Lesson instances must be deleted first, due to foreign key protection constraints...
+        # These tables must be cleared first, due to foreign key protection constraints...
         if self._lessons:
             models.Lesson.delete_all_lessons_for_school(
                 school_id=self._school_access_key
             )
+
+        if self._breaks:
+            models.Break.delete_all_breaks_for_school(school_id=self._school_access_key)
 
         # ... closely followed by YearGroup instances, for the same reason
         if self._year_groups:
@@ -90,9 +98,10 @@ class ResetWarning(StrEnum):
 
     teachers = "This will reset all of your teacher and lesson data, are you sure?"
     classrooms = "This will reset all of your classroom and lesson data, are you sure?"
-    year_groups = "This will reset all of your year group, pupil, timetable structure and lesson data, are you sure?"
+    year_groups = "This will reset all of your year group, pupil, timetable, break and lesson data, are you sure?"
     pupils = "This will reset all of your pupil and lesson data, are you sure?"
     timetable = (
         "This will reset all of your timetable structure and lesson data, are you sure?"
     )
     lessons = "This will reset ALL of your uploaded data, are you sure?"
+    breaks = "This will reset all your break data, are you sure"
