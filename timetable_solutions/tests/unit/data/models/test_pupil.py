@@ -31,7 +31,7 @@ class TestPupil:
         # Create a new pupil for the school
         models.Pupil.create_new(
             school_id=school.school_access_key,
-            year_group=yg.year_group,
+            year_group_id=yg.year_group_id,
             pupil_id=100,
             firstname="test",
             surname="test",
@@ -61,7 +61,7 @@ class TestPupil:
                 pupil_id=pupil.pupil_id,
                 firstname="test",
                 surname="test",
-                year_group=pupil.year_group.year_group,
+                year_group_id=pupil.year_group.year_group_id,
             )
 
     def test_delete_all_instances_for_school_successful(self):

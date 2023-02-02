@@ -61,11 +61,12 @@ class YearGroupAdmin(CustomModelAdminBase):
     ModelAdmin for the Pupil model
     """
 
-    list_display = ["year_group", "get_number_pupils"]
-    list_display_links = ["year_group"]
+    list_display = ["year_group_id", "year_group_name", "get_number_pupils"]
+    list_display_links = ["year_group_name"]
 
     search_fields = [
-        "year_group",
+        "year_group_id",
+        "year_group_name",
     ]
     search_help_text = "Search for a year group"
 

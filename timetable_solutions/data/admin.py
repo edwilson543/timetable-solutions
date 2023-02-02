@@ -58,7 +58,7 @@ class ClassroomAdmin(admin.ModelAdmin):
 
 @admin.register(models.YearGroup)
 class YearGroupAdmin(admin.ModelAdmin):
-    list_display = ["school", "year_group"]
+    list_display = ["school", "year_group_id"]
     list_filter = ["school"]
 
 

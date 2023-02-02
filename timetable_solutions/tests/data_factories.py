@@ -61,7 +61,8 @@ class YearGroup(factory.django.DjangoModelFactory):
         model = models.YearGroup
 
     school = factory.SubFactory(School)
-    year_group = factory.Sequence(lambda n: str(n + 1))
+    year_group_id = factory.Sequence(lambda n: n + 1)
+    year_group_name = factory.Sequence(lambda n: str(n + 1))
 
 
 class Pupil(factory.django.DjangoModelFactory):
