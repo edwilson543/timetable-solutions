@@ -7,7 +7,7 @@ from io import StringIO
 import re
 
 # Third party imports
-from dateutil import parser as dateutil_parser
+from dateutil import parser as dateutil_parser  # type: ignore
 import pandas as pd
 
 # Django imports
