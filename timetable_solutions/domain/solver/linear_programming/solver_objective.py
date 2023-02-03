@@ -31,8 +31,8 @@ class TimetableSolverObjective:
         self._decision_variables = variables.decision_variables
 
         # Add some instance attributes for ease of access
-        self._timetable_start = self._inputs.timetable_start
-        self._timetable_finish = self._inputs.timetable_finish
+        self._timetable_start = self._inputs.timetable_start_hour_as_float
+        self._timetable_finish = self._inputs.timetable_finish_hour_as_float
 
     def add_objective_to_problem(self, problem: lp.LpProblem) -> None:
         """
@@ -59,7 +59,7 @@ class TimetableSolverObjective:
 
         for key, variable in self._decision_variables.items():
             # Get the time of the slot corresponding to the variable
-            slot_time = self._inputs.get_time_period_starts_at_from_slot_id(
+            slot_time = self._inputs.get_time_starts_at_from_slot_id(
                 slot_id=key.slot_id
             )
 
@@ -73,7 +73,6 @@ class TimetableSolverObjective:
 
         return objective_component
 
-    # ANCILLARY METHODS
     def _get_optimal_free_period_time(self) -> float:
         """
         Method to get the optimal free period times - the times at which we avoid putting classes at, because we want
@@ -119,7 +118,6 @@ class TimetableSolverObjective:
             )
         return optimal_free_period_time
 
-    # METHODS PROVIDING THE LOGIC TO GET THE OPTIMAL FREE PERIOD IN EACH SOLUTION SPECIFICATION SCENARIO
     def _get_optimal_free_period_time_no_specified_time(self) -> float:
         """
         Method randomly generating a time between timetable_start-timetable_finish to avoid putting classes at,

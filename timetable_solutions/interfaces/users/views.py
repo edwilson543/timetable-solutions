@@ -24,7 +24,8 @@ from django.views import View
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
+from data import constants
 from data import models
 from . import forms
 
@@ -101,10 +102,10 @@ class SchoolRegistration(View):
             school_name = form.cleaned_data.get("school_name")
             new_school = models.School.create_new(school_name=school_name)
 
-            models.Profile.create_and_save_new(
+            models.Profile.create_new(
                 user=request.user,
                 school_id=new_school.school_access_key,
-                role=models.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
+                role=constants.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
                 approved_by_school_admin=True,
             )
 
@@ -136,7 +137,7 @@ class ProfileRegistration(View):
         if form.is_valid():
             access_key = form.cleaned_data.get("school_access_key")
             role = form.cleaned_data.get("position")
-            models.Profile.create_and_save_new(
+            models.Profile.create_new(
                 user=request.user,
                 school_id=access_key,
                 role=role,

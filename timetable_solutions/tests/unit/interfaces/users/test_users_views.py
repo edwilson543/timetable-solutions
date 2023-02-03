@@ -8,7 +8,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
+from data import constants
 from data import models
 from interfaces.users import forms
 
@@ -42,10 +43,10 @@ class TestRegistration(TestCase):
         user = User.objects.create_user(
             username="dummy_teacher2", password="dt123dt123"
         )
-        models.Profile.create_and_save_new(
+        models.Profile.create_new(
             user=user,
             school_id=123456,
-            role=models.UserRole.TEACHER.value,
+            role=constants.UserRole.TEACHER.value,
             approved_by_school_admin=False,
         )  # This is the key bit
 
@@ -61,7 +62,7 @@ class TestRegistration(TestCase):
         self.assertIn("not yet been approved", unapproved_error)
         self.assertTrue(user.is_authenticated)
         login_successful = response.wsgi_request.user.is_authenticated
-        self.assertTrue(not login_successful)
+        self.assertFalse(login_successful)
 
     # REGISTRATION TESTS
     def test_register_new_user_valid_credentials(self):
@@ -178,7 +179,7 @@ class TestRegistration(TestCase):
         self.assertEqual(
             user_school_id, 123457
         )  # Since 123456 is the max access key in the fixture
-        self.assertEqual(profile.role, models.UserRole.SCHOOL_ADMIN)
+        self.assertEqual(profile.role, constants.UserRole.SCHOOL_ADMIN)
         self.assertTrue(profile.approved_by_school_admin)
 
         # Check the flash message
@@ -195,7 +196,7 @@ class TestRegistration(TestCase):
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
         form_data = {
             "school_access_key": 123456,
-            "position": models.UserRole.TEACHER.value,
+            "position": constants.UserRole.TEACHER.value,
         }
 
         # Execute test unit
@@ -207,8 +208,8 @@ class TestRegistration(TestCase):
         # Check the user's profile has been correctly set
         profile = response.wsgi_request.user.profile
         self.assertEqual(profile.school.school_access_key, 123456)
-        self.assertEqual(profile.role, models.UserRole.TEACHER)
-        self.assertTrue(not profile.approved_by_school_admin)
+        self.assertEqual(profile.role, constants.UserRole.TEACHER)
+        self.assertFalse(profile.approved_by_school_admin)
 
         # Check the flash message
         message = response.cookies["messages"].value
@@ -223,7 +224,7 @@ class TestRegistration(TestCase):
         url = reverse(UrlName.PROFILE_REGISTRATION.value)
         form_data = {
             "school_access_key": 765432,
-            "position": models.UserRole.PUPIL.value,
+            "position": constants.UserRole.PUPIL.value,
         }
 
         # Execute test unit

@@ -2,6 +2,7 @@
 CSS for each component of the site's (optional) dashboard.
 Used by the data upload page, the create page, and the view dashboard.
 ==================== */
+@import url(/static/base_static/stylesheets/colour_scheme.css);
 
 /* ====================
 Container for the main content in the center of the page
@@ -68,7 +69,7 @@ Banner / title at the top of the grid
     line-height: 20px;
 
     /* Background and border */
-    background-color: #11014A;
+    background-color: var(--dark_blue_banners);
     border: 1px solid black;
     border-radius: 5px;
 }
@@ -89,7 +90,7 @@ Default style for panels in the grid container (except the banner / title)
     color: black;
 
     /* Background and border */
-    background-color: #e0e0e0;
+    background-color: var(--light_grey_background);
     border: 2px solid black;
     border-radius: 5px;
 }

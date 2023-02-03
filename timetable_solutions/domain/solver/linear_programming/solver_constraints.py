@@ -9,6 +9,7 @@ from typing import Generator
 import pulp as lp
 
 # Local application imports
+from data import constants
 from data import models
 from domain.solver.solver_input_data import TimetableSolverInputs
 from domain.solver.linear_programming.solver_variables import (
@@ -99,19 +100,19 @@ class TimetableSolverConstraints:
         ) -> tuple[lp.LpConstraint, str]:
             """
             States that the passed lesson must be taught for the number of required periods, that have not been
-            defined by the user
+            defined by the user.
             """
-            variables_sum = lp.lpSum(
+            n_solver_slots_variable = lp.lpSum(
                 [
                     var
                     for key, var in self._decision_variables.items()
                     if key.lesson_id == lesson.lesson_id
                 ]
             )
-            additional_slots = lesson.get_n_solver_slots_required()
+            n_solver_slots_required = lesson.get_n_solver_slots_required()
             constraint = (
-                variables_sum == additional_slots,
-                f"{lesson.lesson_id}_taught_for_{additional_slots}_additional_slots",
+                n_solver_slots_variable == n_solver_slots_required,
+                f"{lesson.lesson_id}_taught_for_{n_solver_slots_required}_additional_slots",
             )
             return constraint
 
@@ -128,23 +129,24 @@ class TimetableSolverConstraints:
         generator that is iterated through once to add each constraint to the LpProblem.
         """
 
-        def __one_place_at_a_time_constraint(
+        def __one_place_at_a_slot_constraint(
             pupil: models.Pupil, time_slot: models.TimetableSlot
         ) -> tuple[lp.LpConstraint, str]:
             """
-            Defines a 'one-place-at-a-time' constraint for an individual pupil, and individual timeslot.
+            Defines a 'one-place-at-a-slot' constraint for an individual pupil, and individual timeslot.
             We sum the decision variables relevant to the pupil, and force this to 0 if the pupil has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+
+            This is a SLOT based constraint, rather than a TIME based one.
             """
-            existing_commitment = pupil.check_if_busy_at_time_slot(slot=time_slot)
+            existing_commitment = pupil.check_if_busy_at_timeslot(slot=time_slot)
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (pupil in ln.pupils.all())
-                    and (
+                    for lesson in pupil.lessons.all()
+                    if (
                         key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=time_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
@@ -163,9 +165,9 @@ class TimetableSolverConstraints:
             return constraint
 
         constraints = (
-            __one_place_at_a_time_constraint(pupil=pupil, time_slot=time_slot)
+            __one_place_at_a_slot_constraint(pupil=pupil, time_slot=time_slot)
             for pupil in self._inputs.pupils
-            for time_slot in self._inputs.timetable_slots
+            for time_slot in pupil.get_associated_timeslots()
         )
         return constraints
 
@@ -174,31 +176,40 @@ class TimetableSolverConstraints:
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
         Method defining the constraints that each teacher can only teach one class at a time, and returning these as a
-        generator that is iterated through once to add each constraint to the LpProblem
+        generator that is iterated through once to add each constraint to the LpProblem.
         """
 
         def __one_place_at_a_time_constraint(
-            teacher: models.Teacher, time_slot: models.TimetableSlot
+            teacher: models.Teacher,
+            time_slot: models.TimetableSlot,
         ) -> tuple[lp.LpConstraint, str]:
             """
             Defines a 'one-place-at-a-time' constraint for an individual teacher, and individual timeslot.
             We sum the decision variables relevant to the teacher, and force this to 0 if the teacher has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+
+            This is a TIME based constraint, rather than a SLOT based one.
             """
-            existing_commitment = teacher.check_if_busy_at_time_slot(slot=time_slot)
+            existing_commitment = teacher.check_if_busy_at_time_of_timeslot(
+                slot=time_slot
+            )
+            # Need to constrain against ALL slots clashing with this one
+            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
+
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (teacher == ln.teacher)
-                    and (
+                    for lesson in teacher.lessons.all()
+                    for clash_slot in clashing_slots
+                    if (
                         key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
+                            lesson_id=lesson.lesson_id, slot_id=clash_slot.slot_id
                         )
                     )
                     in self._decision_variables.keys()
                 ]
             )
+
             if existing_commitment:
                 constraint = (
                     possible_commitments == 0,
@@ -234,16 +245,16 @@ class TimetableSolverConstraints:
             We sum the decision variables relevant to the classroom, and force this to 0 if the teacher has an
             existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
             """
-            occupied = classroom.check_if_occupied_at_time_slot(slot=time_slot)
+            occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=time_slot)
+            # Need to constrain against ALL slots clashing with this one
+            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
             possible_uses = lp.lpSum(
                 [
                     self._decision_variables.get(key)
-                    for ln in self._inputs.lessons
-                    if (classroom == ln.classroom)
-                    and (
-                        key := var_key(
-                            lesson_id=ln.lesson_id, slot_id=time_slot.slot_id
-                        )
+                    for lesson in classroom.lessons.all()
+                    for slot in clashing_slots
+                    if (
+                        key := var_key(lesson_id=lesson.lesson_id, slot_id=slot.slot_id)
                     )
                     in self._decision_variables.keys()
                 ]
@@ -394,7 +405,7 @@ class TimetableSolverConstraints:
         """
 
         def __no_split_classes_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: models.WeekDay
+            lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
             We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
@@ -404,8 +415,11 @@ class TimetableSolverConstraints:
             :param day_of_week: the day of week we are disallowing the splitting on
             :return: a tuple of the constraint and the name for that constraint
             """
+            year_group = lesson.get_associated_year_group()
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
-                school_id=self._inputs.school_id, day_of_week=day_of_week
+                school_id=self._inputs.school_id,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
 
             # Variables contribution
@@ -430,7 +444,9 @@ class TimetableSolverConstraints:
             # Fixed contribution
             existing_singles_on_day = (
                 lesson.user_defined_time_slots.get_timeslots_on_given_day(
-                    school_id=self._inputs.school_id, day_of_week=day_of_week
+                    school_id=self._inputs.school_id,
+                    day_of_week=day_of_week,
+                    year_group=year_group,
                 ).count()
             )
             existing_doubles_on_day = (
@@ -453,7 +469,7 @@ class TimetableSolverConstraints:
         constraints = (
             __no_split_classes_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in self._inputs.available_days
+            for day in lesson.get_usable_days_of_week()
         )
         return constraints
 
@@ -468,14 +484,17 @@ class TimetableSolverConstraints:
         """
 
         def __no_two_doubles_in_a_day_constraint(
-            lesson: models.Lesson, day_of_week: models.WeekDay
+            lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
             States that the given lesson can only have one double period on the given day.
             :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
             """
+            year_group = lesson.get_associated_year_group()
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
-                school_id=self._inputs.school_id, day_of_week=day_of_week
+                school_id=self._inputs.school_id,
+                day_of_week=day_of_week,
+                year_group=year_group,
             )
             solver_doubles_on_day = lp.lpSum(
                 [  # We only check slot_1_id is in slot_ids, since 1 & 2 are on same day
@@ -492,8 +511,8 @@ class TimetableSolverConstraints:
                 )
             )
             existing_doubles_on_day = min(
-                existing_doubles_on_day, 1
-            )  # Since user may have broken the rules
+                existing_doubles_on_day, 1  # Since user may have broken the rules
+            )
 
             dp_constraint = (
                 solver_doubles_on_day + existing_doubles_on_day <= 1,
@@ -504,6 +523,6 @@ class TimetableSolverConstraints:
         constraints = (
             __no_two_doubles_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
-            for day in self._inputs.available_days
+            for day in lesson.get_usable_days_of_week()
         )
         return constraints

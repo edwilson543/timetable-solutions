@@ -4,6 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django import forms
 
 # Local application imports
+from data import constants
 from data import models
 
 
@@ -46,8 +47,8 @@ class ProfileRegistration(forms.Form):
 
     ROLE_CHOICES = [
         # mypy doesn't recognise the value / label attributes of UserRole(IntegerChoices)
-        (models.UserRole.TEACHER.value, models.UserRole.TEACHER.label),  # type: ignore
-        (models.UserRole.PUPIL.value, models.UserRole.PUPIL.label),  # type: ignore
+        (constants.UserRole.TEACHER.value, constants.UserRole.TEACHER.label),  # type: ignore
+        (constants.UserRole.PUPIL.value, constants.UserRole.PUPIL.label),  # type: ignore
     ]
 
     school_access_key = forms.IntegerField()

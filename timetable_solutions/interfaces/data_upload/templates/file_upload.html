@@ -32,19 +32,20 @@
             The structure assumes you have already grouped pupils into classes and assigned teachers and classrooms to
             these classes.<br>
             You can download an example file for each required upload, and reset your uploads at any point.<br>
-            You can also view and edit your data at any point using the button below.
+            You can also view and edit your data at any point using the 'view and edit data' button below, which
+            also allows you to add individual data.
             </i></p>
         </div>
         <div id="form_container">
         <table id="upload_file_table">
             {% for required_form in required_forms.values %}
-            <tr class="{{ required_form.upload_status | lower }}_row">
+            <tr class="{{ required_form.upload_status.status | lower }}_row">
                 <td class="table_cell">
                     <b>
                         {{required_form.form_name}}<br>
                     </b>
                     <i>
-                        ({{ required_form.upload_status | title }})
+                        ({{ required_form.upload_status.status | title }})
                     </i>
                 </td>
                 <td class="table_cell">
@@ -54,7 +55,7 @@
                         </button>
                     </form>
                 </td>
-                {% if required_form.upload_status == "incomplete" %}
+                {% if required_form.upload_status.status == "incomplete" %}
                 <td class="table_cell">
                     <form enctype="multipart/form-data" action="{% url required_form.upload_url_name %}" method="post">
                         {% csrf_token %}
@@ -66,11 +67,11 @@
                         </button>
                     </form>
                 </td>
-                {% elif required_form.upload_status == "complete" %}
+                {% elif required_form.upload_status.status == "complete" %}
                 <td class="table_cell">
                     <form
                         hx-post="{% url required_form.reset_url_name %}"
-                        hx-confirm="You will lose all {{ required_form.form_name | lower }} data, are you sure?"
+                        hx-confirm="{{ required_form.reset_warning }}"
                         hx-target="#form_container"
                         hx-select="#form_container"
                         hx-swap="outerHTML"
@@ -81,10 +82,10 @@
                         </button>
                     </form>
                 </td>
-                {% elif required_form.upload_status == "disallowed" %}
+                {% elif required_form.upload_status.status == "disallowed" %}
                 <td class="table_cell">
                    <p><i>
-                       First complete all the other required uploads.
+                       {{ required_form.upload_status.reason }}
                    </i></p>
                 </td>
                 {% endif %}
@@ -100,7 +101,7 @@
             </form>
             <form
                 hx-post="{% url 'all_data_reset' %}"
-                hx-confirm="You will lose all you data, are you sure?"
+                hx-confirm="You will lose all your uploaded data, are you sure?"
                 hx-target="#form_container"
                 hx-select="#form_container"
                 hx-swap="outerHTML"

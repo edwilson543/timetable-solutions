@@ -44,12 +44,6 @@ class SchoolAdmin(admin.ModelAdmin):
         return html.format_html(f"<b><i>{user_count}<i><b>")
 
 
-@admin.register(models.Pupil)
-class PupilAdmin(admin.ModelAdmin):
-    list_display = ["school", "firstname", "surname", "year_group"]
-    list_filter = ["school"]
-
-
 @admin.register(models.Teacher)
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ["school", "firstname", "surname", "title"]
@@ -62,10 +56,22 @@ class ClassroomAdmin(admin.ModelAdmin):
     list_filter = ["school"]
 
 
+@admin.register(models.YearGroup)
+class YearGroupAdmin(admin.ModelAdmin):
+    list_display = ["school", "year_group_id"]
+    list_filter = ["school"]
+
+
+@admin.register(models.Pupil)
+class PupilAdmin(admin.ModelAdmin):
+    list_display = ["school", "firstname", "surname", "year_group"]
+    list_filter = ["school"]
+
+
 @admin.register(models.TimetableSlot)
 class TimetableSlotAdmin(admin.ModelAdmin):
-    list_display = ["school", "day_of_week", "period_starts_at"]
-    list_filter = ["school", "day_of_week", "period_starts_at"]
+    list_display = ["school", "day_of_week", "starts_at", "ends_at"]
+    list_filter = ["school", "day_of_week", "starts_at", "ends_at"]
     search_fields = ["school__school_access_key"]
     search_help_text = "Search by school access key"
 

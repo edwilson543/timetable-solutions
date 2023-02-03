@@ -2,23 +2,15 @@
 
 # Standard library imports
 import datetime as dt
-from functools import lru_cache
 
 # Django imports
+from django.core import exceptions
 from django.db import models
 
-# Local application imports (other models)
+# Local application imports
+from data import constants
 from data.models.school import School
-
-
-class WeekDay(models.IntegerChoices):
-    """Choices for the different days of the week a lesson can take place at"""
-
-    MONDAY = 1, "Monday"
-    TUESDAY = 2, "Tuesday"
-    WEDNESDAY = 3, "Wednesday"
-    THURSDAY = 4, "Thursday"
-    FRIDAY = 5, "Friday"
+from data.models.year_group import YearGroup, YearGroupQuerySet
 
 
 class TimetableSlotQuerySet(models.QuerySet):
@@ -44,11 +36,50 @@ class TimetableSlotQuerySet(models.QuerySet):
         )
 
     def get_timeslots_on_given_day(
-        self, school_id: int, day_of_week: WeekDay
+        self, school_id: int, day_of_week: constants.Day, year_group: YearGroup
     ) -> "TimetableSlotQuerySet":
-        """Method returning the timetable slots for the school on the given day of the week"""
+        """
+        Method returning the timetable slots for the school on the given day of the week,
+        relevant to a particular year group.
+        """
         return self.filter(
-            models.Q(school_id=school_id) & models.Q(day_of_week=day_of_week)
+            models.Q(school_id=school_id)
+            & models.Q(day_of_week=day_of_week)
+            & models.Q(relevant_year_groups=year_group)
+        )
+
+    # --------------------
+    # Filters
+    # --------------------
+
+    def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
+        """
+        Filter a queryset of slots against an individual slot.
+        :return The slots in the queryset (self) that clash with the passed slot, non-inclusively.
+
+        The use case for this is to check whether teachers / classrooms / (pupil) are busy at a give slot,
+        at any point during that slot.
+        """
+        clash_range = slot.open_interval
+        # Note the django __range filter is inclusive, hence the open interval is essential,
+        # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
+
+        return self.filter(
+            (
+                (
+                    # OVERLAPPING clashes
+                    models.Q(starts_at__range=clash_range)
+                    | models.Q(ends_at__range=clash_range)
+                )
+                | (
+                    # EXACT MATCH clashes
+                    # We do however want slots to clash with themselves / other slots starting and finishing
+                    # at the same time, since a user may have defined slots covering the same time pan
+                    models.Q(starts_at=slot.starts_at)
+                    | models.Q(ends_at=slot.ends_at)
+                )
+            )
+            & models.Q(day_of_week=slot.day_of_week)
         )
 
 
@@ -57,9 +88,10 @@ class TimetableSlot(models.Model):
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     slot_id = models.IntegerField()
-    day_of_week = models.SmallIntegerField(choices=WeekDay.choices)
-    period_starts_at = models.TimeField()
-    period_duration = models.DurationField(default=dt.timedelta(hours=1))
+    day_of_week = models.SmallIntegerField(choices=constants.Day.choices)
+    starts_at: dt.time = models.TimeField()
+    ends_at: dt.time = models.TimeField()
+    relevant_year_groups = models.ManyToManyField(YearGroup, related_name="slots")
 
     # Introduce a custom manager
     objects = TimetableSlotQuerySet.as_manager()
@@ -69,7 +101,7 @@ class TimetableSlot(models.Model):
         Django Meta class for the TimetableSlot model
         """
 
-        ordering = ["day_of_week", "period_starts_at"]
+        ordering = ["day_of_week", "starts_at"]
         unique_together = [["school", "slot_id"]]
 
     class Constant:
@@ -80,44 +112,56 @@ class TimetableSlot(models.Model):
         human_string_singular = "timetable slot"
         human_string_plural = "timetable slots"
 
+        # Field names
+        relevant_year_groups = "relevant_year_groups"
+
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
-        day_of_week = WeekDay(self.day_of_week).label
-        start_time = self.period_starts_at.strftime("%H:%M")
+        day_of_week = constants.Day(self.day_of_week).label
+        start_time = self.starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
     def __repr__(self) -> str:
         """String representation of the model for debugging"""
-        day_of_week = WeekDay(self.day_of_week).label
-        start_time = self.period_starts_at.strftime("%H:%M")
+        day_of_week = constants.Day(self.day_of_week).label
+        start_time = self.starts_at.strftime("%H:%M")
         return f"{day_of_week}, {start_time}"
 
-    # FACTORIES
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls,
         school_id: int,
         slot_id: int,
-        day_of_week: WeekDay,
-        period_starts_at: dt.time,
-        period_duration: dt.timedelta,
+        day_of_week: constants.Day,
+        starts_at: dt.time,
+        ends_at: dt.time,
+        relevant_year_groups: YearGroupQuerySet,
     ) -> "TimetableSlot":
         """Method to create a new TimetableSlot instance."""
         try:
-            day_of_week = WeekDay(day_of_week).value
+            day_of_week = constants.Day(day_of_week).value
         except ValueError:
             raise ValueError(
                 f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
                 f"{type(day_of_week)}"
             )
+
         slot = cls.objects.create(
             school_id=school_id,
             slot_id=slot_id,
             day_of_week=day_of_week,
-            period_starts_at=period_starts_at,
-            period_duration=period_duration,
+            starts_at=starts_at,
+            ends_at=ends_at,
         )
         slot.full_clean()
+
+        if relevant_year_groups is not None:
+            slot.add_year_groups(year_groups=relevant_year_groups)
+
         return slot
 
     @classmethod
@@ -129,33 +173,45 @@ class TimetableSlot(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # QUERIES
+    # --------------------
+    # Mutators
+    # --------------------
+
+    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+        """Method adding a queryset of / yeargroup instance to a TimetableSlot instance"""
+        if isinstance(year_groups, YearGroupQuerySet):
+            self.relevant_year_groups.add(*year_groups)
+        elif isinstance(year_groups, YearGroup):
+            self.relevant_year_groups.add(year_groups)
+
+    # --------------------
+    # Queries
+    # --------------------
+
     @classmethod
-    @lru_cache(maxsize=8)
     def get_timeslot_ids_on_given_day(
-        cls, school_id: int, day_of_week: WeekDay
+        cls, school_id: int, day_of_week: constants.Day, year_group: YearGroup
     ) -> list[int]:
         """
         Method returning the timetable slot IDs for the school on the given day of the week
-        Method is cached since it's implicitly called form a list comp creating solver constraints on no repetition .
         """
         timeslots = cls.objects.get_timeslots_on_given_day(
-            school_id=school_id, day_of_week=day_of_week
+            school_id=school_id, day_of_week=day_of_week, year_group=year_group
         )
         timeslot_ids = [timeslot.slot_id for timeslot in timeslots]
         return timeslot_ids
 
     @classmethod
-    def get_unique_start_times(cls, school_id: int) -> list[dt.time]:
+    def get_unique_start_hours(cls, school_id: int) -> list[dt.time]:
         """
         Method to find the unique period_start_at times for a givens school (ordered from first to last).
         Note that we are only interested in the times of day, and not the days.
         """
         slots = cls.objects.get_all_instances_for_school(school_id=school_id)
-        times = slots.values_list("period_starts_at", flat=True)
-        sorted_times = sorted(
-            list(set(times))
-        )  # Cannot use .distinct("period_starts_at") since SQLite doesn't support
+        times = slots.values_list("starts_at", flat=True)
+        unique_rounded_hours = {dt.time(hour=round(time.hour, 0)) for time in times}
+        sorted_times = sorted(list(unique_rounded_hours))
+
         return sorted_times
 
     def check_if_slots_are_consecutive(self, other_slot: "TimetableSlot") -> bool:
@@ -163,19 +219,42 @@ class TimetableSlot(models.Model):
         Method to check if a slot is consecutive with the passed 'other_slot'
         """
         same_day = self.day_of_week == other_slot.day_of_week
-        contiguous_time = (self.period_starts_at == other_slot.period_ends_at) or (
-            self.period_ends_at == other_slot.period_starts_at
+        contiguous_time = (self.starts_at == other_slot.ends_at) or (
+            self.ends_at == other_slot.starts_at
         )
         return same_day and contiguous_time
 
-    # PROPERTIES
+    # --------------------
+    # Properties
+    # --------------------
+
     @property
-    def period_ends_at(self) -> dt.time:
+    def open_interval(self) -> tuple[dt.time, dt.time]:
         """
-        Property calculating the time at which a timetable slot ends.
+        Duration which the slot covers +/- a second (a 'fake' open interval really).
+        This is so that comparing with another slot doesn't give undesired clashes.
         """
-        end_datetime = (
-            dt.datetime.combine(date=dt.datetime.min, time=self.period_starts_at)
-            + self.period_duration
-        )
-        return end_datetime.time()
+        one_second = dt.timedelta(seconds=1)
+
+        open_start_time = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.starts_at) + one_second
+        ).time()
+
+        open_end_time = (
+            dt.datetime.combine(date=dt.datetime.min, time=self.ends_at) - one_second
+        ).time()
+
+        return open_start_time, open_end_time
+
+    # --------------------
+    # Validation
+    # --------------------
+
+    def clean(self) -> None:
+        """
+        Additional validation on TimetablesLOT instances.
+        """
+        if self.ends_at <= self.starts_at:
+            raise exceptions.ValidationError(
+                "Period cannot finish before it has started!"
+            )

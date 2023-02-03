@@ -1,44 +1,32 @@
 """Unit tests for the methods on the TimetableSolverConstraints class"""
 
 # Standard library imports
-from functools import lru_cache
-
-# Django imports
-from django import test
+import datetime as dt
 
 # Third party imports
-from pulp import LpConstraint
+import pytest
 
 # Local application imports
+from data import models
+from data import constants as data_constants
 from domain import solver as slvr
+from tests import data_factories
+from tests import domain_factories
 
 
-class TestSolverConstraints(test.TestCase):
+@pytest.mark.django_db
+class TestSolverConstraints:
 
-    fixtures = [
-        "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
-        "teachers.json",
-        "timetable.json",
-        "lessons_without_solution",
-    ]
+    # --------------------
+    # Helpers
+    # --------------------
 
     @staticmethod
-    @lru_cache(maxsize=1)
-    def get_constraint_maker() -> slvr.TimetableSolverConstraints:
-        """
-        Method used to instantiate the 'maker' of pulp constraints. Would use pytest fixtures, but this does not work
-        since the test class subclasses the Django TestCase.
-        Note that we include a default solution specification also within this method.
-        """
-        school_access_key = 123456
-        spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=True,
-            allow_triple_periods_and_above=True,
-        )
+    def get_constraint_maker(school: models.School) -> slvr.TimetableSolverConstraints:
+        """Get an instance of the class we will be testing the methods of."""
+        spec = domain_factories.SolutionSpecification()
         data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
+            school_id=school.school_access_key, solution_specification=spec
         )
         variables = slvr.TimetableSolverVariables(inputs=data)
         constraint_maker = slvr.TimetableSolverConstraints(
@@ -46,204 +34,382 @@ class TestSolverConstraints(test.TestCase):
         )
         return constraint_maker
 
-    def test_get_all_fulfillment_constraints(self):
-        """
-        Test that the correct set of fulfillment constraints is returned for all the lessons.
-        We expect one constraint per lesson.
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+    # --------------------
+    # Tests
+    # --------------------
+
+    @pytest.mark.parametrize("n_lessons", [1, 41])
+    def test_get_all_fulfillment_constraints(self, n_lessons):
+        school = data_factories.School()
+
+        for _ in range(0, n_lessons):
+            # Get a n lessons that will need fulfilling, and one slot for each
+            lesson = data_factories.Lesson.with_n_pupils(
+                n_pupils=1,
+                total_required_slots=1,
+                total_required_double_periods=0,
+                school=school,
+            )
+            data_factories.TimetableSlot(
+                school=school,
+                relevant_year_groups=(lesson.pupils.first().year_group,),
+            )
+
+        # Get the fulfillment constraints
+        constraint_maker = self.get_constraint_maker(school=school)
         constraints = constraint_maker._get_all_fulfillment_constraints()
 
-        # Check outcome
-        constraint_count = 0
+        # We should have one constraint: lesson_occurs_at_slot == 1
+        for _ in range(0, n_lessons):
+            constraint = next(constraints)[0]
+            assert len(constraint) == 1
+            assert constraint.constant == -1
+
+        with pytest.raises(StopIteration):
+            next(constraints)
+
+    @pytest.mark.parametrize("n_pupils", [1, 17])
+    def test_get_all_pupil_constraints_gives_a_constraint_per_pupil(
+        self, n_pupils: int
+    ):
+        # Get a single lesson that will need fulfilling, and one slot
+        lesson = data_factories.Lesson.with_n_pupils(
+            n_pupils=n_pupils, total_required_slots=1, total_required_double_periods=0
+        )
+        data_factories.TimetableSlot(
+            school=lesson.school,
+            relevant_year_groups=(lesson.pupils.first().year_group,),
+        )
+
+        # Get the pupil constraints
+        constraint_maker = self.get_constraint_maker(school=lesson.school)
+        constraints = constraint_maker._get_all_pupil_constraints()
+
+        # We should have one constraint per pupil, since there is one lesson and one slot
+        for _ in range(0, n_pupils):
+            constraint = next(constraints)[0]
+            # Each constraint is of the form: busy_at_x <= 1
+            assert len(constraint) == 1
+            assert constraint.constant == -1
+
+        with pytest.raises(StopIteration):
+            next(constraints)
+
+    @pytest.mark.parametrize("n_teachers", [1, 7])
+    def test_get_all_teacher_constraints_gives_one_meaningful_per_teacher(
+        self, n_teachers: int
+    ):
+        school = data_factories.School()
+
+        # Get a lesson & one slot for each teacher to teach
+        for _ in range(0, n_teachers):
+            teacher = data_factories.Teacher(school=school)
+            lesson = data_factories.Lesson.with_n_pupils(
+                n_pupils=1,
+                total_required_slots=1,
+                total_required_double_periods=0,
+                school=school,
+                teacher=teacher,
+            )
+            data_factories.TimetableSlot(
+                school=school,
+                relevant_year_groups=(lesson.pupils.first().year_group,),
+            )
+
+        # Get the teacher constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_teacher_constraints()
+
+        # We should have one constraint per teacher, per slot.
+        # Only one meaningful (non-zero) constraint per teacher however
+        meaningful_constraints = 0
+        zero_constraints = 0
         for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 35
-            )  # Since each decision variable is included in the sum
-            assert (
-                constraint.constant < 0
-            )  # Even if fixed lessons occupy the slots, should still be some free vars
-            constraint_count += 1
-        assert constraint_count == 12
+            if len(constraint) == 0:
+                zero_constraints += 1
+                continue
 
-    def test_get_all_pupil_constraints(self):
-        """
-        Test that the correct set of constraints is returned for pupils
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        pup_constraints = constraint_maker._get_all_pupil_constraints()
+            # Each constraint is of the form: busy_at_x <= 1
+            assert len(constraint) == 1
+            assert constraint.constant == -1
+            meaningful_constraints += 1
 
-        # Check outcome
-        existing_commitment_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
+        # For each teacher we get one meaningful constraint
+        # Which corresponds to them being busy at the slot they will teach in
+        assert meaningful_constraints == n_teachers
+        # And one dead constraint, corresponding to the slots they do not teach at
+        assert zero_constraints == (n_teachers**2) - n_teachers
+
+    def test_get_all_teacher_constraints_with_two_year_groups(self):
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+
+        # Get two year groups and a lesson for each, both taught by the same teacher
+        lesson_0 = data_factories.Lesson.with_n_pupils(
+            n_pupils=1,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            school=school,
+            teacher=teacher,
         )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
-        for constraint_tuple in pup_constraints:
-            assert isinstance(constraint_tuple[0], LpConstraint)
-
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                existing_commitment_count += (
-                    1  # Constraint specifies that the pupil is unavailable at the time
-                )
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_commitment_count == 6 * 35
-        )  # = n_pupils * n_timetable_slots
-        assert free_constraint_count == 6 * (
-            35 - 5
-        )  # Since we have 5 fixed lunch slots (deducted per pupil)
-
-    def test_get_all_teacher_constraints(self):
-        """
-        Test that the correct set of constraints is returned for teachers
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        teacher_constraints = constraint_maker._get_all_teacher_constraints()
-
-        # Check outcome
-        existing_commitment_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
-        )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
-        for constraint_tuple in teacher_constraints:
-            assert isinstance(constraint_tuple[0], LpConstraint)
-
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                existing_commitment_count += 1  # Constraint specifies that the teacher is unavailable at the time
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_commitment_count == 11 * 35
-        )  # = n_teachers * n_timetable_slots
-        assert free_constraint_count == 11 * (
-            35 - 5
-        )  # Since we have 5 fixed lunch slots (deducted per teacher)
-
-    def test_get_all_classroom_constraints(self):
-        """
-        Test that the correct set of constraints is returned for classrooms
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        classroom_constraints = constraint_maker._get_all_classroom_constraints()
-
-        # Check outcome
-        existing_occupied_count = (
-            0  # constraints where the LpAffineExpression must always equal 0
-        )
-        free_constraint_count = (
-            0  # constraints where the LpAffineExpression could equal 1
-        )
-        for constraint_tuple in classroom_constraints:
-            assert isinstance(constraint_tuple[0], LpConstraint)
-
-            constant = constraint_tuple[0].constant
-            if constant == 0:
-                existing_occupied_count += (
-                    1  # Constraint specifies that the classroom is occupied at the time
-                )
-            elif constant == -1:
-                free_constraint_count += 1  # Note PuLP takes x <= 1 to become x - 1 <= 0, hence the -1 constant
-
-        assert (
-            free_constraint_count + existing_occupied_count == 12 * 35
-        )  # = n_classrooms * n_timetable_slots
-        assert free_constraint_count == 12 * 35  # No lunch hall in fixture for now...
-
-    def test_get_all_double_period_fulfillment_constraints(self):
-        """
-        Test that the correct set of constraints on the number of double periods is returned.
-        We expect one constraint per lesson class.
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        dp_fulfillment_constraints = (
-            constraint_maker._get_all_double_period_fulfillment_constraints()
+        yg_0 = lesson_0.pupils.first().year_group
+        slot_0 = data_factories.TimetableSlot(
+            school=school,
+            relevant_year_groups=(yg_0,),
+            starts_at=dt.time(hour=10),
+            ends_at=dt.time(hour=11),
         )
 
-        # Check the outcome
-        constraint_count = 0
-        for constraint_tuple in dp_fulfillment_constraints:
+        lesson_1 = data_factories.Lesson.with_n_pupils(
+            n_pupils=1,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            school=school,
+            teacher=teacher,
+        )
+        yg_1 = lesson_1.pupils.first().year_group
+        data_factories.TimetableSlot(  # Ensure this clashes with the other slot
+            school=school,
+            relevant_year_groups=(yg_1,),
+            starts_at=dt.time(hour=9, minute=30),
+            ends_at=dt.time(hour=10, minute=30),
+            day_of_week=slot_0.day_of_week,
+        )
+        assert yg_0 != yg_1
+
+        # Get the teacher constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_teacher_constraints()
+
+        # We should have a (duplicated) constraint that the teacher can't teach
+        # at both of the factory slots, since they clash (the problem is infeasible)
+        constraint_tuple = next(constraints)
+        constraint = constraint_tuple[0]
+        assert len(constraint) == 2
+        assert constraint.constant == -1
+
+    @pytest.mark.parametrize("n_classrooms", [1, 5])
+    def test_get_all_classroom_constraints_gives_one_meaningful_per_classroom(
+        self, n_classrooms
+    ):
+        school = data_factories.School()
+
+        for _ in range(0, n_classrooms):
+            # Get a lesson & one slot for each classroom to host
+            classroom = data_factories.Classroom(school=school)
+            lesson = data_factories.Lesson.with_n_pupils(
+                n_pupils=1,
+                total_required_slots=1,
+                total_required_double_periods=0,
+                school=school,
+                classroom=classroom,
+            )
+            data_factories.TimetableSlot(
+                school=school,
+                relevant_year_groups=(lesson.pupils.first().year_group,),
+            )
+
+        # Get the classroom constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_classroom_constraints()
+
+        # We should have one constraint per teacher, per slot.
+        # Only one meaningful (non-zero) constraint per teacher however
+        meaningful_constraints = 0
+        zero_constraints = 0
+        for constraint_tuple in constraints:
             constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 30
-            )  # Since each double-period variable is included in the sum
-            constraint_count += 1
-        assert constraint_count == 12
+            if len(constraint) == 0:
+                zero_constraints += 1
+                continue
 
-    def test_get_all_double_period_dependency_constraints(self):
-        """
-        Test that the correct set of constraints is returned linking the decision variables and the double period
-        variables
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        dependency_constraints = (
-            constraint_maker._get_all_double_period_dependency_constraints()
+            # Each constraint is of the form: busy_at_x <= 1
+            assert len(constraint) == 1
+            assert constraint.constant == -1
+            meaningful_constraints += 1
+
+        # For each classroom we get one meaningful constraint
+        # Which corresponds to it being occupied at the slot it will have a lesson for
+        assert meaningful_constraints == n_classrooms
+        # And one dead constraint, corresponding to the slots they do not teach at
+        assert zero_constraints == (n_classrooms**2) - n_classrooms
+
+    def test_get_all_classroom_constraints_with_two_year_groups(self):
+        school = data_factories.School()
+        classroom = data_factories.Classroom(school=school)
+
+        # Get two year groups and a lesson for each, both taught in the same classroom
+        lesson_0 = data_factories.Lesson.with_n_pupils(
+            n_pupils=1,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            school=school,
+            classroom=classroom,
+        )
+        yg_0 = lesson_0.pupils.first().year_group
+        slot_0 = data_factories.TimetableSlot(
+            school=school,
+            relevant_year_groups=(yg_0,),
+            starts_at=dt.time(hour=10),
+            ends_at=dt.time(hour=11),
         )
 
-        # Check the outcome
-        constraint_count = 0
-        for constraint_tuple in dependency_constraints:
-            constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
+        lesson_1 = data_factories.Lesson.with_n_pupils(
+            n_pupils=1,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            school=school,
+            classroom=classroom,
+        )
+        yg_1 = lesson_1.pupils.first().year_group
+        data_factories.TimetableSlot(  # Ensure this clashes with the other slot
+            school=school,
+            relevant_year_groups=(yg_1,),
+            starts_at=dt.time(hour=9, minute=30),
+            ends_at=dt.time(hour=10, minute=30),
+            day_of_week=slot_0.day_of_week,
+        )
+        assert yg_0 != yg_1
+
+        # Get the teacher constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_classroom_constraints()
+
+        # We should have a (duplicated) constraint that the classroom can't be used
+        # at both of the factory slots, since they clash (the problem is infeasible)
+        constraint = next(constraints)[0]
+        assert len(constraint) == 2
+        assert constraint.constant == -1
+
+    @pytest.mark.parametrize("n_lessons", [1, 23])
+    def test_get_all_double_period_fulfillment_constraints_one_per_lesson(
+        self, n_lessons
+    ):
+        school = data_factories.School()
+
+        for _ in range(0, n_lessons):
+            # Get n lessons needing a double, and two consecutive slots for each
+            lesson = data_factories.Lesson.with_n_pupils(
+                n_pupils=1,
+                total_required_slots=2,
+                total_required_double_periods=1,
+                school=school,
+            )
+            slot = data_factories.TimetableSlot(
+                school=school,
+                relevant_year_groups=(lesson.pupils.first().year_group,),
+            )
+            data_factories.TimetableSlot.get_next_consecutive_slot(slot)
+
+        # Get the fulfillment constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_double_period_fulfillment_constraints()
+
+        # We should have one constraint: lesson_occurs_at_slot == 1
+        for _ in range(0, n_lessons):
+            constraint = next(constraints)[0]
+            assert len(constraint) == 1
+            assert constraint.constant == -1
+
+        with pytest.raises(StopIteration):
+            next(constraints)
+
+    @pytest.mark.parametrize("n_lessons", [1, 11])
+    def test_get_all_double_period_dependency_constraints_two_per_lesson(
+        self, n_lessons
+    ):
+        school = data_factories.School()
+
+        for _ in range(0, n_lessons):
+            # Get n lessons needing a double, and two consecutive slots for each
+            lesson = data_factories.Lesson.with_n_pupils(
+                n_pupils=1,
+                total_required_slots=2,
+                total_required_double_periods=1,
+                school=school,
+            )
+            slot = data_factories.TimetableSlot(
+                school=school,
+                relevant_year_groups=(lesson.pupils.first().year_group,),
+            )
+            data_factories.TimetableSlot.get_next_consecutive_slot(slot)
+
+        # Get the dependency constraints
+        constraint_maker = self.get_constraint_maker(school=school)
+        constraints = constraint_maker._get_all_double_period_dependency_constraints()
+
+        # Two constraints per lesson, since the double var depends on both single vars
+        for _ in range(0, 2 * n_lessons):
+            constraint = next(constraints)[0]
+            # Each constraint is of the form: double_at_x_y <= double_at_x
             assert len(constraint) == 2
-            constraint_count += 1
-        # Note that we haveL 12 lessons; 6 double options / day / class; 5 days; 2 related decision variables
-        assert constraint_count == 12 * 6 * 5 * 2
+            assert constraint.constant == 0
 
-    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
-        """
-        Test that the correct set of constraints is returned preventing split periods.
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
-        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
+        with pytest.raises(StopIteration):
+            next(constraints)
 
-        # Check the outcome
-        constraint_count = 0
-        for constraint_tuple in constraints:
-            constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 13
-            )  # Since we have 7 decision variables and 6 double period variables in the mix
-            assert constraint.constant == -1  # 1 Double period per day
-            constraint_count += 1
-        assert constraint_count == 5 * 12  # number days * number lessons
+    def test_get_all_no_two_doubles_in_a_day_constraint_one_per_day(self):
+        # Get a lesson requiring a double
+        lesson = data_factories.Lesson.with_n_pupils(
+            n_pupils=1, total_required_slots=2, total_required_double_periods=1
+        )
+        # Offer 2 different options for the double (3 consecutive periods)
+        slot_0 = data_factories.TimetableSlot(
+            school=lesson.school,
+            relevant_year_groups=(lesson.pupils.first().year_group,),
+        )
+        slot_1 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
+        data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
 
-    def test_get_all_no_triple_periods_and_above_constraints(self):
-        """
-        Test that the correct set of constraints is returned limiting the number of double periods that can take place
-        on one day to 1.
-        """
-        # Execute test unit
-        constraint_maker = self.get_constraint_maker()
+        # Make some noise from another year group,
+        # Another pair of consecutive slots (which should just be ignored by the constraints)
+        noise_0 = data_factories.TimetableSlot(school=lesson.school)
+        data_factories.TimetableSlot.get_next_consecutive_slot(noise_0)
+
+        # Get the dependency constraints
+        constraint_maker = self.get_constraint_maker(school=lesson.school)
         constraints = constraint_maker._get_all_no_two_doubles_in_a_day_constraints()
 
-        # Check the outcome
-        constraint_count = 0
-        for constraint_tuple in constraints:
-            constraint = constraint_tuple[0]
-            assert isinstance(constraint, LpConstraint)
-            assert (
-                len(constraint) == 6
-            )  # Since there are 6 double periods that can happen in each day
-            assert constraint.constant == -1  # 1 Double period per day
-            constraint_count += 1
-        assert constraint_count == 5 * 12  # number days * number lessons
+        # Two constraints per lesson, since the double var depends on both single vars
+        constraint = next(constraints)[0]
+        # Constraint is: double_at_x_y + double_at_y_z <= 1
+        assert len(constraint) == 2
+        assert constraint.constant == -1
+
+        with pytest.raises(StopIteration):
+            next(constraints)
+
+    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
+        # Get a lesson, requiring two distinct slots
+        lesson = data_factories.Lesson.with_n_pupils(
+            n_pupils=1,
+        )
+
+        # Split some classes within a single day
+        data_factories.TimetableSlot(
+            school=lesson.school,
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
+            day_of_week=data_constants.Day.MONDAY,
+            relevant_year_groups=(lesson.pupils.first().year_group,),
+        )
+        data_factories.TimetableSlot(
+            school=lesson.school,
+            starts_at=dt.time(hour=15),
+            ends_at=dt.time(hour=16),
+            day_of_week=data_constants.Day.MONDAY,
+            relevant_year_groups=(lesson.pupils.first().year_group,),
+        )
+
+        # Get the dependency constraints
+        constraint_maker = self.get_constraint_maker(school=lesson.school)
+        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
+
+        constraint = next(constraints)[0]
+        # The constraint is: lesson at slot 1 + lesson at slot 2 <= 1
+        assert len(constraint) == 2
+        assert constraint.constant == -1
+
+        with pytest.raises(StopIteration):
+            next(constraints)

@@ -6,87 +6,132 @@ Unit tests for methods on the Pupil class
 import pytest
 
 # Django imports
-from django import test
 from django.db import IntegrityError
 
 # Local application imports
 from data import models
+from tests import data_factories as factories
 
 
-class TestPupil(test.TestCase):
+@pytest.mark.django_db
+class TestPupil:
 
-    fixtures = [
-        "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
-        "teachers.json",
-        "timetable.json",
-        "lessons_with_solution.json",
-    ]
+    # --------------------
+    # Factories tests
+    # --------------------
 
-    # FACTORY METHOD TESTS
     def test_create_new_valid_pupil(self):
         """
         Tests that we can create and save a Pupil via the create_new method
         """
-        # Execute test unit
-        pupil = models.Pupil.create_new(
-            school_id=123456, pupil_id=7, firstname="test", surname="test", year_group=1
+        # Make a school and year group for the pupil to be associated with
+        school = factories.School()
+        yg = factories.YearGroup(school=school)
+
+        # Create a new pupil for the school
+        models.Pupil.create_new(
+            school_id=school.school_access_key,
+            year_group_id=yg.year_group_id,
+            pupil_id=100,
+            firstname="test",
+            surname="test",
         )
 
         # Check outcome
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        assert pupil in all_pupils
+        all_pupils = models.Pupil.objects.all()
+        assert all_pupils.count() == 1
+
+        pupil = all_pupils.first()
+        assert pupil.school == school
+        assert pupil.year_group == yg
+        assert pupil.pupil_id == 100
+        assert pupil.pk == 1
 
     def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
         """
         Tests that we can cannot create two Pupils with the same id / school, due to unique_together on the Meta class
         """
-        # Execute test unit
+        # Make a pupil to prevent uniqueness
+        pupil = factories.Pupil()
+
+        # Try to make a pupil with the same school / pupil_id
         with pytest.raises(IntegrityError):
             models.Pupil.create_new(
-                school_id=123456,
-                pupil_id=1,  # Note the pupil_id 1 is already taken
+                school_id=pupil.school.school_access_key,
+                pupil_id=pupil.pupil_id,
                 firstname="test",
                 surname="test",
-                year_group=1,
+                year_group_id=pupil.year_group.year_group_id,
             )
 
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can successfully delete all pupils associated with a school
         """
-        # Execute test unit
-        outcome = models.Pupil.delete_all_instances_for_school(school_id=123456)
+        # Make 2 pupils at the same school
+        school_1 = factories.School()
+        factories.Pupil(school=school_1)
+        factories.Pupil(school=school_1)
+
+        # And a pupil at another school
+        school_2 = factories.School()
+        safe_from_deletion_yg = factories.Pupil(school=school_2)
+
+        # Delete all the pupils for school_1
+        outcome = models.Pupil.delete_all_instances_for_school(
+            school_id=school_1.school_access_key
+        )
 
         # Check outcome
         deleted_ref = outcome[1]
-        assert deleted_ref["data.Pupil"] == 6
-        assert deleted_ref["data.Lesson_pupils"] == 24
+        assert deleted_ref["data.Pupil"] == 2
 
-        all_pupils = models.Pupil.objects.get_all_instances_for_school(school_id=123456)
-        assert all_pupils.count() == 0
+        all_pupils = models.Pupil.objects.all()
+        assert all_pupils.count() == 1
+        assert all_pupils.first() == safe_from_deletion_yg
 
-    # FILTER METHOD TESTS
-    def test_check_if_busy_at_time_slot_when_pupil_is_busy(self):
+    # --------------------
+    # Queries tests
+    # --------------------
+
+    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_lesson(self):
         """
-        Test that the check_if_busy_at_time_slot method returns 'True' when we expect it to
+        Pupil should be busy if they're in another lesson at passed slot.
         """
-        # Set test parameters
-        pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=1
+        # Make a pupil and ensure they are busy for some slot
+        pupil = factories.Pupil()
+        slot = factories.TimetableSlot(
+            school=pupil.school, relevant_year_groups=(pupil.year_group,)
         )
-
-        # We ensure they are busy at this time
-        lesson = models.Lesson.objects.get_individual_lesson(
-            school_id=123456, lesson_id="YEAR_ONE_MATHS_A"
+        factories.Lesson(
+            school=pupil.school, pupils=(pupil,), user_defined_time_slots=(slot,)
         )
-        lesson.add_pupils(pupils=pup)
-        lesson.add_user_defined_time_slots(time_slots=slot)
 
         # Execute test unit
-        is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
+
+        # Check outcome
+        assert is_busy
+
+    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_break(self):
+        """
+        Pupil should be busy if they're in a break at passed slot.
+        """
+        # Make a pupil and ensure they are busy for some slot
+        pupil = factories.Pupil()
+        slot = factories.TimetableSlot(
+            school=pupil.school, relevant_year_groups=(pupil.year_group,)
+        )
+        factories.Break(
+            school=pupil.school,
+            relevant_year_groups=(pupil.year_group,),
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
+            day_of_week=slot.day_of_week,
+        )
+
+        # Execute test unit
+        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert is_busy
@@ -95,41 +140,70 @@ class TestPupil(test.TestCase):
         """
         Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to
         """
-        # Set test parameters
-        pup = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
-        slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=123456, slot_id=5
+        # Make a pupil and slot, so in the absence of any lessons the pupil is not bust
+        pupil = factories.Pupil()
+        slot = factories.TimetableSlot(
+            school=pupil.school, relevant_year_groups=(pupil.year_group,)
         )
 
         # Execute test unit
-        is_busy = pup.check_if_busy_at_time_slot(slot=slot)
+        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
 
         # Check outcome
         assert not is_busy
 
-    # QUERY METHOD TESTS
+    def test_get_associated_timeslots(self):
+        """
+        Test that the correct TimetableSlots are associated with a pupil.
+        """
+        # Make a year group with a time slot
+        yg = factories.YearGroup()
+        slot_1 = factories.TimetableSlot(school=yg.school, relevant_year_groups=(yg,))
+        factories.TimetableSlot()  # A dummy slot that won't be included for the pupil
+
+        # Add the pupil to this year group
+        pupil = factories.Pupil(school=yg.school, year_group=yg)
+
+        # Now retrieve the pupil's associated slots
+        slots = pupil.get_associated_timeslots()
+
+        # Check only slot 1 was associated with the pupil
+        assert slots.count() == 1
+        assert slot_1 in slots
+        # Therefore the dummy slot wasn't associated
+
     def test_get_lessons_per_week(self):
         """
         Test that the correct number of lessons per week is retrieved for a pupil.
         """
-        # Set test parameters
-        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
+        # Make a pupil and give them a lesson
+        pupil = factories.Pupil()
+        lesson = factories.Lesson(school=pupil.school, pupils=(pupil,))
 
         # Execute test unit
         weekly_lessons = pupil.get_lessons_per_week()
 
         # Check outcome
-        assert weekly_lessons == 30
+        assert weekly_lessons == lesson.total_required_slots
 
     def test_get_occupied_percentage(self):
         """
         Test that the correct occupied percentage is retrieved for a pupil.
         """
-        # Set test parameters
-        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=1)
+        # Make a pupil and give them a lesson
+        pupil = factories.Pupil()
+        slot = factories.TimetableSlot(
+            school=pupil.school, relevant_year_groups=(pupil.year_group,)
+        )
+        factories.Lesson(
+            school=pupil.school,
+            total_required_slots=1,
+            pupils=(pupil,),
+            user_defined_time_slots=(slot,),
+        )
 
         # Execute test unit
-        percentage = pupil.get_occupied_percentage()
+        occupied_percentage = pupil.get_occupied_percentage()
 
-        # Check outcome
-        assert percentage == (30 / 35)
+        # Occupied percentage should be 100%, since the pupil has 1 lesson slot and 1 associated slot.
+        assert occupied_percentage == 1.0

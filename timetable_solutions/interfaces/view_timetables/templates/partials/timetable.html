@@ -1,0 +1,22 @@
+<!--Context: timetable: OrderedDict[constants.Day, list[TimetableComponent]-->
+
+<style>
+.timetable {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: stretch;
+    justify-content: space-evenly;
+    column-gap: 5px;
+
+    height: 100%;
+    width: 100%;
+}
+</style>
+
+<div class="timetable">
+    {% for day, components in timetable.items %}
+        {% if components %}
+            {% include 'partials/timetable-day.html' with day=day components=components %}
+        {% endif %}
+    {% endfor %}
+</div>

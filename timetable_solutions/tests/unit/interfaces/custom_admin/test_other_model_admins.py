@@ -15,9 +15,10 @@ class TestBaseModelAdmin(test.TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
         "test_scenario_1.json",
@@ -48,29 +49,6 @@ class TestBaseModelAdmin(test.TestCase):
         }
 
     # SAVE MODEL TESTS
-    def test_save_model_auto_associates_user_school_with_pupil(self):
-        """
-        Test that when posting a form to the admin to add a Pupil, the school (carried on the user's profile)
-        successfully gets added to the object by the save_model code.
-        """
-        # Set test parameters
-        self.client.login(username="dummy_teacher", password="dt123dt123")
-        url = "/data/admin/data/pupil/add/"
-        form_data = {
-            "pupil_id": 7,
-            "firstname": "test",
-            "surname": "testson",
-            "year_group": 1,
-        }
-
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-
-        # Check outcome
-        self.assertRedirects(response=response, expected_url="/data/admin/data/pupil/")
-        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=7)
-        assert pupil.school.school_access_key == 123456
-
     def test_save_model_auto_associates_user_school_with_teacher(self):
         """
         Test that when posting a form to the admin to add a Teacher, the school (carried on the user's profile)
@@ -120,6 +98,59 @@ class TestBaseModelAdmin(test.TestCase):
         )
         assert classroom.school.school_access_key == 123456
 
+    def test_save_model_auto_associates_user_school_with_year_group(self):
+        """
+        Test that when posting a form to the admin to add a YearGroup, the school (carried on the user's profile)
+        successfully gets added to the object by the save_model code.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/yeargroup/add/"
+        form_data = {
+            "year_group_id": 7,
+            "year_group_name": "7",
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(
+            response=response, expected_url="/data/admin/data/yeargroup/"
+        )
+        year_group = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group_id=7
+        )
+        assert year_group.school.school_access_key == 123456
+
+    def test_save_model_auto_associates_user_school_with_pupil(self):
+        """
+        Test that when posting a form to the admin to add a Pupil, the school (carried on the user's profile)
+        successfully gets added to the object by the save_model code.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/pupil/add/"
+        form_data = {
+            "pupil_id": 7,
+            "firstname": "test",
+            "surname": "testson",
+            "year_group": "1",
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        self.assertRedirects(response=response, expected_url="/data/admin/data/pupil/")
+        pupil = models.Pupil.objects.get_individual_pupil(school_id=123456, pupil_id=7)
+        assert pupil.school.school_access_key == 123456
+
+        expected_yg = models.YearGroup.objects.get_individual_year_group(
+            school_id=123456, year_group_id=1
+        )
+        assert pupil.year_group == expected_yg
+
     def test_save_model_auto_associates_user_school_with_timetable_slot(self):
         """
         Test that when posting a form to the admin to add a TimetableSlot, the school (carried on the user's profile)
@@ -131,8 +162,9 @@ class TestBaseModelAdmin(test.TestCase):
         form_data = {
             "slot_id": 100,
             "day_of_week": 1,
-            "period_starts_at": "09:00",
-            "period_duration": "01:00",
+            "starts_at": "09:00",
+            "ends_at": "10:00",
+            "relevant_year_groups": [1, 2],
         }
 
         # Execute test unit
@@ -146,6 +178,32 @@ class TestBaseModelAdmin(test.TestCase):
             school_id=123456, slot_id=100
         )
         assert slot.school.school_access_key == 123456
+
+        expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
+            school_id=123456, year_group_ids={1, 2}
+        )
+        self.assertQuerysetEqual(slot.relevant_year_groups.all(), expected_year_groups)
+
+    def test_cannot_create_timetable_slot_without_year_group_via_admin(self):
+        """
+        Test that a form not containing the relevant_year_groups_field will be unsuccessful.
+        """
+        # Set test parameters
+        self.client.login(username="dummy_teacher", password="dt123dt123")
+        url = "/data/admin/data/timetableslot/add/"
+        form_data = {
+            "slot_id": 100,
+            "day_of_week": 1,
+            "starts_at": "09:00",
+            "ends_at": "10:00",
+        }
+
+        # Execute test unit
+        response = self.client.post(url, data=form_data)
+
+        # Check outcome
+        assert b"Please correct the error below" in response.content
+        assert b"This field is required" in response.content
 
     # GET QUERYSET TESTS
     def test_get_queryset_pupils_filters_by_school(self):

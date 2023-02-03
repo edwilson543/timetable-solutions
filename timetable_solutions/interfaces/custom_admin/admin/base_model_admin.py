@@ -9,6 +9,7 @@ from django.db.models import QuerySet
 from django.utils import html
 
 # Local application imports
+from data import constants
 from data import models
 from interfaces.utils import typing_utils
 
@@ -86,7 +87,7 @@ class CustomModelAdminBase(admin.ModelAdmin):
         """
         if hasattr(request.user, "profile"):
             return request.user.is_active and (
-                request.user.profile.role == models.UserRole.SCHOOL_ADMIN
+                request.user.profile.role == constants.UserRole.SCHOOL_ADMIN
             )
         else:
             return False

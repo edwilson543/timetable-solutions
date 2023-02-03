@@ -39,6 +39,14 @@ class TimetableStructureReset(DataResetBase):
     timetable = True
 
 
+class YearGroupReset(DataResetBase):
+    """
+    Class used to handle the resetting of year_group data.
+    """
+
+    year_groups = True
+
+
 class LessonReset(DataResetBase):
     """
     Class used to handle the resetting of lesson data.
@@ -47,13 +55,22 @@ class LessonReset(DataResetBase):
     lessons = True
 
 
-class AllSchoolDataReset(DataResetBase):
+class BreakReset(DataResetBase):
     """
-    Class used to reset ALL the data relevant to a given school (accept users / the school itself)
+    Class used to handle the resetting of break data.
     """
 
-    pupils = True
+    breaks = True
+
+
+class AllSchoolDataReset(DataResetBase):
+    """
+    Class used to reset ALL the data relevant to a given school (except users / the school itself)
+    """
+
     teachers = True
     classrooms = True
+    year_groups = True
+    pupils = True
     timetable = True
     lessons = True

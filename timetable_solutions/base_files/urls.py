@@ -10,7 +10,7 @@ from django.urls import path, include, reverse_lazy
 from django.views.generic import RedirectView
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from interfaces.custom_admin.admin.custom_admin_site import user_admin
 
 urlpatterns = (

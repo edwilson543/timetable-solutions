@@ -1,0 +1,163 @@
+[
+  {
+    "model": "data.school",
+    "pk": 222222,
+    "fields": {
+      "school_name": "Fake School"
+    }
+  },
+  {
+    "model": "data.yeargroup",
+    "pk": 201,
+    "fields": {
+      "year_group_id": 1,
+      "year_group_name": "1",
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.yeargroup",
+    "pk": 202,
+    "fields": {
+      "year_group_id": 2,
+      "year_group_name": "2",
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 201,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 1,
+      "starts_at": "08:30:00",
+      "ends_at": "09:30:00",
+      "school": 222222,
+      "relevant_year_groups": [
+        201
+      ]
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 202,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 2,
+      "starts_at": "20:30:00",
+      "ends_at": "11:30:00",
+      "school": 222222,
+      "relevant_year_groups": [
+        201
+      ]
+    }
+  },
+  {
+    "model": "data.timetableslot",
+    "pk": 203,
+    "fields": {
+      "day_of_week": 1,
+      "slot_id": 3,
+      "starts_at": "09:00:00",
+      "ends_at": "20:00:00",
+      "school": 222222,
+      "relevant_year_groups": [
+        202
+      ]
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 201,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 201,
+      "pupil_id": 1,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.pupil",
+    "pk": 202,
+    "fields": {
+      "firstname": "John",
+      "surname": "Smith",
+      "year_group": 202,
+      "pupil_id": 2,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.teacher",
+    "pk": 201,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 1,
+      "school": 222222
+    }
+  },
+    {
+    "model": "data.teacher",
+    "pk": 202,
+    "fields": {
+      "firstname": "Theresa",
+      "surname": "May",
+      "title": "Mrs",
+      "teacher_id": 2,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.classroom",
+    "pk": 201,
+    "fields": {
+      "building": "MB",
+      "room_number": 47,
+      "classroom_id": 1,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.lesson",
+    "pk": 201,
+    "fields": {
+      "lesson_id": "ENGLISH",
+      "subject_name": "ENGLISH",
+      "teacher": 201,
+      "pupils": [
+        201
+      ],
+      "classroom": 201,
+      "user_defined_time_slots": [],
+      "solver_defined_time_slots": [],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
+      "school": 222222
+    }
+  },
+  {
+    "model": "data.lesson",
+    "pk": 202,
+    "fields": {
+      "lesson_id": "MATHS",
+      "subject_name": "MATHS",
+      "teacher": 202,
+      "pupils": [
+        202
+      ],
+      "classroom": 201,
+      "user_defined_time_slots": [
+        203
+      ],
+      "solver_defined_time_slots": [
+        202
+      ],
+      "total_required_slots": 1,
+      "total_required_double_periods": 0,
+      "school": 222222
+    }
+  }
+]

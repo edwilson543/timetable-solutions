@@ -3,7 +3,7 @@ Module for the AdminSite instance used to implement the custom AdminSite.
 """
 
 # Standard library imports
-from typing import Type, TypedDict
+from typing import TypedDict
 
 # Django imports
 from django import http
@@ -13,7 +13,8 @@ from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
+from data import constants
 from data import models
 
 
@@ -24,7 +25,7 @@ class ModelDict(TypedDict):
     e.g. app_dict = {'data': {..., 'models': [d1: AppDictModel = {...}, d2: AppDictModel = {...}, ... ]}}
     """
 
-    model: Type[models.ModelSubclass]
+    model: type[models.ModelSubclass]
     name: str
     object_name: str
     perms: dict[str, bool]
@@ -60,7 +61,7 @@ class CustomAdminSite(admin.AdminSite):
         """
         if hasattr(request.user, "profile"):
             return request.user.is_active and (
-                request.user.profile.role == models.UserRole.SCHOOL_ADMIN
+                request.user.profile.role == constants.UserRole.SCHOOL_ADMIN
             )
         else:
             return False

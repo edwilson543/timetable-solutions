@@ -8,14 +8,6 @@ from .base_classes import ExampleDownloadBase
 from domain.data_upload_processing.constants import ExampleFile
 
 
-class PupilDownload(ExampleDownloadBase):
-    """
-    Class used to download the example pupils file.
-    """
-
-    example_filepath = ExampleFile.PUPILS.filepath
-
-
 class TeacherDownload(ExampleDownloadBase):
     """
     Class used to download the example teachers file.
@@ -32,6 +24,22 @@ class ClassroomDownload(ExampleDownloadBase):
     example_filepath = ExampleFile.CLASSROOMS.filepath
 
 
+class YearGroupDownload(ExampleDownloadBase):
+    """
+    Class used to download the example year groups file.
+    """
+
+    example_filepath = ExampleFile.YEAR_GROUPS.filepath
+
+
+class PupilDownload(ExampleDownloadBase):
+    """
+    Class used to download the example pupils file.
+    """
+
+    example_filepath = ExampleFile.PUPILS.filepath
+
+
 class TimetableDownload(ExampleDownloadBase):
     """
     Class used to download the example timetable file.
@@ -46,3 +54,11 @@ class LessonDownload(ExampleDownloadBase):
     """
 
     example_filepath = ExampleFile.LESSON.filepath
+
+
+class BreakDownload(ExampleDownloadBase):
+    """
+    Class used to download the example breaks file.
+    """
+
+    example_filepath = ExampleFile.BREAK.filepath

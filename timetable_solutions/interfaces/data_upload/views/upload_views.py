@@ -3,21 +3,9 @@ Views relating to the upload of user data - each subclass of DataUploadBase hand
 """
 
 # Local application imports
-from data import models
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 from .base_classes import DataUploadBase
-
-
-class PupilListUpload(DataUploadBase):
-    """
-    View class to control the uploading of the list of pupils by the user
-    """
-
-    file_structure = data_upload_processing.constants.UploadFileStructure.PUPILS
-    model = models.Pupil
-    form = forms.PupilListUpload
-    processor = data_upload_processing.FileUploadProcessor
 
 
 class TeacherListUpload(DataUploadBase):
@@ -25,10 +13,8 @@ class TeacherListUpload(DataUploadBase):
     View class to control the uploading of the list of teachers by the user
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.TEACHERS
-    model = models.Teacher
     form = forms.TeacherListUpload
-    processor = data_upload_processing.FileUploadProcessor
+    processor = data_upload_processing.TeacherFileUploadProcessor
 
 
 class ClassroomListUpload(DataUploadBase):
@@ -36,10 +22,26 @@ class ClassroomListUpload(DataUploadBase):
     View class to control the uploading of the list of classrooms by the user
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.CLASSROOMS
-    model = models.Classroom
     form = forms.ClassroomListUpload
-    processor = data_upload_processing.FileUploadProcessor
+    processor = data_upload_processing.ClassroomFileUploadProcessor
+
+
+class YearGroupListUpload(DataUploadBase):
+    """
+    View class to control the uploading of the list of year groups by the user
+    """
+
+    form = forms.YearGroupUpload
+    processor = data_upload_processing.YearGroupFileUploadProcessor
+
+
+class PupilListUpload(DataUploadBase):
+    """
+    View class to control the uploading of the list of pupils by the user
+    """
+
+    form = forms.PupilListUpload
+    processor = data_upload_processing.PupilFileUploadProcessor
 
 
 class TimetableStructureUpload(DataUploadBase):
@@ -47,18 +49,23 @@ class TimetableStructureUpload(DataUploadBase):
     View class to control the uploading of the list of teachers by the user
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.TIMETABLE
-    model = models.TimetableSlot
     form = forms.TimetableStructureUpload
-    processor = data_upload_processing.FileUploadProcessor
+    processor = data_upload_processing.TimetableSlotFileUploadProcessor
 
 
 class LessonsUpload(DataUploadBase):
     """
-    View class to control the uploading of the requirements for classes that must take place by the user
+    View class to control the uploading of lesson instances
     """
 
-    file_structure = data_upload_processing.constants.UploadFileStructure.LESSON
-    model = models.Lesson
     form = forms.LessonUpload
     processor = data_upload_processing.LessonFileUploadProcessor
+
+
+class BreaksUpload(DataUploadBase):
+    """
+    View class to control the uploading of break instances
+    """
+
+    form = forms.BreakUpload
+    processor = data_upload_processing.BreakFileUploadProcessor

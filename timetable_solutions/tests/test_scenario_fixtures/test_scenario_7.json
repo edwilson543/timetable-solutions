@@ -7,14 +7,26 @@
     }
   },
   {
+    "model": "data.yeargroup",
+    "pk": 701,
+    "fields": {
+      "year_group_id": 1,
+      "year_group_name": "1",
+      "school": 777777
+    }
+  },
+  {
     "model": "data.timetableslot",
     "pk": 701,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 1,
-      "period_starts_at": "09:00:00",
-      "school": 777777
+      "starts_at": "09:00:00",
+      "ends_at": "10:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -22,21 +34,27 @@
     "pk": 702,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 2,
-      "period_starts_at": "10:00:00",
-      "school": 777777
+      "starts_at": "10:00:00",
+      "ends_at": "11:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
-    {
+  {
     "model": "data.timetableslot",
     "pk": 703,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 3,
-      "period_starts_at": "11:00:00",
-      "school": 777777
+      "starts_at": "11:00:00",
+      "ends_at": "12:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -44,21 +62,27 @@
     "pk": 704,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 4,
-      "period_starts_at": "12:00:00",
-      "school": 777777
+      "starts_at": "12:00:00",
+      "ends_at": "13:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
-    {
+  {
     "model": "data.timetableslot",
     "pk": 705,
     "fields": {
       "day_of_week": 1,
-      "period_duration": "01:00:00",
       "slot_id": 5,
-      "period_starts_at": "13:00:00",
-      "school": 777777
+      "starts_at": "13:00:00",
+      "ends_at": "14:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -66,10 +90,13 @@
     "pk": 706,
     "fields": {
       "day_of_week": 2,
-      "period_duration": "01:00:00",
       "slot_id": 6,
-      "period_starts_at": "09:00:00",
-      "school": 777777
+      "starts_at": "09:00:00",
+      "ends_at": "10:00:00",
+      "school": 777777,
+      "relevant_year_groups": [
+        701
+      ]
     }
   },
   {
@@ -78,7 +105,7 @@
     "fields": {
       "firstname": "John",
       "surname": "Smith",
-      "year_group": 1,
+      "year_group": 701,
       "pupil_id": 1,
       "school": 777777
     }
@@ -111,9 +138,15 @@
       "lesson_id": "ENGLISH",
       "subject_name": "ENGLISH",
       "teacher": 701,
-      "pupils": [701],
+      "pupils": [
+        701
+      ],
       "classroom": 701,
-      "user_defined_time_slots": [701, 702, 705],
+      "user_defined_time_slots": [
+        701,
+        702,
+        705
+      ],
       "solver_defined_time_slots": [],
       "total_required_slots": 4,
       "total_required_double_periods": 1,

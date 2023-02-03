@@ -11,6 +11,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # Local application imports (other models)
+from data import constants
 from data.models.school import School
 
 
@@ -40,18 +41,6 @@ class ProfileQuerySet(models.QuerySet):
         self.update(approved_by_school_admin=True)
 
 
-class UserRole(models.IntegerChoices):
-    """
-    Choices for the different roles that users can have with respect to the site.
-    Note there is no interaction with the default Django authentication tiers (staff / superuser), these roles only
-    relate to the custom admin.
-    """
-
-    SCHOOL_ADMIN = 1, "Administrator"  # Only role with access to the custom admin site
-    TEACHER = 2, "Teacher"
-    PUPIL = 3, "Pupil"
-
-
 class Profile(models.Model):
     """
     Adds information to each User to provide additional profile data.
@@ -59,9 +48,11 @@ class Profile(models.Model):
     responsible for generating their school_id's timetables.
     """
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user: User = models.OneToOneField(User, on_delete=models.CASCADE)
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    role = models.IntegerField(choices=UserRole.choices, default=UserRole.SCHOOL_ADMIN)
+    role = models.IntegerField(
+        choices=constants.UserRole.choices, default=constants.UserRole.SCHOOL_ADMIN
+    )
     approved_by_school_admin = models.BooleanField(default=False)
 
     # Introduce a custom admin
@@ -75,18 +66,21 @@ class Profile(models.Model):
         """String representation of the model for debugging"""
         return f"{self.user} profile"
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories tests
+    # --------------------
+
     @classmethod
-    def create_and_save_new(
+    def create_new(
         cls,
         user: User,
         school_id: int,
-        role: str | UserRole,
+        role: str | constants.UserRole,
         approved_by_school_admin: bool,
     ) -> "Profile":
         """Method to create a new Profile instance, and then save it into the database"""
         if isinstance(role, str):
-            role = UserRole(int(role))
+            role = constants.UserRole(int(role))
         profile = cls.objects.create(
             user=user,
             school_id=school_id,
@@ -95,3 +89,11 @@ class Profile(models.Model):
         )
         profile.full_clean()
         return profile
+
+    # --------------------
+    # Properties tests
+    # --------------------
+
+    @property
+    def username(self) -> str:
+        return self.user.username

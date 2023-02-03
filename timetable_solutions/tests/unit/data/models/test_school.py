@@ -2,38 +2,43 @@
 Unit tests for methods on the School model
 """
 
-# Django imports
-from django import test
+# Third party imports
+import pytest
 
 # Local application imports
 from data import models
+from tests import data_factories as factories
 
 
-class TestClassroom(test.TestCase):
+@pytest.mark.django_db
+class TestSchool:
 
-    fixtures = ["user_school_profile.json"]
+    # --------------------
+    # Factories tests
+    # --------------------
 
-    # FACTORY METHOD TESTS
-    def test_create_new_no_access_key_given(self):
+    def test_create_new_no_access_key_given_no_schools_in_db(self):
         """
-        Test that when a school is created and no access key is given, then one is generated automatically.
+        Test that when the FIRST school is created and no access key is given,
+        then one is generated automatically.
         """
-        # Execute test unit
+        # Create a school using create_new
         school = models.School.create_new(school_name="Test")
 
         # Check outcome
-        assert (
-            school.school_access_key == 123457
-        )  # Since the max access key in the fixture is 123456
 
-    # MISCELLANEOUS METHOD TESTS
-    def test_get_new_access_key_equals_fixture_access_key_plus_one(self):
+        assert school.school_access_key == 1  # Since this is the first school
+
+    def test_create_new_sets_access_key_to_db_school_plus_one(self):
         """
-        There is one school the fixtures with access key 123456, so we expect the next available access key to be
-        123457
+        Test that when the FIRST school is created and no access key is given,
+        then one is generated automatically.
         """
-        # Execute test unit
-        new_access_key = models.School.get_new_access_key()
+        # Make a school using the factory
+        factory_school = factories.School()
+
+        # Create a school using create_new
+        test_school = models.School.create_new(school_name="Test")
 
         # Check outcome
-        assert new_access_key == 123457
+        assert test_school.school_access_key == factory_school.school_access_key + 1

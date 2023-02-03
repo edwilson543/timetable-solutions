@@ -8,7 +8,7 @@ from django import urls
 
 # Local application imports
 from domain.data_upload_processing.constants import ExampleFile
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 
 
 class TestExampleFileDownloads(test.TestCase):
@@ -17,6 +17,23 @@ class TestExampleFileDownloads(test.TestCase):
     """
 
     # Tests for SUCCESSFUL DOWNLOADS VIA GET REQUESTS
+    def test_download_teacher_file_successful(self):
+        """
+        Tests for downloading the example teachers file
+        """
+        # Set test parameters
+        url = urls.reverse(UrlName.TEACHER_DOWNLOAD.value)
+
+        # Execute test unit
+        response = self.client.get(url)
+
+        # Check outcome
+        assert response.headers["Content-Type"] == "text/csv"
+        assert (
+            response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.TEACHERS.value}"'
+        )
+
     def test_download_pupil_file_successful(self):
         """
         Tests for downloading the example pupils file
@@ -34,12 +51,12 @@ class TestExampleFileDownloads(test.TestCase):
             == f'attachment; filename="{ExampleFile.PUPILS.value}"'
         )
 
-    def test_download_teacher_file_successful(self):
+    def test_download_year_group_file_successful(self):
         """
-        Tests for downloading the example teachers file
+        Tests for downloading the example year groups file
         """
         # Set test parameters
-        url = urls.reverse(UrlName.TEACHER_DOWNLOAD.value)
+        url = urls.reverse(UrlName.YEAR_GROUP_DOWNLOAD.value)
 
         # Execute test unit
         response = self.client.get(url)
@@ -48,7 +65,7 @@ class TestExampleFileDownloads(test.TestCase):
         assert response.headers["Content-Type"] == "text/csv"
         assert (
             response.headers["Content-Disposition"]
-            == f'attachment; filename="{ExampleFile.TEACHERS.value}"'
+            == f'attachment; filename="{ExampleFile.YEAR_GROUPS.value}"'
         )
 
     def test_download_classroom_file_successful(self):

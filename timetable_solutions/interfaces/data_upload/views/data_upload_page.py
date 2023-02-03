@@ -4,16 +4,16 @@ Module defining the data upload page, its context, and required ancillaries.
 
 # Standard library imports
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 # Django imports
-from django import urls, forms, http
+from django import urls, http
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.views.generic import TemplateView
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from domain import data_upload_processing
 from interfaces.data_upload import forms
 
@@ -28,11 +28,34 @@ class RequiredUpload:
     """
 
     form_name: str  # Name of the form that will be shown to the user
-    upload_status: data_upload_processing.UploadStatus  # User interpretable status string
-    empty_form: forms.Form
+    upload_status: data_upload_processing.UploadStatusReason
+    empty_form: forms.UploadForm
     upload_url_name: UrlName
     reset_url_name: UrlName
     example_download_url_name: UrlName
+    reset_warning: data_upload_processing.ResetWarning
+
+
+class RequiredFormsContext(TypedDict):
+    """
+    Type and structure of the required_forms context provided to the UploadPage.
+    """
+
+    teachers: RequiredUpload
+    classrooms: RequiredUpload
+    year_groups: RequiredUpload
+    pupils: RequiredUpload
+    timetable: RequiredUpload
+    lessons: RequiredUpload
+    breaks: RequiredUpload
+
+
+class UploadPageContext(TypedDict):
+    """
+    Type and structure of the context provided to the data upload page.
+    """
+
+    required_forms: RequiredFormsContext
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
@@ -46,9 +69,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
     login_url = urls.reverse_lazy("login")
     template_name = "file_upload.html"
 
-    def get_context_data(
-        self, *args: Any, **kwargs: Any
-    ) -> dict[str, dict[str, RequiredUpload]]:
+    def get_context_data(self, *args: Any, **kwargs: Any) -> UploadPageContext:
         """
         Method to get a dictionary of 'RequiredUpload' instances which are used to then control the rendering of either
         an empty form, or a completion message.
@@ -73,16 +94,8 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 extra_tags="safe",
             )
 
-        context = {
+        context: UploadPageContext = {
             "required_forms": {
-                "pupils": RequiredUpload(
-                    form_name="Pupils",
-                    upload_status=upload_status.pupils,
-                    empty_form=forms.PupilListUpload(),
-                    upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
-                    reset_url_name=UrlName.PUPIL_LIST_RESET,
-                    example_download_url_name=UrlName.PUPIL_DOWNLOAD,
-                ),
                 "teachers": RequiredUpload(
                     form_name="Teachers",
                     upload_status=upload_status.teachers,
@@ -90,6 +103,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     upload_url_name=UrlName.TEACHER_LIST_UPLOAD,
                     reset_url_name=UrlName.TEACHER_LIST_RESET,
                     example_download_url_name=UrlName.TEACHER_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.teachers,
                 ),
                 "classrooms": RequiredUpload(
                     form_name="Classrooms",
@@ -98,6 +112,34 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,
                     reset_url_name=UrlName.CLASSROOM_LIST_RESET,
                     example_download_url_name=UrlName.CLASSROOM_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.classrooms,
+                ),
+                "year_groups": RequiredUpload(
+                    form_name="Year Groups",
+                    upload_status=upload_status.year_groups,
+                    empty_form=forms.YearGroupUpload(),
+                    upload_url_name=UrlName.YEAR_GROUP_UPLOAD,
+                    reset_url_name=UrlName.YEAR_GROUP_RESET,
+                    example_download_url_name=UrlName.YEAR_GROUP_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.year_groups,
+                ),
+                "breaks": RequiredUpload(
+                    form_name="Break times",
+                    upload_status=upload_status.breaks,
+                    empty_form=forms.BreakUpload(),
+                    upload_url_name=UrlName.BREAKS_UPLOAD,
+                    reset_url_name=UrlName.BREAKS_RESET,
+                    example_download_url_name=UrlName.BREAKS_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.breaks,
+                ),
+                "pupils": RequiredUpload(
+                    form_name="Pupils",
+                    upload_status=upload_status.pupils,
+                    empty_form=forms.PupilListUpload(),
+                    upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
+                    reset_url_name=UrlName.PUPIL_LIST_RESET,
+                    example_download_url_name=UrlName.PUPIL_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.pupils,
                 ),
                 "timetable": RequiredUpload(
                     form_name="Timetable structure",
@@ -106,6 +148,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
                     reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET,
                     example_download_url_name=UrlName.TIMETABLE_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.timetable,
                 ),
                 "lessons": RequiredUpload(
                     form_name="Lessons",
@@ -114,6 +157,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     upload_url_name=UrlName.LESSONS_UPLOAD,
                     reset_url_name=UrlName.LESSONS_RESET,
                     example_download_url_name=UrlName.LESSONS_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.lessons,
                 ),
             }
         }

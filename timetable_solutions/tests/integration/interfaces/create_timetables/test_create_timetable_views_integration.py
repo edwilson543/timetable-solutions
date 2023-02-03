@@ -10,7 +10,7 @@ from django import test
 from django import urls
 
 # Local application imports
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 from data import models
 from domain.solver import SolutionSpecification
 from interfaces.create_timetables import forms
@@ -24,9 +24,10 @@ class TestCreateTimetableFormView(test.TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_without_solution.json",
     ]
@@ -82,7 +83,7 @@ class TestCreateTimetableFormView(test.TestCase):
         # Check that a solution has been produced
         lessons = models.Lesson.objects.get_all_instances_for_school(school_id=123456)
         for lesson in lessons:
-            if lesson.requires_solving():
+            if lesson.get_n_solver_slots_required() > 0:
                 assert lesson.solver_defined_time_slots.count() in [
                     8,
                     9,

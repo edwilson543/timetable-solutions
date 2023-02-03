@@ -8,16 +8,17 @@ from django import urls
 
 # Local application imports
 from data import models
-from constants.url_names import UrlName
+from interfaces.constants import UrlName
 
 
 class TestLessonDetailModal(test.TestCase):
 
     fixtures = [
         "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
         "teachers.json",
+        "classrooms.json",
+        "year_groups.json",
+        "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
     ]

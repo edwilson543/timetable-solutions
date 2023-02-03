@@ -5,6 +5,9 @@ Module containing custom management command for loading in fixtures, so there is
 # Django imports
 from django.core import management
 
+# Local application imports
+from data import models
+
 
 class Command(management.base.BaseCommand):
     """
@@ -30,13 +33,25 @@ class Command(management.base.BaseCommand):
         """
         Method carrying out the processing relevant to this command
         """
-        management.call_command(
+        management.call_command(  # All other models depend on this fixture
             "loaddata", "user_school_profile.json"
-        )  # All other models depend on this fixture
-        management.call_command("loaddata", "classrooms.json")
-        management.call_command("loaddata", "pupils.json")
+        )
+
+        # Clear the existing data for the fixture school, in correct order
+        models.Lesson.delete_all_lessons_for_school(school_id=123456)
+        models.YearGroup.delete_all_instances_for_school(school_id=123456)
+        models.Teacher.delete_all_instances_for_school(school_id=123456)
+        models.Classroom.delete_all_instances_for_school(school_id=123456)
+        models.Pupil.delete_all_instances_for_school(school_id=123456)
+        models.TimetableSlot.delete_all_instances_for_school(school_id=123456)
+
+        # Load fixtures in the correct order
         management.call_command("loaddata", "teachers.json")
+        management.call_command("loaddata", "classrooms.json")
+        management.call_command("loaddata", "year_groups.json")
+        management.call_command("loaddata", "pupils.json")
         management.call_command("loaddata", "timetable.json")
+        management.call_command("loaddata", "breaks.json")
 
         if kwargs["include_solution"]:  # store_true ensures this is always present
             management.call_command("loaddata", "lessons_with_solution.json")

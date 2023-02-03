@@ -2,106 +2,99 @@
 Unit tests for the ProfileAdmin.
 """
 
+# Third party imports
+import pytest
+
 # Django imports
 from django import test
-from django.contrib.auth.models import User
 
 # Local application imports
 from data import models
 from interfaces.custom_admin import admin
+from tests import data_factories as factories
 
 
-class TestBaseModelAdmin(test.TestCase):
-
-    fixtures = [
-        "user_school_profile.json",
-        "classrooms.json",
-        "pupils.json",
-        "teachers.json",
-        "timetable.json",
-        "lessons_with_solution.json",
-    ]
-
+@pytest.mark.django_db
+class TestBaseModelAdmin:
     def test_approve_user_accounts(self):
         """
         Test that the admin can approve user accounts (profiles) using the admin action.
         """
-        # Add an approved user to the same school
-        other_user = User.objects.create_user(username="test", password="test")
-        models.Profile.create_and_save_new(
-            user=other_user,
-            school_id=123456,
-            role=models.UserRole.TEACHER,
-            approved_by_school_admin=False,
+        # Make an admin user profile
+        admin_profile = factories.Profile(school_admin=True)
+
+        # Add an unapproved user profile to the same school
+        unapproved_profile = factories.Profile(
+            school=admin_profile.school, approved_by_school_admin=False
         )
 
-        # Create a request to the admin index page
+        # Create a request to the admin profile page
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
-        request.user = User.objects.get(username="dummy_teacher")
-        profile_admin = admin.ProfileAdmin(
+        request.user = admin_profile.user
+        profile_model_admin = admin.ProfileAdmin(
             model=models.Profile, admin_site=admin.user_admin
         )
 
-        # Execute test unit
+        # Simulate approving the unapproved profiles
         profile_queryset = models.Profile.objects.get_all_instances_for_school(
-            school_id=123456
+            school_id=admin_profile.school.school_access_key
         )
-        profile_admin.approve_user_accounts(request=request, queryset=profile_queryset)
+        assert unapproved_profile in profile_queryset
+        profile_model_admin.approve_user_accounts(
+            request=request, queryset=profile_queryset
+        )
 
-        # Check outcome
-        profile = models.Profile.objects.get_individual_profile(username="test")
-        assert profile.approved_by_school_admin
+        # Check the unapproved profile is now approved
+        unapproved_profile.refresh_from_db()
+        assert unapproved_profile.approved_by_school_admin
 
     def test_get_actions(self):
         """
         Test that all actions are registered, with the correct names
         """
-        # Set test parameters
+        # Make an admin user profile
+        admin_profile = factories.Profile(school_admin=True)
+
+        # Create a request to the admin profile page
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
-        request.user = User.objects.get(username="dummy_teacher")
+        request.user = admin_profile.user
         profile_admin = admin.ProfileAdmin(
             model=models.Profile, admin_site=admin.user_admin
         )
 
-        # Execute test unit
+        # Get the available actions
         actions = profile_admin.get_actions(request=request)
 
-        # Check outcome
+        # Inspect the available actions
         assert set(actions.keys()) == {"delete_selected", "approve_user_accounts"}
-        # INDEXES: callback = 0; name = 1; short_description = 2;
+
+        # INDEXES are: callback = 0; name = 1; short_description = 2;
         assert actions["delete_selected"][2] == "Delete selected users"
         assert actions["approve_user_accounts"][1]
 
     def test_get_queryset_filters_by_school(self):
         """
-        Test that the queryset of user profiles for a user of school 123456 is restricted to their school only.
+        Test that the queryset of user profiles shown to a user is restricted to their school only.
         """
-        # Add a user for another school
-        other_user = User.objects.create_user(username="test", password="test")
-        models.School.create_new(school_name="test", school_access_key=100001)
-        models.Profile.create_and_save_new(
-            user=other_user,
-            school_id=100001,
-            role=models.UserRole.TEACHER,
-            approved_by_school_admin=False,
-        )
+        # Add a test user, a profile they should, and a profile they shouldn't be able to see
+        test_user = factories.User()
+        test_profile = factories.Profile(user=test_user)
+
+        hidden_profile = factories.Profile()
 
         # Create a request to the admin index page
         factory = test.RequestFactory()
         request = factory.get("/data/admin/data/profile/")
-        request.user = User.objects.get(username="dummy_teacher")
+        request.user = test_user
         profile_admin = admin.ProfileAdmin(
             model=models.Profile, admin_site=admin.user_admin
         )
 
-        # Execute test unit
-        queryset = profile_admin.get_queryset(request=request)
+        # Retrieve the profiles the test user can see
+        viewable_profiles = profile_admin.get_queryset(request=request)
 
-        # Check outcome
-        expected_queryset = models.Profile.objects.get_all_instances_for_school(
-            school_id=123456
-        )
-        assert queryset.count() == 1
-        self.assertQuerysetEqual(queryset, expected_queryset, ordered=False)
+        # Check only the test profile is included in the queryset
+        assert test_profile in viewable_profiles
+        assert hidden_profile not in viewable_profiles

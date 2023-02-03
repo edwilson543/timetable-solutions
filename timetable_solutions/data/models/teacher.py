@@ -6,7 +6,6 @@ from django.db import models
 # Local application imports (other models)
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
-from data import utils
 
 
 class TeacherQuerySet(models.QuerySet):
@@ -19,6 +18,14 @@ class TeacherQuerySet(models.QuerySet):
     def get_individual_teacher(self, school_id: int, teacher_id: int) -> "Teacher":
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(teacher_id=teacher_id))
+
+    def get_specific_teachers(
+        self, school_id: int, teacher_ids: set[int]
+    ) -> "TeacherQuerySet":
+        """Method returning a queryset of teachers with the passed set of ids"""
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(teacher_id__in=teacher_ids)
+        )
 
     def get_teachers_surnames_starting_with_x(
         self, school_id: int, letter: str
@@ -70,7 +77,10 @@ class Teacher(models.Model):
         """String representation of the model for debugging"""
         return f"{self.title} {self.surname}, {self.firstname}"
 
-    # FACTORY METHODS
+    # --------------------
+    # Factories
+    # --------------------
+
     @classmethod
     def create_new(
         cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str
@@ -96,33 +106,36 @@ class Teacher(models.Model):
         outcome = instances.delete()
         return outcome
 
-    # FILTER METHODS
-    def check_if_busy_at_time_slot(self, slot: TimetableSlot) -> bool:
+    # --------------------
+    # Queries
+    # --------------------
+
+    def check_if_busy_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
         """
-        Method to check whether the teacher has already been assigned a lesson at the given slot.
-        :return - True if BUSY at the given timeslot.
+        Method to check whether the teacher is busy AT ANY POINT during the passed time slot.
+        :return - True if busy.
         """
-        # noinspection PyUnresolvedReferences
-        slot_classes = self.lessons.filter(user_defined_time_slots=slot)
-        n_commitments = slot_classes.count()
+
+        # Get number of commitments
+        user_defined_slots = TimetableSlot.objects.filter(user_lessons__teacher=self)
+        lesson_clashes = user_defined_slots.filter_for_clashes(slot)
+
+        teacher_break_clashes = self.breaks.filter_for_clashes(slot)
+
+        n_commitments = lesson_clashes.count() + teacher_break_clashes.count()
+
+        # Decide what should happen
         if n_commitments == 1:
             return True
         elif n_commitments == 0:
             return False
         else:
             raise ValueError(
-                f"Teacher {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
+                f"Teacher {self}, {self.pk} has ended up with more than 1 lesson at {slot}"
             )
 
-    # QUERY METHODS
     def get_lessons_per_week(self) -> int:
         """
         Method to get the number of lessons a teacher has per week.
         """
-        return utils.get_lessons_per_week(obj=self)
-
-    def get_occupied_percentage(self) -> float:
-        """
-        Method to get the percentage of time a teacher is occupied (including any lunch slots).
-        """
-        return utils.get_occupied_percentage(obj=self)
+        return sum(lesson.total_required_slots for lesson in self.lessons.all())
