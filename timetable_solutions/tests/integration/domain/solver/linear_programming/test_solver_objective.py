@@ -38,7 +38,7 @@ class TestSolverObjective:
             pupils=(pupil,),
         )
         slot_0 = data_factories.TimetableSlot(
-            school=school, relevant_year_groups=(yg,), period_starts_at=dt.time(hour=10)
+            school=school, relevant_year_groups=(yg,), starts_at=dt.time(hour=10)
         )
         data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
 

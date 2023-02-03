@@ -40,8 +40,7 @@ class TestYearGroup:
     # Factories tests
     # --------------------
 
-    @pytest.mark.parametrize("year_group", [10, "10"])
-    def test_create_new_valid_year_group_from_string(self, year_group):
+    def test_create_new_valid_year_group_from_string(self):
         """
         Tests that we can create and save a YearGroup instance via the create_new method
         """
@@ -50,7 +49,7 @@ class TestYearGroup:
 
         # Execute test unit
         yg = models.YearGroup.create_new(
-            school_id=school.school_access_key, year_group=year_group
+            school_id=school.school_access_key, year_group_id=1, year_group_name="One"
         )
 
         # Check year group created, and associated with school

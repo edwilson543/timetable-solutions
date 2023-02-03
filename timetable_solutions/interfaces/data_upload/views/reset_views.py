@@ -55,6 +55,14 @@ class LessonReset(DataResetBase):
     lessons = True
 
 
+class BreakReset(DataResetBase):
+    """
+    Class used to handle the resetting of break data.
+    """
+
+    breaks = True
+
+
 class AllSchoolDataReset(DataResetBase):
     """
     Class used to reset ALL the data relevant to a given school (except users / the school itself)

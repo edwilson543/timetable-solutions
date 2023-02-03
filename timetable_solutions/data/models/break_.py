@@ -42,15 +42,15 @@ class BreakQuerySet(models.QuerySet):
             (
                 (
                     # OVERLAPPING clashes
-                    models.Q(break_starts_at__range=clash_interval)
-                    | models.Q(break_ends_at__range=clash_interval)
+                    models.Q(starts_at__range=clash_interval)
+                    | models.Q(ends_at__range=clash_interval)
                 )
                 | (
                     # EXACT MATCH clashes
                     # We do however want slots to clash with themselves / other slots starting and finishing
                     # at the same time, since a user may have defined slots covering the same time pan
-                    models.Q(break_starts_at=slot.period_starts_at)
-                    | models.Q(break_ends_at=slot.period_ends_at)
+                    models.Q(starts_at=slot.starts_at)
+                    | models.Q(ends_at=slot.ends_at)
                 )
             )
             & models.Q(day_of_week=slot.day_of_week)
@@ -68,8 +68,8 @@ class Break(models.Model):
     break_name = models.CharField(max_length=20)
 
     day_of_week = models.SmallIntegerField(choices=constants.Day.choices)
-    break_starts_at: dt.time = models.TimeField()
-    break_ends_at: dt.time = models.TimeField()
+    starts_at: dt.time = models.TimeField()
+    ends_at: dt.time = models.TimeField()
 
     teachers = models.ManyToManyField(Teacher, related_name="breaks")
     relevant_year_groups = models.ManyToManyField(YearGroup, related_name="breaks")
@@ -93,7 +93,7 @@ class Break(models.Model):
         human_string_plural = "breaks"
 
         # M2M field names
-        pupils = "teachers"
+        teachers = "teachers"
         relevant_year_groups = "relevant_year_groups"
 
     def __str__(self) -> str:
@@ -115,8 +115,8 @@ class Break(models.Model):
         break_id: str,
         break_name: str,
         day_of_week: constants.Day,
-        break_starts_at: dt.time,
-        break_ends_at: dt.time,
+        starts_at: dt.time,
+        ends_at: dt.time,
         teachers: TeacherQuerySet,
         relevant_year_groups: YearGroupQuerySet,
     ) -> "Break":
@@ -127,8 +127,8 @@ class Break(models.Model):
             school_id=school_id,
             break_id=break_id,
             break_name=break_name,
-            break_starts_at=break_starts_at,
-            break_ends_at=break_ends_at,
+            starts_at=starts_at,
+            ends_at=ends_at,
             day_of_week=day_of_week,
         )
         break_.full_clean()

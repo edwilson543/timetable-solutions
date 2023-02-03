@@ -67,6 +67,15 @@ class LessonUpload(django_forms.Form):
         file_field_name = "lessons"
 
 
+class BreakUpload(django_forms.Form):
+    """Form containing an individual upload slot for the breaks model."""
+
+    breaks = django_forms.FileField(allow_empty_file=False, label="")
+
+    class Meta:
+        file_field_name = "breaks"
+
+
 # Type hint to use when referencing one of the above collection of forms
 UploadForm = Union[
     TeacherListUpload,
@@ -75,4 +84,5 @@ UploadForm = Union[
     PupilListUpload,
     TimetableStructureUpload,
     LessonUpload,
+    BreakUpload,
 ]

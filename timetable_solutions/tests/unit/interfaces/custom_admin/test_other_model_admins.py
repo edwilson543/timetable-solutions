@@ -107,7 +107,8 @@ class TestBaseModelAdmin(test.TestCase):
         self.client.login(username="dummy_teacher", password="dt123dt123")
         url = "/data/admin/data/yeargroup/add/"
         form_data = {
-            "year_group": "7",
+            "year_group_id": 7,
+            "year_group_name": "7",
         }
 
         # Execute test unit
@@ -118,7 +119,7 @@ class TestBaseModelAdmin(test.TestCase):
             response=response, expected_url="/data/admin/data/yeargroup/"
         )
         year_group = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="7"
+            school_id=123456, year_group_id=7
         )
         assert year_group.school.school_access_key == 123456
 
@@ -146,7 +147,7 @@ class TestBaseModelAdmin(test.TestCase):
         assert pupil.school.school_access_key == 123456
 
         expected_yg = models.YearGroup.objects.get_individual_year_group(
-            school_id=123456, year_group="1"
+            school_id=123456, year_group_id=1
         )
         assert pupil.year_group == expected_yg
 
@@ -161,8 +162,8 @@ class TestBaseModelAdmin(test.TestCase):
         form_data = {
             "slot_id": 100,
             "day_of_week": 1,
-            "period_starts_at": "09:00",
-            "period_ends_at": "10:00",
+            "starts_at": "09:00",
+            "ends_at": "10:00",
             "relevant_year_groups": [1, 2],
         }
 
@@ -179,7 +180,7 @@ class TestBaseModelAdmin(test.TestCase):
         assert slot.school.school_access_key == 123456
 
         expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
-            school_id=123456, year_groups={1, 2}
+            school_id=123456, year_group_ids={1, 2}
         )
         self.assertQuerysetEqual(slot.relevant_year_groups.all(), expected_year_groups)
 
@@ -193,8 +194,8 @@ class TestBaseModelAdmin(test.TestCase):
         form_data = {
             "slot_id": 100,
             "day_of_week": 1,
-            "period_starts_at": "09:00",
-            "period_ends_at": "10:00",
+            "starts_at": "09:00",
+            "ends_at": "10:00",
         }
 
         # Execute test unit

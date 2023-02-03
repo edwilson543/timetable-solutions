@@ -1,3 +1,0 @@
-lesson_id,subject_name,teacher_id,pupil_ids,classroom_id,total_required_slots,total_required_double_periods,user_defined_slot_ids
-Maths-1,MATHS,,1; 2; 3; 4; 5; 6,,5,0,1;2
-Maths-2,MATHS,1,1; 2; 3; 4; 5; 6; 7 (note this pupil doesn't exist),,5,0,1;2

@@ -95,6 +95,7 @@ class DataResetBase(LoginRequiredMixin, View):
     classrooms: bool = False
     timetable: bool = False
     lessons: bool = False
+    breaks: bool = False
 
     @staticmethod
     def get() -> http.HttpResponseRedirect:
@@ -119,6 +120,7 @@ class DataResetBase(LoginRequiredMixin, View):
             classrooms=self.classrooms,
             timetable=self.timetable,
             lessons=self.lessons,
+            breaks=self.breaks,
         )
 
         return http.HttpResponseRedirect(urls.reverse(UrlName.FILE_UPLOAD_PAGE.value))

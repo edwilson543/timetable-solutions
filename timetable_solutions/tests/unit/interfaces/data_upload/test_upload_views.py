@@ -4,6 +4,7 @@
 import datetime as dt
 
 # Django imports
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
 from django.test import TestCase
@@ -13,7 +14,6 @@ from django.urls import reverse
 from interfaces.constants import UrlName
 from data import models
 from interfaces.data_upload import forms
-from tests.input_settings import TEST_DATA_DIR
 
 
 class TestCaseWithUpload(TestCase):
@@ -29,8 +29,9 @@ class TestCaseWithUpload(TestCase):
         :param url_name: the url extension for the given test file upload (also dict key in the data post request)
         :param file_field_name: name of the field in the form used to hold the uploaded file
         """
+        base_path = settings.BASE_DIR / settings.MEDIA_ROOT / "example_files"
         self.client.login(username="dummy_teacher", password="dt123dt123")
-        with open((TEST_DATA_DIR / "valid_uploads" / filename), "rb") as csv_file:
+        with open((base_path / filename), "rb") as csv_file:
             upload_file = SimpleUploadedFile(csv_file.name, csv_file.read())
         url = reverse(url_name.value)
         response = self.client.post(url, data={file_field_name: upload_file})
@@ -50,7 +51,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         """
         # Execute test unit
         self.upload_test_file(
-            filename="teachers.csv",
+            filename="example_teachers.csv",
             url_name=UrlName.TEACHER_LIST_UPLOAD,
             file_field_name=forms.TeacherListUpload.Meta.file_field_name,
         )
@@ -73,7 +74,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         """
         # Try uploading the wrong file (pupils.csv)
         response = self.upload_test_file(
-            filename="lessons.csv",
+            filename="example_lessons.csv",
             url_name=UrlName.TEACHER_LIST_UPLOAD,
             file_field_name=forms.TeacherListUpload.Meta.file_field_name,
         )
@@ -93,7 +94,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         database.
         """
         self.upload_test_file(
-            filename="classrooms.csv",
+            filename="example_classrooms.csv",
             url_name=UrlName.CLASSROOM_LIST_UPLOAD,
             file_field_name=forms.ClassroomListUpload.Meta.file_field_name,
         )
@@ -114,7 +115,7 @@ class TestIndependentFileUploadViews(TestCaseWithUpload):
         database.
         """
         self.upload_test_file(
-            filename="year_groups.csv",
+            filename="example_year_groups.csv",
             url_name=UrlName.YEAR_GROUP_UPLOAD,
             file_field_name=forms.YearGroupUpload.Meta.file_field_name,
         )
@@ -156,7 +157,7 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
         """
         # Execute test unit
         self.upload_test_file(
-            filename="pupils.csv",
+            filename="example_pupils.csv",
             url_name=UrlName.PUPIL_LIST_UPLOAD,
             file_field_name=forms.PupilListUpload.Meta.file_field_name,
         )
@@ -175,7 +176,7 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
         """
         # Try uploading the wrong file (teachers.csv)
         response = self.upload_test_file(
-            filename="teachers.csv",
+            filename="example_teachers.csv",
             url_name=UrlName.PUPIL_LIST_UPLOAD,
             file_field_name=forms.PupilListUpload.Meta.file_field_name,
         )
@@ -193,7 +194,7 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
         populates the database.
         """
         self.upload_test_file(
-            filename="timetable.csv",
+            filename="example_timetable.csv",
             url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
             file_field_name=forms.TimetableStructureUpload.Meta.file_field_name,
         )
@@ -209,12 +210,12 @@ class TestYearGroupDependentUpload(TestCaseWithUpload):
             school_id=123456, slot_id=1
         )
         self.assertEqual(slot.day_of_week, 1)
-        self.assertEqual(slot.period_starts_at, dt.time(hour=9))
-        self.assertEqual(slot.period_ends_at, dt.time(hour=10))
+        self.assertEqual(slot.starts_at, dt.time(hour=9))
+        self.assertEqual(slot.ends_at, dt.time(hour=10))
 
         # Check that all timetable slots have been associated with the correct year groups
         expected_year_groups = models.YearGroup.objects.get_specific_year_groups(
-            school_id=123456, year_groups={"1", "2"}
+            school_id=123456, year_group_ids={"1", "2"}
         )
         for slot in all_slots:
             self.assertQuerysetEqual(
@@ -242,7 +243,7 @@ class TestLessonFileUpload(TestCaseWithUpload):
         Unit test for the Lesson View, that simulating a csv file upload of lessons successfully populates the database.
         """
         self.upload_test_file(
-            filename="lessons.csv",
+            filename="example_lessons.csv",
             url_name=UrlName.LESSONS_UPLOAD,
             file_field_name=forms.LessonUpload.Meta.file_field_name,
         )

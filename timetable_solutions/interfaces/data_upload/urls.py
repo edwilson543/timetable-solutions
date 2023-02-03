@@ -10,7 +10,9 @@ from . import views
 urlpatterns = [
     # BASE data upload page
     path("", views.UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
+    # --------------------
     # Data UPLOAD endpoints
+    # --------------------
     path(
         "teacher_upload/",
         views.TeacherListUpload.as_view(),
@@ -41,7 +43,12 @@ urlpatterns = [
         views.LessonsUpload.as_view(),
         name=UrlName.LESSONS_UPLOAD.value,
     ),
+    path(
+        "break_upload/", views.BreaksUpload.as_view(), name=UrlName.BREAKS_UPLOAD.value
+    ),
+    # --------------------
     # Data RESET endpoints
+    # --------------------
     path(
         "teacher_reset/",
         views.TeacherListReset.as_view(),
@@ -73,11 +80,18 @@ urlpatterns = [
         name=UrlName.LESSONS_RESET.value,
     ),
     path(
+        "break_reset/",
+        views.BreakReset.as_view(),
+        name=UrlName.BREAKS_RESET.value,
+    ),
+    path(
         "all_data_reset/",
         views.AllSchoolDataReset.as_view(),
         name=UrlName.ALL_DATA_RESET.value,
     ),
+    # --------------------
     # Data example DOWNLOAD endpoints
+    # --------------------
     path(
         "teacher_download/",
         views.TeacherDownload.as_view(),
@@ -107,5 +121,10 @@ urlpatterns = [
         "lesson_download/",
         views.LessonDownload.as_view(),
         name=UrlName.LESSONS_DOWNLOAD.value,
+    ),
+    path(
+        "break_download",
+        views.BreakDownload.as_view(),
+        name=UrlName.BREAKS_DOWNLOAD.value,
     ),
 ]

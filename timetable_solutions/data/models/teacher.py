@@ -19,6 +19,14 @@ class TeacherQuerySet(models.QuerySet):
         """Method returning an individual Teacher"""
         return self.get(models.Q(school_id=school_id) & models.Q(teacher_id=teacher_id))
 
+    def get_specific_teachers(
+        self, school_id: int, teacher_ids: set[int]
+    ) -> "TeacherQuerySet":
+        """Method returning a queryset of teachers with the passed set of ids"""
+        return self.filter(
+            models.Q(school_id=school_id) & models.Q(teacher_id__in=teacher_ids)
+        )
+
     def get_teachers_surnames_starting_with_x(
         self, school_id: int, letter: str
     ) -> "TeacherQuerySet":

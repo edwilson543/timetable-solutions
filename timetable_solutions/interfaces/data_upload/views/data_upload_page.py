@@ -47,6 +47,7 @@ class RequiredFormsContext(TypedDict):
     pupils: RequiredUpload
     timetable: RequiredUpload
     lessons: RequiredUpload
+    breaks: RequiredUpload
 
 
 class UploadPageContext(TypedDict):
@@ -121,6 +122,15 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                     reset_url_name=UrlName.YEAR_GROUP_RESET,
                     example_download_url_name=UrlName.YEAR_GROUP_DOWNLOAD,
                     reset_warning=data_upload_processing.ResetWarning.year_groups,
+                ),
+                "breaks": RequiredUpload(
+                    form_name="Break times",
+                    upload_status=upload_status.breaks,
+                    empty_form=forms.BreakUpload(),
+                    upload_url_name=UrlName.BREAKS_UPLOAD,
+                    reset_url_name=UrlName.BREAKS_RESET,
+                    example_download_url_name=UrlName.BREAKS_DOWNLOAD,
+                    reset_warning=data_upload_processing.ResetWarning.breaks,
                 ),
                 "pupils": RequiredUpload(
                     form_name="Pupils",

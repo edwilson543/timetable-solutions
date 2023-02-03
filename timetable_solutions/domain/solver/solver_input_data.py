@@ -90,7 +90,7 @@ class TimetableSolverInputs:
         :return: e.g. if the timetable starts at 9 AM, 9.0 will be returned. Similarly, 2:30 PM -> 14.5
         """
         start_hour = min(
-            slot.period_starts_at.hour + (slot.period_starts_at.minute / 60)
+            slot.starts_at.hour + (slot.starts_at.minute / 60)
             for slot in self.timetable_slots
         )
         return start_hour
@@ -104,20 +104,20 @@ class TimetableSolverInputs:
         Note: 23:30-00:30 is an invalid slot span (see .clean on TimetableSlot), so we don't take modulo 24 at the end.
         """
         finish_hour = max(
-            slot.period_ends_at.hour + (slot.period_ends_at.minute / 60)
+            slot.ends_at.hour + (slot.ends_at.minute / 60)
             for slot in self.timetable_slots
         )
         return finish_hour
 
-    def get_time_period_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
+    def get_time_starts_at_from_slot_id(self, slot_id: int) -> dt.time:
         """
         Method to find the time of day that a period starts at.
         :param slot_id: The id of the timetable slot we are searching
-        :return: period_starts_at - the time of day when the relevant period starts.
+        :return: starts_at - the time of day when the relevant period starts.
         """
         slot = self.timetable_slots.get(slot_id=slot_id)
-        period_starts_at = slot.period_starts_at
-        return period_starts_at
+        starts_at = slot.starts_at
+        return starts_at
 
     # --------------------
     # Helper methods for TimetableSolverVariables
@@ -134,7 +134,7 @@ class TimetableSolverInputs:
         :param year_group: The string identifier of the year_group instance
         :return - as a list, the tuples of consecutive slots.
         """
-        slots = year_group.slots.all().order_by("day_of_week", "period_starts_at")
+        slots = year_group.slots.all().order_by("day_of_week", "starts_at")
 
         consecutive_slots: list[tuple[models.TimetableSlot, models.TimetableSlot]] = []
         previous_slot = None

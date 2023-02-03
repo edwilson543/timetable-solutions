@@ -1,9 +1,11 @@
 """
-Subclasses of the BaseFileUploadProcessor used to handle the upload of individual files.
+Subclasses of the BaseFileUploadProcessor used to handle the upload of individual files
+that contain no relational data.
 """
 
+
 # Local application imports
-from domain.data_upload_processing.processors.base_processors import (
+from domain.data_upload_processing.processors._base import (
     BaseFileUploadProcessor,
 )
 from domain.data_upload_processing.constants import UploadFileStructure
@@ -35,12 +37,3 @@ class YearGroupFileUploadProcessor(BaseFileUploadProcessor):
 
     model = models.YearGroup
     file_structure = UploadFileStructure.YEAR_GROUPS
-
-
-class PupilFileUploadProcessor(BaseFileUploadProcessor):
-    """
-    Processor of csv files containing pupil data.
-    """
-
-    model = models.Pupil
-    file_structure = UploadFileStructure.PUPILS

@@ -35,8 +35,8 @@ class TestPupilTimetable:
                     school=school,
                     relevant_year_groups=(yg,),
                     day_of_week=day,
-                    period_starts_at=dt.time(hour=start_time),
-                    period_ends_at=dt.time(hour=start_time + slot_duration),
+                    starts_at=dt.time(hour=start_time),
+                    ends_at=dt.time(hour=start_time + slot_duration),
                 )
                 slots.append(slot)
 
@@ -55,8 +55,8 @@ class TestPupilTimetable:
                 school=school,
                 relevant_year_groups=(yg,),
                 day_of_week=day,
-                break_starts_at=dt.time(hour=13),
-                break_ends_at=dt.time(hour=13 + slot_duration),
+                starts_at=dt.time(hour=13),
+                ends_at=dt.time(hour=13 + slot_duration),
             )
 
         return pupil

@@ -94,7 +94,7 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
 
         # The coefficients should be the difference between the slot start times
         # and the mocked return value (which is 0), so should the starts times
-        assert list(objective_component.values()) == [slot.period_starts_at.hour]
+        assert list(objective_component.values()) == [slot.starts_at.hour]
 
     def test_optimal_free_period_is_always_same_time(
         self,
@@ -109,7 +109,7 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
 
         # Set the optimal free period time at the start of the first slot
         spec = domain_factories.SolutionSpecification(
-            optimal_free_period_time_of_day=slot_0.period_starts_at,
+            optimal_free_period_time_of_day=slot_0.starts_at,
             ideal_proportion_of_free_periods_at_this_time=1.0,
         )
         objective_maker = self.get_objective_maker(solution_spec=spec)
@@ -127,7 +127,7 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
 
         # The second of the consecutive slots is 1 hour from the optimal time
         assert list(objective_component.values()) == [
-            slot_1.period_starts_at.hour - slot_0.period_starts_at.hour
+            slot_1.starts_at.hour - slot_0.starts_at.hour
         ]
 
     def test_optimal_free_period_is_fifty_percent_same_time(
@@ -143,9 +143,7 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
 
         # Set the optimal free period time at a time neither of the slots are at
         spec = domain_factories.SolutionSpecification(
-            optimal_free_period_time_of_day=dt.time(
-                hour=slot_1.period_starts_at.hour + 1
-            ),
+            optimal_free_period_time_of_day=dt.time(hour=slot_1.starts_at.hour + 1),
             ideal_proportion_of_free_periods_at_this_time=0.5,
         )
         objective_maker = self.get_objective_maker(solution_spec=spec)
@@ -169,14 +167,14 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
 
         # Make one slot in the morning, one in the afternoon
         morning_slot = data_factories.TimetableSlot(
-            period_starts_at=dt.time(hour=9),
-            period_ends_at=dt.time(hour=10),
+            starts_at=dt.time(hour=9),
+            ends_at=dt.time(hour=10),
             school=self.school,
             relevant_year_groups=(self.yg,),
         )
         afternoon_slot = data_factories.TimetableSlot(
-            period_starts_at=dt.time(hour=15),
-            period_ends_at=dt.time(hour=16),
+            starts_at=dt.time(hour=15),
+            ends_at=dt.time(hour=16),
             school=self.school,
             relevant_year_groups=(self.yg,),
         )
@@ -239,7 +237,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         opt_time = objective_maker._get_optimal_free_period_time_no_specified_time()
 
         # Check outcome
-        assert slot_0.period_starts_at.hour <= opt_time <= slot_1.period_ends_at.hour
+        assert slot_0.starts_at.hour <= opt_time <= slot_1.ends_at.hour
 
     def test_specified_time_guarantees_no_random_return(
         self,
@@ -294,7 +292,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
             opt_time = objective_maker._get_optimal_free_period_time()
 
         # Opt time should be randomly generated
-        assert slot.period_starts_at.hour < opt_time <= slot.period_ends_at.hour
+        assert slot.starts_at.hour < opt_time <= slot.ends_at.hour
 
     def test_morning_always_optimal_guarantees_random_morning_return(
         self,
@@ -304,7 +302,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         slot = data_factories.TimetableSlot(
             school=self.school,
             relevant_year_groups=(self.yg,),
-            period_starts_at=dt.time(hour=9),
+            starts_at=dt.time(hour=9),
         )
 
         # Get optimal time when optimal is the morning
@@ -319,7 +317,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         opt_time = objective_maker._get_optimal_free_period_time()
 
         # Check optimal time within morning hours
-        assert slot.period_starts_at.hour <= opt_time <= 12
+        assert slot.starts_at.hour <= opt_time <= 12
 
     def test_morning_specified_can_still_give_random_afternoon_return_using_patch(
         self,
@@ -329,7 +327,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         slot = data_factories.TimetableSlot(
             school=self.school,
             relevant_year_groups=(self.yg,),
-            period_ends_at=dt.time(hour=17),
+            ends_at=dt.time(hour=17),
         )
 
         # Get optimal time when optimal is the morning
@@ -346,7 +344,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
             opt_time = objective_maker._get_optimal_free_period_time()
 
         # Check optimal time randomly set to afternoon
-        assert 12 <= opt_time <= slot.period_ends_at.hour
+        assert 12 <= opt_time <= slot.ends_at.hour
 
     def test_afternoon_always_optimal_guarantees_random_morning_return(
         self,
@@ -356,7 +354,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         slot = data_factories.TimetableSlot(
             school=self.school,
             relevant_year_groups=(self.yg,),
-            period_ends_at=dt.time(hour=17),
+            ends_at=dt.time(hour=17),
         )
 
         # Get optimal time when optimal is the morning
@@ -371,7 +369,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         opt_time = objective_maker._get_optimal_free_period_time()
 
         # Check optimal time within morning hours
-        assert 12 <= opt_time <= slot.period_ends_at.hour
+        assert 12 <= opt_time <= slot.ends_at.hour
 
     def test_get_optimal_free_period_time_morning_specified_guaranteed_random_morning_return_using_patch(
         self,
@@ -381,7 +379,7 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
         slot = data_factories.TimetableSlot(
             school=self.school,
             relevant_year_groups=(self.yg,),
-            period_starts_at=dt.time(hour=9),
+            starts_at=dt.time(hour=9),
         )
 
         # Get optimal time when optimal is the morning
@@ -398,4 +396,4 @@ class TestTimetableSolverObjectiveGetOptimalFreePeriodTime(
             opt_time = objective_maker._get_optimal_free_period_time()
 
         # Check optimal time randomly set to morning
-        assert slot.period_starts_at.hour <= opt_time <= 12
+        assert slot.starts_at.hour <= opt_time <= 12

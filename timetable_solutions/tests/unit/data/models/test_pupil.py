@@ -31,7 +31,7 @@ class TestPupil:
         # Create a new pupil for the school
         models.Pupil.create_new(
             school_id=school.school_access_key,
-            year_group=yg.year_group,
+            year_group_id=yg.year_group_id,
             pupil_id=100,
             firstname="test",
             surname="test",
@@ -61,7 +61,7 @@ class TestPupil:
                 pupil_id=pupil.pupil_id,
                 firstname="test",
                 surname="test",
-                year_group=pupil.year_group.year_group,
+                year_group_id=pupil.year_group.year_group_id,
             )
 
     def test_delete_all_instances_for_school_successful(self):
@@ -125,8 +125,8 @@ class TestPupil:
         factories.Break(
             school=pupil.school,
             relevant_year_groups=(pupil.year_group,),
-            break_starts_at=slot.period_starts_at,
-            break_ends_at=slot.period_ends_at,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
             day_of_week=slot.day_of_week,
         )
 

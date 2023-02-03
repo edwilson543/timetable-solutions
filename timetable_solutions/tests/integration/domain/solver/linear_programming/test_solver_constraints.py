@@ -43,14 +43,14 @@ class TestSolverConstraints:
         slot_0 = data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
-            period_starts_at=dt.time(hour=10),
+            starts_at=dt.time(hour=10),
             day_of_week=data_constants.Day.MONDAY,
         )
         data_factories.TimetableSlot.get_next_consecutive_slot(slot_0)
         data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
-            period_starts_at=dt.time(hour=10),
+            starts_at=dt.time(hour=10),
             day_of_week=data_constants.Day.TUESDAY,
         )
         n_slots = 3

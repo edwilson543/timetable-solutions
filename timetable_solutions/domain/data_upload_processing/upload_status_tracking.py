@@ -52,27 +52,7 @@ class UploadStatusTracker:
     pupils: UploadStatusReason
     timetable: UploadStatusReason
     lessons: UploadStatusReason
-
-    def __init__(
-        self,
-        year_groups: bool,
-        teachers: bool,
-        classrooms: bool,
-        pupils: bool,
-        timetable: bool,
-        lessons: bool,
-    ):
-        """
-        At initialisation the boolean parameters are converted to UploadStatusReasons
-        """
-        self._set_upload_status(
-            year_groups=year_groups,
-            teachers=teachers,
-            classrooms=classrooms,
-            pupils=pupils,
-            timetable=timetable,
-            lessons=lessons,
-        )
+    breaks: UploadStatusReason
 
     @classmethod
     def get_upload_status(cls, school: models.School) -> "UploadStatusTracker":
@@ -87,6 +67,7 @@ class UploadStatusTracker:
         classroom_upload_status = school.has_classroom_data
         timetable_upload_status = school.has_timetable_structure_data
         lesson_upload_status = school.has_lesson_data
+        break_upload_status = school.has_break_data
 
         upload_status = cls(
             year_groups=year_group_status,
@@ -95,9 +76,33 @@ class UploadStatusTracker:
             classrooms=classroom_upload_status,
             timetable=timetable_upload_status,
             lessons=lesson_upload_status,
+            breaks=break_upload_status,
         )
 
         return upload_status
+
+    def __init__(
+        self,
+        year_groups: bool,
+        teachers: bool,
+        classrooms: bool,
+        pupils: bool,
+        timetable: bool,
+        lessons: bool,
+        breaks: bool,
+    ):
+        """
+        At initialisation the boolean parameters are converted to UploadStatusReasons
+        """
+        self._set_upload_status(
+            year_groups=year_groups,
+            teachers=teachers,
+            classrooms=classrooms,
+            pupils=pupils,
+            timetable=timetable,
+            lessons=lessons,
+            breaks=breaks,
+        )
 
     def _set_upload_status(
         self,
@@ -107,6 +112,7 @@ class UploadStatusTracker:
         pupils: bool,
         timetable: bool,
         lessons: bool,
+        breaks: bool,
     ) -> None:
         """
         Method to set the instance attributes on an UploadStatusTracker instance, given all the relevant bools.
@@ -128,7 +134,8 @@ class UploadStatusTracker:
             target_file_status=timetable
         )
 
-        # Dependent on all other uploads
+        # Dependent on other uploads
+        self.breaks = self._get_break_upload_status(break_upload_status=breaks)
         self.lessons = self._get_lesson_upload_status(lesson_upload_status=lessons)
 
     def _get_year_group_dependent_upload_status(
@@ -173,6 +180,20 @@ class UploadStatusTracker:
                 upload_status=lesson_upload_status
             )
 
+    def _get_break_upload_status(self, break_upload_status: bool) -> UploadStatusReason:
+        able_to_add_break_data = (
+            self.year_groups.status == UploadStatus.COMPLETE
+            and self.teachers.status == UploadStatus.COMPLETE
+        )
+
+        if not able_to_add_break_data:
+            reason = "Year group and teacher data must be set first."
+            return UploadStatusReason(status=UploadStatus.DISALLOWED, reason=reason)
+        else:
+            return UploadStatusReason.get_status_from_bool(
+                upload_status=break_upload_status
+            )
+
     # PROPERTIES
     @property
     def all_uploads_complete(self) -> bool:
@@ -188,5 +209,6 @@ class UploadStatusTracker:
             and self.classrooms.status == UploadStatus.COMPLETE
             and self.timetable.status == UploadStatus.COMPLETE
             and self.lessons.status == UploadStatus.COMPLETE
+            and self.breaks.status == UploadStatus.COMPLETE
         )
         return all_complete

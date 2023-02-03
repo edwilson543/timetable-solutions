@@ -18,7 +18,7 @@ class YearGroupQuerySet(models.QuerySet):
         """
         Method to retrieve all YearGroups associate with a school.
         """
-        return self.filter(school_id=school_id).order_by("year_group")
+        return self.filter(school_id=school_id).order_by("year_group_id")
 
     def get_all_year_groups_with_pupils(self, school_id: int) -> "YearGroupQuerySet":
         """
@@ -27,20 +27,24 @@ class YearGroupQuerySet(models.QuerySet):
         all_ygs = self.get_all_instances_for_school(school_id=school_id)
         return all_ygs.annotate(n_pupils=models.Count("pupils")).filter(n_pupils__gt=0)
 
-    def get_individual_year_group(self, school_id: int, year_group: str) -> "YearGroup":
+    def get_individual_year_group(
+        self, school_id: int, year_group_id: int
+    ) -> "YearGroup":
         """
         Method retrieving a specific YearGroup instance.
         """
-        return self.get(models.Q(school_id=school_id) & models.Q(year_group=year_group))
+        return self.get(
+            models.Q(school_id=school_id) & models.Q(year_group_id=year_group_id)
+        )
 
     def get_specific_year_groups(
-        self, school_id: int, year_groups: frozenset[str]
+        self, school_id: int, year_group_ids: frozenset[int]
     ) -> "YearGroupQuerySet":
         """
         Method retrieving a specific set of YearGroups.
         """
         return self.filter(
-            models.Q(school_id=school_id) & models.Q(year_group__in=year_groups)
+            models.Q(school_id=school_id) & models.Q(year_group_id__in=year_group_ids)
         )
 
 
@@ -52,7 +56,8 @@ class YearGroup(models.Model):
     """
 
     school = models.ForeignKey(School, on_delete=models.CASCADE)
-    year_group = models.CharField(max_length=20)
+    year_group_id = models.IntegerField()
+    year_group_name = models.CharField(max_length=20)
 
     # Introduce a custom manager
     objects = YearGroupQuerySet.as_manager()
@@ -62,8 +67,8 @@ class YearGroup(models.Model):
         Django Meta class for the YearGroup model
         """
 
-        unique_together = [["school", "year_group"]]
-        ordering = ["year_group"]
+        unique_together = [["school", "year_group_id"], ["school", "year_group_name"]]
+        ordering = ["year_group_id"]
 
     class Constant:
         """
@@ -76,12 +81,12 @@ class YearGroup(models.Model):
     def __str__(self) -> str:
         """String representation of the model for the django admin site"""
         try:
-            float(self.year_group)
+            float(self.year_group_name)
             # If the year group can be interpreted as a number, it makes sense to say 'Year x'
-            return f"Year {self.year_group}"
+            return f"Year {self.year_group_name}"
         except ValueError:
             # If not, we just want the year group name, e.g. 'Reception'
-            return f"{self.year_group}"
+            return f"{self.year_group_name}"
 
     def __repr__(self) -> str:
         """String representation of the model for debugging"""
@@ -92,11 +97,17 @@ class YearGroup(models.Model):
     # --------------------
 
     @classmethod
-    def create_new(cls, school_id: int, year_group: str | int) -> "YearGroup":
+    def create_new(
+        cls, school_id: int, year_group_id: int, year_group_name: str
+    ) -> "YearGroup":
         """
         Method to create a new YearGroup instance.
         """
-        yg = cls.objects.create(school_id=school_id, year_group=str(year_group))
+        yg = cls.objects.create(
+            school_id=school_id,
+            year_group_id=year_group_id,
+            year_group_name=year_group_name,
+        )
         yg.full_clean()
         return yg
 

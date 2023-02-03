@@ -140,7 +140,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit (for each string, effectively redo the test)
         for valid_string in valid_strings:
-            integer_set = processor._get_integer_set_from_string(
+            integer_set = processor.get_integer_set_from_string(
                 raw_string_of_ids=valid_string, row_number=1
             )
 
@@ -169,7 +169,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit (for each string, effectively redo the test)
         for invalid_string in invalid_strings:
-            integer_set = processor._get_integer_set_from_string(
+            integer_set = processor.get_integer_set_from_string(
                 raw_string_of_ids=invalid_string, row_number=1
             )
 
@@ -187,7 +187,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit
         for raw_id in raw_ids:
-            cleaned_id = processor._get_clean_id_from_file_field_value(
+            cleaned_id = processor.get_clean_id_from_file_field_value(
                 user_input_id=raw_id, row_number=1, field_name="irrelevant"
             )
 
@@ -205,7 +205,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit
         for n, raw_id in enumerate(raw_ids):
-            cleaned_id = processor._get_clean_id_from_file_field_value(
+            cleaned_id = processor.get_clean_id_from_file_field_value(
                 user_input_id=raw_id, row_number=1, field_name="irrelevant"
             )
 
@@ -223,7 +223,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
 
         # Execute test unit
         for n, raw_id in enumerate(raw_ids):
-            cleaned_id = processor._get_clean_id_from_file_field_value(
+            cleaned_id = processor.get_clean_id_from_file_field_value(
                 user_input_id=raw_id, row_number=1, field_name="irrelevant"
             )
 
@@ -239,7 +239,7 @@ class TestLessonFileUploadProcessor(test.TestCase):
         processor = self._get_file_processor()
 
         # Execute test unit
-        processor._get_clean_id_from_file_field_value(
+        processor.get_clean_id_from_file_field_value(
             user_input_id=raw_id, row_number=1, field_name="irrelevant"
         )
 

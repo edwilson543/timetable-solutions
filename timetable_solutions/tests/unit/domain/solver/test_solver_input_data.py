@@ -87,10 +87,10 @@ class TestTimetableSolverInputsHelperMethods:
         # Get and make some data
         school = data_factories.School()
         slot = data_factories.TimetableSlot(
-            school=school, period_starts_at=dt.time(hour=8, minute=15)
+            school=school, starts_at=dt.time(hour=8, minute=15)
         )
         later_slot = data_factories.TimetableSlot(
-            school=school, period_starts_at=dt.time(hour=9, minute=13)
+            school=school, starts_at=dt.time(hour=9, minute=13)
         )
         make_and_get_school_data(school=school, slots=[slot, later_slot])
 
@@ -108,10 +108,10 @@ class TestTimetableSolverInputsHelperMethods:
         # Get and make some data
         school = data_factories.School()
         slot = data_factories.TimetableSlot(
-            school=school, period_ends_at=dt.time(hour=16, minute=48)
+            school=school, ends_at=dt.time(hour=16, minute=48)
         )
         earlier_slot = data_factories.TimetableSlot(
-            school=school, period_ends_at=dt.time(hour=16, minute=47)
+            school=school, ends_at=dt.time(hour=16, minute=47)
         )
         make_and_get_school_data(school=school, slots=[slot, earlier_slot])
 
@@ -158,14 +158,14 @@ class TestTimetableSolverInputsHelperMethods:
         slot_0 = data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg_0,),
-            period_starts_at=dt.time(hour=9),
+            starts_at=dt.time(hour=9),
         )
 
         # Make a slot for this year group but not a consecutive one
         slot_1 = data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg_0,),
-            period_starts_at=dt.time(hour=16),
+            starts_at=dt.time(hour=16),
         )
 
         # Make a slot consecutive to slot_0, but for a different year group
@@ -173,7 +173,7 @@ class TestTimetableSolverInputsHelperMethods:
         slot_2 = data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg_1,),
-            period_starts_at=slot_0.period_ends_at,
+            starts_at=slot_0.ends_at,
             day_of_week=slot_0.day_of_week,
         )
 
@@ -192,7 +192,7 @@ class TestTimetableSolverInputsHelperMethods:
             )
             assert consecutive_slots == []
 
-    def test_get_time_period_starts_at_from_slot_id_equals_slot_start_time(self):
+    def test_get_time_starts_at_from_slot_id_equals_slot_start_time(self):
         # Get and make some data
         school, _, slots, _ = make_and_get_school_data()
 
@@ -203,12 +203,10 @@ class TestTimetableSolverInputsHelperMethods:
         slot = slots[0]
 
         # Execute test unit
-        period_starts_at = data.get_time_period_starts_at_from_slot_id(
-            slot_id=slot.slot_id
-        )
+        starts_at = data.get_time_starts_at_from_slot_id(slot_id=slot.slot_id)
 
         # Check outcome
-        assert period_starts_at == slot.period_starts_at
+        assert starts_at == slot.starts_at
 
 
 @pytest.mark.django_db

@@ -61,7 +61,8 @@ class YearGroup(factory.django.DjangoModelFactory):
         model = models.YearGroup
 
     school = factory.SubFactory(School)
-    year_group = factory.Sequence(lambda n: str(n + 1))
+    year_group_id = factory.Sequence(lambda n: n + 1)
+    year_group_name = factory.Sequence(lambda n: str(n + 1))
 
 
 class Pupil(factory.django.DjangoModelFactory):
@@ -97,16 +98,16 @@ class TimetableSlot(factory.django.DjangoModelFactory):
     )
 
     @factory.sequence
-    def period_starts_at(n: int) -> dt.time:
+    def starts_at(n: int) -> dt.time:
         hour = (
             (n // len(constants.Day)) % 8
         ) + 8  # So we have 8, 8, ..., 8, 9, ... , 9, ...
         return dt.time(hour=hour)
 
     @factory.lazy_attribute
-    def period_ends_at(self) -> dt.time:
-        hour = self.period_starts_at.hour + self.slot_duration_hours
-        return dt.time(hour=hour, minute=self.period_starts_at.minute)
+    def ends_at(self) -> dt.time:
+        hour = self.starts_at.hour + self.slot_duration_hours
+        return dt.time(hour=hour, minute=self.starts_at.minute)
 
     @factory.post_generation
     def relevant_year_groups(
@@ -135,7 +136,7 @@ class TimetableSlot(factory.django.DjangoModelFactory):
         return cls(
             school=slot.school,
             day_of_week=slot.day_of_week,
-            period_starts_at=slot.period_ends_at,  # Therefore consecutive
+            starts_at=slot.ends_at,  # Therefore consecutive
             relevant_year_groups=slot.relevant_year_groups.all(),
         )
 
@@ -256,12 +257,12 @@ class Break(factory.django.DjangoModelFactory):
     day_of_week = factory.Sequence(
         lambda n: constants.Day((n % len(constants.Day)) + 1)
     )
-    break_starts_at = dt.time(hour=12)
+    starts_at = dt.time(hour=12)
 
     @factory.lazy_attribute
-    def break_ends_at(self) -> dt.time:
-        hour = self.break_starts_at.hour + self.break_duration_hours
-        return dt.time(hour=hour, minute=self.break_starts_at.minute)
+    def ends_at(self) -> dt.time:
+        hour = self.starts_at.hour + self.break_duration_hours
+        return dt.time(hour=hour, minute=self.starts_at.minute)
 
     @factory.post_generation
     def teachers(

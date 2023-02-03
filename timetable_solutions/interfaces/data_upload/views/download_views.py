@@ -54,3 +54,11 @@ class LessonDownload(ExampleDownloadBase):
     """
 
     example_filepath = ExampleFile.LESSON.filepath
+
+
+class BreakDownload(ExampleDownloadBase):
+    """
+    Class used to download the example breaks file.
+    """
+
+    example_filepath = ExampleFile.BREAK.filepath

@@ -85,3 +85,9 @@ class School(models.Model):
         """Indicates whether a user from the given school has uploaded Lesson data into the database."""
         # noinspection PyUnresolvedReferences
         return self.lesson_set.exists()
+
+    @property
+    def has_break_data(self) -> bool:
+        """Indicates whether a user from the given school has uploaded Break data into the database."""
+        # noinspection PyUnresolvedReferences
+        return self.break_set.exists()

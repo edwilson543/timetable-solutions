@@ -20,35 +20,34 @@ class Header:
     SCHOOL_ID = "school_id"
 
     # Id columns
-    YEAR_GROUP = "year_group"
-    PUPIL_ID = "pupil_id"
-    TEACHER_ID = "teacher_id"
+    BREAK_ID = "break_id"
     CLASSROOM_ID = "classroom_id"
-    SLOT_ID = "slot_id"
     LESSON_ID = "lesson_id"
+    PUPIL_ID = "pupil_id"
+    SLOT_ID = "slot_id"
+    TEACHER_ID = "teacher_id"
+    YEAR_GROUP_ID = "year_group_id"
 
     # Headers specific to individual files
+    BREAK_NAME = "break_name"
+    BUILDING = "building"
+    DAY_OF_WEEK = "day_of_week"
+    STARTS_AT = "starts_at"
+    ENDS_AT = "ends_at"
     FIRSTNAME = "firstname"
+    ROOM_NUMBER = "room_number"
+    SUBJECT_NAME = "subject_name"
     SURNAME = "surname"
     TITLE = "title"
-    BUILDING = "building"
-    ROOM_NUMBER = "room_number"
-    DAY_OF_WEEK = "day_of_week"
-    PERIOD_STARTS_AT = "period_starts_at"
-    PERIOD_ENDS_AT = "period_ends_at"
-    SUBJECT_NAME = "subject_name"
-    TOTAL_SLOTS = "total_required_slots"
     TOTAL_DOUBLES = "total_required_double_periods"
+    TOTAL_SLOTS = "total_required_slots"
+    YEAR_GROUP_NAME = "year_group_name"
 
     # Headers in files containing many-to-many relationships
     PUPIL_IDS = "pupil_ids"
+    TEACHER_IDS = "teacher_ids"
+    RELEVANT_YEAR_GROUP_IDS = "relevant_year_group_ids"
     USER_DEFINED_SLOTS = "user_defined_slot_ids"
-    RELEVANT_YEAR_GROUPS = "relevant_year_groups"
-
-    # Type reference - where pandas.read_csv() doesn't always get it right
-    AMBIGUOUS_DTYPES = {
-        YEAR_GROUP: str,
-    }
 
 
 @dataclass(frozen=True)
@@ -67,11 +66,13 @@ class UploadFileStructure:
     Storage of the file structure of all csv files that get uploaded / downloaded from the database by users.
     """
 
-    YEAR_GROUPS = FileStructure(
-        headers=[Header.YEAR_GROUP], id_column=Header.YEAR_GROUP
-    )
     PUPILS = FileStructure(
-        headers=[Header.PUPIL_ID, Header.FIRSTNAME, Header.SURNAME, Header.YEAR_GROUP],
+        headers=[
+            Header.PUPIL_ID,
+            Header.FIRSTNAME,
+            Header.SURNAME,
+            Header.YEAR_GROUP_ID,
+        ],
         id_column=Header.PUPIL_ID,
     )
     TEACHERS = FileStructure(
@@ -82,13 +83,19 @@ class UploadFileStructure:
         headers=[Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
         id_column=Header.CLASSROOM_ID,
     )
+    YEAR_GROUPS = FileStructure(
+        headers=[Header.YEAR_GROUP_ID, Header.YEAR_GROUP_NAME],
+        id_column=Header.YEAR_GROUP_ID,
+    )
+
+    # Files with relations
     TIMETABLE = FileStructure(
         headers=[
             Header.SLOT_ID,
             Header.DAY_OF_WEEK,
-            Header.PERIOD_STARTS_AT,
-            Header.PERIOD_ENDS_AT,
-            Header.RELEVANT_YEAR_GROUPS,
+            Header.STARTS_AT,
+            Header.ENDS_AT,
+            Header.RELEVANT_YEAR_GROUP_IDS,
         ],
         id_column=Header.SLOT_ID,
     )
@@ -105,6 +112,18 @@ class UploadFileStructure:
         ],
         id_column=Header.LESSON_ID,
     )
+    BREAK = FileStructure(
+        headers=[
+            Header.BREAK_ID,
+            Header.BREAK_NAME,
+            Header.DAY_OF_WEEK,
+            Header.STARTS_AT,
+            Header.ENDS_AT,
+            Header.TEACHER_IDS,
+            Header.RELEVANT_YEAR_GROUP_IDS,
+        ],
+        id_column=Header.BREAK_ID,
+    )
 
 
 class ExampleFile(StrEnum):
@@ -118,6 +137,7 @@ class ExampleFile(StrEnum):
     CLASSROOMS = "example_classrooms.csv"
     TIMETABLE = "example_timetable.csv"
     LESSON = "example_lessons.csv"
+    BREAK = "example_breaks.csv"
 
     @property
     def filepath(self) -> Path:

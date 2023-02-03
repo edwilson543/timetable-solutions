@@ -59,7 +59,7 @@ class TimetableSolverObjective:
 
         for key, variable in self._decision_variables.items():
             # Get the time of the slot corresponding to the variable
-            slot_time = self._inputs.get_time_period_starts_at_from_slot_id(
+            slot_time = self._inputs.get_time_starts_at_from_slot_id(
                 slot_id=key.slot_id
             )
 

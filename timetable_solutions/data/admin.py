@@ -58,7 +58,7 @@ class ClassroomAdmin(admin.ModelAdmin):
 
 @admin.register(models.YearGroup)
 class YearGroupAdmin(admin.ModelAdmin):
-    list_display = ["school", "year_group"]
+    list_display = ["school", "year_group_id"]
     list_filter = ["school"]
 
 
@@ -70,8 +70,8 @@ class PupilAdmin(admin.ModelAdmin):
 
 @admin.register(models.TimetableSlot)
 class TimetableSlotAdmin(admin.ModelAdmin):
-    list_display = ["school", "day_of_week", "period_starts_at", "period_ends_at"]
-    list_filter = ["school", "day_of_week", "period_starts_at", "period_ends_at"]
+    list_display = ["school", "day_of_week", "starts_at", "ends_at"]
+    list_filter = ["school", "day_of_week", "starts_at", "ends_at"]
     search_fields = ["school__school_access_key"]
     search_help_text = "Search by school access key"
 
