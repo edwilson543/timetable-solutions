@@ -55,8 +55,17 @@ class TimetableStructureUpload(DataUploadBase):
 
 class LessonsUpload(DataUploadBase):
     """
-    View class to control the uploading of the requirements for classes that must take place by the user
+    View class to control the uploading of lesson instances
     """
 
     form = forms.LessonUpload
     processor = data_upload_processing.LessonFileUploadProcessor
+
+
+class BreaksUpload(DataUploadBase):
+    """
+    View class to control the uploading of break instances
+    """
+
+    form = forms.BreakUpload
+    processor = data_upload_processing.BreakFileUploadProcessor

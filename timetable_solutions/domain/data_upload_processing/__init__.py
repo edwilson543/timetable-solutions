@@ -39,4 +39,5 @@ Processor = Union[
     PupilFileUploadProcessor,
     TimetableSlotFileUploadProcessor,
     LessonFileUploadProcessor,
+    BreakFileUploadProcessor,
 ]

@@ -1,4 +1,4 @@
-break_id,break_name,day_of_week,break_starts_at,break_ends_at,teachers,relevant_year_group_ids
+break_id,break_name,day_of_week,starts_at,ends_at,teacher_ids,relevant_year_group_ids
 1,Lunch,1,12:00:00,13:00:00,1; 2,1; 2
 2,Lunch,2,12:00:00,13:00:00,1; 2,1; 2
 3,Lunch,3,12:00:00,13:00:00,1; 2,1; 2

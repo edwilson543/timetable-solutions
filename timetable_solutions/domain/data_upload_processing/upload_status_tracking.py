@@ -209,5 +209,6 @@ class UploadStatusTracker:
             and self.classrooms.status == UploadStatus.COMPLETE
             and self.timetable.status == UploadStatus.COMPLETE
             and self.lessons.status == UploadStatus.COMPLETE
+            and self.breaks.status == UploadStatus.COMPLETE
         )
         return all_complete

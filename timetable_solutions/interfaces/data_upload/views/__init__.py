@@ -3,27 +3,30 @@ All views relating to the data upload page
 """
 from .data_upload_page import UploadPage
 from .upload_views import (
-    TeacherListUpload,
+    BreaksUpload,
     ClassroomListUpload,
-    YearGroupListUpload,
     PupilListUpload,
-    TimetableStructureUpload,
     LessonsUpload,
+    TeacherListUpload,
+    TimetableStructureUpload,
+    YearGroupListUpload,
 )
 from .reset_views import (
-    TeacherListReset,
+    AllSchoolDataReset,
+    BreakReset,
     ClassroomListReset,
     PupilListReset,
-    YearGroupReset,
-    TimetableStructureReset,
     LessonReset,
-    AllSchoolDataReset,
+    TeacherListReset,
+    TimetableStructureReset,
+    YearGroupReset,
 )
 from .download_views import (
-    TeacherDownload,
+    BreakDownload,
     ClassroomDownload,
-    YearGroupDownload,
     PupilDownload,
-    TimetableDownload,
     LessonDownload,
+    TeacherDownload,
+    TimetableDownload,
+    YearGroupDownload,
 )

@@ -72,6 +72,7 @@ class TestUploadPageView(test.TestCase):
             "pupils",
             "timetable",
             "lessons",
+            "breaks",
         ]
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)
@@ -103,6 +104,7 @@ class TestUploadPageView(test.TestCase):
             "pupils",
             "timetable",
             "lessons",
+            "breaks",
         ]
         for form_name, required_upload in required_forms.items():
             self.assertIsInstance(required_upload, RequiredUpload)

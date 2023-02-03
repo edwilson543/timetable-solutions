@@ -46,29 +46,32 @@ class UrlName(StrEnum):
     FILE_UPLOAD_PAGE = "file_upload_page"
 
     # File upload urls
-    TEACHER_LIST_UPLOAD = "teacher_upload"
+    BREAKS_UPLOAD = "breaks_upload"
     CLASSROOM_LIST_UPLOAD = "classroom_upload"
-    YEAR_GROUP_UPLOAD = "year_group_upload"
-    PUPIL_LIST_UPLOAD = "pupil_upload"
-    TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
     LESSONS_UPLOAD = "lessons_upload"
+    PUPIL_LIST_UPLOAD = "pupil_upload"
+    TEACHER_LIST_UPLOAD = "teacher_upload"
+    TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
+    YEAR_GROUP_UPLOAD = "year_group_upload"
 
     # File upload reset urls
-    TEACHER_LIST_RESET = "teacher_reset"
-    CLASSROOM_LIST_RESET = "classroom_reset"
-    YEAR_GROUP_RESET = "year_group_reset"
-    PUPIL_LIST_RESET = "pupil_reset"
-    TIMETABLE_STRUCTURE_RESET = "timetable_reset"
-    LESSONS_RESET = "lessons_reset"
     ALL_DATA_RESET = "all_data_reset"
+    BREAKS_RESET = "breaks_reset"
+    CLASSROOM_LIST_RESET = "classroom_reset"
+    LESSONS_RESET = "lessons_reset"
+    PUPIL_LIST_RESET = "pupil_reset"
+    TEACHER_LIST_RESET = "teacher_reset"
+    TIMETABLE_STRUCTURE_RESET = "timetable_reset"
+    YEAR_GROUP_RESET = "year_group_reset"
 
     # Example file download urls
-    TEACHER_DOWNLOAD = "teacher_download"
+    BREAKS_DOWNLOAD = "breaks_download"
     CLASSROOM_DOWNLOAD = "classroom_download"
-    YEAR_GROUP_DOWNLOAD = "year_group_download"
-    PUPIL_DOWNLOAD = "pupil_download"
-    TIMETABLE_DOWNLOAD = "timetable_download"
     LESSONS_DOWNLOAD = "lessons_download"
+    PUPIL_DOWNLOAD = "pupil_download"
+    TEACHER_DOWNLOAD = "teacher_download"
+    TIMETABLE_DOWNLOAD = "timetable_download"
+    YEAR_GROUP_DOWNLOAD = "year_group_download"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
