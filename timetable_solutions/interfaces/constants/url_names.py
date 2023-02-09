@@ -24,6 +24,7 @@ class UrlName(StrEnum):
         Get the url of one of the enum members.
         raises: NoReverseMatch if incorrect kwargs supplied.
         """
+        kwargs = kwargs or {}
         try:
             return urls.reverse(self, kwargs=kwargs)
         except urls.exceptions.NoReverseMatch:
@@ -85,6 +86,13 @@ class UrlName(StrEnum):
 
     # Custom admin app
     CUSTOM_ADMIN_HOME = "user_admin:index"
+    CUSTOM_ADMIN_TEACHER_LIST = "user_admin:data_teacher_changelist"
+    CUSTOM_ADMIN_CLASSROOM_LIST = "user_admin:data_classroom_changelist"
+    CUSTOM_ADMIN_YEAR_GROUP_LIST = "user_admin:data_yeargroup_changelist"
+    CUSTOM_ADMIN_TIMETABLE_LIST = "user_admin:data_timetableslot_changelist"
+    CUSTOM_ADMIN_PUPIL_LIST = "user_admin:data_pupil_changelist"
+    CUSTOM_ADMIN_LESSON_LIST = "user_admin:data_lesson_changelist"
+    CUSTOM_ADMIN_PROFILE = "user_admin:data_profile_changelist"
 
     # HTMX #
 

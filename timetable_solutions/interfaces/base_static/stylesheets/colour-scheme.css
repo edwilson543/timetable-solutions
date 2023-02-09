@@ -1,0 +1,16 @@
+/* ====================
+Project colour scheme
+==================== */
+:root {
+    /* Head strap & navbar */
+    --dark-blue: #11014A;
+
+    /* Navbar */
+    --grey-black: #3d3d3b;
+
+    /* Footer */
+    --lilac: #d6d4d4;
+
+    /* Bootstrap */
+    --bootstrap-primary: #0d6efd;
+}

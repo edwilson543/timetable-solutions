@@ -1,0 +1,88 @@
+{% load navbar_sitemap %}
+
+<style>
+#navbar {
+    min-height: 100%;
+    background: linear-gradient(to bottom, var(--dark-blue) 0%, var(--grey-black) 75%);
+}
+
+.fa-icon {
+    text-align: center;
+    width: 10%;
+}
+
+.nav-button {
+    /* Display  and box model */
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+
+    /* Typography */
+    text-align: left;
+}
+
+.nav-button-list.collapsed {
+  background-color: rgba(0, 0, 0, 0);
+  border-color: rgba(0, 0, 0, 0);
+}
+.nav-button-list.collapsed:hover {
+  background-color: var(--bootstrap-primary);
+  border-color: var(--bootstrap-primary);
+}
+
+.nav-button-detail {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-color: rgba(0, 0, 0, 0);
+}
+
+</style>
+
+<div id="navbar" class="d-flex flex-column flex-shrink-0 p-3 text-white">
+  <div id="nav-menu" class="mt-3">
+
+    <ul class="ps-0 ms-0 fa-ul">
+
+      <li class="nav-link my-3">
+        <a href="{% url 'dashboard' %}" class="btn btn-primary fs-4 collapsed nav-button nav-button-list">
+          <i class="fa-solid fa-gauge fa-icon"></i>
+          &nbsp; Dashboard
+        </a>
+      </li>
+
+      {% sitemap as sitemap %}
+      {% for page_collection in sitemap %}
+        <li class="nav-link my-3">
+
+          <button class="btn btn-primary fs-4 collapsed nav-button nav-button-list"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapse-{{ forloop.counter }}"
+                  aria-expanded="false"
+                  aria-controls="collapse-{{ forloop.counter }}"
+          >
+            <i class="{{ page_collection.fa_icon }} fa-icon"></i>
+            &nbsp; {{ page_collection.name }}
+          </button>
+
+          <div id="collapse-{{ forloop.counter }}" class="collapse">
+
+            <ul class="ps-3 fa-ul">
+              {% for page in page_collection.pages %}
+              <li>
+                <a href="{{ page.url }}" class="btn btn-primary nav-button nav-button-detail">
+                  <i class="{{ page.fa_icon }} fa-icon"></i>
+                  &nbsp;  {{ page.name }}
+                </a>
+              </li>
+              {% endfor %}
+            </ul>
+
+          </div>
+        </li>
+
+      {% endfor %}
+
+    </ul>
+  </div>
+</div>
