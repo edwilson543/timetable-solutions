@@ -52,21 +52,38 @@ body, html {
 <body>
 
 {% include "includes/flash_messages.html" %}
+
     <!--Add the 'head strap'-->
     {% include "includes/new-headstrap.html" %}
 
     <div class="container-fluid h-100">
         <div class="row h-100">
             <div class="col-lg-3 gx-0">
+
                 <!--Add the navigation bar-->
                 {% if user.is_authenticated %}
                     {% include "includes/new-navigation-bar.html" %}
                 {% endif %}
+
             </div>
 
             <div class="col-lg-9 page-container">
+
+                <!--Space for breadcrumbs-->
+                <nav aria-label="breadcrumb" class="p-2">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" aria-current="page">
+                            Timetable solutions
+                        </li>
+                        {% block breadcrumbs %}
+                        {% endblock %}
+                    </ol>
+                </nav>
+
+                <!-- Varied page content-->
                 {% block content %}
                 {% endblock %}
+
             </div>
         </div>
     </div>
