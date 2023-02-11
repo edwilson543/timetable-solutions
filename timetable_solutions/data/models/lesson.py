@@ -217,13 +217,6 @@ class Lesson(models.Model):
     # Queries - view timetables logic
     # --------------------
 
-    @classmethod
-    def get_lesson_by_pk(cls, pk: int) -> "Lesson":
-        """
-        Look up a Lesson instance by primary key.
-        """
-        return cls.objects.get(pk=pk)
-
     def get_all_time_slots(self) -> TimetableSlotQuerySet:
         """
         Method to provide ALL time slots when a particular lesson is known to take place.

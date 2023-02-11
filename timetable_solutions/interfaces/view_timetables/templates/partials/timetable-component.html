@@ -59,7 +59,7 @@ Text styling
 <div
     class="component {{ component.css_class }}"
     {% if component.is_lesson %}
-        hx-get="{% url 'lesson-detail' component.model_instance.pk %}"
+        hx-get="{% url 'lesson-detail' component.model_instance.lesson_id %}"
         hx-trigger="click"
         hx-target="#modal-htmx-handle"
         hx-swap="innerHTML"
