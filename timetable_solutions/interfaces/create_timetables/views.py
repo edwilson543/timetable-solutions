@@ -16,7 +16,7 @@ from django.views.generic.edit import FormView
 # Local application imports
 from interfaces.constants import UrlName
 from data import models
-from domain.data_upload_processing import UploadStatusTracker
+from domain.data_management import UploadStatusTracker
 from domain import solver
 from interfaces.create_timetables import forms
 

@@ -14,7 +14,7 @@ from interfaces.utils import typing_utils
 
 @login_required
 def lesson_detail_modal(
-    request: typing_utils.HtmxHttpRequest, lesson_pk: int
+    request: typing_utils.HtmxHttpRequest, lesson_id: str
 ) -> http.HttpResponse:
     """
     View populating a modal with the details for a specific Lesson instance.
@@ -22,7 +22,10 @@ def lesson_detail_modal(
     template = loader.get_template("partials/lesson_detail.html")
 
     if request.method == "GET":
-        lesson: models.Lesson = models.Lesson.get_lesson_by_pk(pk=lesson_pk)
+        school_id = request.user.profile.school.school_access_key
+        lesson: models.Lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=school_id, lesson_id=lesson_id
+        )
         context = {
             "modal_is_active": True,
             "lesson": lesson,

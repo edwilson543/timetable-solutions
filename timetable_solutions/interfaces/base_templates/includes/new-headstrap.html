@@ -1,0 +1,59 @@
+<!-- ====================
+Head strap goes at the top of every page of the site
+==================== -->
+<style>
+
+#head-strap {
+    /* Positioning */
+    position: relative;
+    z-index: 100;
+
+    /* Display */
+    width: 100%;
+    height: 60px;
+
+    /*  Typography */
+    line-height: 60px;
+    vertical-align: middle;
+
+    /* Background */
+    background-color: var(--dark-blue);
+}
+
+</style>
+
+<div id="head-strap" class="d-flex flex-row justify-content-between">
+        <span id="head_strap_text" class="text-white fs-1 ms-4" style="font-family:monospace;">
+            Timetable Solutions
+        </span>
+
+    {% if user.is_authenticated %}
+        <span class="dropdown me-5 align-items-center">
+            <button class="btn btn-primary dropdown-toggle" type="button"
+                    id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                {{ user.username }}
+            </button>
+
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <li>
+                    <a class="dropdown-item" href="{% url 'logout' %}">
+                        Logout
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="{% url 'password_change' %}">
+                        Change password
+                    </a>
+                </li>
+                <hr>
+                {% if user.profile %}
+                <li class="dropdown-item">
+                    {{user.profile.school.school_name}}
+                    <br>
+                    Access key: {{user.profile.school.school_access_key}}
+                </li>
+                {% endif %}
+            </ul>
+        </span>
+    {% endif %}
+</div>

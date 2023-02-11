@@ -30,7 +30,7 @@ urlpatterns = [
     ),
     # HTMX URLs
     path(
-        "lesson-detail-modal/<int:lesson_pk>",
+        "lesson-detail-modal/<str:lesson_id>",
         htmx_views.lesson_detail_modal,
         name=UrlName.LESSON_DETAIL.value,
     ),
