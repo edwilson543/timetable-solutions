@@ -18,7 +18,7 @@ urlpatterns = (
         path("", generic.RedirectView.as_view(url=reverse_lazy(UrlName.LOGIN.value))),
         path("empty/", generic.TemplateView.as_view(template_name="new-base.html")),
         path("view/", include("interfaces.view_timetables.urls")),
-        path("data/", include("interfaces.data_upload.urls")),
+        path("data/", include("interfaces.data_management.urls")),
         path("create/", include("interfaces.create_timetables.urls")),
         path("users/", include("interfaces.users.urls")),
         path("admin/", admin.site.urls),

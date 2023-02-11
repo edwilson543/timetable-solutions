@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     "data",
     "interfaces.users",
     "interfaces.view_timetables",
-    "interfaces.data_upload",
+    "interfaces.data_management",
     "interfaces.create_timetables",
     "interfaces.custom_admin",
     "interfaces.utils",
