@@ -57,7 +57,7 @@ body, html {
     {% include "includes/new-headstrap.html" %}
 
     <div class="container-fluid h-100">
-        <div class="row h-100">
+        <div class="row" style="min-height:100%;">
             <div class="col-lg-3 gx-0">
 
                 <!--Add the navigation bar-->
@@ -86,10 +86,14 @@ body, html {
 
             </div>
         </div>
+
+        <!--Add the footer-->
+        <div class="row">
+            {% include "includes/new-footer.html" %}
+        </div>
+
     </div>
 
-<!--Add the footer-->
-{% include "includes/new-footer.html" %}
 
 </body>
 </html>
