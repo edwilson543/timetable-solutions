@@ -11,6 +11,14 @@ urlpatterns = [
     # BASE data upload page
     path("", views.UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
     # --------------------
+    # Teachers
+    # --------------------
+    path(
+        "teachers/",
+        views.TeacherLanding.as_view(),
+        name=UrlName.TEACHERS_LANDING_PAGE.value,
+    ),
+    # --------------------
     # Data UPLOAD endpoints
     # --------------------
     path(

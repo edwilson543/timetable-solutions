@@ -43,6 +43,13 @@ class UrlName(StrEnum):
     REGISTER_PIVOT = "registration_pivot"
     SCHOOL_REGISTRATION = "school_registration"
 
+    # --------------------
+    # Data management
+    # --------------------
+    # Teachers
+    TEACHERS_LANDING_PAGE = "teachers-landing-page"
+    TEACHERS_LIST = "teachers-list"
+
     # Data upload app
     FILE_UPLOAD_PAGE = "file_upload_page"
 

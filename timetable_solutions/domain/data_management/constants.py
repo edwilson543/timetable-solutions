@@ -146,3 +146,16 @@ class ExampleFile(StrEnum):
         """
         path = settings.BASE_DIR / settings.MEDIA_ROOT / "example_files" / self.value
         return path
+
+
+class DataStatus(StrEnum):
+    """The possible statuses of a user's data with respect to a single model."""
+
+    # School has some data for this model
+    NOT_EMPTY = "not-empty"
+
+    # School can but has not yet added any data for this model
+    EMPTY = "empty"
+
+    # This model cannot be populated before another model which is currently EMPTY or DISALLOWED
+    DISALLOWED = "disallowed"

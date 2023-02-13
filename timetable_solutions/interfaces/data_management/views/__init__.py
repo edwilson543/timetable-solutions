@@ -30,3 +30,5 @@ from .download_views import (
     TimetableDownload,
     YearGroupDownload,
 )
+
+from .teacher import TeacherLanding

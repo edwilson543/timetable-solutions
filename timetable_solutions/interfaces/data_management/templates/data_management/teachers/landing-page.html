@@ -1,0 +1,110 @@
+{% extends 'new-base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        teachers
+    </li>
+{% endblock %}
+
+{% block content %}
+<div>
+
+    <div class="row mx-3 my-3 gb-2">
+
+        <div>
+            <h2>Add data</h2>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 p-3">
+                <div class="card-title">
+                    <h3>Bulk upload teachers</h3>
+                </div>
+                <div class="card-content d-flex flex-column justify-content-between h-100">
+                    <p>
+                        Upload a file containing all or some of your teachers
+                    </p>
+                    <a class="btn btn-primary w-25">
+                        Add
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 p-3">
+                <div class="card-title">
+                    <h3>Add single teacher</h3>
+                </div>
+                <div class="card-content d-flex flex-column justify-content-between h-100">
+                    <p>
+                        Add data for a single teacher to your school
+                    </p>
+                    <a class="btn btn-primary w-25">
+                        Add
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mx-3 my-3 gb-2">
+
+        <div>
+            <h2>Manage data</h2>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 p-3">
+                <div class="card-title">
+                    <h3>View teachers</h3>
+                </div>
+                <div class="card-content d-flex flex-column justify-content-between h-100">
+                    <p>
+                        View details of all the teachers at your school.
+                        You can also update all existing data
+                    </p>
+
+                    {% if has_existing_data %}
+                        <a class="btn btn-primary w-25"  href="{% url 'teachers-list' %}">
+                            View
+                        </a>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            No data to view
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card h-100 p-3">
+                <div class="card-title">
+                    <h3>Delete teacher data</h3>
+                </div>
+                <div class="card-content d-flex flex-column justify-content-between h-100">
+                    <p>
+                        Delete details for all teachers at your school
+                    </p>
+
+                     {% if has_existing_data %}
+                        <a class="btn btn-primary w-25"  href="{% url 'teachers-list' %}">
+                            Delete
+                        </a>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            No data to delete
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
