@@ -73,7 +73,9 @@ body, html {
                 <nav aria-label="breadcrumb" class="p-2">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item active" aria-current="page">
-                            Timetable solutions
+                            <a href="{% url 'dashboard' %}" class="link-secondary text-decoration-none">
+                                Timetable solutions
+                            </a>
                         </li>
                         {% block breadcrumbs %}
                         {% endblock %}
