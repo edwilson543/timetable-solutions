@@ -14,7 +14,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
 from interfaces.constants import UrlName
-from interfaces.data_management import forms
+from interfaces.data_management import forms_legacy as forms
 from data import models
 
 

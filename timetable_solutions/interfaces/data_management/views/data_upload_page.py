@@ -36,7 +36,7 @@ class RequiredUpload:
     reset_warning: data_management.ResetWarning
 
 
-class Requiredforms_legacyContext(TypedDict):
+class RequiredFormsContext(TypedDict):
     """
     Type and structure of the required_forms_legacy context provided to the UploadPage.
     """
@@ -55,7 +55,7 @@ class UploadPageContext(TypedDict):
     Type and structure of the context provided to the data upload page.
     """
 
-    required_forms_legacy: Requiredforms_legacyContext
+    required_forms: RequiredFormsContext
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
@@ -95,7 +95,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             )
 
         context: UploadPageContext = {
-            "required_forms_legacy": {
+            "required_forms": {
                 "teachers": RequiredUpload(
                     form_name="Teachers",
                     upload_status=upload_status.teachers,
