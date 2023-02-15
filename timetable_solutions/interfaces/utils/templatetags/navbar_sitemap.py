@@ -41,7 +41,7 @@ def sitemap() -> list[PageCollection]:
             pages=[
                 Page(
                     "Teachers",
-                    url=UrlName.CUSTOM_ADMIN_TEACHER_LIST.url(),
+                    url=UrlName.TEACHER_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-person-chalkboard",
                 ),
                 Page(

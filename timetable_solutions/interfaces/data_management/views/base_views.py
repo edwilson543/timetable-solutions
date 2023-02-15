@@ -41,7 +41,8 @@ class SearchListBase(mixins.LoginRequiredMixin, generic.FormView, Generic[M]):
     def setup(self, request: http.HttpRequest, *args: object, **kwargs: object) -> None:
         """Set the school id based on the authenticated user."""
         super().setup(request, *args, **kwargs)
-        self.school_id = request.user.profile.school.school_access_key
+        if request.user.is_authenticated:
+            self.school_id = request.user.profile.school.school_access_key
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Set form parameters that are model specific, as defined by the class vars."""

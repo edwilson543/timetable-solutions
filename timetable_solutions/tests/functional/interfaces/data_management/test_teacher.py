@@ -30,7 +30,7 @@ class TestTeacherLanding:
         client.login(username=user.username, password="unhashed")
 
         # Navigate to the teacher landing page
-        url = UrlName.TEACHERS_LANDING_PAGE.url()
+        url = UrlName.TEACHER_LANDING_PAGE.url()
         response = client.get(url)
 
         # Check the page loaded
@@ -39,7 +39,7 @@ class TestTeacherLanding:
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user
         client = test.Client()
-        url = UrlName.TEACHERS_LANDING_PAGE.url()
+        url = UrlName.TEACHER_LANDING_PAGE.url()
         response = client.get(url)
 
         # Check user is redirected to login page
@@ -69,7 +69,7 @@ class TestTeacherSearchList:
         data_factories.Teacher(school=school)
 
         # Navigate to the teacher landing page
-        url = UrlName.TEACHERS_LIST.url()
+        url = UrlName.TEACHER_LIST.url()
         response = client.get(url)
 
         # Check the page loaded correctly
@@ -91,7 +91,7 @@ class TestTeacherSearchList:
         data_factories.Teacher(school=school)
 
         # Navigate to the teacher landing page
-        url = UrlName.TEACHERS_LIST.url()
+        url = UrlName.TEACHER_LIST.url()
 
         form_data = {"search_term": teacher.firstname}
         response = client.post(url, data=form_data)
@@ -116,7 +116,7 @@ class TestTeacherSearchList:
         data_factories.Teacher(school=school)
 
         # Navigate to the teacher landing page
-        url = UrlName.TEACHERS_LIST.url()
+        url = UrlName.TEACHER_LIST.url()
 
         form_data = {}
         response = client.post(url, data=form_data)
@@ -126,4 +126,4 @@ class TestTeacherSearchList:
 
         form = response.context["form"]
         assert form.errors
-        assert "field is required" in form.errors.as_text()
+        assert "Please enter a search term!" in form.errors.as_text()

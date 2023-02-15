@@ -2,7 +2,9 @@
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item active" aria-current="page">
-        teachers
+        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
+            teachers
+        </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
         list
@@ -24,9 +26,33 @@
 </div>
 
 <div class="row mx-3">
-    <div class="card shadow p-1">
+    <div class="card shadow p-2 mb-3">
 
       <div class="card-content">
+
+        <div class="card-text">
+            {% if form.search_term.value %}
+                {% if object_list %}
+                    {% with object_list|length as n_objects %}
+                        <p>
+                            <b>
+                                Found {{ n_objects }} result{% if n_objects > 1 %}s{% endif%}
+                                for search: "{{ form.search_term.value }}"
+                            </b>
+                        </p>
+                    {% endwith %}
+                {% else %}
+                    <p>
+                        <b>Search for "{{ form.search_term.value }}" did not give any results!</b>
+                    </p>
+                {% endif %}
+            {% else %}
+                <p>
+                    <b>Showing all teachers</b>
+                </p>
+            {% endif %}
+        </div>
+
         <table class="table table-striped table-hover w-100">
             <thead>
                 <tr>
@@ -45,6 +71,7 @@
                 {% endfor %}
             </tbody>
         </table>
+
       </div>
     </div>
 </div>

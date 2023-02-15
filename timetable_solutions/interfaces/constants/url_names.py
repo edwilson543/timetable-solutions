@@ -48,8 +48,8 @@ class UrlName(StrEnum):
     # Data management
     # --------------------
     # Teachers
-    TEACHERS_LANDING_PAGE = "teachers-landing-page"
-    TEACHERS_LIST = "teachers-list"
+    TEACHER_LANDING_PAGE = "teacher-landing-page"
+    TEACHER_LIST = "teacher-list"
 
     # Data upload app
     FILE_UPLOAD_PAGE = "file_upload_page"

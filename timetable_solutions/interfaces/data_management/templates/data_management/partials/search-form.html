@@ -7,7 +7,7 @@
     }
 </style>
 
-<form action="{{ post_url }}" method="post">
+<form action="{{ post_url }}" method="post" class="p-1">
     {% csrf_token %}
 
     {% if form.non_field_errors %}
