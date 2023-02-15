@@ -15,7 +15,7 @@ from django.views.generic import TemplateView
 # Local application imports
 from interfaces.constants import UrlName
 from domain import data_management
-from interfaces.data_management import forms
+from interfaces.data_management import forms_legacy
 
 
 @dataclass(frozen=True)
@@ -29,16 +29,16 @@ class RequiredUpload:
 
     form_name: str  # Name of the form that will be shown to the user
     upload_status: data_management.UploadStatusReason
-    empty_form: forms.UploadForm
+    empty_form: forms_legacy.UploadForm
     upload_url_name: UrlName
     reset_url_name: UrlName
     example_download_url_name: UrlName
     reset_warning: data_management.ResetWarning
 
 
-class RequiredFormsContext(TypedDict):
+class Requiredforms_legacyContext(TypedDict):
     """
-    Type and structure of the required_forms context provided to the UploadPage.
+    Type and structure of the required_forms_legacy context provided to the UploadPage.
     """
 
     teachers: RequiredUpload
@@ -55,14 +55,14 @@ class UploadPageContext(TypedDict):
     Type and structure of the context provided to the data upload page.
     """
 
-    required_forms: RequiredFormsContext
+    required_forms_legacy: Requiredforms_legacyContext
 
 
 class UploadPage(LoginRequiredMixin, TemplateView):
     """
     Template view with the following main purposes:
         - Handling HTTP to the base data upload page (whose url this class is attached to)
-        - Defining the logic for gathering all the required upload forms into one set of context data
+        - Defining the logic for gathering all the required upload forms_legacy into one set of context data
         - Being subclassed, to provide its rendering of the data upload page (with the full context) to other views.
     """
 
@@ -95,11 +95,11 @@ class UploadPage(LoginRequiredMixin, TemplateView):
             )
 
         context: UploadPageContext = {
-            "required_forms": {
+            "required_forms_legacy": {
                 "teachers": RequiredUpload(
                     form_name="Teachers",
                     upload_status=upload_status.teachers,
-                    empty_form=forms.TeacherListUpload(),
+                    empty_form=forms_legacy.TeacherListUpload(),
                     upload_url_name=UrlName.TEACHER_LIST_UPLOAD,
                     reset_url_name=UrlName.TEACHER_LIST_RESET,
                     example_download_url_name=UrlName.TEACHER_DOWNLOAD,
@@ -108,7 +108,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "classrooms": RequiredUpload(
                     form_name="Classrooms",
                     upload_status=upload_status.classrooms,
-                    empty_form=forms.ClassroomListUpload(),
+                    empty_form=forms_legacy.ClassroomListUpload(),
                     upload_url_name=UrlName.CLASSROOM_LIST_UPLOAD,
                     reset_url_name=UrlName.CLASSROOM_LIST_RESET,
                     example_download_url_name=UrlName.CLASSROOM_DOWNLOAD,
@@ -117,7 +117,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "year_groups": RequiredUpload(
                     form_name="Year Groups",
                     upload_status=upload_status.year_groups,
-                    empty_form=forms.YearGroupUpload(),
+                    empty_form=forms_legacy.YearGroupUpload(),
                     upload_url_name=UrlName.YEAR_GROUP_UPLOAD,
                     reset_url_name=UrlName.YEAR_GROUP_RESET,
                     example_download_url_name=UrlName.YEAR_GROUP_DOWNLOAD,
@@ -126,7 +126,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "breaks": RequiredUpload(
                     form_name="Break times",
                     upload_status=upload_status.breaks,
-                    empty_form=forms.BreakUpload(),
+                    empty_form=forms_legacy.BreakUpload(),
                     upload_url_name=UrlName.BREAKS_UPLOAD,
                     reset_url_name=UrlName.BREAKS_RESET,
                     example_download_url_name=UrlName.BREAKS_DOWNLOAD,
@@ -135,7 +135,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "pupils": RequiredUpload(
                     form_name="Pupils",
                     upload_status=upload_status.pupils,
-                    empty_form=forms.PupilListUpload(),
+                    empty_form=forms_legacy.PupilListUpload(),
                     upload_url_name=UrlName.PUPIL_LIST_UPLOAD,
                     reset_url_name=UrlName.PUPIL_LIST_RESET,
                     example_download_url_name=UrlName.PUPIL_DOWNLOAD,
@@ -144,7 +144,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "timetable": RequiredUpload(
                     form_name="Timetable structure",
                     upload_status=upload_status.timetable,
-                    empty_form=forms.TimetableStructureUpload(),
+                    empty_form=forms_legacy.TimetableStructureUpload(),
                     upload_url_name=UrlName.TIMETABLE_STRUCTURE_UPLOAD,
                     reset_url_name=UrlName.TIMETABLE_STRUCTURE_RESET,
                     example_download_url_name=UrlName.TIMETABLE_DOWNLOAD,
@@ -153,7 +153,7 @@ class UploadPage(LoginRequiredMixin, TemplateView):
                 "lessons": RequiredUpload(
                     form_name="Lessons",
                     upload_status=upload_status.lessons,
-                    empty_form=forms.LessonUpload(),
+                    empty_form=forms_legacy.LessonUpload(),
                     upload_url_name=UrlName.LESSONS_UPLOAD,
                     reset_url_name=UrlName.LESSONS_RESET,
                     example_download_url_name=UrlName.LESSONS_DOWNLOAD,
