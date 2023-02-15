@@ -1,0 +1,22 @@
+<style>
+    /* Style the error messages */
+    .alert ul {
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style-type: none;
+    }
+</style>
+
+<form action="{{ post_url }}" method="post">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        <div class="alert alert-danger" role="alert">
+            {{ form.non_field_errors }}
+        </div>
+    {% endif %}
+
+    {% include 'data_management/partials/search-field.html' with search_field=form.search_term %}
+
+    <input type="submit" name="search-submit" value="Search" class="btn btn-primary">
+</form>
