@@ -18,6 +18,11 @@ urlpatterns = [
         views.TeacherLanding.as_view(),
         name=UrlName.TEACHERS_LANDING_PAGE.value,
     ),
+    path(
+        "teachers/list/",
+        views.TeacherSearchList.as_view(),
+        name=UrlName.TEACHERS_LIST.value,
+    ),
     # --------------------
     # Data UPLOAD endpoints
     # --------------------

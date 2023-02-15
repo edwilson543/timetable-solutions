@@ -1,0 +1,51 @@
+{% extends 'new-base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        teachers
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        list
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>View and search for your teachers</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        {% include 'data_management/partials/search-form.html' with form=form post_url=form_post_url %}
+    </div>
+</div>
+
+<div class="row mx-3">
+    <div class="card shadow p-1">
+
+      <div class="card-content">
+        <table class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Firstname</th>
+                    <th>Surname</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in object_list %}
+                    <tr>
+                        <td>{{ teacher.teacher_id }}</td>
+                        <td>{{ teacher.firstname }}</td>
+                        <td>{{ teacher.surname }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+{% endblock %}

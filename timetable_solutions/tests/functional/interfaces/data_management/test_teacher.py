@@ -4,6 +4,7 @@ from django.contrib.auth import models as auth_models
 from django import test
 import pytest
 
+from data import models
 from interfaces.constants import UrlName
 from tests import data_factories
 
@@ -44,3 +45,85 @@ class TestTeacherLanding:
         # Check user is redirected to login page
         assert response.status_code == 302
         assert "users/accounts/login" in response.url
+
+
+@pytest.mark.django_db
+class TestTeacherSearchList:
+    @staticmethod
+    def get_authorised_client(school: models.School) -> test.Client:
+        """Get a test client with a user authorised to perform the relevant actions."""
+        user = auth_models.User.objects.create_user(
+            username="testing", password="unhashed"
+        )
+        data_factories.Profile(user=user, school=school)
+        client = test.Client()
+        client.login(username=user.username, password="unhashed")
+        return client
+
+    def test_loads_teachers(self):
+        # Create a user and log them in
+        school = data_factories.School()
+        client = self.get_authorised_client(school=school)
+
+        data_factories.Teacher(school=school)
+        data_factories.Teacher(school=school)
+
+        # Navigate to the teacher landing page
+        url = UrlName.TEACHERS_LIST.url()
+        response = client.get(url)
+
+        # Check the page loaded correctly
+        assert response.status_code == 200
+
+        form = response.context["form"]
+        assert not form.errors
+
+        teachers = response.context["object_list"]
+        assert teachers.count() == 2
+
+    def test_search_term_form_filters_teachers(self):
+        # Create a user and log them in
+        school = data_factories.School()
+        client = self.get_authorised_client(school=school)
+
+        teacher = data_factories.Teacher(school=school)
+        # Create some other teacher to be excluded from the search
+        data_factories.Teacher(school=school)
+
+        # Navigate to the teacher landing page
+        url = UrlName.TEACHERS_LIST.url()
+
+        form_data = {"search_term": teacher.firstname}
+        response = client.post(url, data=form_data)
+
+        # Check the page loaded
+        assert response.status_code == 200
+
+        form = response.context["form"]
+        assert not form.errors
+
+        teachers = response.context["object_list"]
+        assert teachers.count() == 1
+        assert teachers.get() == teacher
+
+    def test_form_invalid_if_no_search_term(self):
+        # Create a user and log them in
+        school = data_factories.School()
+        client = self.get_authorised_client(school=school)
+
+        teacher = data_factories.Teacher(school=school)
+        # Create some other teacher to be excluded from the search
+        data_factories.Teacher(school=school)
+
+        # Navigate to the teacher landing page
+        url = UrlName.TEACHERS_LIST.url()
+
+        form_data = {}
+        response = client.post(url, data=form_data)
+
+        # Check the page loaded
+        assert response.status_code == 200
+
+        form = response.context["form"]
+        assert form.errors
+        assert "field is required" in form.errors.as_text()
