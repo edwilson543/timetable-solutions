@@ -35,7 +35,7 @@ class TeacherSearchList(base_views.SearchListBase):
 
     # Custom vars
     model = models.Teacher
-    search_help_text = "Search for a teacher by id, firstname or surname."
+    search_help_text = "Search for a teacher by name or id."
     form_post_url = UrlName.TEACHERS_LIST.url(lazy=True)
 
     def execute_search_from_clean_form(
