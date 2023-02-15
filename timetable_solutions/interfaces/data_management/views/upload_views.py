@@ -5,7 +5,7 @@ Views relating to the upload of user data - each subclass of DataUploadBase hand
 # Local application imports
 from domain import data_management
 from interfaces.data_management import forms_legacy
-from .base_classes import DataUploadBase
+from .legacy_base import DataUploadBase
 
 
 class TeacherListUpload(DataUploadBase):
