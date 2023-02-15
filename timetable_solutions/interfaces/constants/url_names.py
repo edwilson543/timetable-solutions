@@ -19,14 +19,15 @@ class UrlName(StrEnum):
     would need updating.
     """
 
-    def url(self, **kwargs: str | int | None) -> str:
+    def url(self, lazy: bool = False, **kwargs: str | int | None) -> str:
         """
         Get the url of one of the enum members.
         raises: NoReverseMatch if incorrect kwargs supplied.
         """
         kwargs = kwargs or {}
         try:
-            return urls.reverse(self, kwargs=kwargs)
+            reverser = urls.reverse_lazy if lazy else urls.reverse
+            return reverser(self, kwargs=kwargs)
         except urls.exceptions.NoReverseMatch:
             raise urls.exceptions.NoReverseMatch(
                 f"Invalid kwargs: {kwargs}, for url alias: {self}"
