@@ -1,3 +1,11 @@
+<!--
+A form with a single text entry search field, that also renders error messages
+------------------
+Context variables:
+------------------
+form: base_forms.SearchForm
+-->
+
 <style>
     /* Style the error messages */
     .alert ul {
@@ -11,7 +19,7 @@
     {% csrf_token %}
 
     {% if form.non_field_errors %}
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger p-2" role="alert">
             {{ form.non_field_errors }}
         </div>
     {% endif %}
