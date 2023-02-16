@@ -1,0 +1,61 @@
+<!--
+A table showing a list of objects with appropriate headers
+------------------
+Context variables:
+------------------
+search_term: str | None  Must be explicitly passed to include
+object_list: list[dict[str, str]]
+human_field_names: list[str]
+model_class: type[django_models.Model]
+-->
+
+<div class="row mx-3">
+    <div class="card shadow p-2 mb-3">
+
+      <div class="card-content">
+
+        <div class="card-text">
+            {% if search_term %}
+                {% if object_list %}
+                    {% with object_list|length as n_objects %}
+                        <p>
+                            <b>
+                                Found {{ n_objects }} result{% if n_objects > 1 %}s{% endif%}
+                                for search: "{{ search_term }}"
+                            </b>
+                        </p>
+                    {% endwith %}
+                {% else %}
+                    <p>
+                        <b>Search for "{{ search_term }}" did not give any results!</b>
+                    </p>
+                {% endif %}
+            {% else %}
+                <p>
+                    <b>Showing all {{ model_class.Constant.human_string_plural }}</b>
+                </p>
+            {% endif %}
+        </div>
+
+        <table class="table table-striped table-hover w-100">
+            <thead>
+                <tr>
+                    {% for field_name in human_field_names %}
+                        <th>{{ field_name }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for object_field_values in object_list %}
+                    <tr>
+                        {% for field_value in object_field_values %}
+                            <td>{{ field_value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+      </div>
+    </div>
+</div>

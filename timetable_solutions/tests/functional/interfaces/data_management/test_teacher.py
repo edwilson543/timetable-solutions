@@ -60,13 +60,16 @@ class TestTeacherSearchList:
         client.login(username=user.username, password="unhashed")
         return client
 
-    def test_loads_teachers(self):
+    def test_loads_all_teachers_for_school(self):
         # Create a user and log them in
         school = data_factories.School()
         client = self.get_authorised_client(school=school)
 
         data_factories.Teacher(school=school)
         data_factories.Teacher(school=school)
+
+        # Create a teacher at some other school
+        data_factories.Teacher()
 
         # Navigate to the teacher landing page
         url = UrlName.TEACHER_LIST.url()
@@ -81,7 +84,7 @@ class TestTeacherSearchList:
         teachers = response.context["object_list"]
         assert teachers.count() == 2
 
-    def test_search_term_form_filters_teachers(self):
+    def test_search_term_given_in_form_filters_teachers(self):
         # Create a user and log them in
         school = data_factories.School()
         client = self.get_authorised_client(school=school)
@@ -104,16 +107,16 @@ class TestTeacherSearchList:
 
         teachers = response.context["object_list"]
         assert teachers.count() == 1
-        assert teachers.get() == teacher
+        assert teachers.get() == (
+            teacher.teacher_id,
+            teacher.firstname,
+            teacher.surname,
+        )
 
     def test_form_invalid_if_no_search_term(self):
         # Create a user and log them in
         school = data_factories.School()
         client = self.get_authorised_client(school=school)
-
-        teacher = data_factories.Teacher(school=school)
-        # Create some other teacher to be excluded from the search
-        data_factories.Teacher(school=school)
 
         # Navigate to the teacher landing page
         url = UrlName.TEACHER_LIST.url()
