@@ -12,7 +12,19 @@ class SearchForm(forms.Form):
     )
 
     def __init__(self, *args: object, **kwargs: object) -> None:
-        """Set any parameters overriden in child classes."""
+        """Set any field parameters provided by constructor."""
         if kwargs.get("search_help_text"):
             self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
         super().__init__(*args, **kwargs)
+
+    def clean(self) -> dict[str, str]:
+        """Prevent single letter searches."""
+        if search_term := self.cleaned_data.get("search_term"):
+            try:
+                int(search_term)
+            except ValueError:
+                if len(search_term) < 2:
+                    raise forms.ValidationError(
+                        "Non-numeric search terms must be for more than one character!"
+                    )
+        return self.cleaned_data
