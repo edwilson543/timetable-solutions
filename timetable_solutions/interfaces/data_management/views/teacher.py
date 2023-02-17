@@ -26,7 +26,7 @@ class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class TeacherSearchList(base_views.SearchListBase):
+class TeacherSearchList(base_views.SearchView):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     # Django vars
@@ -41,7 +41,7 @@ class TeacherSearchList(base_views.SearchListBase):
         "surname": "Surname",
     }
     search_help_text = "Search for a teacher by name or id."
-    form_post_url = UrlName.TEACHER_LIST.url(lazy=True)
+    page_url = UrlName.TEACHER_LIST.url(lazy=True)
 
     def execute_search_from_clean_form(
         self, form: forms.TeacherSearch

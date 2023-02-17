@@ -81,7 +81,7 @@ class TestTeacherSearchList:
         form = response.context["form"]
         assert not form.errors
 
-        teachers = response.context["object_list"]
+        teachers = response.context["page_obj"].object_list
         assert teachers.count() == 2
 
     def test_search_term_given_in_form_filters_teachers(self):
@@ -96,8 +96,8 @@ class TestTeacherSearchList:
         # Navigate to the teacher landing page
         url = UrlName.TEACHER_LIST.url()
 
-        form_data = {"search_term": teacher.firstname}
-        response = client.post(url, data=form_data)
+        form_data = {"search_term": teacher.firstname, "search-submit": True}
+        response = client.get(url, data=form_data)
 
         # Check the page loaded
         assert response.status_code == 200
@@ -105,7 +105,7 @@ class TestTeacherSearchList:
         form = response.context["form"]
         assert not form.errors
 
-        teachers = response.context["object_list"]
+        teachers = response.context["page_obj"].object_list
         assert teachers.count() == 1
         assert teachers.get() == (
             teacher.teacher_id,
@@ -121,8 +121,8 @@ class TestTeacherSearchList:
         # Navigate to the teacher landing page
         url = UrlName.TEACHER_LIST.url()
 
-        form_data = {}
-        response = client.post(url, data=form_data)
+        form_data = {"search-submit": True}
+        response = client.get(url, data=form_data)
 
         # Check the page loaded
         assert response.status_code == 200

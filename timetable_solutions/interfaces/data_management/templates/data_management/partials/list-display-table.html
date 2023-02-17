@@ -14,22 +14,24 @@ model_class: type[django_models.Model]
 
       <div class="card-content">
 
+<!--        Explanatory text-->
         <div class="card-text">
-            {% if search_term %}
-                {% if object_list %}
-                    {% with object_list|length as n_objects %}
-                        <p>
-                            <b>
-                                Found {{ n_objects }} result{% if n_objects > 1 %}s{% endif%}
-                                for search: "{{ search_term }}"
-                            </b>
-                        </p>
-                    {% endwith %}
-                {% else %}
-                    <p>
-                        <b>Search for "{{ search_term }}" did not give any results!</b>
-                    </p>
-                {% endif %}
+            {% if search_term and paginator.count > 0 %}
+                <p>
+                    <b>
+                        Found {{ paginator.count }}
+                        {% if paginator.count > 1 %}
+                            {{ model_class.Constant.human_string_plural }}
+                        {% else %}
+                            {{ model_class.Constant.human_string_plural }}
+                        {% endif %}
+                        for search: "{{ search_term }}"
+                    </b>
+                </p>
+            {% elif search_term %}
+                <p>
+                    <b>Search for "{{ search_term }}" did not give any results!</b>
+                </p>
             {% else %}
                 <p>
                     <b>Showing all {{ model_class.Constant.human_string_plural }}</b>
@@ -37,6 +39,7 @@ model_class: type[django_models.Model]
             {% endif %}
         </div>
 
+<!--        Main display table-->
         <table class="table table-striped table-hover w-100">
             <thead>
                 <tr>
@@ -46,7 +49,7 @@ model_class: type[django_models.Model]
                 </tr>
             </thead>
             <tbody>
-                {% for object_field_values in object_list %}
+                {% for object_field_values in page_obj.object_list %}
                     <tr>
                         {% for field_value in object_field_values %}
                             <td>{{ field_value }}</td>
@@ -55,6 +58,25 @@ model_class: type[django_models.Model]
                 {% endfor %}
             </tbody>
         </table>
+
+<!--        Pagination-->
+        {% if paginator.count > 0 %}
+            <div>
+                <span>
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+                    <span>
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+              </div>
+        {% endif %}
 
       </div>
     </div>
