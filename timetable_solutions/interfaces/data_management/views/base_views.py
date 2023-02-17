@@ -11,10 +11,12 @@ from django.views import generic
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_FormT = TypeVar("_FormT", bound=django_forms.Form)
+_SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
 
 
-class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _FormT]):
+class SearchView(
+    mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _SearchFormT]
+):
     """
     Page displaying a school's data for a single model, and allowing this data to be searched.
 
@@ -32,7 +34,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
     model: type[_ModelT]
     """The model who's data is rendered on this page."""
 
-    form_class: type[_FormT]
+    form_class: type[_SearchFormT]
     """The form class used to process the user's search."""
 
     # Ordinary class vars
@@ -52,7 +54,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
     school_id: int
     """The school who's data will be shown."""
 
-    form: _FormT
+    form: _SearchFormT
     """
     The form instance to be provided as context.
 
@@ -62,7 +64,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
 
     @abc.abstractmethod
     def execute_search_from_clean_form(
-        self, form: _FormT
+        self, form: _SearchFormT
     ) -> django_models.QuerySet[_ModelT]:
         """
         Retrieve a queryset of objects by calling some model-specific domain function.
@@ -80,7 +82,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
 
         self.form = self.get_form()
 
-    def get_form(self) -> _FormT:
+    def get_form(self) -> _SearchFormT:
         if self.is_search:
             form = self.form_class(
                 search_help_text=self.search_help_text, data=self.request.GET
