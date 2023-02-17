@@ -65,8 +65,8 @@ class TestTeacherSearchList:
         school = data_factories.School()
         client = self.get_authorised_client(school=school)
 
-        data_factories.Teacher(school=school)
-        data_factories.Teacher(school=school)
+        teacher_1 = data_factories.Teacher(teacher_id=1, school=school)
+        teacher_2 = data_factories.Teacher(teacher_id=2, school=school)
 
         # Create a teacher at some other school
         data_factories.Teacher()
@@ -75,14 +75,17 @@ class TestTeacherSearchList:
         url = UrlName.TEACHER_LIST.url()
         response = client.get(url)
 
-        # Check the page loaded correctly
+        # Check the page loaded correctly and with correct context
         assert response.status_code == 200
 
         form = response.context["form"]
         assert not form.errors
 
         teachers = response.context["page_obj"].object_list
-        assert teachers.count() == 2
+        assert list(teachers) == [
+            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
+            (teacher_2.teacher_id, teacher_2.firstname, teacher_2.surname),
+        ]
 
     def test_search_term_given_in_form_filters_teachers(self):
         # Create a user and log them in

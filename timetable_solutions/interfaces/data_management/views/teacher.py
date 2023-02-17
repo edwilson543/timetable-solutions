@@ -31,10 +31,13 @@ class TeacherSearchList(base_views.SearchView):
 
     # Django vars
     template_name = "data_management/teacher/teacher-list.html"
+    ordering = ["teacher_id"]
+
+    # Generic class vars
+    model = models.Teacher
     form_class = forms.TeacherSearch
 
-    # Custom vars
-    model = models.Teacher
+    # Ordinary class vars
     displayed_fields = {
         "teacher_id": "Teacher ID",
         "firstname": "Firstname",
