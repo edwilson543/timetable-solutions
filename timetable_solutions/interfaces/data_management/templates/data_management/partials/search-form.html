@@ -4,6 +4,7 @@ A form with a single text entry search field, that also renders error messages
 Context variables:
 ------------------
 form: base_forms.SearchForm
+page_url: str
 -->
 
 <style>
@@ -15,8 +16,7 @@ form: base_forms.SearchForm
     }
 </style>
 
-<form action="{{ post_url }}" method="post" class="p-1" id="search-form">
-    {% csrf_token %}
+<form action="{{ page_url }}" method="get" class="p-1" id="search-form">
 
     {% if form.non_field_errors %}
         <div class="alert alert-danger p-2" role="alert">
@@ -29,7 +29,7 @@ form: base_forms.SearchForm
 
 <div class="d-flex flex-row">
     <input form="search-form" type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
-    <form action="{{ post_url }}" method="get" class="m-1">
-        <input type="submit" name="search-clear" value="Clear" class="btn btn-secondary">
-    </form>
+    <a href="{{ page_url }}" class="btn btn-secondary m-1">
+        Clear
+    </a>
 </div>
