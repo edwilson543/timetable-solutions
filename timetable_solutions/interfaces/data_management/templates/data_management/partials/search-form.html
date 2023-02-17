@@ -15,7 +15,7 @@ form: base_forms.SearchForm
     }
 </style>
 
-<form action="{{ post_url }}" method="post" class="p-1">
+<form action="{{ post_url }}" method="post" class="p-1" id="search-form">
     {% csrf_token %}
 
     {% if form.non_field_errors %}
@@ -25,6 +25,11 @@ form: base_forms.SearchForm
     {% endif %}
 
     {% include 'data_management/partials/search-field.html' with search_field=form.search_term %}
-
-    <input type="submit" name="search-submit" value="Search" class="btn btn-primary">
 </form>
+
+<div class="d-flex flex-row">
+    <input form="search-form" type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
+    <form action="{{ post_url }}" method="get" class="m-1">
+        <input type="submit" name="search-clear" value="Clear" class="btn btn-secondary">
+    </form>
+</div>
