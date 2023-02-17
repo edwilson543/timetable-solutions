@@ -1,7 +1,7 @@
 """View classes shared across the data management admin."""
 
 import abc
-from typing import Any, Generic, TypeVar
+from typing import Any, ClassVar, Generic, TypeVar
 
 from django import http
 from django.contrib.auth import mixins
@@ -18,25 +18,26 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
     """Page displaying a school's data for one db table, and allowing them to search that table."""
 
     # Defaulted django vars
-    paginate_by: int = 50
+    paginate_by: ClassVar[int] = 50
 
-    # Custom class vars
+    # Generic class vars
     model: type[_ModelT]
     """The model who's data is rendered on this page."""
 
-    displayed_fields: dict[str, str]
+    form_class: type[_FormT]
+    """The form class used to process the user's search."""
+
+    # Ordinary class vars
+    displayed_fields: ClassVar[dict[str, str]]
     """
     The fields to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
     """
 
-    form_class: type[_FormT]
-    """The form class used to process the user's search."""
-
-    search_help_text: str
+    search_help_text: ClassVar[str]
     """User prompt for the fields they can search by."""
 
-    page_url: str
+    page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
 
     # Instance vars
@@ -47,8 +48,8 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
     """
     The form instance to be provided as context.
 
-    If the user has submitted a search, this is validated,
-    otherwise it's just an empty instance.
+    If the user has submitted a search, this is validated.
+    Otherwise it's just an empty instance of the form class.
     """
 
     @abc.abstractmethod
