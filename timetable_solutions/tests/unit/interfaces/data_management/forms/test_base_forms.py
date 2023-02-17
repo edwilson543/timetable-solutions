@@ -13,11 +13,17 @@ class TestSearchForm:
         assert form.is_valid()
         assert form.cleaned_data["search_term"] == search_term
 
+    def test_no_search_term_invalid(self):
+        form = base_forms.SearchForm(data={})
+
+        assert not form.is_valid()
+        assert "Please enter a search term!" in form.errors.as_text()
+
     def test_single_character_search_term_invalid(self):
         form = base_forms.SearchForm(data={"search_term": "a"})
 
         assert not form.is_valid()
         assert (
-            "Non-numeric search terms must be for more than one character!"
+            "Non-numeric search terms must be more than one character!"
             in form.errors.as_text()
         )

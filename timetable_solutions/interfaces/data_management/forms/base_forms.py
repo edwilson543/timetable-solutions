@@ -25,6 +25,6 @@ class SearchForm(forms.Form):
             except ValueError:
                 if len(search_term) < 2:
                     raise forms.ValidationError(
-                        "Non-numeric search terms must be for more than one character!"
+                        "Non-numeric search terms must be more than one character!"
                     )
         return self.cleaned_data
