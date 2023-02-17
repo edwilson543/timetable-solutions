@@ -15,10 +15,18 @@ _FormT = TypeVar("_FormT", bound=django_forms.Form)
 
 
 class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _FormT]):
-    """Page displaying a school's data for one db table, and allowing them to search that table."""
+    """
+    Page displaying a school's data for a single model, and allowing this data to be searched.
+
+    Searches should be sent as GET requests from <input name='search-submit' ...> tags.
+    """
 
     # Defaulted django vars
     paginate_by: ClassVar[int] = 50
+    """Render 50 items per page, including for search results."""
+
+    http_method_names = ["get"]
+    """The searching is done via GET requests, so disallow POST."""
 
     # Generic class vars
     model: type[_ModelT]
