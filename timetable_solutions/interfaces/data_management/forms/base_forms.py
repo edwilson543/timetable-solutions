@@ -17,7 +17,7 @@ class SearchForm(forms.Form):
             self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
         super().__init__(*args, **kwargs)
 
-    def clean(self) -> dict[str, str]:
+    def clean_search_term(self) -> str:
         """Prevent single letter searches."""
         if search_term := self.cleaned_data.get("search_term"):
             try:
@@ -27,4 +27,4 @@ class SearchForm(forms.Form):
                     raise forms.ValidationError(
                         "Non-numeric search terms must be more than one character!"
                     )
-        return self.cleaned_data
+        return search_term
