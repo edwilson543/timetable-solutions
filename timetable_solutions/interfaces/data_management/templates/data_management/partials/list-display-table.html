@@ -23,7 +23,7 @@ model_class: type[django_models.Model]
                         {% if paginator.count > 1 %}
                             {{ model_class.Constant.human_string_plural }}
                         {% else %}
-                            {{ model_class.Constant.human_string_plural }}
+                            {{ model_class.Constant.human_string_singular }}
                         {% endif %}
                         for search: "{{ search_term }}"
                     </b>
