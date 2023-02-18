@@ -20,7 +20,7 @@ urlpatterns = [
     ),
     path(
         "teachers/list/",
-        views.TeacherSearchList.as_view(),
+        views.TeacherSearch.as_view(),
         name=UrlName.TEACHER_LIST.value,
     ),
     # --------------------

@@ -31,4 +31,4 @@ from .download_views import (
     YearGroupDownload,
 )
 
-from .teacher import TeacherLanding, TeacherSearchList
+from .teacher import TeacherLanding, TeacherSearch

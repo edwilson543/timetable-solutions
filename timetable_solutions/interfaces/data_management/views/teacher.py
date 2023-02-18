@@ -26,7 +26,7 @@ class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class TeacherSearchList(base_views.SearchView):
+class TeacherSearch(base_views.SearchView):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     # Django vars
