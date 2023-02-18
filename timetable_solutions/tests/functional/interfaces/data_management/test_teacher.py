@@ -1,16 +1,16 @@
 """Tests for the teacher data management views."""
 
-from django.contrib.auth import models as auth_models
-from django import test
+from unittest import mock
+
 import pytest
 
-from data import models
 from interfaces.constants import UrlName
+from interfaces.data_management import views
 from tests import data_factories
+from tests.functional.client import TestClient
 
 
-@pytest.mark.django_db
-class TestTeacherLanding:
+class TestTeacherLanding(TestClient):
     @pytest.mark.parametrize("has_existing_data", [True, False])
     def test_landing_page_loads(self, has_existing_data: bool):
         """
@@ -19,67 +19,50 @@ class TestTeacherLanding:
         The markup is slightly different depending on whether they have existing data,
         so test both cases.
         """
-        # Create a user and log them in
-        user = auth_models.User.objects.create_user(
-            username="testing", password="unhashed"
-        )
-        profile = data_factories.Profile(user=user)
+        # Authorise the client for some school
+        school = data_factories.School()
+        self.authorise_client_for_school(school)
+
         if has_existing_data:
-            data_factories.Teacher(school=profile.school)
-        client = test.Client()
-        client.login(username=user.username, password="unhashed")
+            data_factories.Teacher(school=school)
 
         # Navigate to the teacher landing page
         url = UrlName.TEACHER_LANDING_PAGE.url()
-        response = client.get(url)
+        response = self.client.get(url)
 
         # Check the page loaded
         assert response.status_code == 200
 
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user
-        client = test.Client()
+        self.anonymize_user()
         url = UrlName.TEACHER_LANDING_PAGE.url()
-        response = client.get(url)
+        response = self.client.get(url)
 
         # Check user is redirected to login page
         assert response.status_code == 302
         assert "users/accounts/login" in response.url
 
 
-@pytest.mark.django_db
-class TestTeacherSearchList:
-    @staticmethod
-    def get_authorised_client(school: models.School) -> test.Client:
-        """Get a test client with a user authorised to perform the relevant actions."""
-        user = auth_models.User.objects.create_user(
-            username="testing", password="unhashed"
-        )
-        data_factories.Profile(user=user, school=school)
-        client = test.Client()
-        client.login(username=user.username, password="unhashed")
-        return client
-
-    def test_loads_all_teachers_for_school(self):
-        # Create a user and log them in
+class TestTeacherSearchList(TestClient):
+    def test_loads_all_teachers_for_school_then_filters_by_search_term(self):
+        # Create a school and authorise the test client for this school
         school = data_factories.School()
-        client = self.get_authorised_client(school=school)
+        self.authorise_client_for_school(school)
 
+        # Create some teacher data for the school
         teacher_1 = data_factories.Teacher(teacher_id=1, school=school)
         teacher_2 = data_factories.Teacher(teacher_id=2, school=school)
 
         # Create a teacher at some other school
         data_factories.Teacher()
 
-        # Navigate to the teacher landing page
+        # Navigate to the teacher search view
         url = UrlName.TEACHER_LIST.url()
-        response = client.get(url)
+        response = self.client.get(url)
 
-        # Check the page loaded correctly and with correct context
+        # Check response ok and has the correct context
         assert response.status_code == 200
-
-        form = response.context["form"]
-        assert not form.errors
 
         teachers = response.context["page_obj"].object_list
         assert list(teachers) == [
@@ -87,49 +70,72 @@ class TestTeacherSearchList:
             (teacher_2.teacher_id, teacher_2.firstname, teacher_2.surname),
         ]
 
-    def test_search_term_given_in_form_filters_teachers(self):
-        # Create a user and log them in
-        school = data_factories.School()
-        client = self.get_authorised_client(school=school)
+        django_form = response.context["form"]
+        assert not django_form.errors
 
-        teacher = data_factories.Teacher(school=school)
-        # Create some other teacher to be excluded from the search
-        data_factories.Teacher(school=school)
+        # Retrieve the html form and submit a valid search term
+        webtest_form = response.forms["search-form"]
+        webtest_form["search_term"] = teacher_1.firstname
 
-        # Navigate to the teacher landing page
-        url = UrlName.TEACHER_LIST.url()
+        search_response = webtest_form.submit(name="search-submit", value="Search")
 
-        form_data = {"search_term": teacher.firstname, "search-submit": True}
-        response = client.get(url, data=form_data)
+        # Check response ok and search results
+        assert search_response.status_code == 200
 
-        # Check the page loaded
-        assert response.status_code == 200
-
-        form = response.context["form"]
-        assert not form.errors
-
-        teachers = response.context["page_obj"].object_list
+        teachers = search_response.context["page_obj"].object_list
         assert teachers.count() == 1
-        assert teachers.get() == (
-            teacher.teacher_id,
-            teacher.firstname,
-            teacher.surname,
+        assert teachers.first() == (
+            teacher_1.teacher_id,
+            teacher_1.firstname,
+            teacher_1.surname,
         )
 
-    def test_form_invalid_if_no_search_term(self):
-        # Create a user and log them in
+        # The form should be populated with the existing search
+        webtest_form = search_response.forms["search-form"]
+        assert webtest_form["search_term"].value == teacher_1.firstname
+
+    @mock.patch.object(views.TeacherSearch, "paginate_by", 1)
+    def test_loads_paginated_teachers_then_form_invalid_because_no_search_term_given(
+        self,
+    ):
+        # Create a school and authorise the test client to this school
         school = data_factories.School()
-        client = self.get_authorised_client(school=school)
+        self.authorise_client_for_school(school)
 
-        # Navigate to the teacher landing page
+        # Create some teacher data for our school
+        teacher_1 = data_factories.Teacher(teacher_id=1, school=school)
+        data_factories.Teacher(teacher_id=2, school=school)
+
+        # Navigate to the teacher search view
         url = UrlName.TEACHER_LIST.url()
+        response = self.client.get(url)
 
-        form_data = {"search-submit": True}
-        response = client.get(url, data=form_data)
-
-        # Check the page loaded
+        # Check response ok
         assert response.status_code == 200
 
-        form = response.context["form"]
-        assert form.errors
-        assert "Please enter a search term!" in form.errors.as_text()
+        # Check the teachers have been paginated across two pages
+        page_1 = response.context["page_obj"]
+        assert list(page_1.object_list) == [
+            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
+        ]
+        assert page_1.has_next()
+        paginator = response.context["paginator"]
+        assert paginator.count == 2
+
+        # Retrieve the html form and submit an empty search term
+        webtest_form = response.forms["search-form"]
+        search_response = webtest_form.submit(name="search-submit", value="Search")
+
+        # Check response ok
+        assert search_response.status_code == 200
+
+        # Form should show errors
+        django_form = search_response.context["form"]
+        assert "Please enter a search term!" in django_form.errors.as_text()
+
+        # The full teacher list should still be shown
+        page_1 = search_response.context["page_obj"]
+        assert list(page_1.object_list) == [
+            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
+        ]
+        assert page_1.has_next()
