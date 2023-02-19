@@ -51,3 +51,36 @@ def test_render_form_field_in_div_renders_text_field_correctly(form: type[forms.
     )
     assert isinstance(outcome, html.SafeString)
     assert expected_html in outcome
+
+
+class TestIsTextOrNumberInput:
+    @pytest.mark.parametrize(
+        "field, expected_return",
+        [
+            (forms.CharField(), True),
+            (forms.IntegerField(), True),
+            (forms.FileField(), False),
+        ],
+    )
+    def test_is_text_or_number_input(
+        self, field: forms.BoundField, expected_return: bool
+    ):
+        template_string = """
+        {% load form_tags %}
+        {% if field|is_text_or_number_input %}
+            <p>Is text or number input</p>
+        {% endif %}
+        {{ field|is_text_or_number_input }}
+        """
+
+        temp = template.Template(template_string=template_string)
+        context = template.Context({"field": field})
+
+        outcome = temp.render(context=context)
+
+        if expected_return:
+            assert "Is text or number input" in outcome
+            assert "True" in outcome
+        else:
+            assert not "Is text or number input" in outcome
+            assert "False" in outcome

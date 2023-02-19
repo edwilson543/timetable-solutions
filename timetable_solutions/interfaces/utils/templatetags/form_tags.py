@@ -15,6 +15,7 @@ register = template.Library()
 @register.simple_tag(name="field_div")
 def render_form_field_in_div(bound_field: forms.BoundField) -> html.SafeString:
     """
+    # TODO -> DELETE!!!!!!!
     Template tag rendering the individual form field inside div elements.
 
     The HTML produced is the same as that produced by django's _html_output, which renders the entire form. It doesn't
@@ -38,3 +39,12 @@ def render_form_field_in_div(bound_field: forms.BoundField) -> html.SafeString:
     text = text.strip()
     text = re.sub(r"\n\s*\n", "\n", text)
     return html.format_html(text)
+
+
+@register.filter(name="is_text_or_number_input")
+def is_text_or_number_input(field: forms.BoundField) -> bool:
+    """
+    Check if an input widget is for a text or number input field.
+    These are both marked up in the same way.
+    """
+    return (field.widget_type == "text") or (field.widget_type == "number")
