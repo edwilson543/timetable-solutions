@@ -1,7 +1,7 @@
 from django import forms
 
 
-class SearchForm(forms.Form):
+class Search(forms.Form):
     """Form providing a single search field."""
 
     search_term = forms.CharField(
@@ -28,3 +28,17 @@ class SearchForm(forms.Form):
                         "Non-numeric search terms must be more than one character!"
                     )
         return search_term
+
+
+class CreateUpdate(forms.Form):
+    """Base form for creating and updating individual models."""
+
+    def __init__(self, *args: object, **kwargs: object) -> None:
+        """
+        Set the school, which may be used as context in validation.
+
+        e.g. checking IDs are unique for a school
+        """
+        school_id = kwargs.pop("school_id")
+        self.school_id = school_id
+        super().__init__(*args, **kwargs)
