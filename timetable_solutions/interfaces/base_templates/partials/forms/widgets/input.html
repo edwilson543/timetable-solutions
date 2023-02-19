@@ -1,0 +1,14 @@
+<!--An individual input widget for constructing a form field with
+------------------
+Context variables:
+------------------
+field: django_forms.Field
+-->
+
+<input type="{{ field.widget.input_type }}"
+     value="{{ field.initial }}"
+     name="{{ field.name }}"
+     id="{{ field.id_for_label }}"
+     class="form-control"
+     aria-describedby="{{ field.id_for_label }}-help-text"
+>

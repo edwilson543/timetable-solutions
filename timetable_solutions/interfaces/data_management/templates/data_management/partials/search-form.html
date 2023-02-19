@@ -12,7 +12,8 @@ page_url: str
 
     {% include 'partials/forms/non-field-errors.html' with form=form %}
 
-    {% include 'data_management/partials/search-field.html' with search_field=form.search_term %}
+    {% include 'partials/forms/form-field.html' with field=form.search_term %}
+
     <div class="d-flex flex-row">
         <input form="search-form" type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
         <a href="{{ page_url }}" class="btn btn-secondary m-1">
