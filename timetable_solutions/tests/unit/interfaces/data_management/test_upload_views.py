@@ -13,7 +13,7 @@ from django.urls import reverse
 # Local application imports
 from interfaces.constants import UrlName
 from data import models
-from interfaces.data_management import forms
+from interfaces.data_management import forms_legacy as forms
 
 
 class TestCaseWithUpload(TestCase):

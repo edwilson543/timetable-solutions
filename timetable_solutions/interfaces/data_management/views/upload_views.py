@@ -4,8 +4,8 @@ Views relating to the upload of user data - each subclass of DataUploadBase hand
 
 # Local application imports
 from domain import data_management
-from interfaces.data_management import forms
-from .base_classes import DataUploadBase
+from interfaces.data_management import forms_legacy
+from .legacy_base import DataUploadBase
 
 
 class TeacherListUpload(DataUploadBase):
@@ -13,7 +13,7 @@ class TeacherListUpload(DataUploadBase):
     View class to control the uploading of the list of teachers by the user
     """
 
-    form = forms.TeacherListUpload
+    form = forms_legacy.TeacherListUpload
     processor = data_management.TeacherFileUploadProcessor
 
 
@@ -22,7 +22,7 @@ class ClassroomListUpload(DataUploadBase):
     View class to control the uploading of the list of classrooms by the user
     """
 
-    form = forms.ClassroomListUpload
+    form = forms_legacy.ClassroomListUpload
     processor = data_management.ClassroomFileUploadProcessor
 
 
@@ -31,7 +31,7 @@ class YearGroupListUpload(DataUploadBase):
     View class to control the uploading of the list of year groups by the user
     """
 
-    form = forms.YearGroupUpload
+    form = forms_legacy.YearGroupUpload
     processor = data_management.YearGroupFileUploadProcessor
 
 
@@ -40,7 +40,7 @@ class PupilListUpload(DataUploadBase):
     View class to control the uploading of the list of pupils by the user
     """
 
-    form = forms.PupilListUpload
+    form = forms_legacy.PupilListUpload
     processor = data_management.PupilFileUploadProcessor
 
 
@@ -49,7 +49,7 @@ class TimetableStructureUpload(DataUploadBase):
     View class to control the uploading of the list of teachers by the user
     """
 
-    form = forms.TimetableStructureUpload
+    form = forms_legacy.TimetableStructureUpload
     processor = data_management.TimetableSlotFileUploadProcessor
 
 
@@ -58,7 +58,7 @@ class LessonsUpload(DataUploadBase):
     View class to control the uploading of lesson instances
     """
 
-    form = forms.LessonUpload
+    form = forms_legacy.LessonUpload
     processor = data_management.LessonFileUploadProcessor
 
 
@@ -67,5 +67,5 @@ class BreaksUpload(DataUploadBase):
     View class to control the uploading of break instances
     """
 
-    form = forms.BreakUpload
+    form = forms_legacy.BreakUpload
     processor = data_management.BreakFileUploadProcessor

@@ -21,7 +21,7 @@ from django import urls
 # Local application imports
 from interfaces.constants import UrlName
 from domain import data_management
-from interfaces.data_management import forms
+from interfaces.data_management import forms_legacy
 
 
 class DataUploadBase(LoginRequiredMixin, View):
@@ -35,7 +35,7 @@ class DataUploadBase(LoginRequiredMixin, View):
     :param processor - the class that will be used to process the user's uploaded file into the database.
     """
 
-    form: type[forms.UploadForm]
+    form: type[forms_legacy.UploadForm]
     processor: type[data_management.Processor]
 
     @staticmethod
@@ -48,7 +48,7 @@ class DataUploadBase(LoginRequiredMixin, View):
     def post(self, request: http.HttpRequest) -> http.HttpResponseRedirect:
         """
         All subclasses of this View upload a single file, which this post method handles.
-        If the upload is successful, the remaining empty forms are displayed, otherwise the error messages are shown.
+        If the upload is successful, the remaining empty forms_legacy are displayed, otherwise the error messages are shown.
         """
         form = self.form(request.POST, request.FILES)
         school_access_key = request.user.profile.school.school_access_key

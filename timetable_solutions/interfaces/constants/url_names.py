@@ -19,14 +19,15 @@ class UrlName(StrEnum):
     would need updating.
     """
 
-    def url(self, **kwargs: str | int | None) -> str:
+    def url(self, lazy: bool = False, **kwargs: str | int | None) -> str:
         """
         Get the url of one of the enum members.
         raises: NoReverseMatch if incorrect kwargs supplied.
         """
         kwargs = kwargs or {}
         try:
-            return urls.reverse(self, kwargs=kwargs)
+            reverser = urls.reverse_lazy if lazy else urls.reverse
+            return reverser(self, kwargs=kwargs)
         except urls.exceptions.NoReverseMatch:
             raise urls.exceptions.NoReverseMatch(
                 f"Invalid kwargs: {kwargs}, for url alias: {self}"
@@ -42,6 +43,13 @@ class UrlName(StrEnum):
     REGISTER = "register"
     REGISTER_PIVOT = "registration_pivot"
     SCHOOL_REGISTRATION = "school_registration"
+
+    # --------------------
+    # Data management
+    # --------------------
+    # Teachers
+    TEACHER_LANDING_PAGE = "teacher-landing-page"
+    TEACHER_LIST = "teacher-list"
 
     # Data upload app
     FILE_UPLOAD_PAGE = "file_upload_page"

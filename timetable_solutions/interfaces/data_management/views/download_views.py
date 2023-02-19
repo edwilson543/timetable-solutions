@@ -4,7 +4,7 @@ All views just return a FileResponse, containing the requested file.
 """
 
 # Local application imports
-from .base_classes import ExampleDownloadBase
+from .legacy_base import ExampleDownloadBase
 from domain.data_management.constants import ExampleFile
 
 

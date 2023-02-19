@@ -1,0 +1,32 @@
+<!--An individual search field for constructing a form with
+------------------
+Context variables:
+------------------
+search_field: django_forms.CharField
+-->
+
+<div class="mb-2">
+
+  <label for="{{ search_field.id_for_label }}" class="form-label">
+    {{ search_field.label }}
+  </label>
+
+  {% if form.search_term.errors %}
+      <div class="alert alert-danger mb-1 p-1" role="alert">
+          {{ search_field.errors }}
+      </div>
+  {% endif %}
+
+  <input type="text"
+         value="{{ search_field.initial }}"
+         name="{{ search_field.name }}"
+         id="{{ search_field.id_for_label }}"
+         class="form-control"
+         aria-describedby="search-help-text"
+  >
+
+  <div id="search-help-text" class="form-text">
+      {{ search_field.help_text }}
+  </div>
+
+</div>

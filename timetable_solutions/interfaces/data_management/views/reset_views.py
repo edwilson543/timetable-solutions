@@ -4,7 +4,7 @@ Views relating to the resetting of user uploaded data.
 """
 
 # Local application imports
-from .base_classes import DataResetBase
+from .legacy_base import DataResetBase
 
 
 class PupilListReset(DataResetBase):
