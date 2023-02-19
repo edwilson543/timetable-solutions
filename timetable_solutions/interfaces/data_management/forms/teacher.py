@@ -34,13 +34,7 @@ class _TeacherCreateUpdateBase(base_forms.CreateUpdate):
 class TeacherUpdate(_TeacherCreateUpdateBase):
     """Form to update a teacher with."""
 
-    def __init__(self, *args: object, **kwargs: models.Teacher) -> None:
-        """Set the initial displayed values to the teacher's attribute values."""
-        teacher: models.Teacher = kwargs.pop("teacher")
-        self.base_fields["firstname"].initial = teacher.firstname
-        self.base_fields["surname"].initial = teacher.surname
-        self.base_fields["title"].initial = teacher.title
-        super().__init__(*args, **kwargs)
+    pass
 
 
 class TeacherCreate(_TeacherCreateUpdateBase):
