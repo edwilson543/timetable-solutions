@@ -8,6 +8,14 @@ object_list: list[dict[str, str]]
 human_field_names: list[str]
 model_class: type[django_models.Model]
 -->
+<style>
+.fixed-width-column {
+    {% with human_field_names|length as n_columns %}
+        width: calc(100% / {{ n_columns }});
+    {% endwith %}
+}
+</style>
+
 
 <div class="row mx-3">
     <div class="card shadow p-2 mb-3">
@@ -44,7 +52,7 @@ model_class: type[django_models.Model]
             <thead>
                 <tr>
                     {% for field_name in human_field_names %}
-                        <th>{{ field_name }}</th>
+                        <th class="fixed-width-column">{{ field_name }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -64,15 +72,23 @@ model_class: type[django_models.Model]
             <div>
                 <span>
                     {% if page_obj.has_previous %}
-                        <a href="?page=1">&laquo; first</a>
-                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                        <a href="?page=1" class="btn btn-secondary p-1">
+                            &laquo; first
+                        </a>
+                        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary p-1">
+                            previous
+                        </a>
                     {% endif %}
                     <span>
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                        <b>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</b>
                     </span>
                     {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">next</a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary p-1">
+                            next
+                        </a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-secondary p-1">
+                            last &raquo;
+                        </a>
                     {% endif %}
                 </span>
               </div>
