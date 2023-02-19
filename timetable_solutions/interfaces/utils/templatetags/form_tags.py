@@ -42,9 +42,15 @@ def render_form_field_in_div(bound_field: forms.BoundField) -> html.SafeString:
 
 
 @register.filter(name="is_text_or_number_input")
-def is_text_or_number_input(field: forms.BoundField) -> bool:
+def is_text_or_number_input(field: forms.BoundField | forms.Field) -> bool:
     """
     Check if an input widget is for a text or number input field.
     These are both marked up in the same way.
     """
-    return (field.widget_type == "text") or (field.widget_type == "number")
+    if isinstance(field, forms.BoundField):
+        return (field.widget_type == "text") or (field.widget_type == "number")
+    elif isinstance(field, forms.Field):
+        return (field.widget.input_type == "text") or (
+            field.widget.input_type == "number"
+        )
+    return False
