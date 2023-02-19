@@ -11,12 +11,10 @@ from django.views import generic
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
+_FormT = TypeVar("_FormT", bound=django_forms.Form)
 
 
-class SearchView(
-    mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _SearchFormT]
-):
+class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _FormT]):
     """
     Page displaying a school's data for a single model, and allowing this data to be searched.
 
@@ -31,10 +29,10 @@ class SearchView(
     """The searching is done via GET requests, so disallow POST."""
 
     # Generic class vars
-    model: type[_ModelT]
+    model_class: type[_ModelT]
     """The model who's data is rendered on this page."""
 
-    form_class: type[_SearchFormT]
+    form_class: type[_FormT]
     """The form class used to process the user's search."""
 
     # Ordinary class vars
@@ -54,7 +52,7 @@ class SearchView(
     school_id: int
     """The school who's data will be shown."""
 
-    form: _SearchFormT
+    form: _FormT
     """
     The form instance to be provided as context.
 
@@ -64,7 +62,7 @@ class SearchView(
 
     @abc.abstractmethod
     def execute_search_from_clean_form(
-        self, form: _SearchFormT
+        self, form: _FormT
     ) -> django_models.QuerySet[_ModelT]:
         """
         Retrieve a queryset of objects by calling some model-specific domain function.
@@ -82,7 +80,7 @@ class SearchView(
 
         self.form = self.get_form()
 
-    def get_form(self) -> _SearchFormT:
+    def get_form(self) -> _FormT:
         if self.is_search:
             form = self.form_class(
                 search_help_text=self.search_help_text, data=self.request.GET
@@ -101,7 +99,7 @@ class SearchView(
                 *self.display_field_names
             )
         else:
-            return self.model.objects.get_all_instances_for_school(
+            return self.model_class.objects.get_all_instances_for_school(
                 school_id=self.school_id
             ).values_list(*self.display_field_names)
 
@@ -115,7 +113,7 @@ class SearchView(
 
         context["page_url"] = self.page_url
         context["human_field_names"] = self.human_field_names
-        context["model_class"] = self.model
+        context["model_class"] = self.model_class
         context["form"] = self.form
 
         return context

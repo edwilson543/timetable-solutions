@@ -34,7 +34,7 @@ class TeacherSearch(base_views.SearchView):
     ordering = ["teacher_id"]
 
     # Generic class vars
-    model = models.Teacher
+    model_class = models.Teacher
     form_class = forms.TeacherSearch
 
     # Ordinary class vars
