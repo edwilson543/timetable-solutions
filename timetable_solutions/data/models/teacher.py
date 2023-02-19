@@ -59,7 +59,11 @@ class Teacher(models.Model):
         Django Meta class for the Teacher model
         """
 
-        unique_together = [["school", "teacher_id"]]
+        constraints = [
+            models.UniqueConstraint(
+                "school", "teacher_id", name="teacher_id_unique_for_school"
+            )
+        ]
 
     class Constant:
         """
@@ -93,7 +97,6 @@ class Teacher(models.Model):
             surname=surname,
             title=title,
         )
-        teacher.full_clean()
         return teacher
 
     @classmethod
