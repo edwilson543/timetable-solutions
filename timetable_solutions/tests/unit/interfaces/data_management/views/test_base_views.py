@@ -2,7 +2,7 @@ from interfaces.data_management.views import base_views
 
 
 class TestSearchViewProperties:
-    """Test for the properties defined on the SearchListBase FormView."""
+    """Tests for the properties defined on the SearchView class."""
 
     class FakeSearchView(base_views.SearchView):
         displayed_fields = {
