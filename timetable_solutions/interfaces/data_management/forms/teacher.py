@@ -22,12 +22,12 @@ class _TeacherCreateUpdateBase(base_forms.CreateUpdate):
 
     surname = django_forms.CharField(
         required=True,
-        label="Firstname",
+        label="Surname",
     )
 
     title = django_forms.CharField(
         required=True,
-        label="Firstname",
+        label="Title",
     )
 
 
