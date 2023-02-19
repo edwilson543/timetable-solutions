@@ -5,8 +5,8 @@ Context variables:
 field: django_forms.Field
 -->
 
-<input type="{{ field.widget.input_type }}"
-     value="{{ field.initial }}"
+<input type="{{ field.widget_type }}"
+     value="{{ field.value }}"
      name="{{ field.name }}"
      id="{{ field.id_for_label }}"
      class="form-control"
