@@ -1,0 +1,21 @@
+<!--
+A form to change a model instance with, in which all widgets are disabled
+------------------
+Context variables:
+------------------
+form: base_forms.CreateUpdate
+page_url: str
+-->
+
+<form action="{{ post_url }}" method="get" class="p-1" id="disabled-change-form">
+
+    {% include 'partials/forms/non-field-errors.html' with form=form %}
+
+    <fieldset disabled>
+        {% for field_ in form %}
+            {% include 'partials/forms/form-field.html' with field=field_ only %}
+        {% endfor %}
+    </fieldset>
+    <input type="submit" name="edit-submit" value="Edit" class="btn btn-success m-1">
+
+</form>

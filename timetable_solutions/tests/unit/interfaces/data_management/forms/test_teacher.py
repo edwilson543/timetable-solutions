@@ -6,19 +6,6 @@ from interfaces.data_management import forms
 from tests import data_factories
 
 
-class TestTeacherUpdate:
-    def test_teacher_attributes_set_as_initial_values(self):
-        school = data_factories.School.build()
-        teacher = data_factories.Teacher.build(school=school)
-
-        form = forms.TeacherUpdate(school_id=school.school_access_key, teacher=teacher)
-
-        assert form.school_id == school.school_access_key
-        assert form.fields["firstname"].initial == teacher.firstname
-        assert form.fields["surname"].initial == teacher.surname
-        assert form.fields["title"].initial == teacher.title
-
-
 @pytest.mark.django_db
 class TestTeacherCreate:
     def test_form_valid_if_teacher_id_unique_for_school(self):

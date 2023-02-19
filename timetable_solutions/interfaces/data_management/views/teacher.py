@@ -54,3 +54,21 @@ class TeacherSearch(base_views.SearchView):
         return teacher_queries.get_teachers_by_search_term(
             school_id=self.school_id, search_term=search_term
         )
+
+
+class TeacherUpdate(base_views.UpdateView):
+    """
+    Page displaying information on a single teacher, and allowing this data to be updated.
+    """
+
+    # Django vars
+    template_name = "data_management/teacher/teacher-detail-update.html"
+
+    # Generic class vars
+    form_class = forms.TeacherUpdate
+    model_class = models.Teacher
+
+    # Ordinary class vars
+    object_id_name = "teacher_id"
+    model_attributes_for_form_initials = ["firstname", "surname", "title"]
+    page_url_prefix = UrlName.TEACHER_UPDATE

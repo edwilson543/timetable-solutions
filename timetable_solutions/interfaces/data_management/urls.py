@@ -23,6 +23,11 @@ urlpatterns = [
         views.TeacherSearch.as_view(),
         name=UrlName.TEACHER_LIST.value,
     ),
+    path(
+        "teachers/list/<int:teacher_id>/",
+        views.TeacherUpdate.as_view(),
+        name=UrlName.TEACHER_UPDATE.value,
+    ),
     # --------------------
     # Data UPLOAD endpoints
     # --------------------
