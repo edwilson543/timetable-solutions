@@ -14,7 +14,7 @@ from interfaces.utils import typing_utils
 
 @login_required
 def lesson_detail_modal(
-    request: typing_utils.HtmxHttpRequest, lesson_id: str
+    request: typing_utils.AuthenticatedHtmxRequest, lesson_id: str
 ) -> http.HttpResponse:
     """
     View populating a modal with the details for a specific Lesson instance.
@@ -36,7 +36,7 @@ def lesson_detail_modal(
 
 @login_required
 def close_lesson_detail_modal(
-    request: typing_utils.HtmxHttpRequest,
+    request: typing_utils.AuthenticatedHtmxRequest,
 ) -> http.HttpResponse:
     """
     View to close the less detail modal

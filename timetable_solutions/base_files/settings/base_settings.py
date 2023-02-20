@@ -25,16 +25,19 @@ INSTALLED_APPS = [
     "interfaces.create_timetables",
     "interfaces.custom_admin",
     "interfaces.utils",
-    # Standard django apps
+    # Django contrib apps
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Third party apps
+    "django_htmx",
 ]
 
 MIDDLEWARE = [
+    # Standard django middleware
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -42,6 +45,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Third party middleware
+    "django_htmx.middleware.HtmxMiddleware",
 ]
 
 ROOT_URLCONF = "base_files.urls"

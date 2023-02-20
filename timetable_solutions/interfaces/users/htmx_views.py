@@ -26,7 +26,9 @@ class FieldStatus(enum.StrEnum):
     EMPTY = ""
 
 
-def username_field_view(request: typing_utils.HtmxHttpRequest) -> http.HttpResponse:
+def username_field_view(
+    request: typing_utils.AuthenticatedHtmxRequest,
+) -> http.HttpResponse:
     """
     View providing inline validation for the username field.
     The template rendered is just the div wrapping the username field.
