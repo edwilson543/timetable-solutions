@@ -3,14 +3,18 @@
 import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
+from django import forms as django_forms
 from django import http
 from django.contrib.auth import mixins
 from django.db import models as django_models
-from django import forms as django_forms
+from django.template import loader
 from django.views import generic
 
 from interfaces.constants import UrlName
-from interfaces.utils.typing_utils import AuthenticatedHttpRequest
+from interfaces.utils.typing_utils import (
+    AuthenticatedHttpRequest,
+    AuthenticatedHtmxRequest,
+)
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -151,7 +155,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     """The model we are updating an instance of."""
 
     form_class: type[_FormT]
-    """Form used to update a model instance."""
+    """Form used to update a model instance (overridden from django's FormView)"""
 
     # Ordinary class vars
     object_id_name: ClassVar[str]
@@ -164,6 +168,13 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     """
     Prefix of this page's url - where the search form should be submitted.
     The full url is constructed as page_url_prefix/<model_instance_id>.
+    """
+
+    enabled_form_template_name = "data_management/partials/add-update-form.html"
+    """
+    Location of the form partial to allow users to update object details.
+    Note this is not included on initial page load, and is only rendered following
+    a htmx get request sent from an "Edit" button.
     """
 
     # Instance vars
@@ -189,6 +200,20 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     # Implementation of django hooks
     # --------------------
 
+    def get(
+        self, request: AuthenticatedHtmxRequest, *args: object, **kwargs: object
+    ) -> http.HttpResponse:
+        """
+        Override get to handle a htmx request as well as the ordinary page load.
+
+        The ordinary page load presents a disabled form only rendering the object details,
+        which is made editable via a htmx get request.
+        """
+        if self.request_is_from_htmx:
+            return self._get_htmx_response()
+        else:
+            return super().get(request=request, *args, **kwargs)
+
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: Any
     ) -> None:
@@ -213,9 +238,18 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
         context["page_url"] = self.page_url
         return context
 
+    def get_success_url(self) -> str:
+        """Redirect a posted form back to the same page."""
+        return self.page_url
+
     # --------------------
     # Helper methods
     # --------------------
+    def _get_htmx_response(self) -> http.HttpResponse:
+        """Get an editable update form partial."""
+        template = loader.get_template(template_name=self.enabled_form_template_name)
+        context = self.get_context_data()
+        return http.HttpResponse(template.render(context=context, request=self.request))
 
     def _get_object_or_404(self, model_instance_id: int | str) -> _ModelT:
         """Retrieve the model instance we are updating."""
@@ -236,6 +270,13 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     # --------------------
     # Properties
     # --------------------
+
+    @property
+    def request_is_from_htmx(self) -> bool:
+        """Whether the request being handled is an htmx request."""
+        return "Http-Hx-Request" in self.request.headers.keys() or bool(
+            self.request.htmx
+        )
 
     @property
     def page_url(self) -> str:
