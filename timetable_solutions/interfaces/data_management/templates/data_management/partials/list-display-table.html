@@ -3,6 +3,7 @@ A table showing a list of objects with appropriate headers
 ------------------
 Context variables:
 ------------------
+form: base_forms.Search
 search_term: str | None  Must be explicitly passed to include
 object_list: list[dict[str, str]]
 human_field_names: list[str]
@@ -24,7 +25,7 @@ model_class: type[django_models.Model]
 
 <!--        Explanatory text-->
         <div class="card-text">
-            {% if search_term and paginator.count > 0 %}
+            {% if search_term and paginator.count > 0 and not form.errors %}
                 <p>
                     <b>
                         Found {{ paginator.count }}
@@ -36,7 +37,7 @@ model_class: type[django_models.Model]
                         for search: "{{ search_term }}"
                     </b>
                 </p>
-            {% elif search_term %}
+            {% elif search_term and not form.errors %}
                 <p>
                     <b>Search for "{{ search_term }}" did not give any results!</b>
                 </p>

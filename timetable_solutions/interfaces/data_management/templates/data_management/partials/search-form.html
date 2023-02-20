@@ -15,7 +15,7 @@ page_url: str
     {% include 'partials/forms/form-field.html' with field=form.search_term %}
 
     <div class="d-flex flex-row">
-        <input form="search-form" type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
+        <input type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
         <a href="{{ page_url }}" class="btn btn-secondary m-1">
             Clear
         </a>
