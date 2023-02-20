@@ -87,7 +87,13 @@ class Teacher(models.Model):
 
     @classmethod
     def create_new(
-        cls, school_id: int, teacher_id: int, firstname: str, surname: str, title: str
+        cls,
+        *,
+        school_id: int,
+        teacher_id: int,
+        firstname: str,
+        surname: str,
+        title: str,
     ) -> "Teacher":
         """Method to create a new Teacher instance."""
         teacher = cls.objects.create(
@@ -108,6 +114,23 @@ class Teacher(models.Model):
         instances = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = instances.delete()
         return outcome
+
+    # --------------------
+    # Mutators
+    # --------------------
+    def update(
+        self,
+        *,
+        firstname: str | None = None,
+        surname: str | None = None,
+        title: str | None = None,
+    ) -> "Teacher":
+        """Update a teacher's details, only exposing editable fields as kwargs."""
+        self.firstname = firstname or self.firstname
+        self.surname = surname or self.surname
+        self.title = title or self.title
+        self.save(update_fields=["firstname", "surname", "title"])
+        return self
 
     # --------------------
     # Queries
