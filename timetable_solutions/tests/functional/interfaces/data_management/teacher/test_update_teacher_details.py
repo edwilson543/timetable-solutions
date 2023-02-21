@@ -52,10 +52,11 @@ class TestTeacherUpdate(TestClient):
         response = form.submit()
 
         # Check response ok and teacher details updated
-        assert response.status == 200
+        assert response.status_code == 302
+        assert response.location == url
 
         db_teacher = models.Teacher.objects.get(
-            school_id=teacher.school.school_id, teacher_id=teacher.teacher_id
+            school_id=teacher.school.school_access_key, teacher_id=teacher.teacher_id
         )
 
         assert db_teacher.firstname == "Ed"

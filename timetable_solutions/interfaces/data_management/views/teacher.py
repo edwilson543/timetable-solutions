@@ -7,6 +7,8 @@ from django.views import generic
 
 from data import models
 from domain.data_management.teachers import queries as teacher_queries
+from domain.data_management.teachers import operations as teacher_operations
+from domain.data_management.teachers import exceptions as teacher_exceptions
 from interfaces.data_management.views import base_views
 from interfaces.data_management import forms
 from interfaces.constants import UrlName
@@ -72,3 +74,20 @@ class TeacherUpdate(base_views.UpdateView):
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]
     page_url_prefix = UrlName.TEACHER_UPDATE
+
+    def update_model_from_clean_form(
+        self, form: forms.TeacherUpdate
+    ) -> models.Teacher | None:
+        """Update a teacher's details in the db."""
+        firstname = form.cleaned_data.get("firstname", None)
+        surname = form.cleaned_data.get("surname", None)
+        title = form.cleaned_data.get("title", None)
+        try:
+            return teacher_operations.update_teacher(
+                teacher=self.model_instance,
+                firstname=firstname,
+                surname=surname,
+                title=title,
+            )
+        except teacher_exceptions.CouldNotUpdateTeacher:
+            return None

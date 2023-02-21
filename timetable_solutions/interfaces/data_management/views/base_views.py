@@ -6,6 +6,7 @@ from typing import Any, ClassVar, Generic, TypeVar
 from django import forms as django_forms
 from django import http
 from django.contrib.auth import mixins
+from django.contrib import messages
 from django.db import models as django_models
 from django.template import loader
 from django.views import generic
@@ -214,6 +215,21 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
         else:
             return super().get(request=request, *args, **kwargs)
 
+    def form_valid(self, form: _FormT) -> http.HttpResponse:
+        """Use the form to update the relevant data."""
+        if form.is_valid():
+            if new_instance := self.update_model_from_clean_form(form=form):
+                self.model_instance = new_instance
+                messages.success(
+                    request=self.request, message=self.update_success_message
+                )
+                return super().form_valid(form=form)
+            else:
+                messages.error(request=self.request, message=self.update_error_message)
+                return super().form_invalid(form=form)
+        else:
+            return self.form_invalid(form=form)
+
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: Any
     ) -> None:
@@ -270,6 +286,18 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     # --------------------
     # Properties
     # --------------------
+    @property
+    def update_success_message(self) -> str:
+        """Message to display when the model instance is successfully updated."""
+        return f"Details for {self.model_instance} was successfully updated!"
+
+    @property
+    def update_error_message(self) -> str:
+        """
+        Message to display when updating the model instance errors.
+        This will only be shown following a valid form but failed domain call.
+        """
+        return f"Could not update details for {self.model_instance}."
 
     @property
     def request_is_from_htmx(self) -> bool:

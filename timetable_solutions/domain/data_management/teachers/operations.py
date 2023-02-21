@@ -33,12 +33,12 @@ def update_teacher(
     firstname: str | None = None,
     surname: str | None,
     title: str | None = None
-) -> None:
+) -> models.Teacher:
     """
     Update a teacher in the db.
 
     """
     try:
-        teacher.update(firstname=firstname, surname=surname, title=title)
+        return teacher.update(firstname=firstname, surname=surname, title=title)
     except django_exceptions.ValidationError:
         raise exceptions.CouldNotCreateTeacher
