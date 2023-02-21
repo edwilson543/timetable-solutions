@@ -1,27 +1,17 @@
 """Unit tests for teacher operations"""
 
-# Third party imports
 import pytest
 
-# Local application imports
 from data import models
 from domain.data_management.teachers import exceptions, operations
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
-class TestTeacher:
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
-    def test_create_new_valid_teacher(self):
-        """
-        Tests that we can create and save a Teacher via the create_new method
-        """
+class TestCreateNewTeacher:
+    def test_creates_teacher_in_db_for_valid_params(self):
         # Make a school for the teacher to teach at
-        school = factories.School()
+        school = data_factories.School()
 
         # Try creating teacher using create_new
         teacher = operations.create_new_teacher(
@@ -37,12 +27,9 @@ class TestTeacher:
         assert all_teachers.count() == 1
         assert all_teachers.first() == teacher
 
-    def test_create_new_fails_when_teacher_id_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Teachers with the same id / school, due to unique_together on the Meta class
-        """
+    def test_raises_when_teacher_id_not_unique_for_school(self):
         # Make a teacher to occupy an id value
-        teacher = factories.Teacher()
+        teacher = data_factories.Teacher()
 
         # Try making a teacher with the same school / id
         with pytest.raises(exceptions.CouldNotCreateTeacher):
@@ -53,3 +40,17 @@ class TestTeacher:
                 surname="test-2",
                 title="mrs",
             )
+
+
+@pytest.mark.django_db
+class TestCreateNewTeacher:
+    def test_updates_teacher_in_db_for_valid_params(self):
+        teacher = data_factories.Teacher()
+
+        operations.update_teacher(
+            teacher=teacher, firstname="test", surname="testnameson", title="mr"
+        )
+
+        assert teacher.firstname == "test"
+        assert teacher.surname == "testnameson"
+        assert teacher.title == "mr"
