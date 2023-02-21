@@ -48,6 +48,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
     """
     The fields to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
+    The first key should always be the model's id within the school field, e.g. 'teacher_id'.
     """
 
     search_help_text: ClassVar[str]
@@ -55,6 +56,12 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
 
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
+
+    update_url: ClassVar[UrlName]
+    """
+    URL to go through to the detail view of individual objects.
+    Needs reversing with an id kwarg in the template.
+    """
 
     # Instance vars
     school_id: int
@@ -120,6 +127,7 @@ class SearchView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _
         context = super().get_context_data(**kwargs)
 
         context["page_url"] = self.page_url
+        context["update_url"] = self.update_url
         context["human_field_names"] = self.human_field_names
         context["model_class"] = self.model_class
         context["form"] = self.form
@@ -289,7 +297,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _
     @property
     def update_success_message(self) -> str:
         """Message to display when the model instance is successfully updated."""
-        return f"Details for {self.model_instance} was successfully updated!"
+        return f"Details for {self.model_instance} were successfully updated!"
 
     @property
     def update_error_message(self) -> str:

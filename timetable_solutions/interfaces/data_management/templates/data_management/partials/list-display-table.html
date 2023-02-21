@@ -12,8 +12,11 @@ model_class: type[django_models.Model]
 <style>
 .fixed-width-column {
     {% with human_field_names|length as n_columns %}
-        width: calc(100% / {{ n_columns }});
+        width: calc(90% / {{ n_columns }});
     {% endwith %}
+}
+.view-column {
+    width: 10%;
 }
 </style>
 
@@ -62,14 +65,28 @@ model_class: type[django_models.Model]
                     {% for field_name in human_field_names %}
                         <th class="fixed-width-column">{{ field_name }}</th>
                     {% endfor %}
+                    <th class="view-column"></th>
                 </tr>
             </thead>
             <tbody>
                 {% for object_field_values in page_obj.object_list %}
-                    <tr>
+                    {% with object_field_values.0 as id_within_school %}
                         {% for field_value in object_field_values %}
-                            <td>{{ field_value }}</td>
+                            <td class="align-middle">
+                                <a
+                                   href="{% url update_url id_within_school %}"
+                                   class="link-secondary text-decoration-none text-dark"
+                                >
+                                {{ field_value }}
+                                </a>
+                            </td>
                         {% endfor %}
+                            <td class="py-1">
+                                <a href="{% url update_url id_within_school %}" class="btn btn-secondary py-1">
+                                    View
+                                </a>
+                            </td>
+                    {% endwith %}
                     </tr>
                 {% endfor %}
             </tbody>
