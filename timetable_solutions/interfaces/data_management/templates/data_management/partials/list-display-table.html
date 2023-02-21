@@ -43,7 +43,14 @@ model_class: type[django_models.Model]
                 </p>
             {% else %}
                 <p>
-                    <b>Showing all {{ model_class.Constant.human_string_plural }}</b>
+                    {% if paginator.num_pages == 1 %}
+                        <b>Showing all {{ paginator.count }} {{ model_class.Constant.human_string_plural }}</b>
+                    {% else %}
+                        <b>
+                            Showing {{ model_class.Constant.human_string_plural }} {{ page_obj.start_index }} -
+                            {{ page_obj.end_index }} of {{ paginator.count }}
+                        </b>
+                    {% endif %}
                 </p>
             {% endif %}
         </div>
