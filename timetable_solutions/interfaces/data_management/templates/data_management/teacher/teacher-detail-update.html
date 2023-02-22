@@ -12,7 +12,7 @@
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        {{ model_instance }}
+        teacher id: {{ model_instance.teacher_id }}
     </li>
 {% endblock %}
 
@@ -20,7 +20,7 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>View and update the data for {{ model_instance }} </h3>
+        <h3>View and update details for {{ model_instance }} </h3>
     </div>
 </div>
 
@@ -30,5 +30,6 @@
     </div>
 </div>
 
+{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=model_instance.lessons.all %}
 
 {% endblock %}
