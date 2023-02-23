@@ -1,8 +1,10 @@
 """Forms relating to the Teacher model."""
 
+from typing import Any
+
 from django import forms as django_forms
 
-from data import models
+from domain.data_management.teachers import queries
 from . import base_forms
 
 
@@ -44,15 +46,21 @@ class TeacherCreate(_TeacherCreateUpdateBase):
         help_text="Unique identifier to be used for this teacher",
     )
 
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Set the next available ID as the initial teacher_id."""
+        super().__init__(*args, **kwargs)
+        self.base_fields["teacher_id"].initial = queries.get_next_teacher_id_for_school(
+            school_id=self.school_id
+        )
+
     def clean_teacher_id(self) -> int:
         """Check the given teacher id does not already exist for the school."""
         teacher_id = self.cleaned_data.get("teacher_id")
-        try:
-            models.Teacher.objects.get_individual_teacher(
-                school_id=self.school_id, teacher_id=teacher_id
-            )
+        if queries.get_teacher_for_school(
+            school_id=self.school_id, teacher_id=teacher_id
+        ):
             raise django_forms.ValidationError(
-                f"Teacher with id: {teacher_id} already exists!"
+                f"Teacher with id: {teacher_id} already exists! "
+                f"The next available id is: {self.base_fields['teacher_id'].initial}"
             )
-        except models.Teacher.DoesNotExist:
-            return teacher_id
+        return teacher_id

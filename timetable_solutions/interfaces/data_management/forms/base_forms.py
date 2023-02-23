@@ -1,3 +1,5 @@
+from typing import Any
+
 from django import forms
 
 
@@ -11,7 +13,7 @@ class Search(forms.Form):
         error_messages={"required": "Please enter a search term!"},
     )
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Set any field parameters provided by constructor."""
         if kwargs.get("search_help_text"):
             self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
@@ -33,7 +35,7 @@ class Search(forms.Form):
 class CreateUpdate(forms.Form):
     """Base form for creating and updating individual models."""
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(self, *args: object, **kwargs: int) -> None:
         """
         Set the school, which may be used as context in validation.
 
