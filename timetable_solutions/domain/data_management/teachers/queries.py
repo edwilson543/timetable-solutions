@@ -52,6 +52,14 @@ def get_teachers_by_search_term(
     return teachers.order_by("teacher_id")
 
 
+def get_teacher_for_school(school_id: int, teacher_id: int) -> models.Teacher | None:
+    """Get the teacher with the teacher id, at the given school."""
+    try:
+        return models.Teacher.objects.get(teacher_id=teacher_id, school_id=school_id)
+    except models.Teacher.DoesNotExist:
+        return None
+
+
 def get_next_teacher_id_for_school(school_id: int) -> int:
     """Get the lowest, unused teacher id for a given school."""
     if teachers := models.Teacher.objects.filter(school_id=school_id):
