@@ -139,3 +139,26 @@ class TestGetTeacherBySearchTerm:
         assert teachers.count() == 1
         queried_teacher = teachers.first()
         assert queried_teacher == teacher
+
+
+@pytest.mark.django_db
+class TestGetNextIdForSchool:
+    def test_gets_next_teacher_id_when_school_has_teacher(self):
+        school = data_factories.School()
+        teacher_a = data_factories.Teacher(school=school)
+        teacher_b = data_factories.Teacher(school=school)
+
+        next_id = queries.get_next_teacher_id_for_school(
+            school_id=school.school_access_key
+        )
+
+        assert next_id == max(teacher_a.teacher_id, teacher_b.teacher_id) + 1
+
+    def test_gets_one_when_teacher_has_no_teachers(self):
+        school = data_factories.School.build()
+
+        next_id = queries.get_next_teacher_id_for_school(
+            school_id=school.school_access_key
+        )
+
+        assert next_id == 1
