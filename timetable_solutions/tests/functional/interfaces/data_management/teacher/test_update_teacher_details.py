@@ -39,7 +39,7 @@ class TestTeacherUpdate(TestClient):
         # Check response ok and correct context
         assert form_partial.status_code == 200
 
-        form = form_partial.forms["add-update-form"]
+        form = form_partial.forms["update-form"]
         assert form["firstname"].value == teacher.firstname
         assert form["surname"].value == teacher.surname
         assert form["title"].value == teacher.title

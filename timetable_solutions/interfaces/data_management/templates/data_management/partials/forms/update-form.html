@@ -3,11 +3,11 @@ A form to change a model instance with
 ------------------
 Context variables:
 ------------------
-form: base_forms.CreateUpdate
+form: base_forms.Update
 page_url: str
 -->
 
-<form method="post" action="{{ page_url }}" class="p-1" id="add-update-form">
+<form method="post" action="{{ page_url }}" class="p-1" id="update-form">
 
     {% csrf_token %}
     {% include 'partials/forms/non-field-errors.html' with form=form %}
