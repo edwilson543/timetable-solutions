@@ -66,8 +66,7 @@ class TestTeacherCreate(TestClient):
         django_form = form_response.context["form"]
         errors = django_form.errors.as_text()
         assert (
-            f"Teacher with id: {existing_teacher.teacher_id + 1} already exists!"
-            in errors
+            f"Teacher with id: {existing_teacher.teacher_id} already exists!" in errors
         )
 
         # Check no new teacher was created
