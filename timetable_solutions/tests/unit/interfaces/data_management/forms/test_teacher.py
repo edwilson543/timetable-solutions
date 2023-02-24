@@ -66,14 +66,3 @@ class TestTeacherCreate:
 
         assert f"Teacher with id: {teacher.teacher_id} already exists!" in errors
         assert f"The next available id is: 123456" in errors
-
-    @mock.patch(
-        "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
-        return_value=123456,
-    )
-    def test_form_init_sets_next_teacher_id(self, mock_get_next_teacher: mock.Mock()):
-        form = forms.TeacherCreate(school_id=1)
-
-        assert form.school_id == 1
-        # The test class mocks the query for the next teacher_id to be 10
-        assert form.base_fields["teacher_id"].initial == 123456

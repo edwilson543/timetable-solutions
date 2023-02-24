@@ -41,17 +41,17 @@ class TeacherUpdate(_TeacherCreateUpdateBase):
 
 class TeacherCreate(_TeacherCreateUpdateBase):
     teacher_id = django_forms.IntegerField(
-        required=True,
+        required=False,
         label="Teacher ID",
-        help_text="Unique identifier to be used for this teacher",
+        help_text="Unique identifier to be used for this teacher. "
+        "If unspecified we will use the next ID available.",
     )
+
+    field_order = ["teacher_id", "firstname", "surname", "title"]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Set the next available ID as the initial teacher_id."""
         super().__init__(*args, **kwargs)
-        self.base_fields["teacher_id"].initial = queries.get_next_teacher_id_for_school(
-            school_id=self.school_id
-        )
 
     def clean_teacher_id(self) -> int:
         """Check the given teacher id does not already exist for the school."""
@@ -59,8 +59,11 @@ class TeacherCreate(_TeacherCreateUpdateBase):
         if queries.get_teacher_for_school(
             school_id=self.school_id, teacher_id=teacher_id
         ):
+            next_available_id = queries.get_next_teacher_id_for_school(
+                school_id=self.school_id
+            )
             raise django_forms.ValidationError(
                 f"Teacher with id: {teacher_id} already exists! "
-                f"The next available id is: {self.base_fields['teacher_id'].initial}"
+                f"The next available id is: {next_available_id}"
             )
         return teacher_id

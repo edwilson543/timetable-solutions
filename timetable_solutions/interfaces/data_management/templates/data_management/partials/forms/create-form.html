@@ -1,0 +1,21 @@
+<!--
+A form to change a model instance with
+------------------
+Context variables:
+------------------
+form: base_forms.Create
+page_url: str
+-->
+
+<form method="post" action="{{ page_url }}" class="p-1" id="create-form">
+
+    {% csrf_token %}
+    {% include 'partials/forms/non-field-errors.html' with form=form %}
+
+    {% for field in form %}
+        {% include 'partials/forms/form-field.html' with field=field only %}
+    {% endfor %}
+
+    <input type="submit" name="submit" value="Create" class="btn btn-success m-1">
+
+</form>
