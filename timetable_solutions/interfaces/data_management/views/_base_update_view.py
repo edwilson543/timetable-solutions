@@ -48,7 +48,9 @@ class UpdateView(
     The full url is constructed as page_url_prefix/<model_instance_id>.
     """
 
-    enabled_form_template_name = "data_management/partials/forms/add-update-form.html"
+    enabled_form_template_name = (
+        "data_management/partials/forms/create-update-form.html"
+    )
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following
