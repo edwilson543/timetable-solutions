@@ -4,16 +4,16 @@ These are:
     - PupilAdmin, TeacherAdmin, ClassroomAdmin, TimetableSlotAdmin
 And all require minimal customisation beyond that provided by CustomModelAdminBase.
 """
-# Standard library imports
+
 
 # Django imports
 from django.contrib import admin
 
 # Local application imports
-from .custom_admin_site import user_admin
+from data import constants, models
+
 from .base_model_admin import CustomModelAdminBase
-from data import constants
-from data import models
+from .custom_admin_site import user_admin
 
 
 @admin.register(models.Teacher, site=user_admin)

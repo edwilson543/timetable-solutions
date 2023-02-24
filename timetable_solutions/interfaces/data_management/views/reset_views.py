@@ -3,7 +3,7 @@ Views relating to the resetting of user uploaded data.
  - Each subclass of DataResetBase handles the upload of one OR MORE of the user's uploads.
 """
 
-# Local application imports
+
 from .legacy_base import DataResetBase
 
 

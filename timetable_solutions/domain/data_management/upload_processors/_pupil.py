@@ -2,12 +2,12 @@
 import pandas as pd
 
 # Local application imports
+from data import models
+from domain.data_management.constants import Header, UploadFileStructure
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
 )
-from domain.data_management.constants import Header, UploadFileStructure
-from data import models
 
 
 class PupilFileUploadProcessor(BaseFileUploadProcessor, RelationalUploadProcessorMixin):

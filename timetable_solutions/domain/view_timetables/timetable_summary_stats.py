@@ -2,12 +2,12 @@
 Module providing summary stats for the view timetable app's dashboard
 """
 
+
 # Standard library imports
-from typing import TypedDict, Literal
+from typing import Literal, TypedDict
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 
 
 class _StatsSummary(TypedDict):

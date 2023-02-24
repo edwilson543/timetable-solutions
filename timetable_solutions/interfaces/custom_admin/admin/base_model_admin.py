@@ -2,6 +2,7 @@
 Base classes relevant to the custom admin site.
 """
 
+
 # Django imports
 from django import http
 from django.contrib import admin
@@ -9,8 +10,7 @@ from django.db.models import QuerySet
 from django.utils import html
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 from interfaces.utils import typing_utils
 
 

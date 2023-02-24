@@ -2,9 +2,9 @@
 Tests for the htmx views in the view_timetables app.
 """
 
+
 # Django imports
-from django import test
-from django import urls
+from django import test, urls
 
 # Local application imports
 from data import models

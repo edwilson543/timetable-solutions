@@ -8,12 +8,12 @@ import pandas as pd
 from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
+from data import models
 from domain.data_management.constants import Header, UploadFileStructure
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
 )
-from data import models
 
 
 class BreakFileUploadProcessor(BaseFileUploadProcessor, RelationalUploadProcessorMixin):

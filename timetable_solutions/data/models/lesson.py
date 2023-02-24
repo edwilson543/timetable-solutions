@@ -6,7 +6,7 @@ Module defining the model for a SchoolClass, and its manager.
 from django.core.exceptions import ValidationError
 from django.db import models
 
-# Local application imports (other models)
+# Local application imports
 from data import constants
 from data.models.classroom import Classroom
 from data.models.pupil import Pupil, PupilQuerySet

@@ -1,5 +1,6 @@
 """Unit tests for views of the data_upload app"""
 
+
 # Standard library imports
 import datetime as dt
 
@@ -11,8 +12,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 # Local application imports
-from interfaces.constants import UrlName
 from data import models
+from interfaces.constants import UrlName
 from interfaces.data_management import forms_legacy as forms
 
 

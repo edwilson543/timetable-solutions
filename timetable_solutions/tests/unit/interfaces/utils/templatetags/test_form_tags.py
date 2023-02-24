@@ -2,12 +2,12 @@
 Unit tests for the custom form tags.
 """
 
+
 # Third party imports
 import pytest
 
 # Django imports
-from django import forms
-from django import template
+from django import forms, template
 from django.utils import html
 
 

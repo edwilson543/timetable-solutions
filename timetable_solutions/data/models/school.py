@@ -1,5 +1,6 @@
 """Module defining the model for a school_id in the database, and any ancillary objects"""
 
+
 # Django imports
 from django.db import models
 

@@ -1,5 +1,6 @@
 """Unit tests for the methods on the TimetableSolverConstraints class"""
 
+
 # Standard library imports
 import datetime as dt
 
@@ -7,11 +8,10 @@ import datetime as dt
 import pytest
 
 # Local application imports
-from data import models
 from data import constants as data_constants
+from data import models
 from domain import solver as slvr
-from tests import data_factories
-from tests import domain_factories
+from tests import data_factories, domain_factories
 
 
 @pytest.mark.django_db

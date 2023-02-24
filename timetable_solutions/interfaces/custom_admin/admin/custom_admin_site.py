@@ -2,20 +2,19 @@
 Module for the AdminSite instance used to implement the custom AdminSite.
 """
 
+
 # Standard library imports
 from typing import TypedDict
 
 # Django imports
-from django import http
-from django import urls
+from django import http, urls
 from django.contrib import admin
 from django.urls import NoReverseMatch, reverse
 from django.utils.text import capfirst
 
 # Local application imports
+from data import constants, models
 from interfaces.constants import UrlName
-from data import constants
-from data import models
 
 
 # TYPE HINTS

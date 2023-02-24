@@ -2,14 +2,15 @@
 Unit test for the upload status tracking mechanism in the domain layer
 """
 
+
 # Django imports
 from django import test
 
 # Local application imports
 from data import models
 from domain.data_management.upload_status_tracking import (
-    UploadStatusTracker,
     UploadStatus,
+    UploadStatusTracker,
 )
 
 

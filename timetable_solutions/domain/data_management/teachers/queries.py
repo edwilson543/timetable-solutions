@@ -1,7 +1,9 @@
 """Queries of the teacher model related to user-driven data management."""
 
+# Django imports
 from django.db import models as django_models
 
+# Local application imports
 from data import models
 
 

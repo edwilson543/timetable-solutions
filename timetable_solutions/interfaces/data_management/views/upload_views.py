@@ -2,9 +2,11 @@
 Views relating to the upload of user data - each subclass of DataUploadBase handles the upload of one specific csv file.
 """
 
+
 # Local application imports
 from domain import data_management
 from interfaces.data_management import forms_legacy
+
 from .legacy_base import DataUploadBase
 
 

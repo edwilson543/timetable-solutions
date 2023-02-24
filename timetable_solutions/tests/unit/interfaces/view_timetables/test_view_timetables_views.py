@@ -2,6 +2,7 @@
 Module containing unit tests for the views in view_timetables app.
 """
 
+
 # Django imports
 from django.db.models import QuerySet
 from django.test import TestCase

@@ -2,13 +2,13 @@
 Tests for the views that handle the resetting of user data.
 """
 
+
 # Django imports
-from django import test
-from django import urls
+from django import test, urls
 
 # Local application imports
-from interfaces.constants import UrlName
 from data import models
+from interfaces.constants import UrlName
 
 
 class TestDataResetViews(test.TestCase):

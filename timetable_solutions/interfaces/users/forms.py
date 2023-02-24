@@ -1,11 +1,10 @@
 # Django imports
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ObjectDoesNotExist
-from django import forms
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 
 
 class CustomUserCreation(UserCreationForm):

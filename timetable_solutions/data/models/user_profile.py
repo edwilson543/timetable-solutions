@@ -3,6 +3,7 @@ Module defining the model for a user profile in the database, and any ancillary 
 Each Profile instance is used to add information relating to exactly one user.
 """
 
+
 # Standard library imports
 from typing import Optional
 
@@ -10,7 +11,7 @@ from typing import Optional
 from django.contrib.auth.models import User
 from django.db import models
 
-# Local application imports (other models)
+# Local application imports
 from data import constants
 from data.models.school import School
 

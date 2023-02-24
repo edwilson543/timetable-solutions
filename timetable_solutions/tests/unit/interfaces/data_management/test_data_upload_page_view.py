@@ -1,16 +1,17 @@
 """Unit tests for generic data upload view of the data_upload app"""
 
+
 # Django imports
-from django.contrib.auth.models import User
 from django import test
+from django.contrib.auth.models import User
 from django.urls import reverse
 
 # Local application imports
-from interfaces.constants import UrlName
 from domain.data_management import UploadStatus
+from interfaces.constants import UrlName
+from interfaces.data_management import forms_legacy as forms
 from interfaces.data_management.views import UploadPage
 from interfaces.data_management.views.data_upload_page import RequiredUpload
-from interfaces.data_management import forms_legacy as forms
 
 
 class TestUploadPageView(test.TestCase):

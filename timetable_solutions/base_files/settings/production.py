@@ -9,7 +9,6 @@ from decouple import config
 # Django imports
 from django.contrib import messages
 
-# Local application imports
 from .base_settings import *
 
 
@@ -19,7 +18,6 @@ ALLOWED_HOSTS = [
     "localhost",  # For running production environment locally with docker
     ".timetable-solutions.com",
 ]
-
 # Tell django the htp header indicating whether the request came from https
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
@@ -28,8 +26,6 @@ DEBUG = int(config("DEBUG"))
 MESSAGE_LEVEL = messages.INFO
 
 SECRET_KEY = config("SECRET_KEY")
-
-
 # Databases settings -> postgresql in production
 DATABASES = {
     "default": {

@@ -2,10 +2,11 @@
 Unit tests for the custom management command used to load in some dummy data (load_all_fixtures)
 """
 
+
 # Django imports
 from django import test
-from django.core.management import call_command
 from django.contrib.auth.models import User
+from django.core.management import call_command
 
 # Local application imports
 from data import models

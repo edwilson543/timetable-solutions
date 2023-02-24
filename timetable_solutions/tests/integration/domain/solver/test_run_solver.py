@@ -2,13 +2,14 @@
 Integration test for running the solver end-to-end
 """
 
+
 # Django imports
 from django import test
 
 # Local application imports
 from data import models
-from domain.solver.run_solver import produce_timetable_solutions
 from domain import solver as slvr
+from domain.solver.run_solver import produce_timetable_solutions
 
 
 class TestRunSolver(test.TestCase):

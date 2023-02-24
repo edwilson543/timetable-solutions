@@ -1,22 +1,24 @@
 """Views for the teacher data management functionality."""
 
+# Standard library imports
 from typing import Any
 
+# Django imports
 from django.contrib.auth import mixins
 from django.views import generic
 
+# Local application imports
 from data import models
-from domain.data_management.teachers import queries as teacher_queries
-from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import exceptions as teacher_exceptions
+from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
+from interfaces.constants import UrlName
+from interfaces.data_management import forms
 from interfaces.data_management.views import (
+    _base_create_view,
     _base_search_view,
     _base_update_view,
-    _base_create_view,
 )
-from interfaces.data_management import forms
-from interfaces.constants import UrlName
 
 
 class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):

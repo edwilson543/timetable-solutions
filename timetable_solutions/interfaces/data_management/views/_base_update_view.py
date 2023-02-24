@@ -1,18 +1,21 @@
+# Standard library imports
 import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
+# Django imports
 from django import forms as django_forms
 from django import http
-from django.contrib.auth import mixins
 from django.contrib import messages
+from django.contrib.auth import mixins
 from django.db import models as django_models
 from django.template import loader
 from django.views import generic
 
+# Local application imports
 from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import (
-    AuthenticatedHttpRequest,
     AuthenticatedHtmxRequest,
+    AuthenticatedHttpRequest,
 )
 
 
@@ -34,7 +37,6 @@ class UpdateView(
 
     form_class: type[_UpdateFormT]
     """Form used to update a model instance (overridden from django's FormView)"""
-
     # Ordinary class vars
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
@@ -55,7 +57,6 @@ class UpdateView(
     Note this is not included on initial page load, and is only rendered following
     a htmx get request sent from an "Edit" button.
     """
-
     # Instance vars
     school_id: int
     """The school who's data will be shown."""
@@ -78,7 +79,6 @@ class UpdateView(
     # --------------------
     # Implementation of django hooks
     # --------------------
-
     def get(
         self, request: AuthenticatedHtmxRequest, *args: object, **kwargs: object
     ) -> http.HttpResponse:
@@ -163,7 +163,6 @@ class UpdateView(
     # --------------------
     # Properties
     # --------------------
-
     @property
     def request_is_from_htmx(self) -> bool:
         """Whether the request being handled is an htmx request."""

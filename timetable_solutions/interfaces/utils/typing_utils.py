@@ -2,13 +2,17 @@
 Utility types for use throughout interfaces layer.
 """
 
+# Standard library imports
 from typing import Protocol, TypeVar
 
-from django import forms
-from django import http
-from django.contrib.auth import models as auth_models
+# Third party imports
 from django_htmx.middleware import HtmxDetails
 
+# Django imports
+from django import forms, http
+from django.contrib.auth import models as auth_models
+
+# Local application imports
 from data import models
 
 

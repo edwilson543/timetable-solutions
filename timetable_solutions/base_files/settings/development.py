@@ -5,7 +5,6 @@ Settings specific to the local development environment
 # Django imports
 from django.contrib import messages
 
-# Local application imports
 from .base_settings import *
 
 
@@ -17,8 +16,6 @@ DEBUG = True
 MESSAGE_LEVEL = messages.DEBUG
 
 SECRET_KEY = "django-insecure-&b(x7(hn8==(696kz$y9hb!l_=1tuq)#j@-9(1sk9gy=1^nopa"
-
-
 # Database settings -> sqlite in development
 DATABASES = {
     "default": {

@@ -5,6 +5,7 @@ In particular, we test:
 - The methods calculating individual random optimal free periods, each using different logic
 """
 
+
 # Standard library imports
 import datetime as dt
 from unittest import mock
@@ -14,8 +15,7 @@ import pytest
 
 # Local application imports
 from domain import solver as slvr
-from tests import data_factories
-from tests import domain_factories
+from tests import data_factories, domain_factories
 
 
 @pytest.mark.django_db

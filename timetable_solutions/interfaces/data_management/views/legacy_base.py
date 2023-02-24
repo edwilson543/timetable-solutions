@@ -7,20 +7,20 @@ The pattern is to implement all logic in these base classes, and then for each r
 which has next to no code in it.
 """
 
+
 # Standard library imports
 from pathlib import Path
 from typing import Callable
 
 # Django imports
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django import http, urls
 from django.contrib import messages
-from django import http
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import View
-from django import urls
 
 # Local application imports
-from interfaces.constants import UrlName
 from domain import data_management
+from interfaces.constants import UrlName
 from interfaces.data_management import forms_legacy
 
 

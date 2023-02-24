@@ -2,6 +2,7 @@
 Implementation for inserting the solver solution into the relevant part of the database.
 """
 
+
 # Local application imports
 from domain.solver.linear_programming.solver import TimetableSolver
 

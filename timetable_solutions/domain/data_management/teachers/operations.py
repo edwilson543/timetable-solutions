@@ -1,11 +1,13 @@
 """Operations on the Teacher model affecting db state."""
 
-from django.db import IntegrityError
+# Django imports
 from django.core import exceptions as django_exceptions
+from django.db import IntegrityError
 
-from . import exceptions
-from . import queries
+# Local application imports
 from data import models
+
+from . import exceptions, queries
 
 
 def create_new_teacher(

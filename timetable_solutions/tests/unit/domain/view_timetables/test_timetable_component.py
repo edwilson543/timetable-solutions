@@ -8,11 +8,10 @@ import pytest
 from data import constants as data_constants
 from domain.view_timetables import constants as view_timetables_constants
 from domain.view_timetables.timetable_component import (
-    TimetableComponent,
     CannotMergeError,
+    TimetableComponent,
 )
-from tests import data_factories
-from tests import domain_factories
+from tests import data_factories, domain_factories
 
 
 class TestTimetableComponent:

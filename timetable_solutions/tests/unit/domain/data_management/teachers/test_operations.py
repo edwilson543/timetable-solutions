@@ -1,7 +1,9 @@
 """Unit tests for teacher operations"""
 
+# Third party imports
 import pytest
 
+# Local application imports
 from data import models
 from domain.data_management.teachers import exceptions, operations
 from tests import data_factories

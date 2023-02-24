@@ -2,9 +2,9 @@
 Module containing unit tests for HTMX request handlers.
 """
 
+
 # Django imports
-from django import urls
-from django import test
+from django import test, urls
 
 # Local application imports
 from interfaces.constants import UrlName

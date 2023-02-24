@@ -3,11 +3,9 @@ Views used to navigate users towards an individual pupil/teacher's timetable.
 """
 
 # Django imports
-from django.contrib.auth.decorators import login_required
 from django import http
+from django.contrib.auth.decorators import login_required
 from django.template import loader
-
-import data.models
 
 # Local application imports
 from data import models
@@ -60,7 +58,7 @@ def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpRespon
     and so different users will see different content at the requested url.
     """
     school_id = request.user.profile.school.school_access_key
-    pupil = data.models.Pupil.objects.get_individual_pupil(
+    pupil = models.Pupil.objects.get_individual_pupil(
         school_id=school_id, pupil_id=pupil_id
     )
     timetable = view_timetables.get_pupil_timetable(pupil)
@@ -81,7 +79,7 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
     and so different users will see different content at the requested url.
     """
     school_id = request.user.profile.school.school_access_key
-    teacher = data.models.Teacher.objects.get_individual_teacher(
+    teacher = models.Teacher.objects.get_individual_teacher(
         school_id=school_id, teacher_id=teacher_id
     )
     timetable = view_timetables.get_teacher_timetable(teacher)

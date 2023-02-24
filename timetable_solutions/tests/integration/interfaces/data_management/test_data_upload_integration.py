@@ -2,20 +2,19 @@
 Integration tests for combinations of processes relating to file upload.
 """
 
+
 # Standard library imports
 from pathlib import Path
 
 # Django imports
-from django import http
-from django import test
-from django import urls
+from django import http, test, urls
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
+from data import models
 from interfaces.constants import UrlName
 from interfaces.data_management import forms_legacy as forms
-from data import models
 
 
 class TestFileUploadIntegration(test.TestCase):

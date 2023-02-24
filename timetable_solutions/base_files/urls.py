@@ -3,15 +3,16 @@ Base url stubs for the timetable solutions project.
 """
 
 # Django imports
-from django.conf.urls.static import static
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, reverse_lazy
+from django.urls import include, path, reverse_lazy
 from django.views import generic
 
 # Local application imports
 from interfaces.constants import UrlName
 from interfaces.custom_admin.admin.custom_admin_site import user_admin
+
 
 urlpatterns = (
     [

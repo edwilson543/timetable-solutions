@@ -2,6 +2,7 @@
 Module containing unit tests for the SolutionSpecification form in the create_timetables app.
 """
 
+
 # Standard library imports
 import datetime as dt
 

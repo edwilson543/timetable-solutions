@@ -2,6 +2,7 @@
 Unit tests for methods on the Pupil class
 """
 
+
 # Third party imports
 import pytest
 

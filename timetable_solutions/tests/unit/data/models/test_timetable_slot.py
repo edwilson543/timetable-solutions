@@ -2,6 +2,7 @@
 Unit tests for methods on the TimetableSlot and TimetableSlotQuerySet class
 """
 
+
 # Standard library imports
 import datetime as dt
 
@@ -13,8 +14,7 @@ from django.core import exceptions
 from django.db import IntegrityError
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 from tests import data_factories as factories
 
 

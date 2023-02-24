@@ -2,10 +2,12 @@
 Module containing the TimetableFileUploadProccessor only.
 """
 
+# Third party imports
 import pandas as pd
 
+# Local application imports
 from data import models
-from domain.data_management.constants import UploadFileStructure, Header
+from domain.data_management.constants import Header, UploadFileStructure
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,

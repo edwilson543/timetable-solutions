@@ -5,8 +5,9 @@ from django.urls import path
 
 # Local application imports
 from interfaces.constants import UrlName
-from . import htmx_views
-from . import views
+
+from . import htmx_views, views
+
 
 urlpatterns = [
     path(

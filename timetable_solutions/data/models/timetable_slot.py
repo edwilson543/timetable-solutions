@@ -1,5 +1,6 @@
 """Module defining the model for a timetable slot and any ancillary objects."""
 
+
 # Standard library imports
 import datetime as dt
 

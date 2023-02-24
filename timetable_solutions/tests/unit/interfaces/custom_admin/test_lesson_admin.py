@@ -2,6 +2,7 @@
 Unit tests for the LessonModelAdmin class.
 """
 
+
 # Django imports
 from django import test
 from django.contrib.auth.models import User

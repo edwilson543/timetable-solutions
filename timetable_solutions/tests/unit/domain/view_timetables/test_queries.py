@@ -2,8 +2,8 @@
 import pytest
 
 # Local application imports
-from tests import data_factories
 from domain.view_timetables import queries
+from tests import data_factories
 
 
 @pytest.mark.django_db

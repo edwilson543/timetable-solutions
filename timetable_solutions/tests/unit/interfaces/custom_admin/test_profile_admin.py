@@ -2,6 +2,7 @@
 Unit tests for the ProfileAdmin.
 """
 
+
 # Third party imports
 import pytest
 

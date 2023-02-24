@@ -2,9 +2,11 @@
 Module defining constants relating to urls.
 """
 
+
 # Standard library imports
 from enum import StrEnum
 
+# Django imports
 # Django import
 from django import urls
 

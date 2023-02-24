@@ -1,8 +1,8 @@
 """Quick script for converting a fixture saved as json to a csv, which can then be used to test csv upload."""
 
 # Standard library imports
-from pathlib import Path
 import json
+from pathlib import Path
 
 # Third party imports
 import pandas as pd

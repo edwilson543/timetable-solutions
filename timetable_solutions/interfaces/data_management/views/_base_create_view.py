@@ -1,17 +1,18 @@
+# Standard library imports
 import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
+# Django imports
 from django import forms as django_forms
 from django import http
-from django.contrib.auth import mixins
 from django.contrib import messages
+from django.contrib.auth import mixins
 from django.db import models as django_models
 from django.views import generic
 
+# Local application imports
 from interfaces.constants import UrlName
-from interfaces.utils.typing_utils import (
-    AuthenticatedHttpRequest,
-)
+from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -29,7 +30,6 @@ class CreateView(
 
     form_class: type[_CreateFormT]
     """Form used to update a model instance (overridden from django's FormView)"""
-
     # Ordinary class vars
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
@@ -42,7 +42,6 @@ class CreateView(
 
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
-
     # Instance vars
     school_id: int
     """The school who's data will be shown."""

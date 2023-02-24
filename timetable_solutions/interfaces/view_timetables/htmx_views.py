@@ -2,10 +2,11 @@
 Views handling AJAX requests submitted via HTMX.
 """
 
+
 # Django imports
 from django import http
-from django.template import loader
 from django.contrib.auth.decorators import login_required
+from django.template import loader
 
 # Local application imports
 from data import models

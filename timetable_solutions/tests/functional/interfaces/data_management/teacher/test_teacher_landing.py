@@ -1,7 +1,9 @@
 """Tests for the teacher landing page in the data management app."""
 
+# Third party imports
 import pytest
 
+# Local application imports
 from interfaces.constants import UrlName
 from tests import data_factories
 from tests.functional.client import TestClient
