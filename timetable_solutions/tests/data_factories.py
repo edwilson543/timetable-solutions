@@ -2,6 +2,7 @@
 Factories to be used throughout test suite when basic model instances are needed.
 """
 
+
 # Standard library imports
 import datetime as dt
 from typing import Any
@@ -13,8 +14,7 @@ import factory
 from django.contrib.auth import models as auth_models
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 
 
 class User(factory.django.DjangoModelFactory):

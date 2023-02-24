@@ -2,6 +2,7 @@
 Unit tests for the Lesson model and its manager, LessonQuerySet.
 """
 
+
 # Third party imports
 import pytest
 
@@ -9,8 +10,7 @@ import pytest
 from django.db import IntegrityError
 
 # Local application imports
-from data import constants
-from data import models
+from data import constants, models
 from tests import data_factories as factories
 
 

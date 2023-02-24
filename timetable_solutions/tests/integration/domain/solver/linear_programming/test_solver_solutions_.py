@@ -1,13 +1,14 @@
 """Integration tests looking for specific timetable solutions from the TimetableSolver class."""
 
+
 # Standard library imports
 import datetime as dt
 
-# Django imports
-from django import test
-
 # Third party imports
 import pulp as lp
+
+# Django imports
+from django import test
 
 # Local application imports
 from domain import solver as slvr

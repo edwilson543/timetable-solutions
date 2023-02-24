@@ -1,15 +1,16 @@
+# Standard library imports
 import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
+# Django imports
 from django import forms as django_forms
 from django.contrib.auth import mixins
 from django.db import models as django_models
 from django.views import generic
 
+# Local application imports
 from interfaces.constants import UrlName
-from interfaces.utils.typing_utils import (
-    AuthenticatedHttpRequest,
-)
+from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -31,14 +32,12 @@ class SearchView(
 
     http_method_names = ["get"]
     """The searching is done via GET requests, so disallow POST."""
-
     # Generic class vars
     model_class: type[_ModelT]
     """The model who's data is rendered on this page."""
 
     form_class: type[_SearchFormT]
     """The form class used to process the user's search."""
-
     # Ordinary class vars
     displayed_fields: ClassVar[dict[str, str]]
     """
@@ -58,7 +57,6 @@ class SearchView(
     URL to go through to the detail view of individual objects.
     Needs reversing with an id kwarg in the template.
     """
-
     # Instance vars
     school_id: int
     """The school who's data will be shown."""

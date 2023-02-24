@@ -2,13 +2,14 @@
 Views handling requests submitted by HTTP
 """
 
+
 # Standard library imports
 import enum
 
 # Django imports
-from django import http
-from django import shortcuts
-from django.contrib.auth import validators, models as auth_models
+from django import http, shortcuts
+from django.contrib.auth import models as auth_models
+from django.contrib.auth import validators
 from django.core import exceptions
 from django.views import generic
 

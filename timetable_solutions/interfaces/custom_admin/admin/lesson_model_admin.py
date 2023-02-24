@@ -3,12 +3,12 @@ Module containing the custom ModelAdmin for the Lesson model, and its ancillarie
 This gets its own module since the Lesson model itself is more complex, passing this complexity on to the admin.
 """
 
+
 # Standard library imports
 from typing import Any
 
 # Django imports
-from django import forms
-from django import http
+from django import forms, http
 from django.contrib import admin
 from django.utils import html
 from django.utils.safestring import SafeString

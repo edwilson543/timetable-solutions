@@ -2,13 +2,12 @@
 Unit tests for the user-orientated custom admin site
 """
 
+
 # Third party imports
 import pytest
 
 # Django imports
-from django import http
-from django import test
-from django import urls
+from django import http, test, urls
 from django.contrib.auth.models import User
 
 # Local application imports

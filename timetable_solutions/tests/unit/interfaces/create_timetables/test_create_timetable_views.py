@@ -2,13 +2,13 @@
 Unit tests for the views in the create_timetable app
 """
 
+
 # Standard library imports
 import datetime as dt
 
 # Django imports
-from django import test
+from django import test, urls
 from django.contrib.auth.models import User
-from django import urls
 
 # Local application imports
 from interfaces.constants import UrlName

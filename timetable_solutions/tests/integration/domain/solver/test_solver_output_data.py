@@ -2,6 +2,7 @@
 Integration test for the TimetableSolverOutcome
 """
 
+
 # Django imports
 from django import test
 

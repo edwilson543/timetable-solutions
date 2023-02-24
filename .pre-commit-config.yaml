@@ -14,6 +14,14 @@ repos:
     -   id: black
         language_version: python3.11
 
+    # isort
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+  - id: isort
+    args: [--profile, black, --lines-before-imports=1, --lines-after-imports=2]
+    name: isort (python)
+
     # Basic pre-commit hooks provided by default
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v2.3.0

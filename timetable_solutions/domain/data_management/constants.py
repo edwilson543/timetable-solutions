@@ -2,6 +2,7 @@
 Module listing constants related to the processing of uploaded user files.
 """
 
+
 # Standard library imports
 from dataclasses import dataclass
 from enum import StrEnum

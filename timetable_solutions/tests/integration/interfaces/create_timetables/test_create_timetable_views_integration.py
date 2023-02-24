@@ -2,17 +2,17 @@
 Integration tests for the views in the create_timetable app
 """
 
+
 # Standard library imports
 import datetime as dt
 
 # Django imports
-from django import test
-from django import urls
+from django import test, urls
 
 # Local application imports
-from interfaces.constants import UrlName
 from data import models
 from domain.solver import SolutionSpecification
+from interfaces.constants import UrlName
 from interfaces.create_timetables import forms
 
 

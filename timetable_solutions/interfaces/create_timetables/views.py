@@ -2,22 +2,22 @@
 Module containing the view class for the timetable creation page.
 """
 
+
 # Standard library imports
 from typing import Any
 
 # Django imports
-from django import http
-from django import urls
+from django import http, urls
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
 
 # Local application imports
-from interfaces.constants import UrlName
 from data import models
-from domain.data_management import UploadStatusTracker
 from domain import solver
+from domain.data_management import UploadStatusTracker
+from interfaces.constants import UrlName
 from interfaces.create_timetables import forms
 
 

@@ -1,12 +1,11 @@
-# Local application imports
+# Standard library imports
 from collections import OrderedDict
 from string import ascii_uppercase
 
 # Local application imports
 from data import constants as data_constants
 from data import models
-from domain.view_timetables import timetable
-from domain.view_timetables import timetable_component
+from domain.view_timetables import timetable, timetable_component
 
 
 def get_pupil_timetable(

@@ -3,8 +3,8 @@ Module containing the custom ModelAdmin for the Profile model, and its ancillari
 """
 
 # Django imports
-from django.contrib import admin
 from django import http
+from django.contrib import admin
 
 # Local application imports
 from data import models

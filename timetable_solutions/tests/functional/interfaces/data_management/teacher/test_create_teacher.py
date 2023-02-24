@@ -1,3 +1,4 @@
+# Local application imports
 from data import models
 from interfaces.constants import UrlName
 from tests import data_factories

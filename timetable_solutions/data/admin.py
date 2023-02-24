@@ -1,12 +1,11 @@
 """The user/admin setup follows the 'extending the existing User model' section of django 4.0 docs."""
 
+
 # Django imports
-from django.contrib import admin
-from django.contrib import auth
+from django.contrib import admin, auth
 from django.contrib.auth.admin import UserAdmin as _UserAdmin
 from django.contrib.auth.models import User
-from django.utils import html
-from django.utils import safestring
+from django.utils import html, safestring
 
 # Local application imports
 from data import models

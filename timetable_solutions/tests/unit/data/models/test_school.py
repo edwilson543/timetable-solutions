@@ -2,6 +2,7 @@
 Unit tests for methods on the School model
 """
 
+
 # Third party imports
 import pytest
 

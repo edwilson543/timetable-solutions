@@ -2,9 +2,9 @@
 Tests for the example file download view classes (via their url endpoints)
 """
 
+
 # Django imports
-from django import test
-from django import urls
+from django import test, urls
 
 # Local application imports
 from domain.data_management.constants import ExampleFile

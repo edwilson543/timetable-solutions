@@ -9,24 +9,25 @@ Step 3a - the user must also register themselves with the school
 Step 3b - the user must provide a school access key to associate themselves with a school that is already registered.
 """
 
+
 # Standard library imports
 from typing import Any
 
 # Django imports
 from django import http
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.template import loader
-from django.views import View
 from django.urls import reverse
+from django.views import View
 
 # Local application imports
+from data import constants, models
 from interfaces.constants import UrlName
-from data import constants
-from data import models
+
 from . import forms
 
 

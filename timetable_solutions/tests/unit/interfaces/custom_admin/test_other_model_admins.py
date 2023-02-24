@@ -2,6 +2,7 @@
 Unit tests for the subclasses of the BaseModelAdmin class defined in other_model_admins.py
 """
 
+
 # Django imports
 from django import test
 from django.contrib.auth.models import User

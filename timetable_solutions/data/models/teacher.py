@@ -1,9 +1,10 @@
 """Module defining the model for a teacher and any ancillary objects."""
 
+
 # Django imports
 from django.db import models
 
-# Local application imports (other models)
+# Local application imports
 from data.models.school import School
 from data.models.timetable_slot import TimetableSlot
 

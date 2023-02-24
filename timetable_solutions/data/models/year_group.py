@@ -2,6 +2,7 @@
 Module defining the model for a school year group, and any ancillary objects.
 """
 
+
 # Django imports
 from django.db import models
 

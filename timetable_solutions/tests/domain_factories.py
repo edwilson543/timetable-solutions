@@ -2,7 +2,8 @@
 Factories for domain-level objects.
 """
 
-# Local application imports
+
+# Standard library imports
 import datetime as dt
 
 # Third party imports
@@ -10,8 +11,8 @@ import factory
 
 # Local application imports
 from data import constants
-from domain.view_timetables import timetable_component
 from domain import solver
+from domain.view_timetables import timetable_component
 
 
 class TimetableComponent(factory.Factory):

@@ -1,13 +1,13 @@
 """Unit tests for the instantiation of solver variables."""
 
+
 # Third party imports
 import pytest
 
 # Local application imports
 from data import models
 from domain import solver as slvr
-from tests import data_factories
-from tests import domain_factories
+from tests import data_factories, domain_factories
 
 
 def get_variables_maker(school: models.School) -> slvr.TimetableSolverVariables:

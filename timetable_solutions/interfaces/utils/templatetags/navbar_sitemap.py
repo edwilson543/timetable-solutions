@@ -1,9 +1,12 @@
 """Template tag and ancillaries for storing the sitemap."""
+# Standard library imports
 import dataclasses
 from dataclasses import dataclass
 
+# Django imports
 from django import template
 
+# Local application imports
 from interfaces.constants import UrlName
 
 

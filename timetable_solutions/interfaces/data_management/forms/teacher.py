@@ -1,10 +1,14 @@
 """Forms relating to the Teacher model."""
 
+# Standard library imports
 from typing import Any
 
+# Django imports
 from django import forms as django_forms
 
+# Local application imports
 from domain.data_management.teachers import queries
+
 from . import base_forms
 
 

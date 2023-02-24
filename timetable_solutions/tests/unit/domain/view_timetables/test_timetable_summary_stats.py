@@ -2,6 +2,7 @@
 Module containing unit tests for functions in timetable_summary_stats in the view_timetables app of the domain layer.
 """
 
+
 # Django imports
 from django.core import management
 from django.test import TestCase

@@ -2,24 +2,23 @@
 Module containing integration tests for the TimetableFileUploadProcessor
 """
 
+
 # Standard library imports
 import copy
 import datetime as dt
 
-# Django imports
-from django.core.files.uploadedfile import SimpleUploadedFile
-
 # Third party imports
 import pytest
 
+# Django imports
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
-from data import models
 from data import constants as data_constants
+from data import models
 from domain import data_management
 from domain.data_management.constants import Header
-from tests import data_factories
-from tests import utils
+from tests import data_factories, utils
 
 
 @pytest.mark.django_db

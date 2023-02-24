@@ -3,22 +3,22 @@ Module containing utility class used to do the processing of the uploaded csv fi
 """
 
 # Standard library imports
-from io import StringIO
 import re
+from io import StringIO
 
 # Third party imports
-from dateutil import parser as dateutil_parser  # type: ignore
 import pandas as pd
+from dateutil import parser as dateutil_parser  # type: ignore
 
 # Django imports
 from django.conf import settings
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.uploadedfile import UploadedFile
-from django.db import transaction, IntegrityError
+from django.db import IntegrityError, transaction
 
 # Local application imports
-from domain.data_management.constants import Header, FileStructure
 from data import models
+from domain.data_management.constants import FileStructure, Header
 
 
 class BaseFileUploadProcessor:

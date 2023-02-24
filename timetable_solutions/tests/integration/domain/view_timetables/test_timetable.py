@@ -1,5 +1,6 @@
 """Tests the timetables are constructed as expected."""
 
+
 # Standard library imports
 import datetime as dt
 

@@ -1,9 +1,12 @@
 """Tests for forms relating to the Teacher model."""
 
+# Standard library imports
 from unittest import mock
 
+# Third party imports
 import pytest
 
+# Local application imports
 from interfaces.data_management import forms
 from tests import data_factories
 

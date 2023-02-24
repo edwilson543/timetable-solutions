@@ -3,11 +3,13 @@ Entry point to the solver, both in terms of using it, and in terms of the interf
 The function below and SolutionSpecification are the only two objects used outside of domain/solver
 """
 
+
 # Local application imports
 from data import models
-from .solver_input_data import TimetableSolverInputs, SolutionSpecification
-from .solver_output_data import TimetableSolverOutcome
+
 from .linear_programming.solver import TimetableSolver
+from .solver_input_data import SolutionSpecification, TimetableSolverInputs
+from .solver_output_data import TimetableSolverOutcome
 
 
 def produce_timetable_solutions(

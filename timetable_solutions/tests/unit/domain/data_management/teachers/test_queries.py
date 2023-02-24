@@ -1,7 +1,9 @@
 """Tests for data management teacher queries."""
 
+# Third party imports
 import pytest
 
+# Local application imports
 from domain.data_management.teachers import queries
 from tests import data_factories
 

@@ -5,12 +5,12 @@ from typing import Any
 import pulp as lp
 
 # Local application imports
-from domain.solver.solver_input_data import TimetableSolverInputs
 from domain.solver.linear_programming.solver_constraints import (
     TimetableSolverConstraints,
 )
 from domain.solver.linear_programming.solver_objective import TimetableSolverObjective
 from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
+from domain.solver.solver_input_data import TimetableSolverInputs
 
 
 class TimetableSolver:

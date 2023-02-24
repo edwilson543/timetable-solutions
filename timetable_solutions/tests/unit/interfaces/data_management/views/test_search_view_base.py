@@ -1,3 +1,4 @@
+# Local application imports
 from interfaces.data_management.views import _base_search_view
 
 

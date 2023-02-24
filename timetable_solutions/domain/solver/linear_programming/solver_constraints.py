@@ -1,6 +1,7 @@
 """
 Module defining the constraints on the timetabling problem
 """
+
 # Standard library imports
 import itertools
 from typing import Generator
@@ -9,14 +10,13 @@ from typing import Generator
 import pulp as lp
 
 # Local application imports
-from data import constants
-from data import models
-from domain.solver.solver_input_data import TimetableSolverInputs
+from data import constants, models
 from domain.solver.linear_programming.solver_variables import (
     TimetableSolverVariables,
-    var_key,
     doubles_var_key,
+    var_key,
 )
+from domain.solver.solver_input_data import TimetableSolverInputs
 
 
 class TimetableSolverConstraints:
@@ -43,7 +43,6 @@ class TimetableSolverConstraints:
         :param problem - an instance of pulp.LpProblem, which collects constraints/objective and solves
         :return None - since the passed problem will be modified in-place
         """
-
         # BASIC CONSTRAINTS
         fulfillment_constraints = self._get_all_fulfillment_constraints()
         for constraint in fulfillment_constraints:
@@ -60,7 +59,6 @@ class TimetableSolverConstraints:
         classroom_constraints = self._get_all_classroom_constraints()
         for constraint in classroom_constraints:
             problem += constraint
-
         # DOUBLE PERIOD CONSTRAINTS
         double_period_fulfillment_constraints = (
             self._get_all_double_period_fulfillment_constraints()
@@ -73,7 +71,6 @@ class TimetableSolverConstraints:
         )
         for constraint in double_period_dependency_constraints:
             problem += constraint
-
         # OPTIONAL CONSTRAINTS
         if not self._inputs.solution_specification.allow_split_classes_within_each_day:
             no_split_constraints = self._get_all_no_split_classes_in_a_day_constraints()
@@ -342,7 +339,6 @@ class TimetableSolverConstraints:
             :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2
             """
             double_period_var = self._double_period_variables[key]
-
             # Set a name for the new constraint
             if is_slot_1:
                 slot_id = key.slot_1_id
@@ -352,7 +348,6 @@ class TimetableSolverConstraints:
                 slot_id = key.slot_2_id
                 other_slot_id = key.slot_1_id
                 constraint_name = f"{key.lesson_id}_double_could_end_at_{slot_id}"
-
             # Retrieve corresponding decision variable
             try:
                 decision_var = self._decision_variables[
@@ -421,7 +416,6 @@ class TimetableSolverConstraints:
                 day_of_week=day_of_week,
                 year_group=year_group,
             )
-
             # Variables contribution
             periods_on_day = lp.lpSum(
                 [
@@ -440,7 +434,6 @@ class TimetableSolverConstraints:
                     and (key.slot_1_id in slot_ids_on_day)
                 ]
             )
-
             # Fixed contribution
             existing_singles_on_day = (
                 lesson.user_defined_time_slots.get_timeslots_on_given_day(
@@ -454,7 +447,6 @@ class TimetableSolverConstraints:
                     day_of_week=day_of_week
                 )
             )
-
             # Since user may have broken the rules, we limit the fixed contribution to 1
             fixed_contribution = min(
                 existing_singles_on_day - existing_doubles_on_day, 1

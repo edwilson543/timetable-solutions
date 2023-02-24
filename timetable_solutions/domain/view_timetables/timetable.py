@@ -1,12 +1,12 @@
 # Standard library imports
-from collections import OrderedDict
 import datetime as dt
+from collections import OrderedDict
 
 # Local application imports
 from data import constants as data_constants
 from data import models
-from domain.view_timetables import timetable_component
 from domain.view_timetables import constants as view_timetable_constants
+from domain.view_timetables import timetable_component
 
 
 class Timetable:

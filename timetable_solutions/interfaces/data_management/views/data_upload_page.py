@@ -2,19 +2,20 @@
 Module defining the data upload page, its context, and required ancillaries.
 """
 
+
 # Standard library imports
 from dataclasses import dataclass
 from typing import Any, TypedDict
 
 # Django imports
-from django import urls, http
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django import http, urls
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 
 # Local application imports
-from interfaces.constants import UrlName
 from domain import data_management
+from interfaces.constants import UrlName
 from interfaces.data_management import forms_legacy
 
 

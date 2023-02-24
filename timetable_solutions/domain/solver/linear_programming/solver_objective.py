@@ -2,16 +2,17 @@
 Module defining the objective function of the timetable solving problem
 """
 
+
 # Standard library imports
 import datetime as dt
 
 # Third party imports
-import pulp as lp
 import numpy as np
+import pulp as lp
 
 # Local application imports
-from domain.solver.solver_input_data import TimetableSolverInputs, SolutionSpecification
 from domain.solver.linear_programming.solver_variables import TimetableSolverVariables
+from domain.solver.solver_input_data import SolutionSpecification, TimetableSolverInputs
 
 
 class TimetableSolverObjective:

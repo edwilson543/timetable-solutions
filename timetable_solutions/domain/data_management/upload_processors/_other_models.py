@@ -5,11 +5,9 @@ that contain no relational data.
 
 
 # Local application imports
-from domain.data_management.upload_processors._base import (
-    BaseFileUploadProcessor,
-)
-from domain.data_management.constants import UploadFileStructure
 from data import models
+from domain.data_management.constants import UploadFileStructure
+from domain.data_management.upload_processors._base import BaseFileUploadProcessor
 
 
 class TeacherFileUploadProcessor(BaseFileUploadProcessor):

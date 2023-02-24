@@ -2,15 +2,16 @@
 Module containing unit tests for the FileUploadProcessor
 """
 
+
 # Third party imports
 import pandas as pd
 
 # Local application imports
+from domain.data_management.constants import FileStructure
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
 )
-from domain.data_management.constants import FileStructure
 
 
 class TestBaseFileUploadProcessor:

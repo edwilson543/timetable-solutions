@@ -2,8 +2,8 @@
 Module defining the data used by the solver, and how this data is accessed from the data layer
 """
 # Standard library imports
-from dataclasses import dataclass
 import datetime as dt
+from dataclasses import dataclass
 
 # Local application imports
 from data import models

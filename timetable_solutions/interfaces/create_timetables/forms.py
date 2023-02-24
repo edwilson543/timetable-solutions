@@ -2,6 +2,7 @@
 Forms related to allowing users to specify their requirements for how the timetable solutions are found
 """
 
+
 # Standard library imports
 import datetime as dt
 from typing import Any

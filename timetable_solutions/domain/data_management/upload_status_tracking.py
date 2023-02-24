@@ -3,6 +3,7 @@ Module used to track the status of user data uploads into the database, and enfo
 uploads cannot yet be uploaded.
 """
 
+
 # Standard library imports
 from dataclasses import dataclass
 from enum import StrEnum

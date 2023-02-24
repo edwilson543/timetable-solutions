@@ -2,6 +2,7 @@
 Unit tests for methods on the YearGroup class and YearGroupQuerySet class.
 """
 
+
 # Third party imports
 import pytest
 

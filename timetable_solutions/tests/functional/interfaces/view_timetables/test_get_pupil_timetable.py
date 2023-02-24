@@ -2,13 +2,15 @@
 import datetime as dt
 
 # Third party imports
-from django.contrib.auth import models as auth_models
-from django import test
 import pytest
 
+# Django imports
+from django import test
+from django.contrib.auth import models as auth_models
+
 # Local application imports
-from data.constants import Day
 from data import models
+from data.constants import Day
 from interfaces import constants as interfaces_constants
 from tests import data_factories
 

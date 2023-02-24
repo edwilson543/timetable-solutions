@@ -5,7 +5,9 @@ from django.urls import path
 
 # Local application imports
 from interfaces.constants import UrlName
+
 from . import views
+
 
 urlpatterns = [
     # BASE data upload page

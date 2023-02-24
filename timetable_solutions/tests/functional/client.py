@@ -1,7 +1,11 @@
-from django.contrib.auth import models as auth_models
+# Third party imports
 import django_webtest
 import pytest
 
+# Django imports
+from django.contrib.auth import models as auth_models
+
+# Local application imports
 from data import models
 from tests import data_factories
 

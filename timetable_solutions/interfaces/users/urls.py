@@ -1,10 +1,11 @@
 # Django imports
-from django.urls import include, re_path, path
+from django.urls import include, path, re_path
 
 # Local application imports
 from interfaces.constants import UrlName
-from . import htmx_views
-from . import views
+
+from . import htmx_views, views
+
 
 urlpatterns = [
     # Views relating to authentication
