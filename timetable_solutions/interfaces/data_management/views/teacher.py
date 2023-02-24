@@ -9,7 +9,7 @@ from data import models
 from domain.data_management.teachers import queries as teacher_queries
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import exceptions as teacher_exceptions
-from interfaces.data_management.views import base_views
+from interfaces.data_management.views import _base_search_view, _base_update_view
 from interfaces.data_management import forms
 from interfaces.constants import UrlName
 
@@ -28,7 +28,7 @@ class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):
         return context
 
 
-class TeacherSearch(base_views.SearchView):
+class TeacherSearch(_base_search_view.SearchView):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     # Django vars
@@ -59,7 +59,7 @@ class TeacherSearch(base_views.SearchView):
         )
 
 
-class TeacherUpdate(base_views.UpdateView):
+class TeacherUpdate(_base_update_view.UpdateView):
     """
     Page displaying information on a single teacher, and allowing this data to be updated.
     """
