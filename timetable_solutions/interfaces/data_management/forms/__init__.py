@@ -1,1 +1,1 @@
-from .teacher import TeacherSearch
+from .teacher import TeacherSearch, TeacherCreate, TeacherUpdate

@@ -7,7 +7,7 @@
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        list
+        add
     </li>
 {% endblock %}
 
@@ -15,16 +15,14 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>View and search for your teachers</h3>
+        <h3>Add a new teacher</h3>
     </div>
 </div>
 
 <div class="row mx-3 my-1">
     <div class="card p-1 my-3 col-lg-6">
-        {% include 'data_management/partials/forms/search-form.html' with form=form page_url=page_url %}
+        {% include 'data_management/partials/forms/create-form.html' with form=form %}
     </div>
 </div>
-
-{% include 'data_management/partials/tables/list-display-table.html' with search_term=form.search_term.value %}
 
 {% endblock %}

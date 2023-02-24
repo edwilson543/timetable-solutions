@@ -51,8 +51,6 @@ body, html {
 
 <body>
 
-{% include "includes/flash_messages.html" %}
-
     <!--Add the 'head strap'-->
     {% include "includes/new-headstrap.html" %}
 
@@ -68,6 +66,9 @@ body, html {
             </div>
 
             <div class="col-lg-9 page-container">
+                <div class="row">
+                    {% include "includes/flash_messages.html" %}
+                </div>
 
                 <!--Space for breadcrumbs-->
                 <nav aria-label="breadcrumb" class="p-2">

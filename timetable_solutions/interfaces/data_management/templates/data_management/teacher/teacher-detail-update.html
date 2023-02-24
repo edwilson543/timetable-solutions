@@ -7,7 +7,12 @@
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        list
+        <a href="{% url 'teacher-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        teacher id: {{ model_instance.teacher_id }}
     </li>
 {% endblock %}
 
@@ -15,16 +20,16 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>View and search for your teachers</h3>
+        <h3>View and update details for {{ model_instance }} </h3>
     </div>
 </div>
 
 <div class="row mx-3 my-1">
     <div class="card p-1 my-3 col-lg-6">
-        {% include 'data_management/partials/forms/search-form.html' with form=form page_url=page_url %}
+        {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
     </div>
 </div>
 
-{% include 'data_management/partials/tables/list-display-table.html' with search_term=form.search_term.value %}
+{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=model_instance.lessons.all %}
 
 {% endblock %}

@@ -50,6 +50,8 @@ class UrlName(StrEnum):
     # Teachers
     TEACHER_LANDING_PAGE = "teacher-landing-page"
     TEACHER_LIST = "teacher-list"
+    TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
+    TEACHER_CREATE = "teacher-create"
 
     # Data upload app
     FILE_UPLOAD_PAGE = "file_upload_page"

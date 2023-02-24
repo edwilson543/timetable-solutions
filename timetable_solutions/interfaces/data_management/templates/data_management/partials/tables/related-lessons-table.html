@@ -1,0 +1,61 @@
+<!--
+A table showing the lessons associate with a pupil, teacher or classroom
+------------------
+Context variables:
+------------------
+lessons: models.LessonQuerySet
+-->
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-12">
+        <div class="card-title p-2">
+            <h5>
+                Lessons
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover w-100 text-nowrap">
+                <thead>
+                    <tr>
+                        <th>Lesson ID</th>
+                        <th>Subject</th>
+                        <th>Year group</th>
+                        <th>Teacher</th>
+                        <th>Classroom</th>
+                        <th>Lessons / week</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lesson in lessons %}
+                        <tr>
+                            <td>
+                                {{ lesson.lesson_id }}
+                            </td>
+                            <td>
+                                {{ lesson.subject_name|title }}
+                            </td>
+                            <td>
+                                {{ lesson.get_associated_year_group }}
+                            </td>
+                            <td>
+                                {{ lesson.teacher }}
+                            </td>
+                            <td>
+                                {{ lesson.classroom }}
+                            </td>
+                            <td>
+                                {{ lesson.total_required_slots }}
+                            </td>
+                            <td class="py-1">
+                                <a href="" class="btn btn-secondary py-1">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

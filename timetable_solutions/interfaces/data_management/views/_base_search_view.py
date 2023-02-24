@@ -1,13 +1,15 @@
-"""View classes shared across the data management admin."""
-
 import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
-from django import http
+from django import forms as django_forms
 from django.contrib.auth import mixins
 from django.db import models as django_models
-from django import forms as django_forms
 from django.views import generic
+
+from interfaces.constants import UrlName
+from interfaces.utils.typing_utils import (
+    AuthenticatedHttpRequest,
+)
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -31,7 +33,7 @@ class SearchView(
     """The searching is done via GET requests, so disallow POST."""
 
     # Generic class vars
-    model: type[_ModelT]
+    model_class: type[_ModelT]
     """The model who's data is rendered on this page."""
 
     form_class: type[_SearchFormT]
@@ -42,6 +44,7 @@ class SearchView(
     """
     The fields to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
+    The first key should always be the model's id within the school field, e.g. 'teacher_id'.
     """
 
     search_help_text: ClassVar[str]
@@ -49,6 +52,12 @@ class SearchView(
 
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
+
+    update_url: ClassVar[UrlName]
+    """
+    URL to go through to the detail view of individual objects.
+    Needs reversing with an id kwarg in the template.
+    """
 
     # Instance vars
     school_id: int
@@ -74,12 +83,12 @@ class SearchView(
         """
         raise NotImplemented
 
-    def setup(self, request: http.HttpRequest, *args: object, **kwargs: object) -> None:
+    def setup(
+        self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object
+    ) -> None:
         """Set some instance attributes used in later logic."""
         super().setup(request, *args, **kwargs)
-        if request.user.is_authenticated:
-            self.school_id = request.user.profile.school.school_access_key
-
+        self.school_id = request.user.profile.school.school_access_key
         self.form = self.get_form()
 
     def get_form(self) -> _SearchFormT:
@@ -101,7 +110,7 @@ class SearchView(
                 *self.display_field_names
             )
         else:
-            return self.model.objects.get_all_instances_for_school(
+            return self.model_class.objects.get_all_instances_for_school(
                 school_id=self.school_id
             ).values_list(*self.display_field_names)
 
@@ -114,8 +123,9 @@ class SearchView(
         context = super().get_context_data(**kwargs)
 
         context["page_url"] = self.page_url
+        context["update_url"] = self.update_url
         context["human_field_names"] = self.human_field_names
-        context["model_class"] = self.model
+        context["model_class"] = self.model_class
         context["form"] = self.form
 
         return context

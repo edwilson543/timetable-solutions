@@ -9,7 +9,7 @@ CSS file to pair with django's flash messages framework
 
     /* Display */
     --start_height: -30px;
-    --end_height: 30px;
+    --end_height: 40px;
 
     --banner_width: 100vw;
     --banner_left_indent: 0vw;
@@ -50,7 +50,7 @@ CSS file to pair with django's flash messages framework
 /* ====================
 Animations
 ==================== */
-@keyframes error_drop_in {
+@keyframes message_drop_in {
     0% {
         position: static;
         z-index: var(--banner_z_index);
@@ -89,9 +89,11 @@ Components of the flash messages
     width: var(--banner_width);
     align-items: center;
     justify-content: center;
+    margin: 0;
+    padding: 0;
 
     /* Animations */
-    animation-name: error_drop_in;
+    animation-name: message_drop_in;
     animation-duration: var(--message_duration);
     animation-iteration-count: 1;
     animation-fill-mode: forwards;

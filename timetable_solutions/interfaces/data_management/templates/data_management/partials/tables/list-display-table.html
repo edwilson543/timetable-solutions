@@ -3,6 +3,7 @@ A table showing a list of objects with appropriate headers
 ------------------
 Context variables:
 ------------------
+form: base_forms.Search
 search_term: str | None  Must be explicitly passed to include
 object_list: list[dict[str, str]]
 human_field_names: list[str]
@@ -11,8 +12,11 @@ model_class: type[django_models.Model]
 <style>
 .fixed-width-column {
     {% with human_field_names|length as n_columns %}
-        width: calc(100% / {{ n_columns }});
+        width: calc(90% / {{ n_columns }});
     {% endwith %}
+}
+.view-column {
+    width: 10%;
 }
 </style>
 
@@ -24,7 +28,7 @@ model_class: type[django_models.Model]
 
 <!--        Explanatory text-->
         <div class="card-text">
-            {% if search_term and paginator.count > 0 %}
+            {% if search_term and paginator.count > 0 and not form.errors %}
                 <p>
                     <b>
                         Found {{ paginator.count }}
@@ -36,36 +40,59 @@ model_class: type[django_models.Model]
                         for search: "{{ search_term }}"
                     </b>
                 </p>
-            {% elif search_term %}
+            {% elif search_term and not form.errors %}
                 <p>
                     <b>Search for "{{ search_term }}" did not give any results!</b>
                 </p>
             {% else %}
                 <p>
-                    <b>Showing all {{ model_class.Constant.human_string_plural }}</b>
+                    {% if paginator.num_pages == 1 %}
+                        <b>Showing all {{ paginator.count }} {{ model_class.Constant.human_string_plural }}</b>
+                    {% else %}
+                        <b>
+                            Showing {{ model_class.Constant.human_string_plural }} {{ page_obj.start_index }} -
+                            {{ page_obj.end_index }} of {{ paginator.count }}
+                        </b>
+                    {% endif %}
                 </p>
             {% endif %}
         </div>
 
 <!--        Main display table-->
-        <table class="table table-striped table-hover w-100">
-            <thead>
-                <tr>
-                    {% for field_name in human_field_names %}
-                        <th class="fixed-width-column">{{ field_name }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for object_field_values in page_obj.object_list %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover w-100 text-nowrap">
+                <thead>
                     <tr>
-                        {% for field_value in object_field_values %}
-                            <td>{{ field_value }}</td>
+                        {% for field_name in human_field_names %}
+                            <th class="fixed-width-column">{{ field_name }}</th>
                         {% endfor %}
+                        <th class="view-column"></th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for object_field_values in page_obj.object_list %}
+                        {% with object_field_values.0 as id_within_school %}
+                            {% for field_value in object_field_values %}
+                                <td class="align-middle">
+                                    <a
+                                       href="{% url update_url id_within_school %}"
+                                       class="link-secondary text-decoration-none text-dark"
+                                    >
+                                    {{ field_value }}
+                                    </a>
+                                </td>
+                            {% endfor %}
+                                <td class="py-1">
+                                    <a href="{% url update_url id_within_school %}" class="btn btn-secondary py-1">
+                                        View
+                                    </a>
+                                </td>
+                        {% endwith %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
 <!--        Pagination-->
         {% if paginator.count > 0 %}

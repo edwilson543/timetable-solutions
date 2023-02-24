@@ -15,22 +15,17 @@ from django.db.models import ProtectedError
 # Local application imports
 from data import constants
 from data import models
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
-class TestTeacher:
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
+class TestTeacherFactories:
     def test_create_new_valid_teacher(self):
         """
         Tests that we can create and save a Teacher via the create_new method
         """
         # Make a school for the teacher to teach at
-        school = factories.School()
+        school = data_factories.School()
 
         # Try creating teacher using create_new
         teacher = models.Teacher.create_new(
@@ -51,7 +46,7 @@ class TestTeacher:
         Tests that we can cannot create two Teachers with the same id / school, due to unique_together on the Meta class
         """
         # Make a teacher to occupy an id value
-        teacher = factories.Teacher()
+        teacher = data_factories.Teacher()
 
         # Try making a teacher with the same school / id
         with pytest.raises(IntegrityError):
@@ -69,7 +64,7 @@ class TestTeacher:
         instances referencing the teachers as foreign keys.
         """
         # Get a teacher
-        teacher = factories.Teacher()
+        teacher = data_factories.Teacher()
 
         # Delete all the teachers at this teacher's school
         outcome = models.Teacher.delete_all_instances_for_school(
@@ -91,7 +86,7 @@ class TestTeacher:
         referencing the teachers we are trying to delete.
         """
         # Make a lesson with a teacher
-        lesson = factories.Lesson()
+        lesson = data_factories.Lesson()
         assert lesson.teacher
 
         # Try deleting all the lessons for a school
@@ -100,18 +95,40 @@ class TestTeacher:
                 school_id=lesson.school.school_access_key
             )
 
-    # --------------------
-    # Queries tests
-    # --------------------
 
+@pytest.mark.django_db
+class TestTeacherMutators:
+    @pytest.mark.parametrize("firstname", ["testname", None])
+    @pytest.mark.parametrize("surname", ["testnameson", None])
+    @pytest.mark.parametrize("title", ["mr", None])
+    def test_update_updates_teacher_details_with_params(
+        self, firstname: str, surname: str, title: str
+    ):
+        teacher = data_factories.Teacher()
+
+        teacher.update(firstname=firstname, surname=surname, title=title)
+
+        expected_firstname = firstname or teacher.firstname
+        expected_surname = surname or teacher.surname
+        expected_title = title or teacher.title
+
+        teacher.refresh_from_db()
+
+        assert teacher.firstname == expected_firstname
+        assert teacher.surname == expected_surname
+        assert teacher.title == expected_title
+
+
+@pytest.mark.django_db
+class TestTeacherQueries:
     def test_check_if_busy_at_time_of_timeslot_when_teacher_in_lesson_at_passed_slot(
         self,
     ):
         """Test that a teacher is busy if they're teaching at the exact passed lesson slot"""
         # Make a teacher who teaches a lesson fixed at some slot
-        teacher = factories.Teacher()
-        slot = factories.TimetableSlot(school=teacher.school)
-        factories.Lesson(
+        teacher = data_factories.Teacher()
+        slot = data_factories.TimetableSlot(school=teacher.school)
+        data_factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(slot,)
         )
 
@@ -126,9 +143,9 @@ class TestTeacher:
     ):
         """Test that a teacher is busy if they're on a break at the exact passed lesson slot"""
         # Make a teacher who teaches a lesson fixed at some slot
-        teacher = factories.Teacher()
-        slot = factories.TimetableSlot(school=teacher.school)
-        factories.Break(
+        teacher = data_factories.Teacher()
+        slot = data_factories.TimetableSlot(school=teacher.school)
+        data_factories.Break(
             school=teacher.school,
             teachers=models.Teacher.objects.filter(pk=teacher.pk),
             day_of_week=slot.day_of_week,
@@ -150,14 +167,14 @@ class TestTeacher:
         the exact same times as the passed slot
         """
         # Make a teacher who teaches a lesson fixed at some slot
-        teacher = factories.Teacher()
-        busy_slot = factories.TimetableSlot(school=teacher.school)
-        factories.Lesson(
+        teacher = data_factories.Teacher()
+        busy_slot = data_factories.TimetableSlot(school=teacher.school)
+        data_factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot with the exact same times (and day) to check business against
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=teacher.school,
             day_of_week=busy_slot.day_of_week,
             starts_at=busy_slot.starts_at,
@@ -176,18 +193,18 @@ class TestTeacher:
         slightly overlapping slots
         """
         # Make a teacher who teaches a lesson fixed at some slot
-        teacher = factories.Teacher()
-        busy_slot = factories.TimetableSlot(
+        teacher = data_factories.Teacher()
+        busy_slot = data_factories.TimetableSlot(
             school=teacher.school,
             starts_at=dt.time(hour=9),
             ends_at=dt.time(hour=10),
         )
-        factories.Lesson(
+        data_factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot with overlapping times (and same day) to check business against
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=teacher.school,
             day_of_week=busy_slot.day_of_week,
             starts_at=dt.time(hour=9, minute=30),
@@ -205,16 +222,16 @@ class TestTeacher:
         # Make a teacher who teaches a lesson fixed at some slot
         # The business isn't really necessary, but ensures teaching one lesson doesn't
         # make the teacher constantly 'busy'
-        teacher = factories.Teacher()
-        busy_slot = factories.TimetableSlot(
+        teacher = data_factories.Teacher()
+        busy_slot = data_factories.TimetableSlot(
             school=teacher.school, day_of_week=constants.Day.MONDAY
         )
-        factories.Lesson(
+        data_factories.Lesson(
             school=teacher.school, teacher=teacher, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot, which has a different day
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=teacher.school, day_of_week=constants.Day.TUESDAY
         )
 
@@ -229,7 +246,7 @@ class TestTeacher:
         Test that the correct number of lessons per week is retrieved for a teacher.
         """
         # Make a lesson (& teacher)
-        lesson = factories.Lesson()
+        lesson = data_factories.Lesson()
         teacher = lesson.teacher
 
         # Execute test unit

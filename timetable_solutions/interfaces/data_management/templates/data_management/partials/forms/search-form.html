@@ -1,0 +1,23 @@
+<!--
+A form with a single text entry search field, that also renders error messages
+------------------
+Context variables:
+------------------
+form: base_forms.Search
+page_url: str
+-->
+
+
+<form action="{{ page_url }}" method="get" class="p-1" id="search-form">
+
+    {% include 'partials/forms/non-field-errors.html' with form=form %}
+
+    {% include 'partials/forms/form-field.html' with field=form.search_term %}
+
+    <div class="d-flex flex-row">
+        <input type="submit" name="search-submit" value="Search" class="btn btn-success m-1">
+        <a href="{{ page_url }}" class="btn btn-secondary m-1">
+            Clear
+        </a>
+    </div>
+</form>

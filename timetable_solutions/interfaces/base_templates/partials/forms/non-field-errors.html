@@ -1,0 +1,22 @@
+<!--
+Styling of the non-field error messages shown in django forms.
+------------------
+Context variables:
+------------------
+form: django_forms.Form
+-->
+
+<style>
+    /* Style the error messages */
+    .alert ul {
+        margin-bottom: 0;
+        padding-left: 0;
+        list-style-type: none;
+    }
+</style>
+
+{% if form.non_field_errors %}
+    <div class="alert alert-danger p-2" role="alert">
+        {{ form.non_field_errors }}
+    </div>
+{% endif %}
