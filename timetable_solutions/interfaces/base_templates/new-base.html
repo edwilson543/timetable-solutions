@@ -52,7 +52,7 @@ body, html {
 <body>
 
     <!--Add the 'head strap'-->
-    {% include "includes/new-headstrap.html" %}
+    {% include "partials/base-template/headstrap.html" %}
 
     <div class="container-fluid h-100">
         <div class="row" style="min-height:100%;">
@@ -60,7 +60,7 @@ body, html {
 
                 <!--Add the navigation bar-->
                 {% if user.is_authenticated %}
-                    {% include "includes/new-navigation-bar.html" %}
+                    {% include "partials/base-template/navigation-bar.html" %}
                 {% endif %}
 
             </div>
@@ -92,7 +92,7 @@ body, html {
 
         <!--Add the footer-->
         <div class="row">
-            {% include "includes/new-footer.html" %}
+            {% include "partials/base-template/footer.html" %}
         </div>
 
     </div>
