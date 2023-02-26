@@ -19,24 +19,24 @@ from interfaces.data_management import forms
 from interfaces.data_management.views import (
     _base_create_view,
     _base_download_view,
+    _base_landing_page,
     _base_search_view,
     _base_update_view,
     _base_upload_view,
 )
 
 
-class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):
+class TeacherLanding(_base_landing_page.LandingView):
     """Page users arrive at from 'data/teachers' on the navbar."""
 
-    template_name = "data_management/teacher/landing-page.html"
-    http_method_names = ["get"]
+    model_class = models.Teacher
 
-    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
-        """Add some restrictive context for the template."""
-        context = super().get_context_data(**kwargs)
-        school = self.request.user.profile.school
-        context["has_existing_data"] = school.has_teacher_data
-        return context
+    upload_url = UrlName.TEACHER_UPLOAD
+    create_url = UrlName.TEACHER_CREATE
+    list_url = UrlName.TEACHER_LIST
+
+    def has_existing_data(self) -> bool:
+        return self.request.user.profile.school.has_teacher_data
 
 
 class TeacherSearch(_base_search_view.SearchView):
