@@ -10,4 +10,5 @@ field: django_forms.Field
     id="{{ field.id_for_label }}"
     class="form-control"
     aria-describedby="{{ field.id_for_label }}-help-text"
+    {% if field.field.required %}required{% endif %}
 >
