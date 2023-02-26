@@ -21,7 +21,13 @@ from .reset_views import (
     TimetableStructureReset,
     YearGroupReset,
 )
-from .teacher import TeacherCreate, TeacherLanding, TeacherSearch, TeacherUpdate
+from .teacher import (
+    TeacherCreate,
+    TeacherLanding,
+    TeacherSearch,
+    TeacherUpdate,
+    TeacherUpload,
+)
 from .upload_views import (
     BreaksUpload,
     ClassroomListUpload,

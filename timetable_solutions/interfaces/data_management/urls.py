@@ -8,7 +8,6 @@ from interfaces.constants import UrlName
 
 from . import views
 
-
 urlpatterns = [
     # BASE data upload page
     path("", views.UploadPage.as_view(), name=UrlName.FILE_UPLOAD_PAGE.value),
@@ -34,6 +33,11 @@ urlpatterns = [
         "teachers/list/<int:teacher_id>/",
         views.TeacherUpdate.as_view(),
         name=UrlName.TEACHER_UPDATE.value,
+    ),
+    path(
+        "teachers/upload/",
+        views.TeacherUpload.as_view(),
+        name=UrlName.TEACHER_UPLOAD.value,
     ),
     # --------------------
     # Data UPLOAD endpoints

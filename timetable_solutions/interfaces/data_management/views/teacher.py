@@ -9,15 +9,17 @@ from django.views import generic
 
 # Local application imports
 from data import models
+from domain.data_management import upload_processors
 from domain.data_management.teachers import exceptions as teacher_exceptions
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
-from interfaces.constants import UrlName
+from interfaces.constants import ExampleFile, UrlName
 from interfaces.data_management import forms
 from interfaces.data_management.views import (
     _base_create_view,
     _base_search_view,
     _base_update_view,
+    _base_upload_view,
 )
 
 
@@ -64,9 +66,7 @@ class TeacherSearch(_base_search_view.SearchView):
 
 
 class TeacherCreate(_base_create_view.CreateView):
-    """
-    Page allowing the users to create a single teacher.
-    """
+    """Page allowing the users to create a single teacher."""
 
     template_name = "data_management/teacher/teacher-create.html"
 
@@ -105,9 +105,7 @@ class TeacherCreate(_base_create_view.CreateView):
 
 
 class TeacherUpdate(_base_update_view.UpdateView):
-    """
-    Page displaying information on a single teacher, and allowing this data to be updated.
-    """
+    """Page displaying information on a single teacher, and allowing this data to be updated."""
 
     template_name = "data_management/teacher/teacher-detail-update.html"
 
@@ -134,3 +132,14 @@ class TeacherUpdate(_base_update_view.UpdateView):
             )
         except teacher_exceptions.CouldNotUpdateTeacher:
             return None
+
+
+class TeacherUpload(_base_upload_view.UploadView):
+    """Page allowing users to upload a csv file containing teacher data."""
+
+    template_name = "data_management/teacher/teacher-upload.html"
+    success_url = UrlName.TEACHER_LIST.url(lazy=True)
+
+    upload_processor_class = upload_processors.TeacherFileUploadProcessor
+    upload_url = UrlName.TEACHER_UPLOAD.url(lazy=True)
+    example_download_url = ExampleFile.TEACHERS.url()

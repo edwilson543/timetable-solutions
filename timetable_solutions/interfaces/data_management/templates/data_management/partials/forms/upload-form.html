@@ -5,9 +5,10 @@ Context variables:
 ------------------
 form: base_forms.BulkUpload
 upload_url: str
+download_url: str
 -->
 
-<form action="{{ upload_url }}" method="post" class="p-1" id="upload-form">
+<form enctype="multipart/form-data" action="{{ upload_url }}" method="post" class="p-1" id="upload-form">
 
     {% csrf_token %}
     {% include 'partials/forms/non-field-errors.html' with form=form %}
@@ -15,7 +16,7 @@ upload_url: str
 
     <div class="d-flex flex-row">
         <input type="submit" name="upload-submit" value="Upload" class="btn btn-success m-1">
-        <a href="{{ page_url }}" class="btn btn-secondary m-1">
+        <a href="{{ download_url }}" class="btn btn-secondary m-1">
             Download example
         </a>
     </div>
