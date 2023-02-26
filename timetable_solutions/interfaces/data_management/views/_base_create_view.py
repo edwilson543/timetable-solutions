@@ -14,7 +14,6 @@ from django.views import generic
 from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
-
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _CreateFormT = TypeVar("_CreateFormT", bound=django_forms.Form)
 
@@ -30,6 +29,7 @@ class CreateView(
 
     form_class: type[_CreateFormT]
     """Form used to update a model instance (overridden from django's FormView)"""
+
     # Ordinary class vars
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
@@ -42,6 +42,7 @@ class CreateView(
 
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
+
     # Instance vars
     school_id: int
     """The school who's data will be shown."""

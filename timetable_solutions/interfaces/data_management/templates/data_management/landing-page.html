@@ -2,7 +2,7 @@
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item active" aria-current="page">
-        teachers
+        {{ model_string_plural }}
     </li>
 {% endblock %}
 
@@ -18,13 +18,13 @@
         <div class="col-lg-6">
             <div class="card h-100 p-3">
                 <div class="card-title">
-                    <h3>Bulk upload teachers</h3>
+                    <h3>Bulk upload {{ model_string_plural }}</h3>
                 </div>
                 <div class="card-content d-flex flex-column justify-content-between h-100">
                     <p>
-                        Upload a file containing all or some of your teachers
+                        Upload a file containing all or some of your {{ model_string_plural }}
                     </p>
-                    <a class="btn btn-primary w-25">
+                    <a class="btn btn-primary w-25" href="{{ upload_url }}">
                         Add
                     </a>
                 </div>
@@ -34,13 +34,13 @@
         <div class="col-lg-6">
             <div class="card h-100 p-3">
                 <div class="card-title">
-                    <h3>Add single teacher</h3>
+                    <h3>Add single {{ model_string_singular }}</h3>
                 </div>
                 <div class="card-content d-flex flex-column justify-content-between h-100">
                     <p>
-                        Add data for a single teacher to your school
+                        Add data for a single {{ model_string_singular }} to your school
                     </p>
-                    <a class="btn btn-primary w-25" href="{% url 'teacher-create' %}">
+                    <a class="btn btn-primary w-25" href="{{ create_url }}">
                         Add
                     </a>
                 </div>
@@ -49,7 +49,7 @@
 
     </div>
 
-    <div class="row mx-3 my-3 gb-2">
+    <div class="row mx-3 my-3 gy-2">
 
         <div>
             <h2>Manage data</h2>
@@ -58,45 +58,21 @@
         <div class="col-lg-6">
             <div class="card h-100 p-3">
                 <div class="card-title">
-                    <h3>View teachers</h3>
+                    <h3>View {{ model_string_plural }}</h3>
                 </div>
                 <div class="card-content d-flex flex-column justify-content-between h-100">
                     <p>
-                        View details of all the teachers at your school.
+                        View details of all the {{ model_string_plural }} at your school.
                         You can also update all existing data
                     </p>
 
                     {% if has_existing_data %}
-                        <a class="btn btn-primary w-25"  href="{% url 'teacher-list' %}">
+                        <a class="btn btn-primary w-25"  href="{{ list_url }}">
                             View
                         </a>
                     {% else %}
                         <div class="alert alert-warning" role="alert">
                             No data to view
-                        </div>
-                    {% endif %}
-
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="card h-100 p-3">
-                <div class="card-title">
-                    <h3>Delete teacher data</h3>
-                </div>
-                <div class="card-content d-flex flex-column justify-content-between h-100">
-                    <p>
-                        Delete details for all teachers at your school
-                    </p>
-
-                     {% if has_existing_data %}
-                        <a class="btn btn-primary w-25"  href="{% url 'teacher-list' %}">
-                            Delete
-                        </a>
-                    {% else %}
-                        <div class="alert alert-warning" role="alert">
-                            No data to delete
                         </div>
                     {% endif %}
 

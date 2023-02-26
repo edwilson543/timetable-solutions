@@ -19,7 +19,7 @@ repos:
   rev: 5.12.0
   hooks:
   - id: isort
-    args: [--profile, black, --lines-before-imports=1, --lines-after-imports=2]
+    args: [--profile, black]
     name: isort (python)
 
     # Basic pre-commit hooks provided by default

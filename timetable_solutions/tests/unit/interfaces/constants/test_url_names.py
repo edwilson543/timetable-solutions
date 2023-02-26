@@ -14,7 +14,7 @@ class TestUrlName:
         [
             (UrlName.CREATE_TIMETABLES, "/create/"),
             (UrlName.DASHBOARD, "/users/dashboard/"),
-            (UrlName.FILE_UPLOAD_PAGE, "/data/"),
+            (UrlName.TEACHER_LIST, "/data/teachers/list/"),
         ],
     )
     def test_reverse_method_without_kwargs(self, member: UrlName, expected_url: str):

@@ -1,0 +1,83 @@
+{% extends 'new-base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
+            teachers
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        upload
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>Bulk add teachers</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        <div class="card-header">
+            <b>Upload a csv file with the required structure</b>
+        </div>
+        <div class="card-body">
+            {% include 'data_management/partials/forms/upload-form.html' with form=form upload_url=upload_url download_url=example_download_url %}
+        </div>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3">
+        <div class="card-header">
+            <b>Required file structure</b>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped w-100 text-nowrap">
+                <thead>
+                    <tr>
+                        <th>teacher_id</th>
+                        <th>firstname</th>
+                        <th>surname</th>
+                        <th>title</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Victor</td>
+                        <td>Hugo</td>
+                        <td>Monsieur</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <b>teacher_id*:</b> A positive integer (1, 2, 3, ...) used to identify this teacher.
+                Note that these must be unique
+            </li>
+            <li class="list-group-item">
+                <b>firstname*:</b> The teacher's firstname
+            </li>
+            <li class="list-group-item">
+                <b>firstname*:</b> The teacher's surname
+            </li>
+            <li class="list-group-item">
+                <b>title*:</b> The teacher's title (Mr / Mrs etc.)
+            </li>
+            <li class="list-group-item">
+                <i>*required - no empty values are allowed in these columns</i>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+<!--Documentation-->
+
+{% endblock %}

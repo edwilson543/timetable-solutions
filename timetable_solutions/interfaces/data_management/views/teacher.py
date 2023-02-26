@@ -9,6 +9,8 @@ from django.views import generic
 
 # Local application imports
 from data import models
+from domain.data_management import upload_processors
+from domain.data_management.constants import ExampleFile
 from domain.data_management.teachers import exceptions as teacher_exceptions
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
@@ -16,23 +18,25 @@ from interfaces.constants import UrlName
 from interfaces.data_management import forms
 from interfaces.data_management.views import (
     _base_create_view,
+    _base_download_view,
+    _base_landing_page,
     _base_search_view,
     _base_update_view,
+    _base_upload_view,
 )
 
 
-class TeacherLanding(mixins.LoginRequiredMixin, generic.TemplateView):
+class TeacherLanding(_base_landing_page.LandingView):
     """Page users arrive at from 'data/teachers' on the navbar."""
 
-    template_name = "data_management/teacher/landing-page.html"
-    http_method_names = ["get"]
+    model_class = models.Teacher
 
-    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
-        """Add some restrictive context for the template."""
-        context = super().get_context_data(**kwargs)
-        school = self.request.user.profile.school
-        context["has_existing_data"] = school.has_teacher_data
-        return context
+    upload_url = UrlName.TEACHER_UPLOAD
+    create_url = UrlName.TEACHER_CREATE
+    list_url = UrlName.TEACHER_LIST
+
+    def has_existing_data(self) -> bool:
+        return self.request.user.profile.school.has_teacher_data
 
 
 class TeacherSearch(_base_search_view.SearchView):
@@ -64,9 +68,7 @@ class TeacherSearch(_base_search_view.SearchView):
 
 
 class TeacherCreate(_base_create_view.CreateView):
-    """
-    Page allowing the users to create a single teacher.
-    """
+    """Page allowing the users to create a single teacher."""
 
     template_name = "data_management/teacher/teacher-create.html"
 
@@ -105,9 +107,7 @@ class TeacherCreate(_base_create_view.CreateView):
 
 
 class TeacherUpdate(_base_update_view.UpdateView):
-    """
-    Page displaying information on a single teacher, and allowing this data to be updated.
-    """
+    """Page displaying information on a single teacher, and allowing this data to be updated."""
 
     template_name = "data_management/teacher/teacher-detail-update.html"
 
@@ -134,3 +134,20 @@ class TeacherUpdate(_base_update_view.UpdateView):
             )
         except teacher_exceptions.CouldNotUpdateTeacher:
             return None
+
+
+class TeacherUpload(_base_upload_view.UploadView):
+    """Page allowing users to upload a csv file containing teacher data."""
+
+    template_name = "data_management/teacher/teacher-upload.html"
+    success_url = UrlName.TEACHER_LIST.url(lazy=True)
+
+    upload_processor_class = upload_processors.TeacherFileUploadProcessor
+    upload_url = UrlName.TEACHER_UPLOAD.url(lazy=True)
+    example_download_url = UrlName.TEACHER_DOWNLOAD.url(lazy=True)
+
+
+class TeacherExampleDownload(_base_download_view.ExampleDownloadBase):
+    """Provide a response when users want to download an example teacher data file."""
+
+    example_filepath = ExampleFile.TEACHERS.filepath
