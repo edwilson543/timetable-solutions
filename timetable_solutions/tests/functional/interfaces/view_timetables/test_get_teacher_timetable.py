@@ -1,22 +1,17 @@
+"""Tests for retrieval & construction of teacher timetables."""
+
 # Standard library imports
 import datetime as dt
-
-# Third party imports
-import pytest
-
-# Django imports
-from django import test
-from django.contrib.auth import models as auth_models
 
 # Local application imports
 from data import models
 from data.constants import Day
 from interfaces import constants as interfaces_constants
 from tests import data_factories
+from tests.functional.client import TestClient
 
 
-@pytest.mark.django_db
-class TestTeacherTimetable:
+class TestTeacherTimetable(TestClient):
     @staticmethod
     def get_teacher_with_timetable() -> models.Teacher:
         """Make sufficient data for retrieving a teacher's timetable to be viable"""
@@ -64,21 +59,15 @@ class TestTeacherTimetable:
         return teacher
 
     def test_access_teacher_timetable_page_contains_correct_timetable(self):
+        # Get a teacher with a timetable, and authorise our client to their school
         teacher = self.get_teacher_with_timetable()
-
-        # Create a user associated with the school and log them in
-        user = auth_models.User.objects.create_user(
-            username="testing", password="unhashed"
-        )
-        data_factories.Profile(school=teacher.school, user=user)
-        client = test.Client()
-        client.login(username=user.username, password="unhashed")
+        self.authorise_client_for_school(teacher.school)
 
         # Access the teacher's timetable with our client
         url = interfaces_constants.UrlName.TEACHER_TIMETABLE.url(
             teacher_id=teacher.teacher_id
         )
-        response = client.get(url)
+        response = self.client.get(url)
 
         assert response.status_code == 200
 

@@ -1,22 +1,17 @@
+"""Tests for retrieval & construction of pupil timetables."""
+
 # Standard library imports
 import datetime as dt
-
-# Third party imports
-import pytest
-
-# Django imports
-from django import test
-from django.contrib.auth import models as auth_models
 
 # Local application imports
 from data import models
 from data.constants import Day
 from interfaces import constants as interfaces_constants
 from tests import data_factories
+from tests.functional.client import TestClient
 
 
-@pytest.mark.django_db
-class TestPupilTimetable:
+class TestPupilTimetable(TestClient):
     @staticmethod
     def get_pupil_with_timetable() -> models.Pupil:
         """Make sufficient data for retrieving a pupil's timetable to be viable"""
@@ -64,19 +59,13 @@ class TestPupilTimetable:
         return pupil
 
     def test_access_pupil_timetable_page_contains_correct_timetable(self):
+        # Get a pupil with a timetable, and authorise our client to their school
         pupil = self.get_pupil_with_timetable()
+        self.authorise_client_for_school(pupil.school)
 
-        # Create a user associated with the school and log them in
-        user = auth_models.User.objects.create_user(
-            username="testing", password="unhashed"
-        )
-        data_factories.Profile(school=pupil.school, user=user)
-        client = test.Client()
-        client.login(username=user.username, password="unhashed")
-
-        # Access the pupil's timetable with our client
+        # Navigate to the pupil's timetable
         url = interfaces_constants.UrlName.PUPIL_TIMETABLE.url(pupil_id=pupil.pupil_id)
-        response = client.get(url)
+        response = self.client.get(url)
 
         assert response.status_code == 200
 
