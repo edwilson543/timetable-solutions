@@ -19,14 +19,21 @@ class UploadView(mixins.LoginRequiredMixin, generic.FormView):
 
     # Defaults
     form_class = forms.BulkUpload
+    """The form used to accept the uploaded file."""
 
     # Class vars set per subclass
     upload_processor_class: ClassVar[type[upload_processors.Processor]]
+    """Class used to process an uploaded csv file into the db, and handle any errors"""
+
     upload_url: ClassVar[str]
+    """The url where this file upload will be POSTed to."""
+
     example_download_url: ClassVar[str]
+    """The url used to serve the example file download for this file."""
 
     # Instance vars
     school_id: int
+    """The school that all of the processed data will be associated with."""
 
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object
