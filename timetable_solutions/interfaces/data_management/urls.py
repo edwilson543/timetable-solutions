@@ -39,6 +39,11 @@ urlpatterns = [
         views.TeacherUpload.as_view(),
         name=UrlName.TEACHER_UPLOAD.value,
     ),
+    path(
+        "teachers/download/",
+        views.TeacherExampleDownload.as_view(),
+        name="teacher-download",
+    ),
     # --------------------
     # Data UPLOAD endpoints
     # --------------------
@@ -117,43 +122,5 @@ urlpatterns = [
         "all_data_reset/",
         views.AllSchoolDataReset.as_view(),
         name=UrlName.ALL_DATA_RESET.value,
-    ),
-    # --------------------
-    # Data example DOWNLOAD endpoints
-    # --------------------
-    path(
-        "teacher_download/",
-        views.TeacherDownload.as_view(),
-        name=UrlName.TEACHER_DOWNLOAD.value,
-    ),
-    path(
-        "classroom_download/",
-        views.ClassroomDownload.as_view(),
-        name=UrlName.CLASSROOM_DOWNLOAD.value,
-    ),
-    path(
-        "year_group_download/",
-        views.YearGroupDownload.as_view(),
-        name=UrlName.YEAR_GROUP_DOWNLOAD.value,
-    ),
-    path(
-        "pupil_download/",
-        views.PupilDownload.as_view(),
-        name=UrlName.PUPIL_DOWNLOAD.value,
-    ),
-    path(
-        "timetable_download/",
-        views.TimetableDownload.as_view(),
-        name=UrlName.TIMETABLE_DOWNLOAD.value,
-    ),
-    path(
-        "lesson_download/",
-        views.LessonDownload.as_view(),
-        name=UrlName.LESSONS_DOWNLOAD.value,
-    ),
-    path(
-        "break_download",
-        views.BreakDownload.as_view(),
-        name=UrlName.BREAKS_DOWNLOAD.value,
     ),
 ]

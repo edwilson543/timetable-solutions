@@ -1,4 +1,5 @@
 # Standard library imports
+from pathlib import Path
 from typing import Any, ClassVar
 
 # Django imports
@@ -9,7 +10,6 @@ from django.views import generic
 
 # Local application imports
 from domain.data_management import upload_processors
-from interfaces.constants import UrlName
 from interfaces.data_management import forms
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 

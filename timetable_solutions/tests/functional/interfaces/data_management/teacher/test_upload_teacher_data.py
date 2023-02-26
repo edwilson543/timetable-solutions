@@ -8,7 +8,8 @@ from webtest import Upload
 
 # Local application imports
 from data import models
-from interfaces.constants import ExampleFile, UrlName
+from domain.data_management.constants import ExampleFile
+from interfaces.constants import UrlName
 from tests import data_factories
 from tests.functional.client import TestClient
 from tests.utils import get_csv_from_lists
@@ -87,3 +88,33 @@ class TestUploadTeacherData(TestClient):
         # Check no db content created
         teachers = models.Teacher.objects.all()
         assert teachers.count() == 0
+
+    def test_can_download_example_file_then_upload_it(self):
+        school = data_factories.School()
+        self.authorise_client_for_school(school)
+
+        # Navigate to the upload page
+        url = UrlName.TEACHER_UPLOAD.url()
+        page = self.client.get(url)
+
+        # Check response ok
+        assert page.status_code == 200
+
+        # Download the example file
+        file_response = page.click(href=UrlName.TEACHER_DOWNLOAD.url())
+
+        assert file_response.headers["Content-Type"] == "text/csv"
+        assert (
+            file_response.headers["Content-Disposition"]
+            == f'attachment; filename="{ExampleFile.TEACHERS.value}"'
+        )
+
+        # Re-upload the file
+        file = Upload(filename="teachers.csv", content=file_response.body)
+        form = page.forms["upload-form"]
+        form["csv_file"] = file
+        upload_response = form.submit()
+
+        # Check upload successful
+        assert models.Teacher.objects.count() > 0
+        assert upload_response.location == UrlName.TEACHER_LIST.url()

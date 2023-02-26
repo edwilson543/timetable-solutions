@@ -10,13 +10,15 @@ from django.views import generic
 # Local application imports
 from data import models
 from domain.data_management import upload_processors
+from domain.data_management.constants import ExampleFile
 from domain.data_management.teachers import exceptions as teacher_exceptions
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
-from interfaces.constants import ExampleFile, UrlName
+from interfaces.constants import UrlName
 from interfaces.data_management import forms
 from interfaces.data_management.views import (
     _base_create_view,
+    _base_download_view,
     _base_search_view,
     _base_update_view,
     _base_upload_view,
@@ -142,4 +144,10 @@ class TeacherUpload(_base_upload_view.UploadView):
 
     upload_processor_class = upload_processors.TeacherFileUploadProcessor
     upload_url = UrlName.TEACHER_UPLOAD.url(lazy=True)
-    example_download_url = ExampleFile.TEACHERS.url()
+    example_download_url = UrlName.TEACHER_DOWNLOAD.url(lazy=True)
+
+
+class TeacherExampleDownload(_base_download_view.ExampleDownloadBase):
+    """Provide a response when users want to download an example teacher data file."""
+
+    example_filepath = ExampleFile.TEACHERS.filepath

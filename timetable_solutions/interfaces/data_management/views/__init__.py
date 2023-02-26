@@ -2,15 +2,6 @@
 All views relating to the data upload page
 """
 from .data_upload_page import UploadPage
-from .download_views import (
-    BreakDownload,
-    ClassroomDownload,
-    LessonDownload,
-    PupilDownload,
-    TeacherDownload,
-    TimetableDownload,
-    YearGroupDownload,
-)
 from .reset_views import (
     AllSchoolDataReset,
     BreakReset,
@@ -23,6 +14,7 @@ from .reset_views import (
 )
 from .teacher import (
     TeacherCreate,
+    TeacherExampleDownload,
     TeacherLanding,
     TeacherSearch,
     TeacherUpdate,

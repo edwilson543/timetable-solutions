@@ -1,1 +1,1 @@
-from .url_names import ExampleFile, UrlName
+from .url_names import UrlName

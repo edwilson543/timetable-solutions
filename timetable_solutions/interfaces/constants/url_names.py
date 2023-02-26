@@ -2,9 +2,9 @@
 Module defining constants relating to urls.
 """
 
-
 # Standard library imports
 from enum import StrEnum
+from pathlib import Path
 
 # Django imports
 from django import urls
@@ -51,6 +51,7 @@ class UrlName(StrEnum):
     # --------------------
     # Teachers
     TEACHER_CREATE = "teacher-create"
+    TEACHER_DOWNLOAD = "teacher-download"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
     TEACHER_LIST = "teacher-list"
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
@@ -77,15 +78,6 @@ class UrlName(StrEnum):
     TEACHER_LIST_RESET = "teacher_reset"
     TIMETABLE_STRUCTURE_RESET = "timetable_reset"
     YEAR_GROUP_RESET = "year_group_reset"
-
-    # Example file download urls
-    BREAKS_DOWNLOAD = "breaks_download"
-    CLASSROOM_DOWNLOAD = "classroom_download"
-    LESSONS_DOWNLOAD = "lessons_download"
-    PUPIL_DOWNLOAD = "pupil_download"
-    TEACHER_DOWNLOAD = "teacher_download"
-    TIMETABLE_DOWNLOAD = "timetable_download"
-    YEAR_GROUP_DOWNLOAD = "year_group_download"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
@@ -118,19 +110,3 @@ class UrlName(StrEnum):
     # View timetables app
     LESSON_DETAIL = "lesson-detail"
     CLOSE_LESSON_DETAIL = "close-lesson-detail"
-
-
-class ExampleFile(StrEnum):
-    """Get the url for downloading the upload csv files."""
-
-    def url(self) -> str:
-        """Get the url a file can be downloaded from."""
-        return settings.MEDIA_ROOT + "/example_files/" + self
-
-    YEAR_GROUPS = "example_year_groups.csv"
-    PUPILS = "example_pupils.csv"
-    TEACHERS = "example_teachers.csv"
-    CLASSROOMS = "example_classrooms.csv"
-    TIMETABLE = "example_timetable.csv"
-    LESSON = "example_lessons.csv"
-    BREAK = "example_breaks.csv"
