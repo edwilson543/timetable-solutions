@@ -54,7 +54,7 @@ class CreateUpdate(forms.Form):
 class BulkUpload(forms.Form):
     """Base form for uploading a file to populate a db table with."""
 
-    csv_file = forms.FileField(required=True, label="Upload file")
+    csv_file = forms.FileField(required=True, label="Upload a file")
 
     def clean_csv_file(self) -> uploadedfile.SimpleUploadedFile:
         """Check the file has the correct extension."""
