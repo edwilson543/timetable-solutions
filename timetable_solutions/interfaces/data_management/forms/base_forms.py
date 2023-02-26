@@ -1,3 +1,5 @@
+"""Base forms that are subclassed or just used directly for managing individual models."""
+
 # Standard library imports
 from typing import Any
 

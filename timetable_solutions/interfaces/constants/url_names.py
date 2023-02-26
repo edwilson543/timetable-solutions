@@ -57,28 +57,6 @@ class UrlName(StrEnum):
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
     TEACHER_UPLOAD = "teacher-upload"
 
-    # Data upload app
-    FILE_UPLOAD_PAGE = "file_upload_page"
-
-    # File upload urls
-    BREAKS_UPLOAD = "breaks_upload"
-    CLASSROOM_LIST_UPLOAD = "classroom_upload"
-    LESSONS_UPLOAD = "lessons_upload"
-    PUPIL_LIST_UPLOAD = "pupil_upload"
-    TEACHER_LIST_UPLOAD = "teacher_upload"
-    TIMETABLE_STRUCTURE_UPLOAD = "timetable_upload"
-    YEAR_GROUP_UPLOAD = "year_group_upload"
-
-    # File upload reset urls
-    ALL_DATA_RESET = "all_data_reset"
-    BREAKS_RESET = "breaks_reset"
-    CLASSROOM_LIST_RESET = "classroom_reset"
-    LESSONS_RESET = "lessons_reset"
-    PUPIL_LIST_RESET = "pupil_reset"
-    TEACHER_LIST_RESET = "teacher_reset"
-    TIMETABLE_STRUCTURE_RESET = "timetable_reset"
-    YEAR_GROUP_RESET = "year_group_reset"
-
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 
