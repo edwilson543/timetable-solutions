@@ -7,8 +7,8 @@ Module defining constants relating to urls.
 from enum import StrEnum
 
 # Django imports
-# Django import
 from django import urls
+from django.conf import settings
 
 
 class UrlName(StrEnum):
@@ -50,10 +50,11 @@ class UrlName(StrEnum):
     # Data management
     # --------------------
     # Teachers
+    TEACHER_CREATE = "teacher-create"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
     TEACHER_LIST = "teacher-list"
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
-    TEACHER_CREATE = "teacher-create"
+    TEACHER_UPLOAD = "teacher-upload"
 
     # Data upload app
     FILE_UPLOAD_PAGE = "file_upload_page"
@@ -117,3 +118,19 @@ class UrlName(StrEnum):
     # View timetables app
     LESSON_DETAIL = "lesson-detail"
     CLOSE_LESSON_DETAIL = "close-lesson-detail"
+
+
+class ExampleFile(StrEnum):
+    """Get the url for downloading the upload csv files."""
+
+    def url(self) -> str:
+        """Get the url a file can be downloaded from."""
+        return settings.MEDIA_ROOT + "/example_files/" + self
+
+    YEAR_GROUPS = "example_year_groups.csv"
+    PUPILS = "example_pupils.csv"
+    TEACHERS = "example_teachers.csv"
+    CLASSROOMS = "example_classrooms.csv"
+    TIMETABLE = "example_timetable.csv"
+    LESSON = "example_lessons.csv"
+    BREAK = "example_breaks.csv"
