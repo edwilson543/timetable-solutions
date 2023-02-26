@@ -46,7 +46,7 @@ class TestCreateUpdate:
 
 
 class TestBulkUpload:
-    @pytest.fixture(scope="class")
+    @pytest.fixture
     def csv_buffer(self) -> io.BytesIO:
         return get_csv_from_lists([["header", "some_other_header"], [1, 2]])
 
