@@ -36,6 +36,7 @@ class UpdateView(
 
     form_class: type[_UpdateFormT]
     """Form used to update a model instance (overridden from django's FormView)"""
+
     # Ordinary class vars
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
@@ -50,12 +51,12 @@ class UpdateView(
     """
 
     enabled_form_template_name = "data_management/partials/forms/update-form.html"
-
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following
     a htmx get request sent from an "Edit" button.
     """
+
     # Instance vars
     school_id: int
     """The school who's data will be shown."""
