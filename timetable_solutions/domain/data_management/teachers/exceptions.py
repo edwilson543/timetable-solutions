@@ -11,3 +11,9 @@ class CouldNotUpdateTeacher(Exception):
     """Raised if a teacher cannot be updated in the database."""
 
     pass
+
+
+class CouldNotDeleteTeacher(Exception):
+    """Raised if a teacher cannot be deleted in the database."""
+
+    pass

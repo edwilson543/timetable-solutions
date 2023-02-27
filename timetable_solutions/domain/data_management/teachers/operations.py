@@ -1,9 +1,5 @@
 """Operations on the Teacher model affecting db state."""
 
-# Django imports
-from django.core import exceptions as django_exceptions
-from django.db import IntegrityError
-
 # Local application imports
 from data import models
 
@@ -28,7 +24,7 @@ def create_new_teacher(
             surname=surname,
             title=title,
         )
-    except (IntegrityError, django_exceptions.ValidationError):
+    except Exception:
         raise exceptions.CouldNotCreateTeacher
 
 
@@ -42,8 +38,23 @@ def update_teacher(
     """
     Update a teacher in the db.
 
+    raises CouldNotUpdateTeacher if it wasn't possible.
     """
     try:
         return teacher.update(firstname=firstname, surname=surname, title=title)
-    except django_exceptions.ValidationError:
-        raise exceptions.CouldNotCreateTeacher
+    except Exception:
+        raise exceptions.CouldNotUpdateTeacher
+
+
+def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
+    """
+    Delete a teacher in the db.
+
+    :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
+    of that model that were deleted.
+    :raises CouldNotDeleteTeacher: If the teacher couldn't be deleted (e.g due to a protected foreign key)
+    """
+    try:
+        return teacher.delete()
+    except Exception:
+        raise exceptions.CouldNotDeleteTeacher
