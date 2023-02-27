@@ -7,6 +7,7 @@ from typing import Any
 from django import forms as django_forms
 
 # Local application imports
+from data import models
 from domain.data_management.teachers import queries
 
 from . import base_forms
@@ -71,3 +72,17 @@ class TeacherCreate(_TeacherCreateUpdateBase):
                 f"The next available id is: {next_available_id}"
             )
         return teacher_id
+
+
+class TeacherDelete(base_forms.Delete):
+    """Form to delete a single teacher with."""
+
+    model_instance: models.Teacher
+
+    def clean(self) -> dict[str, Any]:
+        """Validate that the teacher has no lessons."""
+        if self.model_instance.lessons.exists():
+            raise django_forms.ValidationError(
+                "This teacher is still assigned to at least one lesson!"
+            )
+        return self.cleaned_data

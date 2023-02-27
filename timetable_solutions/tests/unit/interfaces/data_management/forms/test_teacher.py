@@ -69,3 +69,20 @@ class TestTeacherCreate:
 
         assert f"Teacher with id: {teacher.teacher_id} already exists!" in errors
         assert f"The next available id is: 123456" in errors
+
+
+@pytest.mark.django_db
+class TestTeacherDelete:
+    def test_form_valid_if_teacher_has_no_lessons(self):
+        teacher = data_factories.Teacher()
+
+        form = forms.TeacherDelete(model_instance=teacher)
+
+        assert form.is_valid()
+
+    def test_form_invalid_if_teacher_has_lessons(self):
+        teacher = data_factories.Teacher()
+
+        form = forms.TeacherDelete(model_instance=teacher)
+
+        assert not form.is_valid()
