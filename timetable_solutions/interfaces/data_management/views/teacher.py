@@ -102,10 +102,12 @@ class TeacherUpdate(base_views.UpdateView):
 
     model_class = models.Teacher
     form_class = forms.TeacherUpdate
+    deletion_form_class = forms.TeacherDelete
 
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]
     page_url_prefix = UrlName.TEACHER_UPDATE
+    delete_url_prefix = UrlName.TEACHER_DELETE
 
     def update_model_from_clean_form(
         self, form: forms.TeacherUpdate
@@ -123,6 +125,10 @@ class TeacherUpdate(base_views.UpdateView):
             )
         except teacher_exceptions.CouldNotUpdateTeacher:
             return None
+
+    def deletion_form_is_disabled(self) -> bool:
+        """Disabled if the teacher has any lessons."""
+        return self.model_instance.lessons.all().exists()
 
 
 class TeacherUpload(base_views.UploadView):

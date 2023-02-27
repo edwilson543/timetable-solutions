@@ -3,7 +3,6 @@ import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
 # Django imports
-from django import forms as django_forms
 from django import http
 from django.contrib import messages
 from django.contrib.auth import mixins
@@ -13,31 +12,31 @@ from django.views import generic
 
 # Local application imports
 from interfaces.constants import UrlName
+from interfaces.data_management.forms import base_forms
 from interfaces.utils.typing_utils import (
     AuthenticatedHtmxRequest,
     AuthenticatedHttpRequest,
 )
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_UpdateFormT = TypeVar("_UpdateFormT", bound=django_forms.Form)
 
 
-class UpdateView(
-    mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _UpdateFormT]
-):
+class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     """
     Page displaying a school's data for a single instance of a model,
     and allowing this data to be updated.
     """
 
-    # Generic class vars
+    # Class vars
     model_class: type[_ModelT]
     """The model we are updating an instance of."""
 
-    form_class: type[_UpdateFormT]
+    form_class: type[base_forms.CreateUpdate]
     """Form used to update a model instance (overridden from django's FormView)"""
 
-    # Ordinary class vars
+    deletion_form_class: type[base_forms.Delete]
+    """Form used to delete the model instance."""
+
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
 
@@ -49,6 +48,9 @@ class UpdateView(
     Prefix of this page's url - where the search form should be submitted.
     The full url is constructed as page_url_prefix/<model_instance_id>.
     """
+
+    delete_url_prefix: ClassVar[UrlName]
+    """URL prefix of the page to post to, to delete the model instance."""
 
     enabled_form_template_name = "data_management/partials/forms/update-form.html"
     """
@@ -68,12 +70,19 @@ class UpdateView(
     """Id of the model instance, within the context of the school."""
 
     @abc.abstractmethod
-    def update_model_from_clean_form(self, form: _UpdateFormT) -> _ModelT | None:
+    def update_model_from_clean_form(
+        self, form: base_forms.CreateUpdate
+    ) -> _ModelT | None:
         """
         Method used to try to update the target model instance from a clean form.
 
         Should handle any exceptions, and return None if an instance could not be created.
         """
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def deletion_form_is_disabled(self) -> bool:
+        """Whether the deletion form should be rendered as disabled (to prevent deletion)..."""
         raise NotImplemented
 
     # --------------------
@@ -93,7 +102,7 @@ class UpdateView(
         else:
             return super().get(request=request, *args, **kwargs)
 
-    def form_valid(self, form: _UpdateFormT) -> http.HttpResponse:
+    def form_valid(self, form: base_forms.CreateUpdate) -> http.HttpResponse:
         """Use the form to update the relevant data."""
         if form.is_valid():
             if new_instance := self.update_model_from_clean_form(form=form):
@@ -129,6 +138,13 @@ class UpdateView(
         context = super().get_context_data(**kwargs)
         context["model_instance"] = self.model_instance
         context["page_url"] = self.page_url
+
+        context["deletion_form"] = self.deletion_form_class(
+            model_instance=self.model_instance
+        )
+        context["deletion_form_is_disabled"] = self.deletion_form_is_disabled()
+        context["delete_url"] = self.delete_url
+
         return context
 
     def get_success_url(self) -> str:
@@ -174,5 +190,12 @@ class UpdateView(
     def page_url(self) -> str:
         """Construct the full page url."""
         return self.page_url_prefix.url(
+            lazy=False, **{self.object_id_name: self.model_instance_id}
+        )
+
+    @property
+    def delete_url(self) -> str:
+        """Construct the full url to POST to, to delete the model instance."""
+        return self.delete_url_prefix.url(
             lazy=False, **{self.object_id_name: self.model_instance_id}
         )

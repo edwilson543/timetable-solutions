@@ -25,8 +25,24 @@
 </div>
 
 <div class="row mx-3 my-1">
-    <div class="card p-1 my-3 col-lg-6">
-        {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card">
+            {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+        </div>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card p-1">
+            <div class="card-content">
+                <p class="mx-1">
+                    Tick confirm to delete. Note you must first delete or reassign any lessons
+                    the teacher has.
+                </p>
+                {% include 'data_management/partials/forms/delete-form.html' with form=form %}
+            </div>
+        </div>
     </div>
 </div>
 

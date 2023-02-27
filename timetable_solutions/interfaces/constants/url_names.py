@@ -51,6 +51,7 @@ class UrlName(StrEnum):
     # --------------------
     # Teachers
     TEACHER_CREATE = "teacher-create"
+    TEACHER_DELETE = "teacher-delete"
     TEACHER_DOWNLOAD = "teacher-download"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
     TEACHER_LIST = "teacher-list"
