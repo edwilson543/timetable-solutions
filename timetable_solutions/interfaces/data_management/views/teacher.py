@@ -3,10 +3,6 @@
 # Standard library imports
 from typing import Any
 
-# Django imports
-from django.contrib.auth import mixins
-from django.views import generic
-
 # Local application imports
 from data import models
 from domain.data_management import upload_processors
@@ -16,17 +12,10 @@ from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms
-from interfaces.data_management.views import (
-    _base_create_view,
-    _base_download_view,
-    _base_landing_page,
-    _base_search_view,
-    _base_update_view,
-    _base_upload_view,
-)
+from interfaces.data_management.views import base_views
 
 
-class TeacherLanding(_base_landing_page.LandingView):
+class TeacherLanding(base_views.LandingView):
     """Page users arrive at from 'data/teachers' on the navbar."""
 
     model_class = models.Teacher
@@ -39,7 +28,7 @@ class TeacherLanding(_base_landing_page.LandingView):
         return self.request.user.profile.school.has_teacher_data
 
 
-class TeacherSearch(_base_search_view.SearchView):
+class TeacherSearch(base_views.SearchView):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     template_name = "data_management/teacher/teacher-list.html"
@@ -67,7 +56,7 @@ class TeacherSearch(_base_search_view.SearchView):
         )
 
 
-class TeacherCreate(_base_create_view.CreateView):
+class TeacherCreate(base_views.CreateView):
     """Page allowing the users to create a single teacher."""
 
     template_name = "data_management/teacher/teacher-create.html"
@@ -106,7 +95,7 @@ class TeacherCreate(_base_create_view.CreateView):
         return kwargs
 
 
-class TeacherUpdate(_base_update_view.UpdateView):
+class TeacherUpdate(base_views.UpdateView):
     """Page displaying information on a single teacher, and allowing this data to be updated."""
 
     template_name = "data_management/teacher/teacher-detail-update.html"
@@ -136,7 +125,7 @@ class TeacherUpdate(_base_update_view.UpdateView):
             return None
 
 
-class TeacherUpload(_base_upload_view.UploadView):
+class TeacherUpload(base_views.UploadView):
     """Page allowing users to upload a csv file containing teacher data."""
 
     template_name = "data_management/teacher/teacher-upload.html"
@@ -147,7 +136,7 @@ class TeacherUpload(_base_upload_view.UploadView):
     example_download_url = UrlName.TEACHER_DOWNLOAD.url(lazy=True)
 
 
-class TeacherExampleDownload(_base_download_view.ExampleDownloadBase):
+class TeacherExampleDownload(base_views.ExampleDownloadBase):
     """Provide a response when users want to download an example teacher data file."""
 
     example_filepath = ExampleFile.TEACHERS.filepath

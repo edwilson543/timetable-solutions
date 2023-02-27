@@ -18,7 +18,6 @@ from interfaces.utils.typing_utils import (
     AuthenticatedHttpRequest,
 )
 
-
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _UpdateFormT = TypeVar("_UpdateFormT", bound=django_forms.Form)
 

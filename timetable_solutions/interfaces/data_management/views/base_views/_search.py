@@ -12,7 +12,6 @@ from django.views import generic
 from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
-
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
 
