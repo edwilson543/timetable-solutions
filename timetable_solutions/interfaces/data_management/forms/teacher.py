@@ -83,6 +83,7 @@ class TeacherDelete(base_forms.Delete):
         """Validate that the teacher has no lessons."""
         if self.model_instance.lessons.exists():
             raise django_forms.ValidationError(
-                "This teacher is still assigned to at least one lesson!"
+                "This teacher is still assigned to at least one lesson!\n"
+                "To delete this teacher, first delete or reassign their lessons"
             )
         return self.cleaned_data

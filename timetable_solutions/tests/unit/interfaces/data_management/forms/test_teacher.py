@@ -76,7 +76,7 @@ class TestTeacherDelete:
     def test_form_valid_if_teacher_has_no_lessons(self):
         teacher = data_factories.Teacher()
 
-        form = forms.TeacherDelete(model_instance=teacher)
+        form = forms.TeacherDelete(model_instance=teacher, data={})
 
         assert form.is_valid()
 
