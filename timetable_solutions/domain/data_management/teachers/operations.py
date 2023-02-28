@@ -1,5 +1,10 @@
 """Operations on the Teacher model affecting db state."""
 
+# Django imports
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
+from django.db.models import ProtectedError
+
 # Local application imports
 from data import models
 
@@ -24,8 +29,8 @@ def create_new_teacher(
             surname=surname,
             title=title,
         )
-    except Exception:
-        raise exceptions.CouldNotCreateTeacher
+    except (IntegrityError, ValidationError) as exc:
+        raise exceptions.CouldNotCreateTeacher from exc
 
 
 def update_teacher(
@@ -42,8 +47,8 @@ def update_teacher(
     """
     try:
         return teacher.update(firstname=firstname, surname=surname, title=title)
-    except Exception:
-        raise exceptions.CouldNotUpdateTeacher
+    except ValidationError as exc:
+        raise exceptions.CouldNotUpdateTeacher from exc
 
 
 def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
@@ -56,5 +61,5 @@ def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
     """
     try:
         return teacher.delete()
-    except Exception:
-        raise exceptions.CouldNotDeleteTeacher
+    except ProtectedError as exc:
+        raise exceptions.CouldNotDeleteTeacher from exc
