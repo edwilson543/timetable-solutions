@@ -20,28 +20,16 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>View and update details for {{ model_instance }} </h3>
+        <h3>
+            View and update details for {{ model_instance }}
+        </h3>
     </div>
 </div>
 
 <div class="row mx-3 my-1">
     <div class="col-lg-6 my-3 p-1">
-        <div class="card">
+        <div class="card p-2">
             {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
-        </div>
-    </div>
-</div>
-
-<div class="row mx-3 my-1">
-    <div class="col-lg-6 my-3 p-1">
-        <div class="card p-1">
-            <div class="card-content">
-                <p class="mx-1">
-                    Tick confirm to delete. Note you must first delete or reassign any lessons
-                    the teacher has.
-                </p>
-                {% include 'data_management/partials/forms/delete-form.html' with form=form %}
-            </div>
         </div>
     </div>
 </div>

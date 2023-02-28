@@ -1,2 +1,2 @@
 from .base_forms import BulkUpload
-from .teacher import TeacherCreate, TeacherDelete, TeacherSearch, TeacherUpdate
+from .teacher import TeacherCreate, TeacherSearch, TeacherUpdate

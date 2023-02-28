@@ -50,7 +50,7 @@ class TestTeacherUpdate(TestClient):
         form["surname"] = "Wilson"
         form["title"] = "Mr"
 
-        response = form.submit()
+        response = form.submit(name="update-submit")
 
         # Check response ok and teacher details updated
         assert response.status_code == 302

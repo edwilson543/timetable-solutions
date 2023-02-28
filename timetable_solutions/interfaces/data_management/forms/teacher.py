@@ -72,18 +72,3 @@ class TeacherCreate(_TeacherCreateUpdateBase):
                 f"The next available id is: {next_available_id}"
             )
         return teacher_id
-
-
-class TeacherDelete(base_forms.Delete):
-    """Form to delete a single teacher with."""
-
-    model_instance: models.Teacher
-
-    def clean(self) -> dict[str, Any]:
-        """Validate that the teacher has no lessons."""
-        if self.model_instance.lessons.exists():
-            raise django_forms.ValidationError(
-                "This teacher is still assigned to at least one lesson!\n"
-                "To delete this teacher, first delete or reassign their lessons"
-            )
-        return self.cleaned_data

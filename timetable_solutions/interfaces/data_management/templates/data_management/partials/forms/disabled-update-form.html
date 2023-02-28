@@ -5,25 +5,39 @@ Context variables:
 ------------------
 form: base_forms.CreateUpdate
 page_url: str
+deletion_error_message: str
 -->
+<div id="edit-delete-wrapper">
 
-<form
-    hx-get="{{ page_url }}"
-    hx-target=this
-    hx-swap="outerHTML"
-    id="disabled-change-form"
-    class="p-1"
->
+    <!--    The disabled update form-->
+    <form hx-get="{{ page_url }}" hx-target="#edit-delete-wrapper" hx-swap="outerHTML" id="disabled-change-form">
+        {% include 'partials/forms/non-field-errors.html' with form=form %}
 
-    {% include 'partials/forms/non-field-errors.html' with form=form %}
+        {% if deletion_error_message %}
+            <div class="alert alert-danger p-2" role="alert">{{ deletion_error_message }}</div>
+        {% endif %}
 
-    <fieldset disabled>
-        {% for field in form %}
-            {% include 'partials/forms/form-field.html' with field=field only %}
-        {% endfor %}
-    </fieldset>
-    <button type="submit" id="hx-make-editable" class="btn btn-success m-1">
-        Edit
-    </button>
+        <fieldset disabled>
+            {% for field in form %}
+                {% include 'partials/forms/form-field.html' with field=field only %}
+            {% endfor %}
+        </fieldset>
+    </form>
 
-</form>
+    <!--The delete form-->
+    <form id="delete-form" method="post" action="{{ page_url }}">
+        {% csrf_token %}
+        <input type="hidden" name="delete-submit">
+    </form>
+
+    <!--The control buttons-->
+    <div>
+        <button form="disabled-change-form" type="submit" class="btn btn-success m-1">
+            Edit
+        </button>
+        <button form="delete-form" type="submit" onclick="return confirm('Really delete?')" class="btn btn-danger m-1">
+            Delete
+        </button>
+    </div>
+
+</div>

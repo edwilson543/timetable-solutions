@@ -70,14 +70,3 @@ class BulkUpload(forms.Form):
                 "The given file had no file extension. Please provide a .csv file!"
             )
         return file
-
-
-class Delete(forms.Form):
-    """Form to confirm deleting a single a model instance."""
-
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        """Set the model instance we are deleting as an instance attribute."""
-        self.model_instance = kwargs.pop("model_instance")
-        super().__init__(*args, **kwargs)
-
-    confirm = forms.BooleanField(required=True, label="Confirm deletion")
