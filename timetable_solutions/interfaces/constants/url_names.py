@@ -4,11 +4,9 @@ Module defining constants relating to urls.
 
 # Standard library imports
 from enum import StrEnum
-from pathlib import Path
 
 # Django imports
 from django import urls
-from django.conf import settings
 
 
 class UrlName(StrEnum):
@@ -51,7 +49,6 @@ class UrlName(StrEnum):
     # --------------------
     # Teachers
     TEACHER_CREATE = "teacher-create"
-    TEACHER_DELETE = "teacher-delete"
     TEACHER_DOWNLOAD = "teacher-download"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
     TEACHER_LIST = "teacher-list"
