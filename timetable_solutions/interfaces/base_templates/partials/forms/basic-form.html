@@ -1,0 +1,43 @@
+<!--
+A form with some fields, a submit button and some other button
+------------------
+Context variables:
+------------------
+enctype: str = 'application/x-www-form-urlencoded'
+form: django_forms.Form
+form_id: str
+method: str = 'post'
+submit_url: str
+submit_name: str
+submit_text: str
+other_button_url: str | None = None
+other_button_text: str | None = None
+-->
+
+<form
+    enctype="{{ enctype|default:'application/x-www-form-urlencoded' }}"
+    method="{{ method|default:'post' }}"
+    action="{{ submit_url }}"
+    id="{{ form_id }}"
+    class="p-1"
+>
+
+    {% if not method|lower == "get" %}
+        {% csrf_token %}
+    {% endif %}
+
+    {% include 'partials/forms/non-field-errors.html' with form=form %}
+
+    {% for field in form %}
+        {% include 'partials/forms/form-field.html' with field=field only %}
+    {% endfor %}
+
+    <input type="submit" name="{{ submit_name|default:'submit' }}" value="{{ submit_text }}" class="btn btn-success m-1">
+
+    {% if other_button_url and other_button_text %}
+        <a href="{{ other_button_url }}" class="btn btn-secondary m-1">
+            {{ other_button_text }}
+        </a>
+    {% endif %}
+
+</form>

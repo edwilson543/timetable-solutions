@@ -54,7 +54,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     delete_success_url: ClassVar[str]
     """URL to redirect to following a successful deletion."""
 
-    enabled_form_template_name = "data_management/partials/forms/update-form.html"
+    enabled_form_template_name = "partials/forms/basic-form.html"
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following
@@ -167,7 +167,15 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     def _get_htmx_response(self) -> http.HttpResponse:
         """Get an editable update form partial."""
         template = loader.get_template(template_name=self.enabled_form_template_name)
-        context = self.get_context_data()
+        context = {
+            "form": self.get_form(),
+            "form_id": "update-form",
+            "submit_url": self.page_url,
+            "submit_name": _UPDATE_SUBMIT,
+            "submit_text": "Update",
+            "other_button_url": self.page_url,
+            "other_button_text": "Revert",
+        }
         return http.HttpResponse(template.render(context=context, request=self.request))
 
     def _get_object_or_404(self, model_instance_id: int | str) -> _ModelT:
