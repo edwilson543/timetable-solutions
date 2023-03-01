@@ -7,7 +7,7 @@ form: base_forms.CreateUpdate
 page_url: str
 deletion_error_message: str
 -->
-<div id="edit-delete-wrapper">
+<div id="edit-delete-wrapper" class="p-1">
 
     <!--    The disabled update form-->
     <form hx-get="{{ page_url }}" hx-target="#edit-delete-wrapper" hx-swap="outerHTML" id="disabled-change-form">
