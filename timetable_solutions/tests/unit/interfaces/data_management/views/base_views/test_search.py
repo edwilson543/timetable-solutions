@@ -1,11 +1,11 @@
 # Local application imports
-from interfaces.data_management.views import _base_search_view
+from interfaces.data_management.views import base_views
 
 
 class TestSearchViewProperties:
     """Tests for the properties defined on the SearchView class."""
 
-    class FakeSearchView(_base_search_view.SearchView):
+    class FakeSearchView(base_views.SearchView):
         displayed_fields = {
             "test_field_one": "Test Field One",
             "test_field_two": "Test Field Two",

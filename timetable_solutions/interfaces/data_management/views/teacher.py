@@ -4,8 +4,8 @@
 from typing import Any
 
 # Django imports
-from django.contrib.auth import mixins
-from django.views import generic
+from django import http
+from django.contrib import messages
 
 # Local application imports
 from data import models
@@ -16,17 +16,10 @@ from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms
-from interfaces.data_management.views import (
-    _base_create_view,
-    _base_download_view,
-    _base_landing_page,
-    _base_search_view,
-    _base_update_view,
-    _base_upload_view,
-)
+from interfaces.data_management.views import base_views
 
 
-class TeacherLanding(_base_landing_page.LandingView):
+class TeacherLanding(base_views.LandingView):
     """Page users arrive at from 'data/teachers' on the navbar."""
 
     model_class = models.Teacher
@@ -39,7 +32,7 @@ class TeacherLanding(_base_landing_page.LandingView):
         return self.request.user.profile.school.has_teacher_data
 
 
-class TeacherSearch(_base_search_view.SearchView):
+class TeacherSearch(base_views.SearchView):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     template_name = "data_management/teacher/teacher-list.html"
@@ -67,7 +60,7 @@ class TeacherSearch(_base_search_view.SearchView):
         )
 
 
-class TeacherCreate(_base_create_view.CreateView):
+class TeacherCreate(base_views.CreateView):
     """Page allowing the users to create a single teacher."""
 
     template_name = "data_management/teacher/teacher-create.html"
@@ -106,8 +99,8 @@ class TeacherCreate(_base_create_view.CreateView):
         return kwargs
 
 
-class TeacherUpdate(_base_update_view.UpdateView):
-    """Page displaying information on a single teacher, and allowing this data to be updated."""
+class TeacherUpdate(base_views.UpdateView):
+    """Page displaying information on a single teacher, allowing this data to be updated / deleted."""
 
     template_name = "data_management/teacher/teacher-detail-update.html"
 
@@ -117,6 +110,7 @@ class TeacherUpdate(_base_update_view.UpdateView):
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]
     page_url_prefix = UrlName.TEACHER_UPDATE
+    delete_success_url = UrlName.TEACHER_LIST.url(lazy=True)
 
     def update_model_from_clean_form(
         self, form: forms.TeacherUpdate
@@ -135,8 +129,24 @@ class TeacherUpdate(_base_update_view.UpdateView):
         except teacher_exceptions.CouldNotUpdateTeacher:
             return None
 
+    def delete_model_instance(self) -> http.HttpResponse:
+        """Delete the Teacher stored as an instance attribute."""
+        try:
+            msg = f"{self.model_instance} was deleted."
+            teacher_operations.delete_teacher(teacher=self.model_instance)
+            messages.success(request=self.request, message=msg)
+            return http.HttpResponseRedirect(self.delete_success_url)
+        except teacher_exceptions.CouldNotDeleteTeacher:
+            msg = (
+                "This teacher is still assigned to at least one lesson!\n"
+                "To delete this teacher, first delete or reassign their lessons"
+            )
+            context = super().get_context_data()
+            context["deletion_error_message"] = msg
+            return super().render_to_response(context=context)
 
-class TeacherUpload(_base_upload_view.UploadView):
+
+class TeacherUpload(base_views.UploadView):
     """Page allowing users to upload a csv file containing teacher data."""
 
     template_name = "data_management/teacher/teacher-upload.html"
@@ -147,7 +157,7 @@ class TeacherUpload(_base_upload_view.UploadView):
     example_download_url = UrlName.TEACHER_DOWNLOAD.url(lazy=True)
 
 
-class TeacherExampleDownload(_base_download_view.ExampleDownloadBase):
+class TeacherExampleDownload(base_views.ExampleDownloadBase):
     """Provide a response when users want to download an example teacher data file."""
 
     example_filepath = ExampleFile.TEACHERS.filepath

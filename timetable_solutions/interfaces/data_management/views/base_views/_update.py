@@ -3,7 +3,6 @@ import abc
 from typing import Any, ClassVar, Generic, TypeVar
 
 # Django imports
-from django import forms as django_forms
 from django import http
 from django.contrib import messages
 from django.contrib.auth import mixins
@@ -13,31 +12,33 @@ from django.views import generic
 
 # Local application imports
 from interfaces.constants import UrlName
+from interfaces.data_management.forms import base_forms
 from interfaces.utils.typing_utils import (
     AuthenticatedHtmxRequest,
     AuthenticatedHttpRequest,
 )
 
+# Form submit buttons names
+_UPDATE_SUBMIT = "update-submit"
+_DELETE_SUBMIT = "delete-submit"
+
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_UpdateFormT = TypeVar("_UpdateFormT", bound=django_forms.Form)
 
 
-class UpdateView(
-    mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT, _UpdateFormT]
-):
+class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     """
     Page displaying a school's data for a single instance of a model,
-    and allowing this data to be updated.
+    and allowing this data to be updated or deleted.
     """
 
-    # Generic class vars
+    # Class vars
     model_class: type[_ModelT]
     """The model we are updating an instance of."""
 
-    form_class: type[_UpdateFormT]
+    form_class: type[base_forms.CreateUpdate]
     """Form used to update a model instance (overridden from django's FormView)"""
-    # Ordinary class vars
+
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
 
@@ -50,13 +51,16 @@ class UpdateView(
     The full url is constructed as page_url_prefix/<model_instance_id>.
     """
 
-    enabled_form_template_name = "data_management/partials/forms/update-form.html"
+    delete_success_url: ClassVar[str]
+    """URL to redirect to following a successful deletion."""
 
+    enabled_form_template_name = "data_management/partials/forms/update-form.html"
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following
     a htmx get request sent from an "Edit" button.
     """
+
     # Instance vars
     school_id: int
     """The school who's data will be shown."""
@@ -68,11 +72,20 @@ class UpdateView(
     """Id of the model instance, within the context of the school."""
 
     @abc.abstractmethod
-    def update_model_from_clean_form(self, form: _UpdateFormT) -> _ModelT | None:
+    def update_model_from_clean_form(
+        self, form: base_forms.CreateUpdate
+    ) -> _ModelT | None:
         """
         Method used to try to update the target model instance from a clean form.
 
         Should handle any exceptions, and return None if an instance could not be created.
+        """
+        raise NotImplemented
+
+    @abc.abstractmethod
+    def delete_model_instance(self) -> http.HttpResponse:
+        """
+        Method used to delete the targeted model instance, as if handling HTTP delete requests.
         """
         raise NotImplemented
 
@@ -88,24 +101,19 @@ class UpdateView(
         The ordinary page load presents a disabled form only rendering the object details,
         which is made editable via a htmx get request.
         """
-        if self.request_is_from_htmx:
+        if self.is_htmx_get_request:
             return self._get_htmx_response()
         else:
             return super().get(request=request, *args, **kwargs)
 
-    def form_valid(self, form: _UpdateFormT) -> http.HttpResponse:
-        """Use the form to update the relevant data."""
-        if form.is_valid():
-            if new_instance := self.update_model_from_clean_form(form=form):
-                msg = f"Details for {new_instance} were successfully updated!"
-                messages.success(request=self.request, message=msg)
-                return super().form_valid(form=form)
-            else:
-                msg = f"Could not update details for {self.model_instance}."
-                messages.error(request=self.request, message=msg)
-                return super().form_invalid(form=form)
-        else:
-            return self.form_invalid(form=form)
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object
+    ) -> http.HttpResponse:
+        """Pivot to either updating or deleting the data."""
+        if self.is_delete_request:
+            return self.delete_model_instance()
+        elif self.is_update_request:
+            return super().post(request, *args, **kwargs)
 
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: Any
@@ -117,19 +125,36 @@ class UpdateView(
         self.model_instance_id = kwargs[self.object_id_name]
         self.model_instance = self._get_object_or_404(self.model_instance_id)
 
-    def get_form_kwargs(self) -> dict[str, Any]:
-        """Add the model instance to the form kwargs so the values can be set as initials."""
-        kwargs = super().get_form_kwargs()
-        kwargs["school_id"] = self.school_id
-        kwargs["initial"] = self._get_initial_form_kwargs()
-        return kwargs
-
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """Add some additional context for the template."""
         context = super().get_context_data(**kwargs)
         context["model_instance"] = self.model_instance
         context["page_url"] = self.page_url
         return context
+
+    # --------------------
+    # Handle the update form
+    # --------------------
+    def form_valid(self, form: base_forms.CreateUpdate) -> http.HttpResponse:
+        """Use the form to update the relevant data."""
+        if new_instance := self.update_model_from_clean_form(form=form):
+            msg = f"Details for {new_instance} were successfully updated!"
+            messages.success(request=self.request, message=msg)
+            return http.HttpResponseRedirect(self.get_success_url())
+        else:
+            msg = f"Could not update details for {self.model_instance}."
+            messages.error(request=self.request, message=msg)
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        """Add the model instance to the form kwargs so the values can be set as initials."""
+        kwargs = super().get_form_kwargs()
+        kwargs["school_id"] = self.school_id
+        kwargs["initial"] = self._get_initial_form_kwargs()
+        if self.is_delete_request:
+            # Do not bind any data or files to this form
+            kwargs.pop("data")
+            kwargs.pop("files")
+        return kwargs
 
     def get_success_url(self) -> str:
         """Redirect a posted form back to the same page."""
@@ -138,6 +163,7 @@ class UpdateView(
     # --------------------
     # Helper methods
     # --------------------
+
     def _get_htmx_response(self) -> http.HttpResponse:
         """Get an editable update form partial."""
         template = loader.get_template(template_name=self.enabled_form_template_name)
@@ -164,10 +190,20 @@ class UpdateView(
     # Properties
     # --------------------
     @property
-    def request_is_from_htmx(self) -> bool:
+    def is_update_request(self) -> bool:
+        """Whether this view is handling the attempted update of data."""
+        return _UPDATE_SUBMIT in self.request.POST
+
+    @property
+    def is_delete_request(self) -> bool:
+        """Whether this view is handling the attempted deletion of data."""
+        return _DELETE_SUBMIT in self.request.POST
+
+    @property
+    def is_htmx_get_request(self) -> bool:
         """Whether the request being handled is an htmx request."""
-        return "Http-Hx-Request" in self.request.headers.keys() or bool(
-            self.request.htmx
+        return (self.request.method == "GET") and (
+            "Http-Hx-Request" in self.request.headers.keys() or bool(self.request.htmx)
         )
 
     @property

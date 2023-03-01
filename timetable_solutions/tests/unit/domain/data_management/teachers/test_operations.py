@@ -62,3 +62,21 @@ class TestUpdateTeacher:
         assert teacher.firstname == "test"
         assert teacher.surname == "testnameson"
         assert teacher.title == "mr"
+
+
+@pytest.mark.django_db
+class TestDeleteTeacher:
+    def test_delete_teacher_successful(self):
+        teacher = data_factories.Teacher()
+
+        deleted = operations.delete_teacher(teacher)
+
+        assert deleted == (1, {"data.Teacher": 1})
+        with pytest.raises(models.Teacher.DoesNotExist):
+            teacher.refresh_from_db()
+
+    def test_delete_teacher_unsuccessful_if_has_lessons(self):
+        lesson = data_factories.Lesson()
+
+        with pytest.raises(exceptions.CouldNotDeleteTeacher):
+            operations.delete_teacher(lesson.teacher)

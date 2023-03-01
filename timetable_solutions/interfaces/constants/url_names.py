@@ -4,11 +4,9 @@ Module defining constants relating to urls.
 
 # Standard library imports
 from enum import StrEnum
-from pathlib import Path
 
 # Django imports
 from django import urls
-from django.conf import settings
 
 
 class UrlName(StrEnum):

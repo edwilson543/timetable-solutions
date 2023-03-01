@@ -23,6 +23,8 @@ field: django_forms.Field
         {% include 'partials/forms/widgets/input.html' %}
     {% elif field.widget_type == "clearablefile" %}
         {% include 'partials/forms/widgets/upload.html' %}
+    {% elif field.widget_type == "checkbox" %}
+        {% include 'partials/forms/widgets/checkbox.html' %}
     {% endif %}
 
   <div id="{{ field.id_for_label }}-help-text" class="form-text">

@@ -49,7 +49,7 @@ body, html {
 
 </head>
 
-<body>
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
     <!--Add the 'head strap'-->
     {% include "partials/base-template/headstrap.html" %}

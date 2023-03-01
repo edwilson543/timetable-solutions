@@ -12,7 +12,6 @@ from django.views import generic
 from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
-
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
 
@@ -32,6 +31,7 @@ class SearchView(
 
     http_method_names = ["get"]
     """The searching is done via GET requests, so disallow POST."""
+
     # Generic class vars
     model_class: type[_ModelT]
     """The model who's data is rendered on this page."""
@@ -57,6 +57,7 @@ class SearchView(
     URL to go through to the detail view of individual objects.
     Needs reversing with an id kwarg in the template.
     """
+
     # Instance vars
     school_id: int
     """The school who's data will be shown."""
@@ -90,6 +91,7 @@ class SearchView(
         self.form = self.get_form()
 
     def get_form(self) -> _SearchFormT:
+        """If the user searched something, filter the queryset, otherwise return all data."""
         if self.is_search:
             form = self.form_class(
                 search_help_text=self.search_help_text, data=self.request.GET

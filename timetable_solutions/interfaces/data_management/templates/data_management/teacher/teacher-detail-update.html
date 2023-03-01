@@ -20,13 +20,17 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>View and update details for {{ model_instance }} </h3>
+        <h3>
+            View and update details for {{ model_instance }}
+        </h3>
     </div>
 </div>
 
 <div class="row mx-3 my-1">
-    <div class="card p-1 my-3 col-lg-6">
-        {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card p-2">
+            {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+        </div>
     </div>
 </div>
 
