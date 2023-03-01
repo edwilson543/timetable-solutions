@@ -22,7 +22,10 @@ other_button_text: str | None = None
     class="p-1"
 >
 
-    {% csrf_token %}
+    {% if not method|lower == "get" %}
+        {% csrf_token %}
+    {% endif %}
+
     {% include 'partials/forms/non-field-errors.html' with form=form %}
 
     {% for field in form %}
