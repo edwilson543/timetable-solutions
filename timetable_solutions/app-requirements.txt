@@ -1,6 +1,6 @@
 # Dependencies for building the application
 django==4.1.7
-django-htmx==1.13.0
+django-htmx==1.14.0
 gunicorn==20.1.0
 numpy==1.24.2
 pandas==1.5.3
