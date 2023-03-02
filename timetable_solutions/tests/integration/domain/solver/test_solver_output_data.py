@@ -2,53 +2,40 @@
 Integration test for the TimetableSolverOutcome
 """
 
-
-# Django imports
-from django import test
+# Third party imports
+import pytest
 
 # Local application imports
-from data import models
-from domain import solver as slvr
+from domain import solver
+from tests import data_factories
+from tests.integration.domain.solver.linear_programming import helpers
 
 
-class TestTimetableSolverOutcome(test.TestCase):
-    fixtures = ["test_scenario_1.json"]
+@pytest.mark.django_db
+class TestTimetableSolverOutcome:
+    @pytest.mark.parametrize("total_required_slots", [1, 3])
+    def test_lesson_has_solver_defined_slots_mutated(self, total_required_slots: int):
+        """Solving a timetable solution should set the 'solver_defined_time_slots' on the lesson."""
+        lesson = data_factories.Lesson.with_n_pupils(
+            total_required_slots=total_required_slots, total_required_double_periods=0
+        )
+        yg = lesson.pupils.first().year_group
 
-    def test_timetable_solver_integration_test_scenario_1(self):
-        """
-        Test for extracting a specific solution from the timetable solver. Instantiating te TimetableSolverOutcome
-        instance should initiate and complete all processing, so we check that this is indeed the case.
-        """
-        # Set test parameters
-        school_access_key = 111111
-        spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=True,
-            allow_triple_periods_and_above=True,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-        solver.solve()
+        # Make sufficient timetable slots to meet the required slots
+        slots = {
+            data_factories.TimetableSlot(
+                relevant_year_groups=(yg,), school=lesson.school
+            )
+            for _ in range(0, total_required_slots)
+        }
 
-        # Execute test unit
-        slvr.TimetableSolverOutcome(timetable_solver=solver)
+        # Solve the timetabling problem
+        solver_ = helpers.get_solution(lesson.school)
+        solver_.solve()
 
-        # Check the outcome
-        expected_slots = models.TimetableSlot.objects.get_specific_timeslots(
-            school_id=111111, slot_ids=[1, 2]
-        )
+        # Update the db from the solution
+        solver.TimetableSolverOutcome(timetable_solver=solver_)
 
-        maths_a = models.Lesson.objects.get_individual_lesson(
-            school_id=111111, lesson_id="YEAR_ONE_MATHS_A"
-        )
-        maths_b = models.Lesson.objects.get_individual_lesson(
-            school_id=111111, lesson_id="YEAR_ONE_MATHS_B"
-        )
-
-        self.assertQuerysetEqual(
-            expected_slots, maths_a.get_all_time_slots(), ordered=False
-        )
-        self.assertQuerysetEqual(
-            expected_slots, maths_b.get_all_time_slots(), ordered=False
-        )
+        # Check solutions are as expected
+        lesson.refresh_from_db()
+        assert set(lesson.solver_defined_time_slots.all()) == slots

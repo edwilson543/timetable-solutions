@@ -89,7 +89,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
 
     fixtures = [
-        "test_scenario_1.json",
         "test_scenario_2.json",
         "test_scenario_3.json",
         "test_scenario_4.json",
@@ -107,40 +106,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     )
 
     # TESTS WHERE A BASIC CONSTRAINT IS LIMITING
-    def test_solver_solution_test_scenario_1(self):
-        """
-        Test scenario targeted at the fulfillment constraint.
-        There are 2 pupils / teachers / timeslots / lessons. Each lesson occupies one of the slots,
-        and states 2 slots must be used, so the solution is just to occupy the remaining slot for each lesson
-        """
-        # Set test parameters
-        school_access_key = 111111
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert (
-            len(solver.variables.decision_variables) == 2
-        )  # 1 option where each of 2 class' remaining slot could go
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="YEAR_ONE_MATHS_A", slot_id=2)
-            ].varValue
-            == 1
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="YEAR_ONE_MATHS_B", slot_id=1)
-            ].varValue
-            == 1
-        )
-
     def test_solver_solution_test_scenario_2(self):
         """
         Test scenario targeted at the pupil one-place-at-a-time constraint.

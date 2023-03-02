@@ -21,7 +21,7 @@ class TestBaseModelAdmin(test.TestCase):
         "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
-        "test_scenario_1.json",
+        "test_scenario_10.json",
     ]  # Included since we need some data not corresponding to access key 6
 
     # GET FORM TEST
