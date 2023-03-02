@@ -16,7 +16,6 @@ from tests import data_factories, domain_factories
 
 @pytest.mark.django_db
 class TestSolverConstraints:
-
     # --------------------
     # Helpers
     # --------------------

@@ -12,7 +12,6 @@ from interfaces.constants import UrlName
 
 
 class TestLessonDetailModal(test.TestCase):
-
     fixtures = [
         "user_school_profile.json",
         "teachers.json",

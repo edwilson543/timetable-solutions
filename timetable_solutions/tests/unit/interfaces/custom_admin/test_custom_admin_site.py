@@ -16,7 +16,6 @@ from interfaces.custom_admin import admin
 
 
 class TestCustomAdminSite(test.TestCase):
-
     fixtures = ["user_school_profile.json"]
 
     @staticmethod

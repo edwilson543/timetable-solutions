@@ -54,7 +54,7 @@ jobs:
         python-version: "3.11"
     - name: Install black
       run: |
-        pip install black==22.3.0
+        pip install black==23.1.0
     - name: Run black on all python code
       run: |
         cd timetable_solutions
