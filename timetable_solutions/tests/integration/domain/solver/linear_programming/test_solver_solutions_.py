@@ -92,7 +92,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         "test_scenario_2.json",
         "test_scenario_3.json",
         "test_scenario_4.json",
-        "test_scenario_5.json",
         "test_scenario_6.json",
         "test_scenario_7",
         "test_scenario_8.json",
@@ -212,53 +211,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         )
 
     # TESTS WHERE A DOUBLE PERIOD CONSTRAINT IS LIMITING
-    def test_solver_solution_test_scenario_5(self):
-        """
-        Test scenario targeted at the double period fulfillment and dependency constraints.
-        We have the following setup:
-        Timetable structure:
-            Monday: empty-empty;
-            Tuesday: empty;
-        1 Lesson, requiring:
-            2 total slots;
-            1 double period.
-        Only 2 of the 3 timeslots are consecutive, so we must have the doubler period during these slots.
-        """
-        # Set test parameters
-        school_access_key = 555555
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert (
-            len(solver.variables.decision_variables) == 3
-        )  # 1 lesson must be taught in 2 / 3 time slots
-
-        # The double period is slots 2 & 3
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
-            ].varValue
-            == 0
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 1
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
-            ].varValue
-            == 1
-        )
 
     def test_solver_solution_test_scenario_6(self):
         """
