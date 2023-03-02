@@ -17,7 +17,7 @@ class TestSolverSolutionFulfillmentConstrainDriven:
     """
 
     @pytest.mark.parametrize("total_required_slots", [1, 3])
-    def test_required_slots_are_fulfilled(self, total_required_slots: int):
+    def test_total_required_slots_are_fulfilled(self, total_required_slots: int):
         lesson = data_factories.Lesson.with_n_pupils(
             total_required_slots=total_required_slots, total_required_double_periods=0
         )
@@ -102,6 +102,50 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
 
         # Check solution is a double period on monday
         assert solver_.problem.status == lp.LpStatusOptimal
+
         assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
         assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
         assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+
+    def test_double_period_only_fulfilled_if_teams_up_with_user_defined_slots(self):
+        """
+        Test scenario targeted at the double period fulfillment and dependency constraints, in the particular instance
+        where a user defined slot comes into play.
+
+        We have the following setup:
+        Timetable structure:
+            Monday: empty-empty;
+            Tuesday: empty-fixed;
+        1 Lesson, requiring:
+            2 total slots;
+            1 double period.
+        Therefore, the solution is to attach a second slot to the already defined slot, making the double.
+        """
+        pupil = data_factories.Pupil()
+        yg = pupil.year_group
+        mon_1 = data_factories.TimetableSlot(
+            day_of_week=Day.MONDAY, school=pupil.school, relevant_year_groups=(yg,)
+        )
+        mon_2 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
+        tue_1 = data_factories.TimetableSlot(
+            day_of_week=Day.TUESDAY, school=pupil.school, relevant_year_groups=(yg,)
+        )
+        tue_2 = data_factories.TimetableSlot.get_next_consecutive_slot(tue_1)
+        lesson = data_factories.Lesson(
+            school=pupil.school,
+            total_required_slots=2,
+            total_required_double_periods=1,
+            user_defined_time_slots=(tue_2,),
+            pupils=(pupil,),
+        )
+
+        # Solve the timetabling problem
+        solver_ = helpers.get_solution(lesson.school)
+
+        # Check solution is a double period on monday
+        assert solver_.problem.status == lp.LpStatusOptimal
+
+        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
+        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
+        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
