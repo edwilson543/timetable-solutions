@@ -7,8 +7,9 @@ import pytest
 
 # Local application imports
 from data import constants as data_constants
-from domain import solver as slvr
-from tests import data_factories, domain_factories
+from domain import solver
+from tests import data_factories
+from tests.integration.domain.solver.linear_programming import helpers
 
 
 @pytest.mark.django_db
@@ -69,30 +70,27 @@ class TestSolverSolutionClassroomConstraintDriven:
         )
 
         # Solve the problem for this school
-        spec = domain_factories.SolutionSpecification()
-        data = slvr.TimetableSolverInputs(
-            school_id=classroom.school.school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-        solver.solve()
+        solver_ = helpers.get_solution(classroom.school)
 
         # Check solved & solution as expected
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
+        assert lp.LpStatus[solver_.problem.status] == "Optimal"
 
-        dec_vars = solver.variables.decision_variables
+        dec_vars = solver_.variables.decision_variables
 
         # Check lesson 1 is at its only option slot
-        forced_var = slvr.var_key(slot_id=slot_1.slot_id, lesson_id=lesson_1.lesson_id)
+        forced_var = solver.var_key(
+            slot_id=slot_1.slot_id, lesson_id=lesson_1.lesson_id
+        )
         assert dec_vars[forced_var] == 1
 
         # Check lesson 2 not at the clashed slot
-        clash_var = slvr.var_key(
+        clash_var = solver.var_key(
             slot_id=slot_1_clash.slot_id, lesson_id=lesson_2.lesson_id
         )
         assert dec_vars[clash_var] == 0
 
         # Check lesson 2 therefore at the other slot
-        sol_var_2 = slvr.var_key(
+        sol_var_2 = solver.var_key(
             slot_id=lesson_2_forced_slot.slot_id, lesson_id=lesson_2.lesson_id
         )
         assert dec_vars[sol_var_2] == 0
