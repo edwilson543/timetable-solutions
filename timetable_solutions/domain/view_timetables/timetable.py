@@ -129,7 +129,6 @@ def _merge_consecutive_components(
     new_components = []
 
     for component in components:
-
         if previous_component is None:
             new_components.append(component)
             previous_component = component

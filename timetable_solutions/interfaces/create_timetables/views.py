@@ -16,7 +16,6 @@ from django.views.generic.edit import FormView
 # Local application imports
 from data import models
 from domain import solver
-from domain.data_management import UploadStatusTracker
 from interfaces.constants import UrlName
 from interfaces.create_timetables import forms
 
@@ -78,13 +77,19 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         In particular, we need to carry a boolean that's True if the user has uploaded all data and can start creating
         timetables, and False if they need to complete the data upload step.
         """
-        context_data = (
-            super().get_context_data()
-        )  # Method inherited from views.generic.edit.FormMixin
-        upload_status = UploadStatusTracker.get_upload_status(
-            school=self.request.user.profile.school
+        context_data = super().get_context_data()
+        school: models.School = self.request.user.profile.school
+        context_data["ready_to_create"] = (
+            # TODO -> some proper query in solutions/ for whether makes sense to try make timetables
+            # TODO -> should have a model level one query (probably still in solutions)
+            school.has_teacher_data
+            and school.has_pupil_data
+            and school.has_classroom_data
+            and school.has_year_group_data
+            and school.has_timetable_structure_data
+            and school.has_break_data
+            and school.has_lesson_data
         )
-        context_data["ready_to_create"] = upload_status.all_uploads_complete
         return context_data
 
     def get_form_kwargs(self) -> dict:

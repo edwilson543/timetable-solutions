@@ -68,7 +68,6 @@ class TestTimetableSolverObjectiveGetFreePeriodTimeOfDayObjective:
     # --------------------
 
     def test_no_optimal_free_period_time(self):
-
         self.set_single_lesson_for_school()
         # Make a single slot to contribute to the objective
         slot = data_factories.TimetableSlot(

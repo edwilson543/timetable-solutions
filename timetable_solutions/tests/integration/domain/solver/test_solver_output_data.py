@@ -12,7 +12,6 @@ from domain import solver as slvr
 
 
 class TestTimetableSolverOutcome(test.TestCase):
-
     fixtures = ["test_scenario_1.json"]
 
     def test_timetable_solver_integration_test_scenario_1(self):

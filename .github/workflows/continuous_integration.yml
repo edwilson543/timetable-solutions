@@ -36,7 +36,7 @@ jobs:
         python-version: "3.11"
     - name: Install mypy
       run: |
-        pip install mypy==0.991
+        pip install mypy==1.0.1
     - name: Run mypy in project layers
       run: |
         cd timetable_solutions
@@ -54,7 +54,7 @@ jobs:
         python-version: "3.11"
     - name: Install black
       run: |
-        pip install black==22.3.0
+        pip install black==23.1.0
     - name: Run black on all python code
       run: |
         cd timetable_solutions

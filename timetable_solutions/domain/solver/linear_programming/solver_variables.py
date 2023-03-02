@@ -11,7 +11,6 @@ import pulp as lp
 # Local application imports
 from domain.solver.solver_input_data import TimetableSolverInputs
 
-
 # Keys for the different dictionaries used to store variables
 var_key = namedtuple("var_key", "lesson_id slot_id")  # Decision variables
 doubles_var_key = namedtuple(  # Double period variables
@@ -92,7 +91,6 @@ class TimetableSolverVariables:
         """
         variables = {}  # Dict comp a bit too long here
         for lesson in self._inputs.lessons:
-
             if lesson.total_required_double_periods == 0:
                 continue
 
@@ -102,7 +100,6 @@ class TimetableSolverVariables:
             ) in self._inputs.get_consecutive_slots_for_year_group(
                 year_group=relevant_year_group
             ):
-
                 key = doubles_var_key(
                     lesson_id=lesson.lesson_id,
                     slot_1_id=consecutive_slot_pair[0].slot_id,

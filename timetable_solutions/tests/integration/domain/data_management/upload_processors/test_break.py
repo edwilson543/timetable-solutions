@@ -13,7 +13,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 # Local application imports
 from data import constants as data_constants
 from data import models
-from domain import data_management
+from domain.data_management import upload_processors
 from domain.data_management.constants import Header
 from tests import data_factories, utils
 
@@ -67,7 +67,7 @@ class TestBreakFileUploadProcessorValidUploads:
 
         # Upload the file
         upload_file = SimpleUploadedFile(name="break.csv", content=csv_file.read())
-        upload_processor = data_management.BreakFileUploadProcessor(
+        upload_processor = upload_processors.BreakFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 

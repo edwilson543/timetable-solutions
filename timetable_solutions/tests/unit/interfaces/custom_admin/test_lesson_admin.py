@@ -13,7 +13,6 @@ from interfaces.custom_admin import admin
 
 
 class TestLessonModelAdmin(test.TestCase):
-
     fixtures = [
         "user_school_profile.json",
         "teachers.json",
