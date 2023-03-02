@@ -18,7 +18,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 # Local application imports
 from base_files.settings.base_settings import BASE_DIR
 from data import models
-from domain import data_management
+from domain.data_management import upload_processors
 from domain.data_management.constants import Header
 from tests import data_factories, utils
 
@@ -40,7 +40,7 @@ class TestTeacherFileUploadProcessor:
 
         # Try uploading the file
         upload_file = SimpleUploadedFile(name="teachers.csv", content=csv_file.read())
-        upload_processor = data_management.TeacherFileUploadProcessor(
+        upload_processor = upload_processors.TeacherFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -77,7 +77,7 @@ class TestTeacherFileUploadProcessor:
 
         # Try uploading the file
         upload_file = SimpleUploadedFile(name="teachers.csv", content=csv_file.read())
-        upload_processor = data_management.TeacherFileUploadProcessor(
+        upload_processor = upload_processors.TeacherFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -108,7 +108,7 @@ class TestClassroomUploadProcessor:
 
         # Try uploading the file
         upload_file = SimpleUploadedFile(name="classrooms.csv", content=csv_file.read())
-        upload_processor = data_management.ClassroomFileUploadProcessor(
+        upload_processor = upload_processors.ClassroomFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -140,7 +140,7 @@ class TestClassroomUploadProcessor:
 
         # Try uploading the file
         upload_file = SimpleUploadedFile(name="classrooms.csv", content=csv_file.read())
-        upload_processor = data_management.ClassroomFileUploadProcessor(
+        upload_processor = upload_processors.ClassroomFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -175,7 +175,7 @@ class TestYearGroupUploadProcessor:
         upload_file = SimpleUploadedFile(
             name="year_groups.csv", content=csv_file.read()
         )
-        upload_processor = data_management.YearGroupFileUploadProcessor(
+        upload_processor = upload_processors.YearGroupFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -213,7 +213,7 @@ class TestFileUploadProcessorInvalidMiscellaneous:
             upload_file = SimpleUploadedFile(png_file.name, png_file.read())
 
         # Execute test unit
-        upload_processor = data_management.YearGroupFileUploadProcessor(
+        upload_processor = upload_processors.YearGroupFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -244,7 +244,7 @@ class TestFileUploadProcessorInvalidMiscellaneous:
         upload_file = SimpleUploadedFile(
             name="classrooms.csv", content=csv_file().read()
         )
-        first_upload_processor = data_management.ClassroomFileUploadProcessor(
+        first_upload_processor = upload_processors.ClassroomFileUploadProcessor(
             csv_file=upload_file,
             school_access_key=school.school_access_key,
         )
@@ -255,7 +255,7 @@ class TestFileUploadProcessorInvalidMiscellaneous:
         second_upload_file = SimpleUploadedFile(
             name="classrooms.csv", content=csv_file().read()
         )
-        second_upload_processor = data_management.ClassroomFileUploadProcessor(
+        second_upload_processor = upload_processors.ClassroomFileUploadProcessor(
             csv_file=second_upload_file,
             school_access_key=school.school_access_key,
         )

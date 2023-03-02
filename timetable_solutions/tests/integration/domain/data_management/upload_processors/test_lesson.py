@@ -12,7 +12,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 # Local application imports
 from data import models
-from domain import data_management
+from domain.data_management import upload_processors
 from domain.data_management.constants import Header
 from tests import data_factories, utils
 
@@ -73,7 +73,7 @@ class TestLessonFileUploadProcessorValidUploads:
 
         # Upload the file
         upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
-        upload_processor = data_management.LessonFileUploadProcessor(
+        upload_processor = upload_processors.LessonFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 
@@ -149,7 +149,7 @@ class TestLessonFileUploadProcessorValidUploads:
 
         # Upload the file
         upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
-        upload_processor = data_management.LessonFileUploadProcessor(
+        upload_processor = upload_processors.LessonFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 
@@ -209,7 +209,7 @@ class TestLessonFileUploadProcessorValidUploads:
 
         # Upload the file
         upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
-        upload_processor = data_management.LessonFileUploadProcessor(
+        upload_processor = upload_processors.LessonFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 
@@ -266,7 +266,7 @@ class TestLessonFileUploadProcessorValidUploads:
 
         # Upload the file
         upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
-        upload_processor = data_management.LessonFileUploadProcessor(
+        upload_processor = upload_processors.LessonFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 
@@ -305,7 +305,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         """
         # Upload the file
         upload_file = SimpleUploadedFile("lessons.csv", csv_file.read())
-        upload_processor = data_management.LessonFileUploadProcessor(
+        upload_processor = upload_processors.LessonFileUploadProcessor(
             csv_file=upload_file, school_access_key=school.school_access_key
         )
 

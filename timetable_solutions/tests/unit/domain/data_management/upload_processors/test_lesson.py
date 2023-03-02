@@ -8,7 +8,7 @@ from django import test
 
 # Local application imports
 from data import models
-from domain.data_management import LessonFileUploadProcessor
+from domain.data_management.upload_processors import LessonFileUploadProcessor
 
 
 class TestLessonFileUploadProcessor(test.TestCase):
