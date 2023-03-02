@@ -18,13 +18,6 @@ from domain.data_management.upload_processors._timetable_slot import (
     TimetableSlotFileUploadProcessor,
 )
 
-# Upload status tracking
-from .upload_status_tracking import (
-    UploadStatus,
-    UploadStatusReason,
-    UploadStatusTracker,
-)
-
 # Type hints
 Processor = Union[
     TeacherFileUploadProcessor,
