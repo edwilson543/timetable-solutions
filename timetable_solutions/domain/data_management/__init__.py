@@ -18,9 +18,6 @@ from domain.data_management.upload_processors._timetable_slot import (
     TimetableSlotFileUploadProcessor,
 )
 
-# Upload resetting
-from .reset_uploads import ResetUploads, ResetWarning
-
 # Upload status tracking
 from .upload_status_tracking import (
     UploadStatus,
