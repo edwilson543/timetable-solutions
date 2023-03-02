@@ -1,7 +1,7 @@
 # Requirements for local development
 black==23.1.0
 isort==5.12.0
-mypy==0.991
+mypy==1.0.1
 pre-commit==3.1.1
 # Pytest plugins for assisting local dev (not required to run the tests)
 pytest-random-order==1.1.0
