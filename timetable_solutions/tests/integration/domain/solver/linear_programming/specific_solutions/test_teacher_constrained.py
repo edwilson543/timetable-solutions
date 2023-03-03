@@ -15,6 +15,91 @@ from tests.integration.domain.solver.linear_programming import helpers
 class TestSolverSolutionTeacherConstraintDriven:
     """Tests for solver solutions where the availability of a teacher drives the solution."""
 
+    def test_teacher_is_only_allocated_one_lesson_at_a_time(self):
+        """
+        A teacher must teach 2 lessons.
+        Both use 1 slot, and there are 2 possible time slots.
+        """
+        teacher = data_factories.Teacher()
+        pupil = data_factories.Pupil(school=teacher.school)
+        slot_1 = data_factories.TimetableSlot(
+            school=teacher.school,
+            relevant_year_groups=(pupil.year_group,),
+        )
+        slot_2 = data_factories.TimetableSlot(
+            school=teacher.school,
+            relevant_year_groups=(pupil.year_group,),
+        )
+        # Male two lessons and allocate both to the same teacher
+        lesson_a = data_factories.Lesson(
+            school=teacher.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            teacher=teacher,
+            pupils=(pupil,),
+        )
+        lesson_b = data_factories.Lesson(
+            school=teacher.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            teacher=teacher,
+            pupils=(pupil,),
+        )
+
+        # Solve the timetabling problem
+        solver_ = helpers.get_solution(teacher.school)
+
+        # Check solution allows teacher to both lessons
+        assert solver_.problem.status == lp.LpStatusOptimal
+
+        la_1 = helpers.lesson_occurs_at_slot(solver_.variables, lesson_a, slot_1)
+        la_2 = helpers.lesson_occurs_at_slot(solver_.variables, lesson_a, slot_2)
+        lb_1 = helpers.lesson_occurs_at_slot(solver_.variables, lesson_b, slot_1)
+        lb_2 = helpers.lesson_occurs_at_slot(solver_.variables, lesson_b, slot_2)
+        assert (la_1 and not lb_1) or (la_2 and not lb_2)
+        assert (lb_1 and not la_1) or (lb_2 and not la_2)
+
+    def test_teacher_is_only_allocated_one_lesson_at_a_time_when_has_fixed_slot(self):
+        """
+        A teacher must teach 2 lessons.
+        Both use 1 slot, there are 2 possible time slots,
+        one lesson is fixed at one of the slots.
+        """
+        teacher = data_factories.Teacher()
+        pupil = data_factories.Pupil(school=teacher.school)
+        slot_1 = data_factories.TimetableSlot(
+            school=teacher.school,
+            relevant_year_groups=(pupil.year_group,),
+        )
+        slot_2 = data_factories.TimetableSlot(
+            school=teacher.school,
+            relevant_year_groups=(pupil.year_group,),
+        )
+        # Male two lessons and allocate both to the same teacher
+        data_factories.Lesson(
+            school=teacher.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            teacher=teacher,
+            pupils=(pupil,),
+            user_defined_time_slots=(slot_1,),
+        )
+        lesson_2 = data_factories.Lesson(
+            school=teacher.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            teacher=teacher,
+            pupils=(pupil,),
+        )
+
+        # Solve the timetabling problem
+        solver_ = helpers.get_solution(teacher.school)
+
+        # Check solution allows teacher to both lessons
+        assert solver_.problem.status == lp.LpStatusOptimal
+
+        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson_2, slot_2)
+
     @pytest.mark.parametrize("clash_slot_overlap_minutes", [0, 30])
     def test_teacher_has_two_year_groups_at_clashing_times(
         self, clash_slot_overlap_minutes: int
