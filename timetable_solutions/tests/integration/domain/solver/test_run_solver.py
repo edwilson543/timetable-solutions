@@ -1,39 +1,42 @@
-"""
-Integration test for running the solver end-to-end
-"""
+"""Integration test for running the solver end-to-end."""
 
-
-# Django imports
-from django import test
+# Third party imports
+import pytest
 
 # Local application imports
-from data import models
-from domain import solver as slvr
 from domain.solver.run_solver import produce_timetable_solutions
+from tests import data_factories, domain_factories
 
 
-class TestRunSolver(test.TestCase):
-    fixtures = ["test_scenario_2.json"]
-
-    def test_run_solver_test_scenario_2(self):
+@pytest.mark.django_db
+class TestProduceTimetableSolutions:
+    def test_school_with_complete_inputs_gets_solution(self):
         """
-        Test that the solver can run end-to-end. The solver should be able to load the required data,
-        produce a timetable solution, and then save it in the database.
+        Test that the solver can run end-to-end.
+        The solver should be able to load the required data, produce a timetable solution,
+        and then save it in the database.
         """
-        # Set test parameters
-        spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=True,
-            allow_triple_periods_and_above=True,
+        # Create some school data
+        pupil = data_factories.Pupil()
+        data_factories.TimetableSlot(
+            school=pupil.school,
+            relevant_year_groups=(pupil.year_group,),
+        )
+        lesson = data_factories.Lesson(
+            school=pupil.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+            pupils=(pupil,),
         )
 
-        # Execute
+        # Try to find a solutions
         error_messages = produce_timetable_solutions(
-            school_access_key=222222, solution_specification=spec
+            school_access_key=pupil.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
         )
 
-        # Check outcome - note we don't test for a specific solution
+        # Check a solution was produced
         assert len(error_messages) == 0
-        lessons = models.Lesson.objects.all()
+        assert lesson.solver_defined_time_slots.count() == 1
 
-        for lesson in lessons:
-            assert lesson.solver_defined_time_slots.count() == 1
+    # TODO -> test some error paths
