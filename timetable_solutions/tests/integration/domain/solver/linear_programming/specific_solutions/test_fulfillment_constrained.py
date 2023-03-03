@@ -142,10 +142,55 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
         # Solve the timetabling problem
         solver_ = helpers.get_solution(lesson.school)
 
-        # Check solution is a double period on monday
+        # Check solution is a double period on tuesday
         assert solver_.problem.status == lp.LpStatusOptimal
 
         assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
         assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
         assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+
+    def test_only_one_double_forces_slot_on_different_day(self):
+        """
+        Test scenario targeted at the component of the double period dependency constraint which states that adding an
+        solver defined lesson next to a user defined lesson results in a double period.
+        We have the following setup:
+        Timetable structure:
+            Monday: Fixed-Fixed-empty-empty-Fixed;
+            Tuesday: empty;
+        1 Lesson, requiring:
+            4 total slots;
+            1 double period.
+        Since there is already a double on Monday, and adding a single in either of the available slots would create
+        another double, the class must go on the Tuesday.
+        """
+        pupil = data_factories.Pupil()
+        yg = pupil.year_group
+        mon_1 = data_factories.TimetableSlot(
+            day_of_week=Day.MONDAY,
+            school=pupil.school,
+            relevant_year_groups=(yg,),
+        )
+        mon_2 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
+        mon_3 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_2)
+        mon_4 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_3)
+        mon_5 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_4)
+        tue_1 = data_factories.TimetableSlot(
+            day_of_week=Day.TUESDAY, school=pupil.school, relevant_year_groups=(yg,)
+        )
+        lesson = data_factories.Lesson(
+            school=pupil.school,
+            total_required_slots=4,
+            total_required_double_periods=1,
+            user_defined_time_slots=(mon_1, mon_2, mon_5),
+            pupils=(pupil,),
+        )
+
+        # Solve the timetabling problem
+        solver_ = helpers.get_solution(lesson.school)
+
+        # Check solution is a solved slot on tuesday
+        assert solver_.problem.status == lp.LpStatusOptimal
+
         assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3)
+        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_4)
