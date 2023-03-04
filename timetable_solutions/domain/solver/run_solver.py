@@ -3,6 +3,8 @@ Entry point to the solver, both in terms of using it, and in terms of the interf
 The function below and SolutionSpecification are the only two objects used outside of domain/solver
 """
 
+# Django imports
+from django.db import transaction
 
 # Local application imports
 from data import models
@@ -12,6 +14,7 @@ from .solver_input_data import SolutionSpecification, TimetableSolverInputs
 from .solver_output_data import TimetableSolverOutcome
 
 
+@transaction.atomic
 def produce_timetable_solutions(
     school_access_key: int,
     solution_specification: SolutionSpecification,
