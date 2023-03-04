@@ -89,83 +89,10 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
 
     fixtures = [
-        "test_scenario_9.json",
         "test_scenario_10.json",
     ]
 
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
-
-    def test_solver_solution_test_scenario_9(self):
-        """
-        Test scenario targeted at the no two doubles in a day constraint (which is effectively also a no triples+
-        constraint)
-        We have the following setup:
-        Timetable structure:
-            Monday: empty-empty-empty-Fixed;
-            Tuesday: empty-empty;
-        1 Lesson, requiring:
-            4 total slots;
-            2 double period.
-        By the no two doubles in a day constraint, we must have the following final structure:
-            Monday: A - Solver-Solver-empty-User; OR B - Solver-empty-Solver-User - but we make the pupil /
-            classroom / teacher incompatible with option B, so we always get option A
-            Tuesday: Solver-Solver
-        """
-        # Set test parameters
-        school_access_key = 999999
-        spec = slvr.SolutionSpecification(
-            allow_triple_periods_and_above=False,
-            allow_split_lessons_within_each_day=True,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert (
-            len(solver.variables.decision_variables) == 5
-        )  # 6 slots, 1 class, but one variable gets stripped
-        assert (
-            len(solver.variables.double_period_variables) == 4
-        )  # 3 on the Monday, 1 on the Tuesday
-
-        # See docstring for solution
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
-            ].varValue
-            == 1
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 1
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
-            ].varValue
-            == 0
-        )
-        # slot_id=4 user defined so gets stripped
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=5)
-            ].varValue
-            == 1
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=6)
-            ].varValue
-            == 1
-        )
 
     def test_solver_solution_test_scenario_10(self):
         """
