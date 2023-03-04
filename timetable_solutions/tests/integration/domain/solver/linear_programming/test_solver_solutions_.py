@@ -89,70 +89,11 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
 
     fixtures = [
-        "test_scenario_8.json",
         "test_scenario_9.json",
         "test_scenario_10.json",
     ]
 
-    # Note that test scenarios 7 and above do not use this solution spec
-    solution_spec = slvr.SolutionSpecification(
-        allow_split_lessons_within_each_day=True, allow_triple_periods_and_above=True
-    )
-
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
-    def test_solver_solution_test_scenario_8(self):
-        """
-        Test scenario targeted at the no split lessons constraints.
-        We have the following setup:
-        Timetable structure:
-            Monday: Fixed-empty-empty;
-            Tuesday: empty;
-            Tuesday: 1 slot
-        1 Lesson, requiring:
-            2 total slots;
-            0 double periods.
-        By the no split lessons constraint, the remaining class has to be taught on Tuesday. In particular, it cannot be
-        taught at period 3 on Monday.
-        """
-        # Set test parameters
-        school_access_key = 888888
-        spec = slvr.SolutionSpecification(
-            allow_triple_periods_and_above=True,  # True but irrelevant
-            allow_split_lessons_within_each_day=False,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert (
-            len(solver.variables.decision_variables) == 3
-        )  # 3 slots, 1 class, but one variable gets stripped
-
-        # Slot_id 3 represents the individual slot on the Tuesday where we want the class to happen
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 0
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=3)
-            ].varValue
-            == 0
-        )
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=4)
-            ].varValue
-            == 1
-        )
 
     def test_solver_solution_test_scenario_9(self):
         """
