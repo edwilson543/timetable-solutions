@@ -210,7 +210,7 @@ class TestTimetableSolverInputsHelperMethods:
 
 @pytest.mark.django_db
 class TestTimetableSolverInputsValidation:
-    def test_error_when_lesson_requires_too_many_days_and_disallows_split_classes(self):
+    def test_error_when_lesson_requires_too_many_days_and_disallows_split_lessons(self):
         # Make a lesson requiring more slots than there are days of the week
         days_of_week = len(data_constants.Day)
         lesson = data_factories.Lesson.with_n_pupils(
@@ -223,9 +223,9 @@ class TestTimetableSolverInputsValidation:
                 school=lesson.school, relevant_year_groups=(yg,), day_of_week=day
             )
 
-        # Make a spec disallowing split classes within a day, and gather the input data
+        # Make a spec disallowing split lessons within a day, and gather the input data
         spec = domain_factories.SolutionSpecification(
-            allow_split_classes_within_each_day=False
+            allow_split_lessons_within_each_day=False
         )
         data = slvr.TimetableSolverInputs(
             school_id=lesson.school.school_access_key, solution_specification=spec

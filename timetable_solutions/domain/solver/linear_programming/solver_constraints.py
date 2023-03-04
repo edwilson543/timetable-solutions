@@ -72,8 +72,8 @@ class TimetableSolverConstraints:
         for constraint in double_period_dependency_constraints:
             problem += constraint
         # OPTIONAL CONSTRAINTS
-        if not self._inputs.solution_specification.allow_split_classes_within_each_day:
-            no_split_constraints = self._get_all_no_split_classes_in_a_day_constraints()
+        if not self._inputs.solution_specification.allow_split_lessons_within_each_day:
+            no_split_constraints = self._get_all_no_split_lessons_in_a_day_constraints()
             for constraint in no_split_constraints:
                 problem += constraint
 
@@ -388,18 +388,18 @@ class TimetableSolverConstraints:
         return all_constraints
 
     # STRUCTURAL CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
-    def _get_all_no_split_classes_in_a_day_constraints(
+    def _get_all_no_split_lessons_in_a_day_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining all constraints to disallow classes to be taught at split times across a single day.
+        Method defining all constraints to disallow lessons to be taught at split times across a single day.
         :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
 
         Note: These constraints still allow a stacked triple or quadruple period, hence the need for the constraints
         below restricting the solution to no two double periods in a day (if we do not want triple periods).
         """
 
-        def __no_split_classes_in_a_day_constraint(
+        def __no_split_lessons_in_a_day_constraint(
             lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
@@ -459,7 +459,7 @@ class TimetableSolverConstraints:
             return constraint
 
         constraints = (
-            __no_split_classes_in_a_day_constraint(lesson=lesson, day_of_week=day)
+            __no_split_lessons_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
             for day in lesson.get_usable_days_of_week()
         )

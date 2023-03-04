@@ -39,7 +39,7 @@ class TestSolver(test.TestCase):
         # Set test parameters
         school_access_key = 123456
         spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=False,
+            allow_split_lessons_within_each_day=False,
             allow_triple_periods_and_above=False,
         )
         data = slvr.TimetableSolverInputs(
@@ -64,7 +64,7 @@ class TestSolver(test.TestCase):
         # Set test parameters
         school_access_key = 123456
         spec = slvr.SolutionSpecification(
-            allow_split_classes_within_each_day=False,
+            allow_split_lessons_within_each_day=False,
             allow_triple_periods_and_above=False,
             optimal_free_period_time_of_day=dt.time(hour=14),
             ideal_proportion_of_free_periods_at_this_time=0.75,
@@ -96,13 +96,13 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
     # Note that test scenarios 7 and above do not use this solution spec
     solution_spec = slvr.SolutionSpecification(
-        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+        allow_split_lessons_within_each_day=True, allow_triple_periods_and_above=True
     )
 
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_8(self):
         """
-        Test scenario targeted at the no split classes constraints.
+        Test scenario targeted at the no split lessons constraints.
         We have the following setup:
         Timetable structure:
             Monday: Fixed-empty-empty;
@@ -111,14 +111,14 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         1 Lesson, requiring:
             2 total slots;
             0 double periods.
-        By the no split classes constraint, the remaining class has to be taught on Tuesday. In particular, it cannot be
+        By the no split lessons constraint, the remaining class has to be taught on Tuesday. In particular, it cannot be
         taught at period 3 on Monday.
         """
         # Set test parameters
         school_access_key = 888888
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=True,  # True but irrelevant
-            allow_split_classes_within_each_day=False,
+            allow_split_lessons_within_each_day=False,
         )
         data = slvr.TimetableSolverInputs(
             school_id=school_access_key, solution_specification=spec
@@ -174,7 +174,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         school_access_key = 999999
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=False,
-            allow_split_classes_within_each_day=True,
+            allow_split_lessons_within_each_day=True,
         )
         data = slvr.TimetableSolverInputs(
             school_id=school_access_key, solution_specification=spec
@@ -228,8 +228,8 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
 
     def test_solver_solution_test_scenario_10(self):
         """
-        Test scenario targeted at using the no two doubles in a day constraint in combination with the no split classes
-        constraint, as well as testing that the no split classes constraint isn't broken by a user-defined split
+        Test scenario targeted at using the no two doubles in a day constraint in combination with the no split lessons
+        constraint, as well as testing that the no split lessons constraint isn't broken by a user-defined split
         We have the following setup:
         Timetable structure:
             Monday: empty-empty-empty-empty;
@@ -245,7 +245,7 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
         school_access_key = 101010
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=False,
-            allow_split_classes_within_each_day=False,
+            allow_split_lessons_within_each_day=False,
         )  # Note both False
         data = slvr.TimetableSolverInputs(
             school_id=school_access_key, solution_specification=spec
@@ -325,7 +325,7 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         optimal_free_period = dt.time(hour=9)
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=True,
-            allow_split_classes_within_each_day=True,
+            allow_split_lessons_within_each_day=True,
             optimal_free_period_time_of_day=optimal_free_period,
         )
         data = slvr.TimetableSolverInputs(
@@ -384,7 +384,7 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=True,
-            allow_split_classes_within_each_day=True,
+            allow_split_lessons_within_each_day=True,
             optimal_free_period_time_of_day=morning,
         )
         data = slvr.TimetableSolverInputs(
@@ -431,7 +431,7 @@ class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
         afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
         spec = slvr.SolutionSpecification(
             allow_triple_periods_and_above=True,
-            allow_split_classes_within_each_day=True,
+            allow_split_lessons_within_each_day=True,
             optimal_free_period_time_of_day=afternoon,
         )
         data = slvr.TimetableSolverInputs(
@@ -469,7 +469,7 @@ class TestSolverScenarioSolutionsBreaks(test.TestCase):
 
     fixtures = ["test_scenario_break_1.json"]
     solution_spec = slvr.SolutionSpecification(
-        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+        allow_split_lessons_within_each_day=True, allow_triple_periods_and_above=True
     )
 
     def test_scenario_break_1(self):
@@ -524,7 +524,7 @@ class TestSolverScenarioSolutionsDifferentTimetablesForYearGroups(test.TestCase)
 
     fixtures = ["diff_tts_scenario_1.json"]
     solution_spec = slvr.SolutionSpecification(
-        allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
+        allow_split_lessons_within_each_day=True, allow_triple_periods_and_above=True
     )
 
     def test_diff_tts_scenario_1(self):

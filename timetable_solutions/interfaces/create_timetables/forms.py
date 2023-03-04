@@ -28,7 +28,7 @@ class SolutionSpecification(forms.Form):
     ]
 
     # Form fields
-    allow_split_classes_within_each_day = forms.BooleanField(
+    allow_split_lessons_within_each_day = forms.BooleanField(
         label="Classes can be taught at separate times in a day",
         label_suffix="",
         widget=forms.CheckboxInput,
@@ -90,8 +90,8 @@ class SolutionSpecification(forms.Form):
         Method to create a SolutionSpecification instance from the cleaned form data.
         """
         spec = _SolutionSpecification(
-            allow_split_classes_within_each_day=self.cleaned_data[
-                "allow_split_classes_within_each_day"
+            allow_split_lessons_within_each_day=self.cleaned_data[
+                "allow_split_lessons_within_each_day"
             ],
             allow_triple_periods_and_above=self.cleaned_data[
                 "allow_triple_periods_and_above"
