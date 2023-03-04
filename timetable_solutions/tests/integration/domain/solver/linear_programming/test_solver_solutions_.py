@@ -89,7 +89,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     """
 
     fixtures = [
-        "test_scenario_4.json",
         "test_scenario_8.json",
         "test_scenario_9.json",
         "test_scenario_10.json",
@@ -99,42 +98,6 @@ class TestSolverScenarioSolutionsConstraintDrivenRandomObjective(test.TestCase):
     solution_spec = slvr.SolutionSpecification(
         allow_split_classes_within_each_day=True, allow_triple_periods_and_above=True
     )
-
-    # TESTS WHERE A BASIC CONSTRAINT IS LIMITING
-
-    def test_solver_solution_test_scenario_4(self):
-        """
-        Test scenario targeted at the classroom one-class-at-a-time constraint.
-        Two classes share a classroom, but neither pupils nor teachers. One must take place at a certain time, leaving
-        only one option for the remaining class.
-        """
-        # Set test parameters
-        school_access_key = 444444
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=self.solution_spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert (
-            len(solver.variables.decision_variables) == 2
-        )  # Lesson's 1 slot could go in either time slot
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
-            ].varValue
-            == 0
-        )  # Busy
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 1
-        )
 
     # TESTS WHERE A STRUCTURAL, OPTIONAL CONSTRAINT IS LIMITING
     def test_solver_solution_test_scenario_8(self):
