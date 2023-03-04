@@ -21,8 +21,7 @@ class TestLessonModelAdmin(test.TestCase):
         "pupils.json",
         "timetable.json",
         "lessons_with_solution.json",
-        "test_scenario_10.json",
-    ]  # Included since some data not corresponding to access key 123456 is needed
+    ]
 
     lesson_url = "/data/admin/data/lesson/"
 

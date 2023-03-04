@@ -4,13 +4,12 @@ constraints determines the solution.
 """
 
 # Third party imports
-import pulp as lp
 import pytest
 
 # Local application imports
 from data.constants import Day
+from domain import solver
 from tests import data_factories, domain_factories
-from tests.integration.domain.solver.linear_programming import helpers
 
 
 @pytest.mark.django_db
@@ -42,7 +41,7 @@ class TestNosplitLessonsConstraint:
             relevant_year_groups=(yg,),
         )
         mon_2 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
-        mon_3 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_2)
+        data_factories.TimetableSlot.get_next_consecutive_slot(mon_2)
         tue_1 = data_factories.TimetableSlot(
             day_of_week=Day.TUESDAY, school=pupil.school, relevant_year_groups=(yg,)
         )
@@ -58,14 +57,13 @@ class TestNosplitLessonsConstraint:
         spec = domain_factories.SolutionSpecification(
             allow_split_lessons_within_each_day=False
         )
-        solver_ = helpers.get_solution(school=lesson.school, spec=spec)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=spec,
+        )
 
-        # Check solution is a solved slot on tuesday
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3)
+        # Check the lesson now has the solution set
+        assert lesson.solver_defined_time_slots.get() == tue_1
 
     def test_triple_period_not_allowed_when_no_triples(self):
         """
@@ -109,16 +107,13 @@ class TestNosplitLessonsConstraint:
         spec = domain_factories.SolutionSpecification(
             allow_triple_periods_and_above=False
         )
-        solver_ = helpers.get_solution(school=lesson.school, spec=spec)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=spec,
+        )
 
-        # Check solution is as expected
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3)
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_2)
+        # Check the lesson now has the solution set
+        assert set(lesson.solver_defined_time_slots.all()) == {tue_1, tue_2, mon_3}
 
     def test_no_split_lessons_no_triples_combined(self):
         """
@@ -162,31 +157,22 @@ class TestNosplitLessonsConstraint:
 
         # Solve the timetabling problem
         spec = domain_factories.SolutionSpecification(
-            allow_triple_periods_and_above=False,
             allow_split_lessons_within_each_day=False,
+            allow_triple_periods_and_above=False,
         )
-        solver_ = helpers.get_solution(school=lesson.school, spec=spec)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=spec,
+        )
 
-        # Check solution is as expected
-        assert solver_.problem.status == lp.LpStatusOptimal
+        # Check the lesson now has the solution set
+        solution_slots = set(lesson.solver_defined_time_slots.all())
+        assert len(solution_slots) == 5
 
-        # Check we have on double on monday
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
-        assert helpers.lesson_occurs_at_slot(
-            solver_.variables, lesson, mon_1
-        ) or helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3)
-        assert (
-            not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
-        ) or (not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3))
+        # The middle slot on mon / tues will always be involved to make the double,
+        # and the single slot in wednesday is forced too
+        assert {mon_2, tue_2, wed_1} < solution_slots
 
-        # Check we have on double on tuesday
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_2)
-        assert helpers.lesson_occurs_at_slot(
-            solver_.variables, lesson, tue_1
-        ) or helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_3)
-        assert (
-            not helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
-        ) or (not helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_3))
-
-        # Check single on wednesday
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, wed_1)
+        # The 2 doubles should then be on mon & tues, with no triple
+        assert (mon_1 in solution_slots) or (mon_3 in solution_slots)
+        assert (tue_1 in solution_slots) or (tue_3 in solution_slots)

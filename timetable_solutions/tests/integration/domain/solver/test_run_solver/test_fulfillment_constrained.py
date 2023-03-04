@@ -1,12 +1,12 @@
+"""Tests for the solutions in scenarios driven by lesson fulfillment."""
+
 # Third party imports
-import pulp as lp
 import pytest
 
 # Local application imports
 from data.constants import Day
 from domain import solver
-from tests import data_factories
-from tests.integration.domain.solver.linear_programming import helpers
+from tests import data_factories, domain_factories
 
 
 @pytest.mark.django_db
@@ -30,13 +30,13 @@ class TestSolverSolutionFulfillmentConstrainDriven:
             )
 
         # Solve the timetabling problem
-        solver_ = helpers.get_solution(lesson.school)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
 
-        # Check solutions are as expected
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        n_solved_slots = sum(solver_.variables.decision_variables.values())
-        assert n_solved_slots == total_required_slots
+        # Check the lesson now has the expected slots are set oin the lesson
+        assert lesson.solver_defined_time_slots.all().count() == total_required_slots
 
     def test_required_slots_are_fulfilled_with_user_defined_slot(self):
         pupil = data_factories.Pupil()
@@ -56,13 +56,13 @@ class TestSolverSolutionFulfillmentConstrainDriven:
         )
 
         # Solve the timetabling problem
-        solver_ = helpers.get_solution(lesson.school)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
 
-        # Check solution fulfilled the requirements
-        assert solver_.problem.status == lp.LpStatusOptimal
-        n_solved_slots = sum(solver_.variables.decision_variables.values())
-        # We only needed one slot from the solution
-        assert n_solved_slots == 1
+        # Check 1 additional slot was set on the lesson
+        assert lesson.solver_defined_time_slots.count() == 1
 
 
 @pytest.mark.django_db
@@ -93,19 +93,18 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
             day_of_week=Day.MONDAY, school=lesson.school, relevant_year_groups=(yg,)
         )
         mon_2 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
-        tue_1 = data_factories.TimetableSlot(
+        data_factories.TimetableSlot(
             day_of_week=Day.TUESDAY, school=lesson.school, relevant_year_groups=(yg,)
         )
 
         # Solve the timetabling problem
-        solver_ = helpers.get_solution(lesson.school)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
 
-        # Check solution is a double period on monday
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+        # Check the lesson now has the solution set
+        assert set(lesson.solver_defined_time_slots.all()) == {mon_1, mon_2}
 
     def test_double_period_only_fulfilled_if_teams_up_with_user_defined_slots(self):
         """
@@ -126,7 +125,7 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
         mon_1 = data_factories.TimetableSlot(
             day_of_week=Day.MONDAY, school=pupil.school, relevant_year_groups=(yg,)
         )
-        mon_2 = data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
+        data_factories.TimetableSlot.get_next_consecutive_slot(mon_1)
         tue_1 = data_factories.TimetableSlot(
             day_of_week=Day.TUESDAY, school=pupil.school, relevant_year_groups=(yg,)
         )
@@ -140,14 +139,13 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
         )
 
         # Solve the timetabling problem
-        solver_ = helpers.get_solution(lesson.school)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
 
-        # Check solution is a double period on tuesday
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_1)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_2)
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
+        # Check the lesson now has the solution set
+        assert lesson.solver_defined_time_slots.get() == tue_1
 
     def test_only_one_double_forces_slot_on_different_day(self):
         """
@@ -186,11 +184,10 @@ class TestSolverSolutionDoublePeriodFulfillmentConstrainDriven:
         )
 
         # Solve the timetabling problem
-        solver_ = helpers.get_solution(lesson.school)
+        solver.produce_timetable_solutions(
+            school_access_key=lesson.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
 
-        # Check solution is a solved slot on tuesday
-        assert solver_.problem.status == lp.LpStatusOptimal
-
-        assert helpers.lesson_occurs_at_slot(solver_.variables, lesson, tue_1)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_3)
-        assert not helpers.lesson_occurs_at_slot(solver_.variables, lesson, mon_4)
+        # Check the lesson now has the solution set
+        assert lesson.solver_defined_time_slots.get() == tue_1
