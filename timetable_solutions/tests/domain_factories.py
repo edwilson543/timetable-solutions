@@ -46,11 +46,12 @@ class TimetableComponent(factory.Factory):
 class SolutionSpecification(factory.Factory):
     """Factory of the SolutionSpecification class."""
 
-    allow_split_classes_within_each_day = True
+    allow_split_lessons_within_each_day = True
     allow_triple_periods_and_above = True
     optimal_free_period_time_of_day = (
         solver.SolutionSpecification.OptimalFreePeriodOptions.NONE
     )
+    ideal_proportion_of_free_periods_at_this_time = 1.0
 
     class Meta:
         model = solver.SolutionSpecification

@@ -15,7 +15,7 @@ class SolutionSpecification:
     Data class for storing any parameters relating to how the solution should be generated. These parameters are all
     user-defined. Note tht this dataclass is closely tied to the SolutionSpecification Form.
 
-    :field allow_split_classes_within_each_day: Whether to prevent having one class to be taught more
+    :field allow_split_lessons_within_each_day: Whether to prevent having one lesson to be taught more
     than once in a day, with a gap in between either session.
     :field allow_triple_periods_and_above: Self-evident, but the way it's implemented is to actually prevent a triple
     period or above, since 3 periods in a row would get counted as 2 doubles.
@@ -36,7 +36,7 @@ class SolutionSpecification:
         AFTERNOON = "AFTERNOON"
 
     # Instance attributes
-    allow_split_classes_within_each_day: bool
+    allow_split_lessons_within_each_day: bool
     allow_triple_periods_and_above: bool
     optimal_free_period_time_of_day: str | dt.time = OptimalFreePeriodOptions.NONE
     ideal_proportion_of_free_periods_at_this_time: float = 1.0
@@ -153,12 +153,12 @@ class TimetableSolverInputs:
 
     def _check_specification_aligns_with_input_data(self) -> None:
         """
-        Method to check whether it's possible to find a solution which disallows split classes within each day, before
+        Method to check whether it's possible to find a solution which disallows split lessons within each day, before
         formulating the lp problem, since we know it would be infeasible.
         Side effects: Store a user-targeted error message, specifying the options for resolution. Clearly we could just
         resolve directly within this method, but given the different options, the choice is left to the user.
         """
-        if not self.solution_specification.allow_split_classes_within_each_day:
+        if not self.solution_specification.allow_split_lessons_within_each_day:
             for lesson in self.lessons:
                 required_distinct_days = (
                     lesson.total_required_slots - lesson.total_required_double_periods

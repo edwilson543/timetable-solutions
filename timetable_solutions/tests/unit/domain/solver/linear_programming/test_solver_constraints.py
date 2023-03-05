@@ -379,7 +379,7 @@ class TestSolverConstraints:
         with pytest.raises(StopIteration):
             next(constraints)
 
-    def test_get_all_no_split_classes_within_day_constraints_constraints(self):
+    def test_get_all_no_split_lessons_within_day_constraints_constraints(self):
         # Get a lesson, requiring two distinct slots
         lesson = data_factories.Lesson.with_n_pupils(
             n_pupils=1,
@@ -403,7 +403,7 @@ class TestSolverConstraints:
 
         # Get the dependency constraints
         constraint_maker = self.get_constraint_maker(school=lesson.school)
-        constraints = constraint_maker._get_all_no_split_classes_in_a_day_constraints()
+        constraints = constraint_maker._get_all_no_split_lessons_in_a_day_constraints()
 
         constraint = next(constraints)[0]
         # The constraint is: lesson at slot 1 + lesson at slot 2 <= 1

@@ -97,7 +97,7 @@ class TestCreateTimetableFormView(test.TestCase):
         simple run requirements (i.e. allows all simplifications), the solver is run successfully.
         """
         form_data = {
-            "allow_split_classes_within_each_day": True,
+            "allow_split_lessons_within_each_day": True,
             "allow_triple_periods_and_above": True,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
             "ideal_proportion_of_free_periods_at_this_time": 1.0,
@@ -110,7 +110,7 @@ class TestCreateTimetableFormView(test.TestCase):
         forces all components (i.e. constraints / objective) of the solver to be used, the solver is run successfully.
         """
         form_data = {
-            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_split_lessons_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.NONE,
             "ideal_proportion_of_free_periods_at_this_time": 0.70,
@@ -125,7 +125,7 @@ class TestCreateTimetableFormView(test.TestCase):
         includes an specific optimal free period time and ideal proportion, the solver runs as expected
         """
         form_data = {
-            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_split_lessons_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": dt.time(hour=9),
             "ideal_proportion_of_free_periods_at_this_time": 0.5,
@@ -140,7 +140,7 @@ class TestCreateTimetableFormView(test.TestCase):
         includes an optimum free period specified as the MORNING, and an ideal proportion, the solver runs as expected
         """
         form_data = {
-            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_split_lessons_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.MORNING,
             "ideal_proportion_of_free_periods_at_this_time": 0.5,
@@ -155,7 +155,7 @@ class TestCreateTimetableFormView(test.TestCase):
         includes an optimum free period specified as the AFTERNOON, and an ideal proportion, the solver runs as expected
         """
         form_data = {
-            "allow_split_classes_within_each_day": False,  # Note these are set to False
+            "allow_split_lessons_within_each_day": False,  # Note these are set to False
             "allow_triple_periods_and_above": False,
             "optimal_free_period_time_of_day": SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON,
             "ideal_proportion_of_free_periods_at_this_time": 0.5,
