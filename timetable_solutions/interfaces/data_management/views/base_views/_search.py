@@ -76,14 +76,12 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
             form = self.form_class(search_help_text=self.search_help_text)
         return form
 
-    def get_queryset(self) -> django_models.QuerySet[_ModelT]:
+    def get_queryset(self) -> list[dict]:
         """Get the queryset based on the search term or retrieve the full queryset."""
         if self.form.is_valid():
-            return self.execute_search_from_clean_form(self.form).values_list(
-                *self.display_field_names
-            )
-        else:
-            return super().get_queryset()
+            queryset = self.execute_search_from_clean_form(self.form)
+            return super().serialize_queryset(queryset)
+        return super().get_queryset()
 
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """

@@ -8,6 +8,7 @@ from interfaces.constants import UrlName
 from interfaces.data_management import views
 from tests import data_factories
 from tests.functional.client import TestClient
+from tests.helpers import serializers as serializers_helpers
 
 
 class TestTeacherSearchList(TestClient):
@@ -29,11 +30,9 @@ class TestTeacherSearchList(TestClient):
 
         # Check response ok and has the correct context
         assert response.status_code == 200
-
-        teachers = response.context["page_obj"].object_list
-        assert list(teachers) == [
-            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
-            (teacher_2.teacher_id, teacher_2.firstname, teacher_2.surname),
+        assert response.context["page_obj"].object_list == [
+            serializers_helpers.expected_teacher(teacher_1),
+            serializers_helpers.expected_teacher(teacher_2),
         ]
 
         django_form = response.context["form"]
@@ -49,12 +48,7 @@ class TestTeacherSearchList(TestClient):
         assert search_response.status_code == 200
 
         teachers = search_response.context["page_obj"].object_list
-        assert teachers.count() == 1
-        assert teachers.first() == (
-            teacher_1.teacher_id,
-            teacher_1.firstname,
-            teacher_1.surname,
-        )
+        assert teachers == [serializers_helpers.expected_teacher(teacher_1)]
 
         # The form should be populated with the existing search
         webtest_form = search_response.forms["search-form"]
@@ -70,7 +64,7 @@ class TestTeacherSearchList(TestClient):
 
         # Create some teacher data for our school
         teacher_1 = data_factories.Teacher(teacher_id=1, school=school)
-        data_factories.Teacher(teacher_id=2, school=school)
+        teacher_2 = data_factories.Teacher(teacher_id=2, school=school)
 
         # Navigate to the teacher search view
         url = UrlName.TEACHER_LIST.url()
@@ -81,12 +75,14 @@ class TestTeacherSearchList(TestClient):
 
         # Check the teachers have been paginated across two pages
         page_1 = response.context["page_obj"]
-        assert list(page_1.object_list) == [
-            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
-        ]
+        assert page_1.object_list == [serializers_helpers.expected_teacher(teacher_1)]
         assert page_1.has_next()
+
         paginator = response.context["paginator"]
-        assert paginator.count == 2
+        assert paginator.object_list == [
+            serializers_helpers.expected_teacher(teacher_1),
+            serializers_helpers.expected_teacher(teacher_2),
+        ]
 
         # Retrieve the html form and submit an empty search term
         webtest_form = response.forms["search-form"]
@@ -101,7 +97,5 @@ class TestTeacherSearchList(TestClient):
 
         # The full teacher list should still be shown
         page_1 = search_response.context["page_obj"]
-        assert list(page_1.object_list) == [
-            (teacher_1.teacher_id, teacher_1.firstname, teacher_1.surname),
-        ]
+        assert page_1.object_list == [serializers_helpers.expected_teacher(teacher_1)]
         assert page_1.has_next()

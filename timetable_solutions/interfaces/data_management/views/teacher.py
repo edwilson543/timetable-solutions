@@ -15,7 +15,7 @@ from domain.data_management.teachers import exceptions as teacher_exceptions
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
 from interfaces.constants import UrlName
-from interfaces.data_management import forms
+from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
 
 
@@ -40,11 +40,13 @@ class TeacherSearch(base_views.SearchView):
 
     model_class = models.Teacher
     form_class = forms.TeacherSearch
+    serializer_class = serializers.Teacher
 
     displayed_fields = {
         "teacher_id": "Teacher ID",
         "firstname": "Firstname",
         "surname": "Surname",
+        "title": "Title",
     }
     search_help_text = "Search for a teacher by name or id."
     page_url = UrlName.TEACHER_LIST.url(lazy=True)
