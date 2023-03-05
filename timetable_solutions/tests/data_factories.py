@@ -2,7 +2,6 @@
 Factories to be used throughout test suite when basic model instances are needed.
 """
 
-
 # Standard library imports
 import datetime as dt
 from typing import Any
@@ -177,8 +176,8 @@ class Lesson(factory.django.DjangoModelFactory):
     subject_name = "Maths"
     teacher = factory.SubFactory(Teacher, school=factory.SelfAttribute("..school"))
     classroom = factory.SubFactory(Classroom, school=factory.SelfAttribute("..school"))
-    total_required_slots = 7
-    total_required_double_periods = 2
+    total_required_slots = 1
+    total_required_double_periods = 0
 
     @factory.post_generation
     def pupils(
