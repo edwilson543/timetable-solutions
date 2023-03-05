@@ -5,6 +5,7 @@ from data import models
 from interfaces.constants import UrlName
 from tests import data_factories
 from tests.functional.client import TestClient
+from tests.helpers import serializers as serializers_helpers
 
 
 class TestTeacherUpdate(TestClient):
@@ -20,8 +21,11 @@ class TestTeacherUpdate(TestClient):
         # Check response ok and correct context
         assert page.status_code == 200
 
-        assert page.context["model_instance"] == teacher
+        assert page.context[
+            "serialized_model_instance"
+        ] == serializers_helpers.expected_teacher(teacher)
 
+        # Check the initial form values match the teacher's
         form = page.forms["disabled-change-form"]
         assert form["firstname"].value == teacher.firstname
         assert form["surname"].value == teacher.surname

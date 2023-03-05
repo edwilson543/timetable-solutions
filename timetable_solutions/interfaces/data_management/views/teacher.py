@@ -108,6 +108,7 @@ class TeacherUpdate(base_views.UpdateView):
 
     model_class = models.Teacher
     form_class = forms.TeacherUpdate
+    serializer_class = serializers.Teacher
 
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]

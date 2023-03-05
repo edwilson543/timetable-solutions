@@ -1,6 +1,10 @@
 # Standard library imports
 import abc
+from collections import OrderedDict
 from typing import Any, ClassVar, Generic, TypeVar
+
+# Third party imports
+from rest_framework import serializers
 
 # Django imports
 from django import http
@@ -38,6 +42,8 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
 
     form_class: type[base_forms.CreateUpdate]
     """Form used to update a model instance (overridden from django's FormView)"""
+
+    serializer_class: type[serializers.Serializer[_ModelT]]
 
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
@@ -128,7 +134,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """Add some additional context for the template."""
         context = super().get_context_data(**kwargs)
-        context["model_instance"] = self.model_instance
+        context["serialized_model_instance"] = self._get_serialized_model_instance()
         context["page_url"] = self.page_url
         return context
 
@@ -186,6 +192,10 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
             )
         except self.model_class.DoesNotExist:
             raise http.Http404
+
+    def _get_serialized_model_instance(self) -> OrderedDict:
+        """Serialize the model instance before passing as context."""
+        return self.serializer_class(instance=self.model_instance).data
 
     def _get_initial_form_kwargs(self) -> dict[str, Any]:
         """Get the kwargs to pass to the form as the initial kwarg values."""
