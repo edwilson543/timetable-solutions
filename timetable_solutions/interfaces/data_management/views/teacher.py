@@ -6,6 +6,7 @@ from typing import Any
 # Django imports
 from django import http
 from django.contrib import messages
+from django.db.models import Prefetch
 
 # Local application imports
 from data import models
@@ -15,7 +16,7 @@ from domain.data_management.teachers import exceptions as teacher_exceptions
 from domain.data_management.teachers import operations as teacher_operations
 from domain.data_management.teachers import queries as teacher_queries
 from interfaces.constants import UrlName
-from interfaces.data_management import forms
+from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
 
 
@@ -40,11 +41,13 @@ class TeacherSearch(base_views.SearchView):
 
     model_class = models.Teacher
     form_class = forms.TeacherSearch
+    serializer_class = serializers.Teacher
 
     displayed_fields = {
         "teacher_id": "Teacher ID",
         "firstname": "Firstname",
         "surname": "Surname",
+        "title": "Title",
     }
     search_help_text = "Search for a teacher by name or id."
     page_url = UrlName.TEACHER_LIST.url(lazy=True)
@@ -106,6 +109,9 @@ class TeacherUpdate(base_views.UpdateView):
 
     model_class = models.Teacher
     form_class = forms.TeacherUpdate
+    serializer_class = serializers.Teacher
+
+    prefetch_related = [Prefetch("lessons")]
 
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]

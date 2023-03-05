@@ -12,7 +12,7 @@
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        teacher id: {{ model_instance.teacher_id }}
+        teacher id: {{ serialized_model_instance.teacher_id }}
     </li>
 {% endblock %}
 
@@ -21,7 +21,7 @@
 <div class="row mx-3">
     <div class="card-header">
         <h3>
-            View and update details for {{ model_instance }}
+            View and update details for {{ serialized_model_instance.title }} {{ serialized_model_instance.surname }}
         </h3>
     </div>
 </div>
@@ -34,6 +34,6 @@
     </div>
 </div>
 
-{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=model_instance.lessons.all %}
+{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=serialized_model_instance.lessons %}
 
 {% endblock %}
