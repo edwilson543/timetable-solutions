@@ -7,7 +7,8 @@ form: base_forms.Search
 search_term: str | None  Must be explicitly passed to include
 object_list: list[dict[str, str]]
 human_field_names: list[str]
-model_class: type[django_models.Model]
+model_name_singular: str
+model_name_plural: str
 -->
 <style>
 .fixed-width-column {
@@ -33,9 +34,9 @@ model_class: type[django_models.Model]
                     <b>
                         Found {{ paginator.count }}
                         {% if paginator.count > 1 %}
-                            {{ model_class.Constant.human_string_plural }}
+                            {{ model_name_plural }}
                         {% else %}
-                            {{ model_class.Constant.human_string_singular }}
+                            {{ model_name_singular }}
                         {% endif %}
                         for search: "{{ search_term }}"
                     </b>
@@ -47,10 +48,10 @@ model_class: type[django_models.Model]
             {% else %}
                 <p>
                     {% if paginator.num_pages == 1 %}
-                        <b>Showing all {{ paginator.count }} {{ model_class.Constant.human_string_plural }}</b>
+                        <b>Showing all {{ paginator.count }} {{ model_name_singular }}</b>
                     {% else %}
                         <b>
-                            Showing {{ model_class.Constant.human_string_plural }} {{ page_obj.start_index }} -
+                            Showing {{ model_name_plural }} {{ page_obj.start_index }} -
                             {{ page_obj.end_index }} of {{ paginator.count }}
                         </b>
                     {% endif %}

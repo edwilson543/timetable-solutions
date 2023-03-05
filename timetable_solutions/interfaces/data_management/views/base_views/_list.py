@@ -71,7 +71,8 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
         context = super().get_context_data(**kwargs)
         context["update_url"] = self.update_url
         context["human_field_names"] = self.human_field_names
-        context["model_class"] = self.model_class
+        context["model_name_singular"] = self.model_class.Constant.human_string_singular
+        context["model_name_plural"] = self.model_class.Constant.human_string_plural
         return context
 
     # --------------------
