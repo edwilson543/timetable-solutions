@@ -45,10 +45,8 @@ class LandingView(mixins.LoginRequiredMixin, generic.TemplateView):
 
         context["has_existing_data"] = self.has_existing_data()
 
-        context[
-            "model_string_singular"
-        ] = self.model_class.Constant.human_string_singular
-        context["model_string_plural"] = self.model_class.Constant.human_string_plural
+        context["model_name_singular"] = self.model_class.Constant.human_string_singular
+        context["model_name_plural"] = self.model_class.Constant.human_string_plural
 
         context["upload_url"] = self.upload_url.url()
         context["create_url"] = self.create_url.url()
