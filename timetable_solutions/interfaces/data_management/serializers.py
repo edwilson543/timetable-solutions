@@ -20,3 +20,10 @@ class Teacher(serializers.Serializer):
     def _get_update_url(self, obj: models.Teacher) -> str:
         """Get the url leading to this teacher's update / detail view page."""
         return UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher_id)
+
+
+class YearGroup(serializers.Serializer):
+    """Serialize a lesson instance for use in template context."""
+
+    year_group_id = serializers.IntegerField()
+    year_group_name = serializers.CharField()

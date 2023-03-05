@@ -30,3 +30,25 @@ class TestTeacherSerializer:
             serializers_helpers.expected_teacher(teacher_a),
             serializers_helpers.expected_teacher(teacher_b),
         ]
+
+
+@pytest.mark.django_db
+class TestYearGroupSerializer:
+    def test_serialize_individual_instance(self):
+        year_group = data_factories.YearGroup()
+
+        serialized_teacher = serializers.YearGroup(year_group).data
+
+        assert serialized_teacher == serializers_helpers.expected_year_group(year_group)
+
+    def test_serialize_teacher_queryset(self):
+        yg_a = data_factories.YearGroup(year_group_name="AAA")
+        yg_b = data_factories.YearGroup(year_group_name="BBB")
+        queryset = models.YearGroup.objects.all().order_by("year_group_name")
+
+        serialized_teacher = serializers.YearGroup(queryset, many=True).data
+
+        assert serialized_teacher == [
+            serializers_helpers.expected_year_group(yg_a),
+            serializers_helpers.expected_year_group(yg_b),
+        ]
