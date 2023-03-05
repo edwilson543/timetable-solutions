@@ -5,7 +5,7 @@ import datetime as dt
 import pytest
 
 # Local application imports
-from data import constants as data_constants
+from data.constants import Day
 from domain import solver
 from tests import data_factories, domain_factories
 
@@ -125,7 +125,7 @@ class TestSolverSolutionTeacherConstraintDriven:
         lesson_1_forced_slot = data_factories.TimetableSlot(
             relevant_year_groups=(yg_1,),
             school=teacher.school,
-            day_of_week=data_constants.Day.MONDAY,
+            day_of_week=Day.MONDAY,
         )
 
         # Make a lesson with 2 slot choices, once clashing with slot_1
@@ -136,7 +136,7 @@ class TestSolverSolutionTeacherConstraintDriven:
             total_required_double_periods=0,
         )
         yg_2 = lesson_2.pupils.first().year_group
-        slot_1_clash = data_factories.TimetableSlot(
+        data_factories.TimetableSlot(
             relevant_year_groups=(yg_2,),
             school=teacher.school,
             starts_at=dt.time(
@@ -147,14 +147,14 @@ class TestSolverSolutionTeacherConstraintDriven:
                 hour=lesson_1_forced_slot.ends_at.hour,
                 minute=clash_slot_overlap_minutes,
             ),
-            day_of_week=data_constants.Day.MONDAY,
+            day_of_week=Day.MONDAY,
         )
         lesson_2_forced_slot = data_factories.TimetableSlot(
             relevant_year_groups=(yg_2,),
             school=teacher.school,
             starts_at=lesson_1_forced_slot.starts_at,
             ends_at=lesson_1_forced_slot.ends_at,
-            day_of_week=data_constants.Day.TUESDAY,  # Note different day
+            day_of_week=Day.TUESDAY,  # Note different day
         )
 
         # Solve the timetabling problem
@@ -166,3 +166,56 @@ class TestSolverSolutionTeacherConstraintDriven:
         # Assert the lessons only have one slot, and occur at different times
         assert lesson_1.solver_defined_time_slots.get() == lesson_1_forced_slot
         assert lesson_2.solver_defined_time_slots.get() == lesson_2_forced_slot
+
+    @pytest.mark.parametrize("clash_slot_overlap_minutes", [0, 30])
+    def test_teacher_cannot_take_lesson_if_has_a_break(
+        self, clash_slot_overlap_minutes: int
+    ):
+        """
+        Test when a break clashes with a potential slot.
+        A teacher teaches 1 lesson, which requires 2 slots.
+        There are 2 slots on different days, one clashes with a break.
+        So the lesson must go at the one not clashing with a break
+        """
+        teacher = data_factories.Teacher()
+
+        # Make a lesson with only 1 slot choice
+        lesson = data_factories.Lesson.with_n_pupils(
+            teacher=teacher,
+            school=teacher.school,
+            total_required_slots=1,
+            total_required_double_periods=0,
+        )
+        yg = lesson.pupils.first().year_group
+
+        # Make two potential slots the lesson could go at
+        solution_slot = data_factories.TimetableSlot(
+            relevant_year_groups=(yg,),
+            school=teacher.school,
+            day_of_week=Day.MONDAY,
+        )
+        clash_slot = data_factories.TimetableSlot(
+            relevant_year_groups=(yg,),
+            school=teacher.school,
+            day_of_week=Day.TUESDAY,
+        )
+
+        # Put the teacher on a break clashing with the clash slot
+        data_factories.Break(
+            relevant_year_groups=(yg,),
+            school=teacher.school,
+            starts_at=dt.time(
+                hour=clash_slot.starts_at.hour,
+                minute=clash_slot_overlap_minutes,
+            ),
+            day_of_week=clash_slot.day_of_week,
+        )
+
+        # Solve the timetabling problem
+        solver.produce_timetable_solutions(
+            school_access_key=teacher.school.school_access_key,
+            solution_specification=domain_factories.SolutionSpecification(),
+        )
+
+        # Assert the lessons only have one slot, and occur at different times
+        assert lesson.solver_defined_time_slots.get() == solution_slot
