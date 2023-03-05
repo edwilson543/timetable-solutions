@@ -4,33 +4,23 @@ from typing import Any, ClassVar, Generic, TypeVar
 
 # Django imports
 from django import forms as django_forms
-from django.contrib.auth import mixins
 from django.db import models as django_models
-from django.views import generic
 
 # Local application imports
-from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
+
+from ._list import ListView
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
 
 
-class SearchView(
-    mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _SearchFormT]
-):
+class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
     """
     Page displaying a school's data for a single model, and allowing this data to be searched.
 
     Searches should be sent as GET requests from <input name='search-submit' ...> tags.
     """
-
-    # Defaulted django vars
-    paginate_by: ClassVar[int] = 50
-    """Render 50 items per page, including for search results."""
-
-    http_method_names = ["get"]
-    """The searching is done via GET requests, so disallow POST."""
 
     # Generic class vars
     model_class: type[_ModelT]
@@ -38,29 +28,13 @@ class SearchView(
 
     form_class: type[_SearchFormT]
     """The form class used to process the user's search."""
+
     # Ordinary class vars
-    displayed_fields: ClassVar[dict[str, str]]
-    """
-    The fields to use as column headers in the rendered context.
-    Given as {field name: displayed name, ...} key-value pairs.
-    The first key should always be the model's id within the school field, e.g. 'teacher_id'.
-    """
-
-    search_help_text: ClassVar[str]
-    """User prompt for the fields they can search by."""
-
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
 
-    update_url: ClassVar[UrlName]
-    """
-    URL to go through to the detail view of individual objects.
-    Needs reversing with an id kwarg in the template.
-    """
-
-    # Instance vars
-    school_id: int
-    """The school who's data will be shown."""
+    search_help_text: ClassVar[str]
+    """User prompt for the fields they can search by."""
 
     form: _SearchFormT
     """
@@ -87,7 +61,6 @@ class SearchView(
     ) -> None:
         """Set some instance attributes used in later logic."""
         super().setup(request, *args, **kwargs)
-        self.school_id = request.user.profile.school.school_access_key
         self.form = self.get_form()
 
     def get_form(self) -> _SearchFormT:
@@ -110,9 +83,7 @@ class SearchView(
                 *self.display_field_names
             )
         else:
-            return self.model_class.objects.get_all_instances_for_school(
-                school_id=self.school_id
-            ).values_list(*self.display_field_names)
+            return super().get_queryset()
 
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """
@@ -121,13 +92,8 @@ class SearchView(
         This is either the return of the user's search, or all model data for their school.
         """
         context = super().get_context_data(**kwargs)
-
         context["page_url"] = self.page_url
-        context["update_url"] = self.update_url
-        context["human_field_names"] = self.human_field_names
-        context["model_class"] = self.model_class
         context["form"] = self.form
-
         return context
 
     # --------------------
@@ -137,13 +103,3 @@ class SearchView(
     def is_search(self) -> bool:
         """Whether the request includes a search attempt or not."""
         return "search-submit" in self.request.GET.keys()
-
-    @property
-    def display_field_names(self) -> list[str]:
-        """The field names in the database that data will be fetched from."""
-        return list(self.displayed_fields.keys())
-
-    @property
-    def human_field_names(self) -> list[str]:
-        """Human friendly names for each field."""
-        return list(self.displayed_fields.values())
