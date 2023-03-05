@@ -44,6 +44,10 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     """Form used to update a model instance (overridden from django's FormView)"""
 
     serializer_class: type[serializers.Serializer[_ModelT]]
+    """Serializer used to convert the model instance into JSON-like data."""
+
+    prefetch_related: list[django_models.Prefetch] | None = None
+    """Any relationships to prefetch when retrieving the model instance."""
 
     object_id_name: ClassVar[str]
     """Name of the object's id field, that is unique to the school. e.g. 'teacher_id', 'pupil_id'."""
@@ -187,7 +191,13 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     def _get_object_or_404(self, model_instance_id: int | str) -> _ModelT:
         """Retrieve the model instance we are updating."""
         try:
-            return self.model_class.objects.get(
+            if self.prefetch_related:
+                objects = self.model_class.objects.prefetch_related(
+                    *self.prefetch_related
+                )
+            else:
+                objects = self.model_class.objects
+            return objects.get(
                 school_id=self.school_id, **{self.object_id_name: model_instance_id}
             )
         except self.model_class.DoesNotExist:

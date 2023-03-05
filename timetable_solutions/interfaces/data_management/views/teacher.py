@@ -6,6 +6,7 @@ from typing import Any
 # Django imports
 from django import http
 from django.contrib import messages
+from django.db.models import Prefetch
 
 # Local application imports
 from data import models
@@ -109,6 +110,8 @@ class TeacherUpdate(base_views.UpdateView):
     model_class = models.Teacher
     form_class = forms.TeacherUpdate
     serializer_class = serializers.Teacher
+
+    prefetch_related = [Prefetch("lessons")]
 
     object_id_name = "teacher_id"
     model_attributes_for_form_initials = ["firstname", "surname", "title"]
