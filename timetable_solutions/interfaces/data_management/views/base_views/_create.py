@@ -85,10 +85,7 @@ class CreateView(
         This is either the return of the user's search, or all model data for their school.
         """
         context = super().get_context_data(**kwargs)
-
         context["page_url"] = self.page_url
-        context["model_class"] = self.model_class
-
         return context
 
     def get_success_url(self) -> str:
