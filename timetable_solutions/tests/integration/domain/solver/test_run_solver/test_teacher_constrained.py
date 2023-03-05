@@ -107,7 +107,7 @@ class TestSolverSolutionTeacherConstraintDriven:
         self, clash_slot_overlap_minutes: int
     ):
         """
-        One teacher takes two lessons each requiring one slot.
+        One teacher takes two lessons each requiring one slot, for different year groups.
         The first lesson only has one slot choice for when it can go.
         The second slot has two choices of slot, but one clashes with the first lesson's only choice.
         Since the teacher can only be in one place at a time, the second lesson is determined.

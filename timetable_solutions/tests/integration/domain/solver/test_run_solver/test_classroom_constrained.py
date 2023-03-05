@@ -107,7 +107,7 @@ class TestSolverSolutionClassroomConstraintDriven:
         self, clash_slot_overlap_minutes: int
     ):
         """
-        One classroom hosts two lessons each requiring one slot.
+        One classroom hosts two lessons each requiring one slot, for different year groups.
         The first lesson only has one slot choice for when it can go.
         The second slot has two choices of slot, but one clashes with the first lesson's only choice.
         Since the classroom can only have one lesson at a time, the second lesson is determined.

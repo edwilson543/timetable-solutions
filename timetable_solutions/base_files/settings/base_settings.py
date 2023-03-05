@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 # Standard library imports
 from pathlib import Path
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parents[2]
 # Application definition
@@ -114,5 +113,3 @@ LOGIN_REDIRECT_URL = "dashboard"
 LOGOUT_REDIRECT_URL = "dashboard"
 # Forms - use default div renderer
 FORM_RENDERER = "django.forms.renderers.DjangoDivFormRenderer"
-# Testing
-FIXTURE_DIRS = [BASE_DIR / "tests" / "test_scenario_fixtures"]
