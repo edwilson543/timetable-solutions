@@ -32,3 +32,16 @@ def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
             ("year_group_name", year_group.year_group_name),
         ]
     )
+
+
+def expected_lessons(lesson: models.Lesson) -> OrderedDict:
+    """Get the expected serialized data from a single year group."""
+    return OrderedDict(
+        [
+            ("lesson_id", lesson.lesson_id),
+            ("subject_name", lesson.subject_name),
+            ("year_group", str(lesson.get_associated_year_group().year_group_name)),
+            ("teacher", str(lesson.teacher)),
+            ("total_required_slots", lesson.total_required_slots),
+        ]
+    )

@@ -37,18 +37,42 @@ class TestYearGroupSerializer:
     def test_serialize_individual_instance(self):
         year_group = data_factories.YearGroup()
 
-        serialized_teacher = serializers.YearGroup(year_group).data
+        serialized_year_group = serializers.YearGroup(year_group).data
 
-        assert serialized_teacher == serializers_helpers.expected_year_group(year_group)
+        assert serialized_year_group == serializers_helpers.expected_year_group(
+            year_group
+        )
 
     def test_serialize_teacher_queryset(self):
         yg_a = data_factories.YearGroup(year_group_name="AAA")
         yg_b = data_factories.YearGroup(year_group_name="BBB")
         queryset = models.YearGroup.objects.all().order_by("year_group_name")
 
-        serialized_teacher = serializers.YearGroup(queryset, many=True).data
+        serialized_year_groups = serializers.YearGroup(queryset, many=True).data
 
-        assert serialized_teacher == [
+        assert serialized_year_groups == [
             serializers_helpers.expected_year_group(yg_a),
             serializers_helpers.expected_year_group(yg_b),
+        ]
+
+
+@pytest.mark.django_db
+class TestLessonSerializer:
+    def test_serialize_individual_instance(self):
+        lesson = data_factories.Lesson.with_n_pupils()
+
+        serialized_lesson = serializers.Lesson(lesson).data
+
+        assert serialized_lesson == serializers_helpers.expected_lessons(lesson)
+
+    def test_serialize_lesson_queryset(self):
+        lesson_a = data_factories.Lesson.with_n_pupils(lesson_id="AAA")
+        lesson_b = data_factories.Lesson.with_n_pupils(lesson_id="BBB")
+        lessons = models.Lesson.objects.all().order_by("lesson_id")
+
+        serialized_lesson = serializers.Lesson(lessons, many=True).data
+
+        assert serialized_lesson == [
+            serializers_helpers.expected_lessons(lesson_a),
+            serializers_helpers.expected_lessons(lesson_b),
         ]
