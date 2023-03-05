@@ -19,6 +19,7 @@ def expected_teacher(teacher: models.Teacher) -> OrderedDict:
             ("firstname", teacher.firstname),
             ("surname", teacher.surname),
             ("title", teacher.title),
+            ("lessons", [expected_lesson(lesson) for lesson in teacher.lessons.all()]),
             ("update_url", UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id)),
         ]
     )
@@ -34,7 +35,7 @@ def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
     )
 
 
-def expected_lessons(lesson: models.Lesson) -> OrderedDict:
+def expected_lesson(lesson: models.Lesson) -> OrderedDict:
     """Get the expected serialized data from a single year group."""
     return OrderedDict(
         [

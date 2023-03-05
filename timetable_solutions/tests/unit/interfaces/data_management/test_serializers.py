@@ -19,6 +19,14 @@ class TestTeacherSerializer:
 
         assert serialized_teacher == serializers_helpers.expected_teacher(teacher)
 
+    def test_serialize_individual_instance_with_lesson(self):
+        lesson = data_factories.Lesson.with_n_pupils()
+        teacher = lesson.teacher
+
+        serialized_teacher = serializers.Teacher(teacher).data
+
+        assert serialized_teacher == serializers_helpers.expected_teacher(teacher)
+
     def test_serialize_teacher_queryset(self):
         teacher_a = data_factories.Teacher(firstname="AAA")
         teacher_b = data_factories.Teacher(firstname="BBB")
@@ -63,7 +71,7 @@ class TestLessonSerializer:
 
         serialized_lesson = serializers.Lesson(lesson).data
 
-        assert serialized_lesson == serializers_helpers.expected_lessons(lesson)
+        assert serialized_lesson == serializers_helpers.expected_lesson(lesson)
 
     def test_serialize_lesson_queryset(self):
         lesson_a = data_factories.Lesson.with_n_pupils(lesson_id="AAA")
@@ -73,6 +81,6 @@ class TestLessonSerializer:
         serialized_lesson = serializers.Lesson(lessons, many=True).data
 
         assert serialized_lesson == [
-            serializers_helpers.expected_lessons(lesson_a),
-            serializers_helpers.expected_lessons(lesson_b),
+            serializers_helpers.expected_lesson(lesson_a),
+            serializers_helpers.expected_lesson(lesson_b),
         ]

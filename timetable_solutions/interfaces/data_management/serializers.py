@@ -18,7 +18,16 @@ class Teacher(serializers.Serializer):
     firstname = serializers.CharField()
     surname = serializers.CharField()
     title = serializers.CharField()
+
+    # Relational data
+    lessons = serializers.SerializerMethodField(method_name="_lessons")
+
+    # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _lessons(self, obj: models.Teacher) -> list[OrderedDict]:
+        """Serialize the lessons associated with this teacher."""
+        return Lesson(instance=obj.lessons, many=True).data
 
     def _get_update_url(self, obj: models.Teacher) -> str:
         """Get the url leading to this teacher's update / detail view page."""
@@ -44,5 +53,6 @@ class Lesson(serializers.Serializer):
     def _year_group(self, obj: models.Lesson) -> str:
         return obj.get_associated_year_group().year_group_name
 
-    def _teacher(self, obj: models.Lesson) -> OrderedDict:
-        return Teacher(obj.teacher).data
+    def _teacher(self, obj: models.Lesson) -> str:
+        """Return a simple string rep of the teacher to avoid recursion."""
+        return str(obj.teacher)

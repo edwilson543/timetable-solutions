@@ -34,6 +34,6 @@
     </div>
 </div>
 
-{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=model_instance.lessons.all %}
+{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=serialized_model_instance.lessons %}
 
 {% endblock %}

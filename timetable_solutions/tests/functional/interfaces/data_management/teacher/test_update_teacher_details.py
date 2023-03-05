@@ -10,8 +10,9 @@ from tests.helpers import serializers as serializers_helpers
 
 class TestTeacherUpdate(TestClient):
     def test_access_detail_page_with_disabled_form(self):
-        # Make a teacher's data to access
-        teacher = data_factories.Teacher()
+        # Make a teacher's data to access, with an associated lesson
+        lesson = data_factories.Lesson.with_n_pupils()
+        teacher = lesson.teacher
         self.authorise_client_for_school(teacher.school)
 
         # Navigate to this teacher's detail view
