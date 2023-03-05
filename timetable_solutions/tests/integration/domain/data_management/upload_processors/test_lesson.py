@@ -14,7 +14,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import Header
-from tests import data_factories, utils
+from tests import data_factories
+from tests.helpers.csv import get_csv_from_lists
 
 
 @pytest.mark.django_db
@@ -36,7 +37,7 @@ class TestLessonFileUploadProcessorValidUploads:
         pupil_1 = data_factories.Pupil(school=school, year_group=yg)
 
         # Get a csv file-like object
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -122,7 +123,7 @@ class TestLessonFileUploadProcessorValidUploads:
         slot_id_string = "".join(f"{slot.slot_id};" for slot in slots)
 
         # Get a csv file-like object
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -182,7 +183,7 @@ class TestLessonFileUploadProcessorValidUploads:
         pupil = data_factories.Pupil(school=school, year_group=yg)
 
         # Get a csv file-like object
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -239,7 +240,7 @@ class TestLessonFileUploadProcessorValidUploads:
         pupil = data_factories.Pupil(school=school, year_group=yg)
 
         # Get a csv file-like object
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -325,7 +326,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         non_existent_pupil_id = "1"
 
         # Make the erroneous csv file
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -369,7 +370,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         non_existent_teacher_id = "1"
 
         # Make the erroneous csv file
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -413,7 +414,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         non_existent_classroom_id = "1"
 
         # Make the erroneous csv file
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,
@@ -458,7 +459,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         non_existent_slot_id = "1"
 
         # Make the erroneous csv file
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.LESSON_ID,

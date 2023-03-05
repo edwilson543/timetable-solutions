@@ -11,7 +11,7 @@ from django.core.files import uploadedfile
 
 # Local application imports
 from interfaces.data_management.forms import base_forms
-from tests.utils import get_csv_from_lists
+from tests.helpers.csv import get_csv_from_lists
 
 
 class TestSearch:

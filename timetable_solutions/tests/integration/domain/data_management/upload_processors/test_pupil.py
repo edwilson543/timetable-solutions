@@ -14,7 +14,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import Header
-from tests import data_factories, utils
+from tests import data_factories
+from tests.helpers.csv import get_csv_from_lists
 
 
 @pytest.mark.django_db
@@ -25,7 +26,7 @@ class TestPupilFileUploadProcessor:
         year_group_a = data_factories.YearGroup(school=school)
         year_group_b = data_factories.YearGroup(school=school)
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.PUPIL_ID,
@@ -74,7 +75,7 @@ class TestPupilFileUploadProcessor:
         second_row = [2, "Wesley", "Hoolahan", year_group.year_group_id]
         second_row[missing_data_column] = None
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.PUPIL_ID,
@@ -104,7 +105,7 @@ class TestPupilFileUploadProcessor:
         # Create a school to associate the pupils with
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.PUPIL_ID,

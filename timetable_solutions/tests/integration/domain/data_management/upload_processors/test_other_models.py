@@ -20,7 +20,8 @@ from base_files.settings.base_settings import BASE_DIR
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import Header
-from tests import data_factories, utils
+from tests import data_factories
+from tests.helpers.csv import get_csv_from_lists
 
 
 @pytest.mark.django_db
@@ -29,7 +30,7 @@ class TestTeacherFileUploadProcessor:
         # Create a school to upload the file to
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
                 [1, "Nims", "Purja", "Mr"],
@@ -67,7 +68,7 @@ class TestTeacherFileUploadProcessor:
         # Create a school to upload the file to
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [Header.TEACHER_ID, Header.FIRSTNAME, Header.SURNAME, Header.TITLE],
                 [1, "Nims", "Purja", "Mr"],
@@ -97,7 +98,7 @@ class TestClassroomUploadProcessor:
         # Create a school to upload the file to
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
                 [1, "MB", 10],
@@ -129,7 +130,7 @@ class TestClassroomUploadProcessor:
         # Create a school to upload the file to
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
                 [1, "MB", 10],
@@ -161,7 +162,7 @@ class TestYearGroupUploadProcessor:
         # Create a school to upload the file to
         school = data_factories.School()
 
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [Header.YEAR_GROUP_ID, Header.YEAR_GROUP_NAME],
                 [1, "1"],
@@ -231,7 +232,7 @@ class TestFileUploadProcessorInvalidMiscellaneous:
         school = data_factories.School()
 
         def csv_file() -> io.BytesIO:
-            return utils.get_csv_from_lists(
+            return get_csv_from_lists(
                 [
                     [Header.CLASSROOM_ID, Header.BUILDING, Header.ROOM_NUMBER],
                     [1, "MB", 10],

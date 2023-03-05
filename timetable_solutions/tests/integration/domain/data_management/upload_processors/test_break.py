@@ -15,7 +15,8 @@ from data import constants as data_constants
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import Header
-from tests import data_factories, utils
+from tests import data_factories
+from tests.helpers.csv import get_csv_from_lists
 
 
 @pytest.mark.django_db
@@ -33,7 +34,7 @@ class TestBreakFileUploadProcessorValidUploads:
         yg_b = data_factories.YearGroup(school=school)
 
         # Get a csv file-like object
-        csv_file = utils.get_csv_from_lists(
+        csv_file = get_csv_from_lists(
             [
                 [
                     Header.BREAK_ID,

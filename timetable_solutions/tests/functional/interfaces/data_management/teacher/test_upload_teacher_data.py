@@ -12,7 +12,7 @@ from domain.data_management.constants import ExampleFile
 from interfaces.constants import UrlName
 from tests import data_factories
 from tests.functional.client import TestClient
-from tests.utils import get_csv_from_lists
+from tests.helpers.csv import get_csv_from_lists
 
 
 class TestUploadTeacherData(TestClient):
