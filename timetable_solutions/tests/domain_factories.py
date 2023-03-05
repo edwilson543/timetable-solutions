@@ -51,6 +51,7 @@ class SolutionSpecification(factory.Factory):
     optimal_free_period_time_of_day = (
         solver.SolutionSpecification.OptimalFreePeriodOptions.NONE
     )
+    ideal_proportion_of_free_periods_at_this_time = 1.0
 
     class Meta:
         model = solver.SolutionSpecification

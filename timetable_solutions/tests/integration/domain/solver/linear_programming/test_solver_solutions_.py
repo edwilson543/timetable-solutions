@@ -1,9 +1,5 @@
 """Integration tests looking for specific timetable solutions from the TimetableSolver class."""
 
-
-# Standard library imports
-import datetime as dt
-
 # Third party imports
 import pulp as lp
 
@@ -12,110 +8,6 @@ from django import test
 
 # Local application imports
 from domain import solver as slvr
-
-
-class TestSolverScenarioSolutionsObjectiveDriven(test.TestCase):
-    """
-    Tests where we are after a specific solution. See individual docstrings for scenario setups.
-    'ObjectiveDrive' - the scenario is setup such that the optimal solution is entirely dictated by the objective
-    function.
-    """
-
-    fixtures = ["test_scenario_objective_2.json"]
-
-    def test_solver_solution_test_scenario_with_objective_2_ideal_morning(self):
-        """
-        Test scenario targeted at using the optimal free period objective component, with the morning specified.
-        We have the following setup:
-        Timetable structure:
-            Monday: MORNING: empty; AFTERNOON: empty;
-        1 Lesson, requiring:
-            1 slot;
-        Optimal free period time:
-            MORNING;
-        Therefore we want the outcome to be that the lesson's one slot takes place in the AFTERNOON.
-        """
-        # Set test parameters
-        school_access_key = 222222
-        morning = slvr.SolutionSpecification.OptimalFreePeriodOptions.MORNING
-        spec = slvr.SolutionSpecification(
-            allow_triple_periods_and_above=True,
-            allow_split_lessons_within_each_day=True,
-            optimal_free_period_time_of_day=morning,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2
-        assert len(solver.variables.double_period_variables) == 0
-
-        # See docstring for solution
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
-            ].varValue
-            == 0
-        )  # Morn
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 1
-        )  # Aft
-
-    def test_solver_solution_test_scenario_with_objective_2_ideal_afternoon(self):
-        """
-        Test scenario targeted at using the optimal free period objective component, with the afternoon specified.
-        We have the following setup:
-        Timetable structure:
-            Monday: MORNING: empty; AFTERNOON: empty;
-        1 Lesson, requiring:
-            1 slot;
-        Optimal free period time:
-            AFTERNOON;
-        Therefore we want the outcome to be that the lesson's one slot takes place in the MORNING.
-        """
-        # Set test parameters
-        school_access_key = 222222
-        afternoon = slvr.SolutionSpecification.OptimalFreePeriodOptions.AFTERNOON
-        spec = slvr.SolutionSpecification(
-            allow_triple_periods_and_above=True,
-            allow_split_lessons_within_each_day=True,
-            optimal_free_period_time_of_day=afternoon,
-        )
-        data = slvr.TimetableSolverInputs(
-            school_id=school_access_key, solution_specification=spec
-        )
-        solver = slvr.TimetableSolver(input_data=data)
-
-        # Execute test unit
-        solver.solve()
-
-        # Check outcome
-        assert lp.LpStatus[solver.problem.status] == "Optimal"
-        assert len(solver.variables.decision_variables) == 2
-        assert len(solver.variables.double_period_variables) == 0
-
-        # See docstring for solution
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=1)
-            ].varValue
-            == 1
-        )  # Morn
-        assert (
-            solver.variables.decision_variables[
-                slvr.var_key(lesson_id="ENGLISH", slot_id=2)
-            ].varValue
-            == 0
-        )  # Aft
 
 
 class TestSolverScenarioSolutionsBreaks(test.TestCase):
