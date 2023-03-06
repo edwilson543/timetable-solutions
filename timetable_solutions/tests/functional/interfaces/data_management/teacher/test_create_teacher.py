@@ -9,7 +9,7 @@ class TestTeacherCreate(TestClient):
     def test_valid_add_teacher_form_creates_teacher_in_db(self):
         # Create existing db content
         school = data_factories.School()
-        teacher = data_factories.Teacher(school=school, teacher_id=1)
+        teacher = data_factories.Teacher(school=school)
 
         # Authorise the client to this school and navigate to add page
         self.authorise_client_for_school(school)
@@ -24,7 +24,7 @@ class TestTeacherCreate(TestClient):
         assert int(form["teacher_id"].value) == teacher.teacher_id + 1
 
         # Fill out and submit the form
-        form["teacher_id"] = 2
+        form["teacher_id"] = teacher.teacher_id + 1
         form["firstname"] = "Dave"
         form["surname"] = "Smith"
         form["title"] = "Miss"
@@ -33,7 +33,9 @@ class TestTeacherCreate(TestClient):
 
         # Check response ok and redirects
         assert response.status_code == 302
-        assert response.location == UrlName.TEACHER_UPDATE.url(teacher_id=2)
+        assert response.location == UrlName.TEACHER_UPDATE.url(
+            teacher_id=teacher.teacher_id + 1
+        )
 
         # Check a new teacher was created in the db
         db_teacher = models.Teacher.objects.get(
@@ -73,4 +75,4 @@ class TestTeacherCreate(TestClient):
         # Check no new teacher was created
         teachers = models.Teacher.objects.all()
         assert teachers.count() == 1
-        assert teachers.get().firstname != "test"
+        assert teachers.get() == existing_teacher
