@@ -166,7 +166,7 @@ class TestGetTeacherForSchool:
 
 @pytest.mark.django_db
 class TestGetNextIdForSchool:
-    def test_gets_next_teacher_id_when_school_has_teacher(self):
+    def test_gets_next_teacher_id_when_school_has_teachers(self):
         school = data_factories.School()
         teacher_a = data_factories.Teacher(school=school)
         teacher_b = data_factories.Teacher(school=school)
@@ -177,7 +177,7 @@ class TestGetNextIdForSchool:
 
         assert next_id == max(teacher_a.teacher_id, teacher_b.teacher_id) + 1
 
-    def test_gets_one_when_teacher_has_no_teachers(self):
+    def test_gets_one_when_school_has_no_teachers(self):
         school = data_factories.School()
 
         next_id = queries.get_next_teacher_id_for_school(
