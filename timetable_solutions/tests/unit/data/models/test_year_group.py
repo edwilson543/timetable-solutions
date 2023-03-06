@@ -8,20 +8,20 @@ import pytest
 
 # Local application imports
 from data import models
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
 class TestYearGroupQuerySet:
     def test_get_all_year_groups_with_pupils_excludes_no_pupil_ygs(self):
-        school = factories.School()
+        school = data_factories.School()
 
         # Create a year group with at least one pupil
-        yg_1 = factories.YearGroup(school=school)
-        factories.Pupil(year_group=yg_1, school=school)
+        yg_1 = data_factories.YearGroup(school=school)
+        data_factories.Pupil(year_group=yg_1, school=school)
 
         # Create a year group with no pupils
-        factories.YearGroup(school=school)
+        data_factories.YearGroup(school=school)
 
         # Execute test unit
         ygs_with_pupils = models.YearGroup.objects.get_all_year_groups_with_pupils(
@@ -36,9 +36,8 @@ class TestYearGroupQuerySet:
 
 @pytest.mark.django_db
 class TestYearGroup:
-
     # --------------------
-    # Factories tests
+    # data_factories tests
     # --------------------
 
     def test_create_new_valid_year_group_from_string(self):
@@ -46,7 +45,7 @@ class TestYearGroup:
         Tests that we can create and save a YearGroup instance via the create_new method
         """
         # Get a school to add the year group to
-        school = factories.School()
+        school = data_factories.School()
 
         # Execute test unit
         yg = models.YearGroup.create_new(
@@ -62,12 +61,12 @@ class TestYearGroup:
         Test that we can successfully delete all year groups associated with a school.
         """
         # Get some year groups, for different schools
-        school_1 = factories.School()
-        factories.YearGroup(school=school_1)
-        factories.YearGroup(school=school_1)
+        school_1 = data_factories.School()
+        data_factories.YearGroup(school=school_1)
+        data_factories.YearGroup(school=school_1)
 
-        school_2 = factories.School()
-        safe_from_deletion_yg = factories.YearGroup(school=school_2)
+        school_2 = data_factories.School()
+        safe_from_deletion_yg = data_factories.YearGroup(school=school_2)
 
         # Delete the year groups from the first school
         outcome = models.YearGroup.delete_all_instances_for_school(
@@ -87,9 +86,9 @@ class TestYearGroup:
         Test that deleting year groups cascades to pupil deletions.
         """
         # Make some pupils and add them to a year group
-        yg = factories.YearGroup()
-        factories.Pupil(year_group=yg)
-        factories.Pupil(year_group=yg)
+        yg = data_factories.YearGroup()
+        data_factories.Pupil(year_group=yg)
+        data_factories.Pupil(year_group=yg)
 
         # Delete the year group
         outcome = models.YearGroup.delete_all_instances_for_school(
@@ -109,8 +108,10 @@ class TestYearGroup:
         Test that deleting year groups only deletes relationships with TimetableSlots
         """
         # Make a slot relevant to a year group
-        yg = factories.YearGroup()
-        slot = factories.TimetableSlot(relevant_year_groups=(yg,), school=yg.school)
+        yg = data_factories.YearGroup()
+        slot = data_factories.TimetableSlot(
+            relevant_year_groups=(yg,), school=yg.school
+        )
 
         # Delete the year group
         outcome = models.YearGroup.delete_all_instances_for_school(
@@ -130,3 +131,15 @@ class TestYearGroup:
         all_slots = models.TimetableSlot.objects.all()
         assert all_slots.count() == 1
         assert all_slots.first() == slot
+
+
+@pytest.mark.django_db
+class TestYearGroupMutators:
+    def test_updates_year_group_name(self):
+        yg = data_factories.YearGroup(year_group_name="not-test")
+
+        yg.update(year_group_name="test")
+
+        yg.refresh_from_db()
+
+        assert yg.year_group_name == "test"

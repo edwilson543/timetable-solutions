@@ -94,7 +94,7 @@ class YearGroup(models.Model):
         return self.__str__()
 
     # --------------------
-    # Factories tests
+    # Factories
     # --------------------
 
     @classmethod
@@ -120,7 +120,21 @@ class YearGroup(models.Model):
         return outcome
 
     # --------------------
-    # Queries tests
+    # Mutators
+    # --------------------
+
+    def update(
+        self,
+        *,
+        year_group_name: str | None = None,
+    ) -> "YearGroup":
+        """Update a year group's details, only exposing editable fields as kwargs."""
+        self.year_group_name = year_group_name or self.year_group_name
+        self.save(update_fields=["year_group_name"])
+        return self
+
+    # --------------------
+    # Queries
     # --------------------
 
     def get_number_pupils(self) -> int:
