@@ -52,3 +52,15 @@ class TestCreateNewYearGroup:
                 year_group_id="not-an-integer",
                 year_group_name="test",
             )
+
+
+@pytest.mark.django_db
+class TestUpdateYearGroup:
+    def test_updates_year_group_name(self):
+        yg = data_factories.YearGroup(year_group_name="not-test")
+
+        operations.update_year_group(year_group=yg, year_group_name="test")
+
+        yg.refresh_from_db()
+
+        assert yg.year_group_name == "test"

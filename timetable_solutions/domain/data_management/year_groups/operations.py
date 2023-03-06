@@ -28,3 +28,19 @@ def create_new_year_group(
         )
     except (IntegrityError, ValidationError, ValueError) as exc:
         raise exceptions.CouldNotCreateYearGroup from exc
+
+
+def update_year_group(
+    *,
+    year_group: models.YearGroup,
+    year_group_name: str | None = None,
+) -> models.YearGroup:
+    """
+    Update a year group in the db.
+
+    raises CouldNotUpdateYearGroup if it wasn't possible.
+    """
+    try:
+        return year_group.update(year_group_name=year_group_name)
+    except (ValidationError, ValueError) as exc:
+        raise exceptions.CouldNotUpdateYearGroup from exc
