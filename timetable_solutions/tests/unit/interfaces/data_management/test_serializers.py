@@ -42,8 +42,18 @@ class TestTeacherSerializer:
 
 @pytest.mark.django_db
 class TestYearGroupSerializer:
-    def test_serialize_individual_instance(self):
+    def test_serialize_individual_instance_no_pupils(self):
         year_group = data_factories.YearGroup()
+
+        serialized_year_group = serializers.YearGroup(year_group).data
+
+        assert serialized_year_group == serializers_helpers.expected_year_group(
+            year_group
+        )
+
+    def test_serialize_individual_instance_with_pupils(self):
+        pupil = data_factories.Pupil()
+        year_group = pupil.year_group
 
         serialized_year_group = serializers.YearGroup(year_group).data
 

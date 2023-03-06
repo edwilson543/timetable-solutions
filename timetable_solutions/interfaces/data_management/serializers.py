@@ -40,6 +40,12 @@ class YearGroup(serializers.Serializer):
     year_group_id = serializers.IntegerField()
     year_group_name = serializers.CharField()
 
+    # Non-field data data
+    number_pupils = serializers.SerializerMethodField(method_name="_number_pupils")
+
+    def _number_pupils(self, obj: models.YearGroup) -> int:
+        return obj.get_number_pupils()
+
 
 class Lesson(serializers.Serializer):
     """Serialize a lesson instance for use in template context."""
