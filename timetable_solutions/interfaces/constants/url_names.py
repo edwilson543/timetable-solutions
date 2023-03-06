@@ -55,6 +55,9 @@ class UrlName(StrEnum):
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
     TEACHER_UPLOAD = "teacher-upload"
 
+    # Year groups
+    YEAR_GROUP_LANDING_PAGE = "year-group-landing-page"
+
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 

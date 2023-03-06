@@ -42,4 +42,12 @@ urlpatterns = [
         views.TeacherExampleDownload.as_view(),
         name="teacher-download",
     ),
+    # --------------------
+    # Year groups
+    # --------------------
+    path(
+        "yeargroups/",
+        views.YearGroupLanding.as_view(),
+        name=UrlName.YEAR_GROUP_LANDING_PAGE.value,
+    ),
 ]
