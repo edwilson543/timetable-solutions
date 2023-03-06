@@ -11,18 +11,19 @@ from interfaces.data_management import forms
 from tests import data_factories
 
 
+@mock.patch(
+    "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
+)
+@mock.patch(
+    "interfaces.data_management.forms.teacher.queries.get_teacher_for_school",
+)
 @pytest.mark.django_db
 class TestTeacherCreate:
-    @mock.patch(
-        "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
-    )
-    @mock.patch(
-        "interfaces.data_management.forms.teacher.queries.get_teacher_for_school",
-        return_value=False,
-    )
     def test_form_valid_if_teacher_id_unique_for_school(
         self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
     ):
+        mock_get_teacher.return_value = False
+
         school = data_factories.School()
 
         form = forms.TeacherCreate(
@@ -41,18 +42,13 @@ class TestTeacherCreate:
         assert form.cleaned_data["surname"] == "test-surname"
         assert form.cleaned_data["title"] == "test-title"
 
-    @mock.patch(
-        "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
-        return_value=123456,
-    )
-    @mock.patch(
-        "interfaces.data_management.forms.teacher.queries.get_teacher_for_school",
-        return_value=True,
-    )
     def test_form_invalid_if_teacher_id_already_exists_for_school(
         self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
     ):
         teacher = data_factories.Teacher()
+
+        mock_get_next_teacher.return_value = 123456
+        mock_get_teacher.return_value = teacher
 
         form = forms.TeacherCreate(
             school_id=teacher.school.school_access_key,
