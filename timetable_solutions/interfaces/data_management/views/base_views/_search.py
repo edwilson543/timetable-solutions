@@ -80,6 +80,8 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
         """Get the queryset based on the search term or retrieve the full queryset."""
         if self.form.is_valid():
             queryset = self.execute_search_from_clean_form(self.form)
+            if self.prefetch_related:
+                queryset = queryset.prefetch_related(*self.prefetch_related)
             return super().serialize_queryset(queryset)
         return super().get_queryset()
 
