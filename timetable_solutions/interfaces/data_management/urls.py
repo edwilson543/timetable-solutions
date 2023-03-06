@@ -50,4 +50,9 @@ urlpatterns = [
         views.YearGroupLanding.as_view(),
         name=UrlName.YEAR_GROUP_LANDING_PAGE.value,
     ),
+    path(
+        "yeargroups/list/",
+        views.YearGroupList.as_view(),
+        name=UrlName.YEAR_GROUP_LIST.value,
+    ),
 ]

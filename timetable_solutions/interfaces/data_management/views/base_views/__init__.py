@@ -3,6 +3,7 @@
 from ._create import CreateView
 from ._download import ExampleDownloadBase
 from ._landing_page import LandingView
+from ._list import ListView
 from ._search import SearchView
 from ._update import UpdateView
 from ._upload import UploadView

@@ -23,9 +23,9 @@ class TestYearGroupLanding(TestClient):
         self.authorise_client_for_school(school)
 
         if has_existing_data:
-            data_factories.Teacher(school=school)
+            data_factories.YearGroup(school=school)
 
-        # Navigate to the teacher landing page
+        # Navigate to the year group landing page
         url = UrlName.YEAR_GROUP_LANDING_PAGE.url()
         response = self.client.get(url)
 
@@ -35,7 +35,7 @@ class TestYearGroupLanding(TestClient):
         # TODO -> update the urls once implemented
         assert response.context["create_url"] == UrlName.TEACHER_CREATE.url()
         assert response.context["upload_url"] == UrlName.TEACHER_UPLOAD.url()
-        assert response.context["list_url"] == UrlName.TEACHER_LIST.url()
+        assert response.context["list_url"] == UrlName.YEAR_GROUP_LIST.url()
 
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user
