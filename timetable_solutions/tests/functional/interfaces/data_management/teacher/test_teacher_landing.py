@@ -32,6 +32,10 @@ class TestTeacherLanding(TestClient):
         # Check the page loaded
         assert response.status_code == 200
 
+        assert response.context["create_url"] == UrlName.TEACHER_CREATE.url()
+        assert response.context["upload_url"] == UrlName.TEACHER_UPLOAD.url()
+        assert response.context["list_url"] == UrlName.TEACHER_LIST.url()
+
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user
         self.anonymize_user()
