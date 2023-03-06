@@ -33,7 +33,7 @@ class TestYearGroupLanding(TestClient):
         assert response.status_code == 200
 
         # TODO -> update the urls once implemented
-        assert response.context["create_url"] == UrlName.TEACHER_CREATE.url()
+        assert response.context["create_url"] == UrlName.YEAR_GROUP_CREATE.url()
         assert response.context["upload_url"] == UrlName.TEACHER_UPLOAD.url()
         assert response.context["list_url"] == UrlName.YEAR_GROUP_LIST.url()
 

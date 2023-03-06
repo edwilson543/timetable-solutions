@@ -56,6 +56,7 @@ class UrlName(StrEnum):
     TEACHER_UPLOAD = "teacher-upload"
 
     # Year groups
+    YEAR_GROUP_CREATE = "year-group-create"
     YEAR_GROUP_LANDING_PAGE = "year-group-landing-page"
     YEAR_GROUP_LIST = "year-group-list"
 
