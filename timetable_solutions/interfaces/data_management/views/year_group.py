@@ -9,6 +9,8 @@ from django.contrib import messages
 
 # Local application imports
 from data import models
+from domain.data_management import upload_processors
+from domain.data_management.constants import ExampleFile
 from domain.data_management.year_groups import exceptions as year_group_exceptions
 from domain.data_management.year_groups import operations as year_group_operations
 from domain.data_management.year_groups import queries as year_group_queries
@@ -22,8 +24,7 @@ class YearGroupLanding(base_views.LandingView):
 
     model_class = models.YearGroup
 
-    # TODO -> update the urls once implemented
-    upload_url = UrlName.TEACHER_UPLOAD
+    upload_url = UrlName.YEAR_GROUP_UPLOAD
     create_url = UrlName.YEAR_GROUP_CREATE
     list_url = UrlName.YEAR_GROUP_LIST
 
@@ -125,3 +126,20 @@ class YearGroupUpdate(base_views.UpdateView):
             msg = "Could not delete this year group, try deleting all associated data"
             context["deletion_error_message"] = msg
             return super().render_to_response(context=context)
+
+
+class YearGroupUpload(base_views.UploadView):
+    """Page allowing users to upload a csv file containing year group data."""
+
+    template_name = "data_management/year-group/year-group-upload.html"
+    success_url = UrlName.YEAR_GROUP_LIST.url(lazy=True)
+
+    upload_processor_class = upload_processors.YearGroupFileUploadProcessor
+    upload_url = UrlName.YEAR_GROUP_UPLOAD.url(lazy=True)
+    example_download_url = UrlName.YEAR_GROUP_DOWNLOAD.url(lazy=True)
+
+
+class YearGroupExampleDownload(base_views.ExampleDownloadBase):
+    """Provide a response when users want to download an example year group data file."""
+
+    example_filepath = ExampleFile.YEAR_GROUPS.filepath

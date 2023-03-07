@@ -65,4 +65,14 @@ urlpatterns = [
         views.YearGroupUpdate.as_view(),
         name=UrlName.YEAR_GROUP_UPDATE.value,
     ),
+    path(
+        "yeargroups/upload/",
+        views.YearGroupUpload.as_view(),
+        name=UrlName.YEAR_GROUP_UPLOAD.value,
+    ),
+    path(
+        "yeargroups/download/",
+        views.YearGroupExampleDownload.as_view(),
+        name="year-group-download",
+    ),
 ]

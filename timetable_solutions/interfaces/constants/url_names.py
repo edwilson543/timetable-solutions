@@ -57,9 +57,11 @@ class UrlName(StrEnum):
 
     # Year groups
     YEAR_GROUP_CREATE = "year-group-create"
+    YEAR_GROUP_DOWNLOAD = "year-group-download"
     YEAR_GROUP_LANDING_PAGE = "year-group-landing-page"
     YEAR_GROUP_LIST = "year-group-list"
     YEAR_GROUP_UPDATE = "year-group-update"
+    YEAR_GROUP_UPLOAD = "year-group-upload"
 
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"

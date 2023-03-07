@@ -10,7 +10,9 @@ from .teacher import (
 )
 from .year_group import (
     YearGroupCreate,
+    YearGroupExampleDownload,
     YearGroupLanding,
     YearGroupList,
     YearGroupUpdate,
+    YearGroupUpload,
 )
