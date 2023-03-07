@@ -15,16 +15,8 @@ from tests import data_factories as factories
 
 
 @pytest.mark.django_db
-class TestPupil:
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
+class TestCreateNewPupil:
     def test_create_new_valid_pupil(self):
-        """
-        Tests that we can create and save a Pupil via the create_new method
-        """
         # Make a school and year group for the pupil to be associated with
         school = factories.School()
         yg = factories.YearGroup(school=school)
@@ -49,13 +41,8 @@ class TestPupil:
         assert pupil.pk == 1
 
     def test_create_new_fails_when_pupil_id_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Pupils with the same id / school, due to unique_together on the Meta class
-        """
-        # Make a pupil to prevent uniqueness
         pupil = factories.Pupil()
 
-        # Try to make a pupil with the same school / pupil_id
         with pytest.raises(IntegrityError):
             models.Pupil.create_new(
                 school_id=pupil.school.school_access_key,
@@ -65,6 +52,9 @@ class TestPupil:
                 year_group_id=pupil.year_group.year_group_id,
             )
 
+
+@pytest.mark.django_db
+class TestDeleteAllInstancesForSchool:
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can successfully delete all pupils associated with a school
