@@ -64,3 +64,52 @@ class TestUpdateYearGroup:
         yg.refresh_from_db()
 
         assert yg.year_group_name == "test"
+
+
+@pytest.mark.django_db
+class TestDeleteYearGroup:
+    def test_delete_year_group_with_no_pupils(self):
+        yg = data_factories.YearGroup()
+
+        operations.delete_year_group(yg)
+
+        with pytest.raises(models.YearGroup.DoesNotExist):
+            yg.refresh_from_db()
+
+    def test_deleting_year_group_also_deletes_pupils(self):
+        pupil = data_factories.Pupil()
+        yg = pupil.year_group
+
+        operations.delete_year_group(yg)
+
+        with pytest.raises(models.YearGroup.DoesNotExist):
+            yg.refresh_from_db()
+
+        with pytest.raises(models.Pupil.DoesNotExist):
+            pupil.refresh_from_db()
+
+    def test_deleting_year_group_removes_relation_with_timetable_slots(self):
+        yg = data_factories.YearGroup()
+        slot = data_factories.TimetableSlot(
+            school=yg.school, relevant_year_groups=(yg,)
+        )
+
+        operations.delete_year_group(yg)
+
+        with pytest.raises(models.YearGroup.DoesNotExist):
+            yg.refresh_from_db()
+
+        slot.refresh_from_db()
+        assert slot.relevant_year_groups.count() == 0
+
+    def test_deleting_year_group_removes_relation_with_break(self):
+        yg = data_factories.YearGroup()
+        break_ = data_factories.Break(school=yg.school, relevant_year_groups=(yg,))
+
+        operations.delete_year_group(yg)
+
+        with pytest.raises(models.YearGroup.DoesNotExist):
+            yg.refresh_from_db()
+
+        break_.refresh_from_db()
+        assert break_.relevant_year_groups.count() == 0

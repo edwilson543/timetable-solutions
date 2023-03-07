@@ -1,8 +1,9 @@
-"""Operations on the Teacher model affecting db state."""
+"""Operations on the YearGroup model affecting db state."""
 
 # Django imports
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
@@ -44,3 +45,17 @@ def update_year_group(
         return year_group.update(year_group_name=year_group_name)
     except (ValidationError, ValueError) as exc:
         raise exceptions.CouldNotUpdateYearGroup from exc
+
+
+def delete_year_group(year_group: models.YearGroup) -> tuple[int, dict[str, int]]:
+    """
+    Delete a year group in the db.
+
+    :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
+    of that model that were deleted.
+    :raises CouldNotDeleteYearGroup: If the year group couldn't be deleted (e.g due to a protected foreign key)
+    """
+    try:
+        return year_group.delete()
+    except ProtectedError as exc:
+        raise exceptions.CouldNotDeleteYearGroup from exc
