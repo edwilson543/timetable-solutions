@@ -72,7 +72,7 @@ class TeacherCreate(base_views.CreateView):
     form_class = forms.TeacherCreate
 
     page_url = UrlName.TEACHER_CREATE.url(lazy=True)
-    success_url_prefix = UrlName.TEACHER_UPDATE
+    success_url = UrlName.TEACHER_LIST.url(lazy=True)
     object_id_name = "teacher_id"
 
     def create_model_from_clean_form(

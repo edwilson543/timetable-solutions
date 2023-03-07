@@ -34,9 +34,7 @@ class TestTeacherCreate(TestClient):
 
         # Check response ok and redirects
         assert response.status_code == 302
-        assert response.location == UrlName.TEACHER_UPDATE.url(
-            teacher_id=new_teacher_id
-        )
+        assert response.location == UrlName.TEACHER_LIST.url()
 
         # Check a new teacher was created in the db
         db_teacher = models.Teacher.objects.get(

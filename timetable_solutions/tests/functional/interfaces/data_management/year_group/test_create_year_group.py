@@ -32,9 +32,7 @@ class TestYearGroupCreate(TestClient):
 
         # Check response ok and redirects
         assert response.status_code == 302
-        assert response.location == UrlName.YEAR_GROUP_UPDATE.url(
-            year_group_id=new_yg_id
-        )
+        assert response.location == UrlName.YEAR_GROUP_LIST.url()
 
         # Check a new year group was created in the db
         yg = models.YearGroup.objects.get(

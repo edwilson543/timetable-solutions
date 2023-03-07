@@ -59,7 +59,7 @@ class YearGroupCreate(base_views.CreateView):
     form_class = forms.YearGroupCreate
 
     page_url = UrlName.YEAR_GROUP_CREATE.url(lazy=True)
-    success_url_prefix = UrlName.YEAR_GROUP_UPDATE
+    success_url = UrlName.YEAR_GROUP_LIST.url(lazy=True)
     object_id_name = "year_group_id"
 
     def create_model_from_clean_form(
