@@ -83,6 +83,16 @@ class Break(models.Model):
         Django Meta class for the Break model
         """
 
+        constraints = [
+            models.UniqueConstraint(
+                "school", "break_id", name="break_id_unique_for_school"
+            ),
+            models.CheckConstraint(
+                check=models.Q(starts_at__lt=models.F("ends_at")),
+                name="break_ends_after_it_starts",
+            ),
+        ]
+
         unique_together = [["school", "break_id"]]
 
     class Constant:
