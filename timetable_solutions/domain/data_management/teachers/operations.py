@@ -29,7 +29,7 @@ def create_new_teacher(
             surname=surname,
             title=title,
         )
-    except (IntegrityError, ValidationError) as exc:
+    except (IntegrityError, ValidationError, ValueError) as exc:
         raise exceptions.CouldNotCreateTeacher from exc
 
 
@@ -47,7 +47,7 @@ def update_teacher(
     """
     try:
         return teacher.update(firstname=firstname, surname=surname, title=title)
-    except ValidationError as exc:
+    except (ValidationError, ValueError) as exc:
         raise exceptions.CouldNotUpdateTeacher from exc
 
 

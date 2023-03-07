@@ -54,7 +54,7 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Year groups",
-                    url=UrlName.CUSTOM_ADMIN_YEAR_GROUP_LIST.url(),
+                    url=UrlName.YEAR_GROUP_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-children",
                 ),
                 Page(

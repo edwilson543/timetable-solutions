@@ -5,7 +5,8 @@ Context variables:
 ------------------
 form: base_forms.Search
 search_term: str | None  Must be explicitly passed to include
-object_list: list[dict[str, str]]
+page_obj: django_paginator.Page
+paginator: django_paginate.Paginator
 human_field_names: list[str]
 model_name_singular: str
 model_name_plural: str
@@ -48,8 +49,10 @@ model_name_plural: str
                 </p>
             {% else %}
                 <p>
-                    {% if paginator.num_pages == 1 %}
-                        <b>Showing all {{ paginator.count }} {{ model_name_singular }}</b>
+                    {% if paginator.num_pages == 1 and paginator.count == 1 %}
+                        <b>Showing your only {{model_name_singular }}</b>
+                    {% elif paginator.num_pages == 1 and paginator.count > 1 %}
+                        <b>Showing all {{ paginator.count }} {{ model_name_plural }}</b>
                     {% else %}
                         <b>
                             Showing {{ model_name_plural }} {{ page_obj.start_index }} -

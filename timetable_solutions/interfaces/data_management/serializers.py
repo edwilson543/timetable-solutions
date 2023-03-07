@@ -40,6 +40,19 @@ class YearGroup(serializers.Serializer):
     year_group_id = serializers.IntegerField()
     year_group_name = serializers.CharField()
 
+    # Relational data
+    number_pupils = serializers.SerializerMethodField(method_name="_number_pupils")
+
+    # Non-field data data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _number_pupils(self, obj: models.YearGroup) -> int:
+        return obj.get_number_pupils()
+
+    def _get_update_url(self, obj: models.YearGroup) -> str:
+        """Get the url leading to this year groups's update / detail view page."""
+        return UrlName.YEAR_GROUP_UPDATE.url(year_group_id=obj.year_group_id)
+
 
 class Lesson(serializers.Serializer):
     """Serialize a lesson instance for use in template context."""

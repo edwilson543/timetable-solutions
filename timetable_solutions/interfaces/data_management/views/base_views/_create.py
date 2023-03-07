@@ -11,7 +11,6 @@ from django.db import models as django_models
 from django.views import generic
 
 # Local application imports
-from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -34,10 +33,9 @@ class CreateView(
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
 
-    success_url_prefix: ClassVar[UrlName]
+    success_url: ClassVar[str]
     """
-    Prefix of the success page's url - where users are redirected having created a model instance.
-    The full url is constructed as page_url_prefix/<new_model_instance_id>.
+    URL to redirect to on successful creation of a new model instance.
     """
 
     object_id_name: ClassVar[str]
@@ -87,14 +85,3 @@ class CreateView(
         context = super().get_context_data(**kwargs)
         context["page_url"] = self.page_url
         return context
-
-    def get_success_url(self) -> str:
-        """Redirect users to the detail view of the model instance they just created."""
-        return self.success_url_prefix.url(
-            lazy=False,
-            **{
-                self.object_id_name: getattr(
-                    self.created_model_instance, self.object_id_name
-                )
-            },
-        )

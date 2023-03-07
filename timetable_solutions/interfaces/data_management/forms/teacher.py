@@ -7,7 +7,6 @@ from typing import Any
 from django import forms as django_forms
 
 # Local application imports
-from data import models
 from domain.data_management.teachers import queries
 
 from . import base_forms
@@ -53,10 +52,6 @@ class TeacherCreate(_TeacherCreateUpdateBase):
     )
 
     field_order = ["teacher_id", "firstname", "surname", "title"]
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Set the next available ID as the initial teacher_id."""
-        super().__init__(*args, **kwargs)
 
     def clean_teacher_id(self) -> int:
         """Check the given teacher id does not already exist for the school."""

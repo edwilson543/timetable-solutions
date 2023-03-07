@@ -12,9 +12,7 @@ from django.db.models import Prefetch
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import ExampleFile
-from domain.data_management.teachers import exceptions as teacher_exceptions
-from domain.data_management.teachers import operations as teacher_operations
-from domain.data_management.teachers import queries as teacher_queries
+from domain.data_management.teachers import exceptions, operations, queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
@@ -58,7 +56,7 @@ class TeacherSearch(base_views.SearchView):
     ) -> models.TeacherQuerySet:
         """Get the queryset of teachers matching the search term."""
         search_term = form.cleaned_data["search_term"]
-        return teacher_queries.get_teachers_by_search_term(
+        return queries.get_teachers_by_search_term(
             school_id=self.school_id, search_term=search_term
         )
 
@@ -72,7 +70,7 @@ class TeacherCreate(base_views.CreateView):
     form_class = forms.TeacherCreate
 
     page_url = UrlName.TEACHER_CREATE.url(lazy=True)
-    success_url_prefix = UrlName.TEACHER_UPDATE
+    success_url = UrlName.TEACHER_LIST.url(lazy=True)
     object_id_name = "teacher_id"
 
     def create_model_from_clean_form(
@@ -81,21 +79,21 @@ class TeacherCreate(base_views.CreateView):
         """Create a teacher in the db using the clean form details."""
         teacher_id = form.cleaned_data.get("teacher_id", None)
         try:
-            return teacher_operations.create_new_teacher(
+            return operations.create_new_teacher(
                 school_id=self.school_id,
                 teacher_id=teacher_id,
                 firstname=form.cleaned_data["firstname"],
                 surname=form.cleaned_data["surname"],
                 title=form.cleaned_data["title"],
             )
-        except teacher_exceptions.CouldNotCreateTeacher:
+        except exceptions.CouldNotCreateTeacher:
             return None
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Set the next available teacher id as an initial value."""
         kwargs = super().get_form_kwargs()
         kwargs["initial"] = {
-            "teacher_id": teacher_queries.get_next_teacher_id_for_school(
+            "teacher_id": queries.get_next_teacher_id_for_school(
                 school_id=self.school_id
             )
         }
@@ -126,23 +124,23 @@ class TeacherUpdate(base_views.UpdateView):
         surname = form.cleaned_data.get("surname", None)
         title = form.cleaned_data.get("title", None)
         try:
-            return teacher_operations.update_teacher(
+            return operations.update_teacher(
                 teacher=self.model_instance,
                 firstname=firstname,
                 surname=surname,
                 title=title,
             )
-        except teacher_exceptions.CouldNotUpdateTeacher:
+        except exceptions.CouldNotUpdateTeacher:
             return None
 
     def delete_model_instance(self) -> http.HttpResponse:
         """Delete the Teacher stored as an instance attribute."""
         try:
             msg = f"{self.model_instance} was deleted."
-            teacher_operations.delete_teacher(teacher=self.model_instance)
+            operations.delete_teacher(teacher=self.model_instance)
             messages.success(request=self.request, message=msg)
             return http.HttpResponseRedirect(self.delete_success_url)
-        except teacher_exceptions.CouldNotDeleteTeacher:
+        except exceptions.CouldNotDeleteTeacher:
             msg = (
                 "This teacher is still assigned to at least one lesson!\n"
                 "To delete this teacher, first delete or reassign their lessons"
