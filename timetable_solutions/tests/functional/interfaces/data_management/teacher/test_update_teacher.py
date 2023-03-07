@@ -1,7 +1,6 @@
-"""Tests for the TeacherUpdate view."""
+"""Tests for updating teacher details via the TeacherUpdate view."""
 
 # Local application imports
-from data import models
 from interfaces.constants import UrlName
 from tests import data_factories
 from tests.functional.client import TestClient
@@ -61,10 +60,7 @@ class TestTeacherUpdate(TestClient):
         assert response.status_code == 302
         assert response.location == url
 
-        db_teacher = models.Teacher.objects.get(
-            school_id=teacher.school.school_access_key, teacher_id=teacher.teacher_id
-        )
-
-        assert db_teacher.firstname == "Ed"
-        assert db_teacher.surname == "Wilson"
-        assert db_teacher.title == "Mr"
+        teacher.refresh_from_db()
+        assert teacher.firstname == "Ed"
+        assert teacher.surname == "Wilson"
+        assert teacher.title == "Mr"

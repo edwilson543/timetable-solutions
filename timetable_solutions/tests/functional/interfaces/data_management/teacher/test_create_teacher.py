@@ -10,6 +10,7 @@ class TestTeacherCreate(TestClient):
         # Create existing db content
         school = data_factories.School()
         teacher = data_factories.Teacher(school=school)
+        new_teacher_id = teacher.teacher_id + 1
 
         # Authorise the client to this school and navigate to add page
         self.authorise_client_for_school(school)
@@ -21,10 +22,10 @@ class TestTeacherCreate(TestClient):
 
         form = page.forms["create-form"]
         # Suggested value for the teacher id should be one more than next highest
-        assert int(form["teacher_id"].value) == teacher.teacher_id + 1
+        assert int(form["teacher_id"].value) == new_teacher_id
 
         # Fill out and submit the form
-        form["teacher_id"] = teacher.teacher_id + 1
+        form["teacher_id"] = new_teacher_id
         form["firstname"] = "Dave"
         form["surname"] = "Smith"
         form["title"] = "Miss"
@@ -34,12 +35,12 @@ class TestTeacherCreate(TestClient):
         # Check response ok and redirects
         assert response.status_code == 302
         assert response.location == UrlName.TEACHER_UPDATE.url(
-            teacher_id=teacher.teacher_id + 1
+            teacher_id=new_teacher_id
         )
 
         # Check a new teacher was created in the db
         db_teacher = models.Teacher.objects.get(
-            school_id=school.school_access_key, teacher_id=2
+            school_id=school.school_access_key, teacher_id=new_teacher_id
         )
         assert db_teacher.firstname == "Dave"
         assert db_teacher.surname == "Smith"
