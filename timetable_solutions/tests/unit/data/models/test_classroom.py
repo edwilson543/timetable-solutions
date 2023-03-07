@@ -19,8 +19,7 @@ from tests import data_factories as factories
 
 
 @pytest.mark.django_db
-class TestClassroom:
-
+class TestCreateNewClassroom:
     # --------------------
     # Factories tests
     # --------------------
@@ -46,14 +45,8 @@ class TestClassroom:
         assert all_classrooms.first() == classroom
 
     def test_create_new_fails_when_classroom_id_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Classrooms with the same id / school, due to unique_together on the
-        Meta class
-        """
-        # Make a classroom to block uniqueness with
         classroom = factories.Classroom()
 
-        # Try creating a classroom with the same school / id
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(
                 school_id=classroom.school.school_access_key,
@@ -63,14 +56,8 @@ class TestClassroom:
             )
 
     def test_create_new_fails_when_building_and_room_number_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Classrooms with the same id / school, due to unique_together on the
-        Meta class
-        """
-        # Make a classroom to block uniqueness with
         classroom = factories.Classroom()
 
-        # Try creating a classroom with the same school, building & room number
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(
                 school_id=classroom.school.school_access_key,
@@ -79,6 +66,9 @@ class TestClassroom:
                 room_number=classroom.room_number,
             )
 
+
+@pytest.mark.django_db
+class TestDeleteAllInstancesForSchool:
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can successfully delete all classrooms associated with a school, when there are no Lesson
