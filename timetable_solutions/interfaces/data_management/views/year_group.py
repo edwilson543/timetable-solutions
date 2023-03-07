@@ -46,7 +46,7 @@ class YearGroupList(base_views.ListView):
         "number_pupils": "Number pupils",
     }
 
-    update_url = ""  # TODO -> add once available
+    update_url = UrlName.YEAR_GROUP_UPDATE
 
 
 class YearGroupCreate(base_views.CreateView):

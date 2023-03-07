@@ -32,6 +32,10 @@ def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
             ("year_group_id", year_group.year_group_id),
             ("year_group_name", year_group.year_group_name),
             ("number_pupils", year_group.get_number_pupils()),
+            (
+                "update_url",
+                UrlName.YEAR_GROUP_UPDATE.url(year_group_id=year_group.year_group_id),
+            ),
         ]
     )
 
