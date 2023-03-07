@@ -60,4 +60,9 @@ urlpatterns = [
         views.YearGroupList.as_view(),
         name=UrlName.YEAR_GROUP_LIST.value,
     ),
+    path(
+        "yeargroups/list/<int:year_group_id>/",
+        views.YearGroupUpdate.as_view(),
+        name=UrlName.YEAR_GROUP_UPDATE.value,
+    ),
 ]

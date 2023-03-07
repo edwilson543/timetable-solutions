@@ -8,4 +8,9 @@ from .teacher import (
     TeacherUpdate,
     TeacherUpload,
 )
-from .year_group import YearGroupCreate, YearGroupLanding, YearGroupList
+from .year_group import (
+    YearGroupCreate,
+    YearGroupLanding,
+    YearGroupList,
+    YearGroupUpdate,
+)
