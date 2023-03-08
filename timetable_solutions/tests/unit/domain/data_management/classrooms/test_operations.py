@@ -1,4 +1,4 @@
-"""Unit tests for teacher operations"""
+"""Unit tests for classroom operations"""
 
 # Third party imports
 import pytest
