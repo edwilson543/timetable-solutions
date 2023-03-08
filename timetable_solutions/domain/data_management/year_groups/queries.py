@@ -20,7 +20,7 @@ def get_year_group_for_school(
 
 
 def get_next_year_group_id_for_school(school_id: int) -> int:
-    """Get the lowest, unused teacher id for a given school."""
+    """Get the lowest, unused year group id for a given school."""
     if year_groups := models.YearGroup.objects.filter(school_id=school_id):
         return (
             year_groups.aggregate(django_models.Max("year_group_id"))[
