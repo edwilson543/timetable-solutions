@@ -2,9 +2,11 @@
 Unit tests for methods on the YearGroup class and YearGroupQuerySet class.
 """
 
-
 # Third party imports
 import pytest
+
+# Django imports
+from django.db import IntegrityError
 
 # Local application imports
 from data import models
@@ -35,27 +37,40 @@ class TestYearGroupQuerySet:
 
 
 @pytest.mark.django_db
-class TestYearGroup:
-    # --------------------
-    # data_factories tests
-    # --------------------
-
+class TestCreateNew:
     def test_create_new_valid_year_group_from_string(self):
-        """
-        Tests that we can create and save a YearGroup instance via the create_new method
-        """
-        # Get a school to add the year group to
         school = data_factories.School()
 
-        # Execute test unit
         yg = models.YearGroup.create_new(
             school_id=school.school_access_key, year_group_id=1, year_group_name="One"
         )
 
-        # Check year group created, and associated with school
         assert yg in models.YearGroup.objects.all()
         assert yg.school == school
 
+    def test_raises_for_non_unique_year_group_id_for_school(self):
+        yg = data_factories.YearGroup(year_group_name="something")
+
+        with pytest.raises(IntegrityError):
+            models.YearGroup.create_new(
+                school_id=yg.school.school_access_key,
+                year_group_id=yg.year_group_id,
+                year_group_name="something-else",
+            )
+
+    def test_raises_for_non_unique_year_group_name_for_school(self):
+        yg = data_factories.YearGroup()
+
+        with pytest.raises(IntegrityError):
+            models.YearGroup.create_new(
+                school_id=yg.school.school_access_key,
+                year_group_id=yg.year_group_id + 1,
+                year_group_name=yg.year_group_name,
+            )
+
+
+@pytest.mark.django_db
+class TestDeleteAllInstancesForSchool:
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can successfully delete all year groups associated with a school.

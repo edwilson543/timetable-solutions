@@ -10,7 +10,6 @@ import datetime as dt
 import pytest
 
 # Django imports
-from django.core import exceptions
 from django.db import IntegrityError
 
 # Local application imports
@@ -105,17 +104,8 @@ class TestTimetableSlotQuerySet:
 
 
 @pytest.mark.django_db
-class TestTimetableSlot:
-    """Unit tests for the TimetableSlot model"""
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
+class TestCreateNewTimetableSlot:
     def test_create_new_valid_timeslot(self):
-        """
-        Tests that we can create and save a TimetableSlot via the create_new method
-        """
         # Make a school and year group for the timetable slot
         school = factories.School()
         yg = factories.YearGroup(school=school)
@@ -132,18 +122,12 @@ class TestTimetableSlot:
 
         # Check slot saved to db and defined as expected
         all_slots = models.TimetableSlot.objects.all()
-        assert all_slots.count() == 1
-        assert all_slots.first() == slot
+        assert all_slots.get() == slot
 
         all_ygs = slot.relevant_year_groups.all()
-        assert all_ygs.count() == 1
-        assert yg in all_ygs
+        assert all_ygs.get() == yg
 
     def test_create_new_fails_when_timetable_slot_id_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Timetable slots with the same id / school, due to unique_together on the
-        Meta class.
-        """
         # Make a slot to block uniqueness
         slot = factories.TimetableSlot()
 
@@ -159,10 +143,6 @@ class TestTimetableSlot:
             )
 
     def test_create_new_fails_with_invalid_day_of_week(self):
-        """
-        Tests that we can cannot create two Timetable slots with the same id / school, due to unique_together on the
-        Meta class.
-        """
         # Make a school for the timetable slot
         school = factories.School()
 
@@ -177,21 +157,16 @@ class TestTimetableSlot:
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
-    def test_create_new_fails_with_equal_start_and_end(self):
-        """
-        Tests that we can cannot create a Timetable slot with 0s duration.
-        """
-        # Make a school for the timetable slot
+    def test_create_new_fails_with_equal_start_and_end_time(self):
         school = factories.School()
 
-        # Try making a slot with invalid day of week
-        with pytest.raises(exceptions.ValidationError):
+        with pytest.raises(IntegrityError):
             models.TimetableSlot.create_new(
                 school_id=school.school_access_key,
                 slot_id=1,
                 day_of_week=constants.Day.MONDAY,
                 starts_at=dt.time(hour=9),
-                ends_at=dt.time(hour=9),
+                ends_at=dt.time(hour=9),  # Note these are the same
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
@@ -203,7 +178,7 @@ class TestTimetableSlot:
         school = factories.School()
 
         # Try making a slot with invalid day of week
-        with pytest.raises(exceptions.ValidationError):
+        with pytest.raises(IntegrityError):
             models.TimetableSlot.create_new(
                 school_id=school.school_access_key,
                 slot_id=1,
@@ -213,6 +188,9 @@ class TestTimetableSlot:
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
+
+@pytest.mark.django_db
+class TestDeleteAllInstancesForSchool:
     def test_delete_all_instances_for_school_successful(self):
         """
         Test that we can successfully delete all timetable slots associated with a school.

@@ -45,6 +45,20 @@ class Classroom(models.Model):
         Django Meta class for the Classroom model
         """
 
+        constraints = [
+            models.UniqueConstraint(
+                "school",
+                "classroom_id",
+                name="classroom_id_unique_for_school",
+            ),
+            models.UniqueConstraint(
+                "school",
+                "building",
+                "room_number",
+                name="classroom_building_room_number_unique_for_school",
+            ),
+        ]
+
         unique_together = [
             ["school", "classroom_id"],
             ["school", "building", "room_number"],

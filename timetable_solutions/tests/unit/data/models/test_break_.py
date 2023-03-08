@@ -9,7 +9,7 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import constants, models
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
@@ -29,13 +29,13 @@ class TestBreakQuerySet:
     def test_filter_for_clashes_gives_clash(self, break_starts_at, slot_starts_at):
         """Test that a slot and break at the exact same time clash."""
         # The break and slot are both 1 hour long, defined according to parameters
-        break_ = factories.Break(
+        break_ = data_factories.Break(
             starts_at=break_starts_at,
             ends_at=dt.time(
                 hour=(break_starts_at.hour + 1), minute=break_starts_at.minute
             ),
         )
-        slot = factories.TimetableSlot(
+        slot = data_factories.TimetableSlot(
             school=break_.school,
             starts_at=slot_starts_at,
             ends_at=dt.time(
@@ -56,11 +56,11 @@ class TestBreakQuerySet:
     ):
         """Test that a slot and break at different times don't clash."""
         # Make a break and slot at different times
-        break_ = factories.Break(
+        break_ = data_factories.Break(
             starts_at=starts_at,
             ends_at=dt.time(hour=(starts_at.hour + 1), minute=starts_at.minute),
         )
-        slot = factories.TimetableSlot(
+        slot = data_factories.TimetableSlot(
             school=break_.school,
             starts_at=dt.time(hour=8),
             ends_at=dt.time(hour=9),
@@ -73,23 +73,12 @@ class TestBreakQuerySet:
 
 
 @pytest.mark.django_db
-class TestBreak:
-    """
-    Unit tests for the Break model.
-    """
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
+class TestCreateNewBreak:
     def test_create_new_for_valid_break(self):
-        """
-        Test we can create a valid Break instance using create_new()
-        """
         # Get some teachers and year groups to add
-        school = factories.School()
-        teacher = factories.Teacher()
-        yg = factories.YearGroup()
+        school = data_factories.School()
+        teacher = data_factories.Teacher()
+        yg = data_factories.YearGroup()
 
         # Make the break
         break_ = models.Break.create_new(
@@ -116,12 +105,8 @@ class TestBreak:
         assert all_ygs.count() == 1
         assert yg in all_ygs
 
-    def test_create_new_for_invalid_break_id_already_taken(self):
-        """
-        Test we can cannot create two breaks with the same ID at a school.
-        """
-        # Make a break to block uniqueness
-        break_ = factories.Break()
+    def test_create_new_raises_when_break_id_already_taken(self):
+        break_ = data_factories.Break()
 
         # Try to make another break with the same id
         with pytest.raises(IntegrityError):
@@ -136,12 +121,47 @@ class TestBreak:
                 relevant_year_groups=models.YearGroup.objects.none(),
             )
 
+    def test_create_new_raises_when_break_ends_before_it_starts(self):
+        school = data_factories.School()
+
+        # Try to make another break with the same id
+        with pytest.raises(IntegrityError):
+            models.Break.create_new(
+                school_id=school.school_access_key,
+                break_id="morning-break",
+                break_name="test",
+                starts_at=dt.time(hour=12),
+                ends_at=dt.time(hour=11),  # Note ends after starts
+                day_of_week=constants.Day.MONDAY,
+                teachers=models.Teacher.objects.none(),
+                relevant_year_groups=models.YearGroup.objects.none(),
+            )
+
+    def test_create_new_raises_when_break_ends_when_it_starts(self):
+        school = data_factories.School()
+
+        # Try to make another break with the same id
+        with pytest.raises(IntegrityError):
+            models.Break.create_new(
+                school_id=school.school_access_key,
+                break_id="morning-break",
+                break_name="test",
+                starts_at=dt.time(hour=12),
+                ends_at=dt.time(hour=12),  # Note ends at same time
+                day_of_week=constants.Day.MONDAY,
+                teachers=models.Teacher.objects.none(),
+                relevant_year_groups=models.YearGroup.objects.none(),
+            )
+
+
+@pytest.mark.django_db
+class TestDeleteAllInstancesForSchool:
     def test_delete_all_breaks_for_school_successful(self):
         """
         Test that we can delete all the breaks associated with a school.
         """
         # Make a break
-        break_ = factories.Break()
+        break_ = data_factories.Break()
 
         # Try deleting the break
         models.Break.delete_all_breaks_for_school(

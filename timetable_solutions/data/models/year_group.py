@@ -68,7 +68,15 @@ class YearGroup(models.Model):
         Django Meta class for the YearGroup model
         """
 
-        unique_together = [["school", "year_group_id"], ["school", "year_group_name"]]
+        constraints = [
+            models.UniqueConstraint(
+                "school", "year_group_id", name="year_group_id_unique_for_school"
+            ),
+            models.UniqueConstraint(
+                "school", "year_group_name", name="year_group_name_unique_for_school"
+            ),
+        ]
+
         ordering = ["year_group_id"]
 
     class Constant:
@@ -109,7 +117,6 @@ class YearGroup(models.Model):
             year_group_id=year_group_id,
             year_group_name=year_group_name,
         )
-        yg.full_clean()
         return yg
 
     @classmethod

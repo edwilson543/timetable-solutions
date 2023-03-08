@@ -51,8 +51,12 @@ class Pupil(models.Model):
         Django Meta class for the Pupil model
         """
 
+        constraints = [
+            models.UniqueConstraint(
+                "school", "pupil_id", name="pupil_id_unique_for_school"
+            )
+        ]
         ordering = ["surname", "firstname"]
-        unique_together = [["school", "pupil_id"]]
 
     class Constant:
         """
