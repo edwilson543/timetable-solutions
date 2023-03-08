@@ -2,7 +2,6 @@
 Unit tests for the Lesson model and its manager, LessonQuerySet.
 """
 
-
 # Third party imports
 import pytest
 
@@ -11,7 +10,7 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import constants, models
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
@@ -25,12 +24,12 @@ class TestLessonQuerySet:
         Check that the correct subset of lessons is extracted for the solver.
         """
         # Make one lesson requiring solving...
-        school = factories.School()
-        unsolved_lesson = factories.Lesson(school=school, total_required_slots=1)
+        school = data_factories.School()
+        unsolved_lesson = data_factories.Lesson(school=school, total_required_slots=1)
 
         # ...and one lesson not requiring solving
-        solved_slot = factories.TimetableSlot(school=school)
-        factories.Lesson(
+        solved_slot = data_factories.TimetableSlot(school=school)
+        data_factories.Lesson(
             school=school,
             total_required_slots=1,
             user_defined_time_slots=(solved_slot,),
@@ -48,25 +47,14 @@ class TestLessonQuerySet:
 
 
 @pytest.mark.django_db
-class TestLesson:
-    """
-    Unit tests for the Lesson model.
-    """
-
-    # --------------------
-    # Factories tests
-    # --------------------
-
+class TestCreateNewLesson:
     def test_create_new_valid_lesson(self):
-        """
-        Tests that we can create and save a Lesson via the create_new method.
-        """
         # Get some data to make the lesson with
-        school = factories.School()
-        teacher = factories.Teacher(school=school)
-        classroom = factories.Classroom(school=school)
-        pupil = factories.Pupil(school=school)
-        user_defined_slot = factories.TimetableSlot(
+        school = data_factories.School()
+        teacher = data_factories.Teacher(school=school)
+        classroom = data_factories.Classroom(school=school)
+        pupil = data_factories.Pupil(school=school)
+        user_defined_slot = data_factories.TimetableSlot(
             school=school, relevant_year_groups=(pupil.year_group,)
         )
 
@@ -79,14 +67,12 @@ class TestLesson:
             total_required_double_periods=2,
             teacher_id=teacher.teacher_id,
             classroom_id=classroom.classroom_id,
-            pupils=pupil,
-            user_defined_time_slots=user_defined_slot,
+            pupils=models.Pupil.objects.all(),
+            user_defined_time_slots=models.TimetableSlot.objects.all(),
         )
 
         # Check lesson was created
-        all_lessons = models.Lesson.objects.all()
-        assert all_lessons.count() == 1
-        assert all_lessons.first() == lesson
+        assert models.Lesson.objects.get() == lesson
 
         # Check lesson fields are as expected
         assert lesson.school == school
@@ -95,18 +81,9 @@ class TestLesson:
         assert pupil in lesson.pupils.all()
         assert user_defined_slot in lesson.user_defined_time_slots.all()
 
-    def test_create_new_fails_when_lesson_id_not_unique_for_school(self):
-        """
-        Tests that we can cannot create two Lessons with the same (lesson_id, school) combination,
-        due to unique_together constraint.
-        """
+    def test_create_new_raises_when_lesson_id_not_unique_for_school(self):
         # Make a lesson to block uniqueness
-        lesson = factories.Lesson()
-        school = lesson.school
-
-        # Create a spare teacher / classroom for the lesson
-        spare_teacher = factories.Teacher(school=school)
-        spare_classroom = factories.Classroom(school=school)
+        lesson = data_factories.Lesson()
 
         # Try creating another lesson with the same id / school
         with pytest.raises(IntegrityError):
@@ -116,16 +93,29 @@ class TestLesson:
                 subject_name="test",
                 total_required_slots=4,
                 total_required_double_periods=2,
-                teacher_id=spare_teacher.teacher_id,
-                classroom_id=spare_classroom.classroom_id,
             )
 
+    def test_create_new_raises_when_double_periods_exceeds_feasible_amount(self):
+        school = data_factories.School()
+
+        with pytest.raises(IntegrityError):
+            models.Lesson.create_new(
+                school_id=school.school_access_key,
+                lesson_id="some-lesson",
+                subject_name="some-subject",
+                total_required_slots=5,
+                total_required_double_periods=3,
+            )
+
+
+@pytest.mark.django_db
+class TestLessonDeletionMethods:
     def test_delete_all_lessons_for_school_successful(self):
         """
         Test that we can delete all the lessons associated with a school.
         """
         # Make a lesson
-        lesson = factories.Lesson()
+        lesson = data_factories.Lesson()
 
         # Try deleting the lesson
         models.Lesson.delete_all_lessons_for_school(
@@ -141,9 +131,9 @@ class TestLesson:
         Test that we can delete the solver produced solution for a school.
         """
         # Make a lesson with some solver slots (simulating having been solved)
-        school = factories.School()
-        slot = factories.TimetableSlot(school=school)
-        lesson = factories.Lesson(school=school, solver_defined_time_slots=(slot,))
+        school = data_factories.School()
+        slot = data_factories.TimetableSlot(school=school)
+        lesson = data_factories.Lesson(school=school, solver_defined_time_slots=(slot,))
 
         # Delete the solver solution for the lesson's school
         models.Lesson.delete_solver_solution_for_school(
@@ -154,6 +144,51 @@ class TestLesson:
         lesson.refresh_from_db()
         assert lesson.solver_defined_time_slots.count() == 0
 
+
+@pytest.mark.django_db
+class TestAddUserDefinedTimeSlots:
+    def test_can_add_time_slot(self):
+        slot = data_factories.TimetableSlot()
+        lesson = data_factories.Lesson(school=slot.school)
+
+        lesson.add_user_defined_time_slots(models.TimetableSlot.objects.all())
+
+        assert slot in lesson.user_defined_time_slots.all()
+
+    def test_cannot_add_time_slot_when_insufficient_required_slots(self):
+        slot = data_factories.TimetableSlot()
+        slot = data_factories.TimetableSlot(school=slot.school)
+        lesson = data_factories.Lesson(
+            school=slot.school, user_defined_time_slots=(slot,), total_required_slots=1
+        )
+
+        with pytest.raises(IntegrityError):
+            lesson.add_user_defined_time_slots(models.TimetableSlot.objects.all())
+
+
+@pytest.mark.django_db
+class TestAddSolverDefinedTimeSlots:
+    def test_can_add_time_slot(self):
+        slot = data_factories.TimetableSlot()
+        lesson = data_factories.Lesson(school=slot.school)
+
+        lesson.add_solver_defined_time_slots(models.TimetableSlot.objects.all())
+
+        assert slot in lesson.solver_defined_time_slots.all()
+
+    def test_cannot_add_user_defined_time_slot_as_solver_defined(self):
+        slot = data_factories.TimetableSlot()
+        slot = data_factories.TimetableSlot(school=slot.school)
+        lesson = data_factories.Lesson(
+            school=slot.school, user_defined_time_slots=(slot,), total_required_slots=2
+        )
+
+        with pytest.raises(IntegrityError):
+            lesson.add_solver_defined_time_slots(models.TimetableSlot.objects.all())
+
+
+@pytest.mark.django_db
+class TestLessonQueries:
     # --------------------
     # Queries - view timetables logic tests
     # --------------------
@@ -163,10 +198,10 @@ class TestLesson:
         Test that the get all timeslots method correctly combines the solver / user time slot querysets
         """
         # Make a lesson with both user and solver defined slots
-        school = factories.School()
-        user_defined_slot = factories.TimetableSlot(school=school)
-        solver_defined_slot = factories.TimetableSlot(school=school)
-        lesson = factories.Lesson(
+        school = data_factories.School()
+        user_defined_slot = data_factories.TimetableSlot(school=school)
+        solver_defined_slot = data_factories.TimetableSlot(school=school)
+        lesson = data_factories.Lesson(
             school=school,
             user_defined_time_slots=(user_defined_slot,),
             solver_defined_time_slots=(solver_defined_slot,),
@@ -189,9 +224,9 @@ class TestLesson:
         Method to check that the correct number of solver slots is calculated for a lesson
         """
         # Make a lesson with a non-zero delta between defined / required slots
-        school = factories.School()
-        user_defined_slot = factories.TimetableSlot(school=school)
-        lesson = factories.Lesson(
+        school = data_factories.School()
+        user_defined_slot = data_factories.TimetableSlot(school=school)
+        lesson = data_factories.Lesson(
             school=school,
             user_defined_time_slots=(user_defined_slot,),
             total_required_slots=2,
@@ -208,17 +243,18 @@ class TestLesson:
         Method to check that the correct number of solver double periods is calculated for a lesson
         """
         # Make a lesson with one user-defined double, and one further double required
-        school = factories.School()
-        yg = factories.YearGroup(school=school)
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
 
-        slot_1 = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
-        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+        slot_1 = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
 
-        pupil = factories.Pupil(school=school, year_group=yg)
-        lesson = factories.Lesson(
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        lesson = data_factories.Lesson(
             school=school,
             user_defined_time_slots=(slot_1, slot_2),  # User defined double
             total_required_double_periods=2,
+            total_required_slots=4,
             pupils=(pupil,),
         )
 
@@ -234,16 +270,17 @@ class TestLesson:
         with ONE double period is correct.
         """
         # Make a lesson with one user-defined double
-        school = factories.School()
-        yg = factories.YearGroup(school=school)
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
 
-        slot_1 = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
-        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+        slot_1 = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
 
-        pupil = factories.Pupil(school=school, year_group=yg)
-        lesson = factories.Lesson(
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        lesson = data_factories.Lesson(
             school=school,
             user_defined_time_slots=(slot_1, slot_2),  # User defined double
+            total_required_slots=4,
             total_required_double_periods=2,
             pupils=(pupil,),
         )
@@ -261,20 +298,21 @@ class TestLesson:
         with ZERO double periods is correct.
         """
         # Make a lesson with one double on Tuesday
-        school = factories.School()
-        yg = factories.YearGroup(school=school)
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
 
-        slot_1 = factories.TimetableSlot(
+        slot_1 = data_factories.TimetableSlot(
             school=school,
             relevant_year_groups=(yg,),
             day_of_week=constants.Day.TUESDAY,
         )
-        slot_2 = factories.TimetableSlot.get_next_consecutive_slot(slot_1)
+        slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(slot_1)
 
-        pupil = factories.Pupil(school=school, year_group=yg)
-        lesson = factories.Lesson(
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        lesson = data_factories.Lesson(
             school=school,
             user_defined_time_slots=(slot_1, slot_2),  # User defined double
+            total_required_slots=4,
             total_required_double_periods=2,
             pupils=(pupil,),
         )
@@ -292,22 +330,22 @@ class TestLesson:
         Test the correct list of days is returned for a year one lesson.
         """
         # Make a lesson with a slot
-        school = factories.School()
-        yg = factories.YearGroup(school=school)
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
 
         # Add a pupil for getting the year group (and therefore slots)
-        pupil = factories.Pupil(school=school, year_group=yg)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
 
         # And a slot for getting the days
-        slot = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
 
-        lesson = factories.Lesson(
+        lesson = data_factories.Lesson(
             school=school,
             pupils=(pupil,),
         )
 
         # Make a dummy slot at a different school
-        factories.TimetableSlot(day_of_week=constants.Day.TUESDAY)
+        data_factories.TimetableSlot(day_of_week=constants.Day.TUESDAY)
 
         # Execute test unit
         associated_days = lesson.get_usable_days_of_week()
@@ -315,27 +353,27 @@ class TestLesson:
         # Check outcome (and dummy not in answer)
         assert associated_days == [slot.day_of_week]
 
-    def test_associated_timeslots_for_single_slot(self):
+    def test_get_associated_timeslots_for_single_slot(self):
         """
         Test the correct list of days is returned for a year one lesson.
         """
         # Make a lesson with a slot
-        school = factories.School()
-        yg = factories.YearGroup(school=school)
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
 
         # Add a pupil for getting the year group (and therefore slots)
-        pupil = factories.Pupil(school=school, year_group=yg)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
 
         # And a slot for getting the days
-        slot = factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+        slot = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
 
-        lesson = factories.Lesson(
+        lesson = data_factories.Lesson(
             school=school,
             pupils=(pupil,),
         )
 
         # Make a dummy slot at a different school
-        factories.TimetableSlot(day_of_week=constants.Day.TUESDAY)
+        data_factories.TimetableSlot(day_of_week=constants.Day.TUESDAY)
 
         # Execute test unit
         associated_slots = lesson.get_associated_timeslots()

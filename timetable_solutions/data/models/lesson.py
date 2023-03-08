@@ -3,8 +3,7 @@ Module defining the model for a SchoolClass, and its manager.
 """
 
 # Django imports
-from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import IntegrityError, models
 
 # Local application imports
 from data import constants
@@ -94,7 +93,18 @@ class Lesson(models.Model):
         Django Meta class for the Lesson model
         """
 
-        unique_together = [["school", "lesson_id"]]
+        constraints = [
+            models.UniqueConstraint(
+                "school", "lesson_id", name="lesson_id_unique_for_school"
+            ),
+            models.CheckConstraint(
+                name="number_of_double_period_slots_cannot_exceed_total_required_slots",
+                check=models.Q(
+                    total_required_slots__gte=models.F("total_required_double_periods")
+                    * 2
+                ),
+            ),
+        ]
 
     class Constant:
         """
@@ -163,7 +173,6 @@ class Lesson(models.Model):
             teacher=teacher,
             classroom=classroom,
         )
-        lesson.full_clean()
 
         if pupils is not None:
             lesson.add_pupils(pupils=pupils)
@@ -191,27 +200,33 @@ class Lesson(models.Model):
     # --------------------
 
     def add_pupils(self, pupils: PupilQuerySet | Pupil) -> None:
-        """Method adding a queryset of pupils to the Lesson instance's many-to-many pupils field"""
-        if isinstance(pupils, PupilQuerySet):
-            self.pupils.add(*pupils)
-        elif isinstance(pupils, Pupil):
-            self.pupils.add(pupils)
+        """
+        Add some pupils to this Lesson.
+        """
+        self.pupils.add(*pupils)
 
-    def add_user_defined_time_slots(
-        self, time_slots: TimetableSlotQuerySet | TimetableSlot
-    ) -> None:
-        """Method adding a queryset of time slots to the Lesson's many-to-many user_defined_time_slot field"""
-        if isinstance(time_slots, TimetableSlotQuerySet):
-            self.user_defined_time_slots.add(*time_slots)
-        elif isinstance(time_slots, TimetableSlot):
-            self.user_defined_time_slots.add(time_slots)
+    def add_user_defined_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
+        """
+        Add some user-defined time slots to this lesson.
+        """
+        existing_user_slots = self.user_defined_time_slots.all()
+
+        if (time_slots | existing_user_slots).count() > self.total_required_slots:
+            raise IntegrityError(
+                f"User tried to define more slots for {repr(self)} than the total requirement"
+            )
+        self.user_defined_time_slots.add(*time_slots)
 
     def add_solver_defined_time_slots(self, time_slots: TimetableSlotQuerySet) -> None:
-        """Method adding a queryset of time slots to the Lesson's many-to-many solver_defined_time_slot field"""
-        if isinstance(time_slots, TimetableSlotQuerySet):
-            self.solver_defined_time_slots.add(*time_slots)
-        elif isinstance(time_slots, TimetableSlot):
-            self.solver_defined_time_slots.add(time_slots)
+        """
+        Add the solver-generated solution slots for this lesson.
+        """
+        if intersection := time_slots & self.user_defined_time_slots.all():
+            raise IntegrityError(
+                f"Tried to set slots: {intersection} that appear in user defined slots "
+                f"as solver defined for lesson {repr(self)}!"
+            )
+        self.solver_defined_time_slots.add(*time_slots)
 
     # --------------------
     # Queries - view timetables logic
@@ -323,36 +338,3 @@ class Lesson(models.Model):
         Method returning the number of pupils associated with this Lesson instance.
         """
         return self.pupils.all().count()
-
-    # --------------------
-    # Validation
-    # --------------------
-
-    def clean(self) -> None:
-        """
-        Additional validation on Lesson instances. Note that we cannot imply a number of double periods that
-        would exceed the total number of slots.
-        """
-        if not hasattr(self, "school"):
-            # When a Lesson instance is created from the django-admin, the full_clean method is called before saving
-            # the instance. Since the additional cleaning performed by the clean method includes checks on the m2m
-            # fields, an error is thrown, because the m2m fields require the instance to be saved before they can be
-            # used. This if condition therefore bypasses the custom cleaning when calling full_clean from a ModelForm
-            return None
-
-        if self.user_defined_time_slots.all().count() > self.total_required_slots:
-            raise ValidationError(
-                f"User has defined more slots for {repr(self)} than the total requirement"
-            )
-
-        if self.total_required_slots < self.total_required_double_periods * 2:
-            raise ValidationError(
-                f"Number of double periods required is not feasible for {repr(self)}. "
-                f"({self.total_required_double_periods} > 2 * {self.total_required_slots}"
-            )
-
-        for slot in self.solver_defined_time_slots.all():
-            if slot in self.user_defined_time_slots.all():
-                raise ValidationError(
-                    f"{slot} appears in both user and solver slots for {repr(self)}"
-                )
