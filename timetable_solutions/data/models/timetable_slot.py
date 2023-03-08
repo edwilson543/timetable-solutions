@@ -102,8 +102,17 @@ class TimetableSlot(models.Model):
         Django Meta class for the TimetableSlot model
         """
 
-        ordering = ["day_of_week", "starts_at"]
+        constraints = [
+            models.UniqueConstraint(
+                "school", "slot_id", name="slot_id_unique_for_school"
+            ),
+            models.CheckConstraint(
+                check=models.Q(starts_at__lt=models.F("ends_at")),
+                name="slot_ends_after_it_starts",
+            ),
+        ]
         unique_together = [["school", "slot_id"]]
+        ordering = ["day_of_week", "starts_at"]
 
     class Constant:
         """
@@ -246,16 +255,3 @@ class TimetableSlot(models.Model):
         ).time()
 
         return open_start_time, open_end_time
-
-    # --------------------
-    # Validation
-    # --------------------
-
-    def clean(self) -> None:
-        """
-        Additional validation on TimetablesLOT instances.
-        """
-        if self.ends_at <= self.starts_at:
-            raise exceptions.ValidationError(
-                "Period cannot finish before it has started!"
-            )
