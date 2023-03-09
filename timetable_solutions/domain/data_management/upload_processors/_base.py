@@ -2,9 +2,12 @@
 Module containing utility class used to do the processing of the uploaded csv files into the database.
 """
 
+# TODO... sort this out...
+
 # Standard library imports
 import re
 from io import StringIO
+from typing import Callable, Generic, TypeVar
 
 # Third party imports
 import pandas as pd
@@ -14,14 +17,18 @@ from dateutil import parser as dateutil_parser  # type: ignore
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.uploadedfile import UploadedFile
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError
+from django.db import models as django_models
+from django.db import transaction
 
 # Local application imports
 from data import models
 from domain.data_management.constants import FileStructure, Header
 
+_Model = TypeVar("_Model", bound=django_models.Model)
 
-class BaseFileUploadProcessor:
+
+class BaseFileUploadProcessor(Generic[_Model]):
     """
     Class for the processing unit which, following a POST request from the user involving a file upload, will take that
     file, check it fits the requirements, and then upload to the database or not as appropriate.
@@ -30,11 +37,23 @@ class BaseFileUploadProcessor:
     The class is subclassed to define the processing of uploaded 'Lesson' files.
     """
 
-    # Class attributes set on each subclass
-    model: type[models.ModelSubclass]  # Database table we are processing to
-    file_structure: FileStructure  # Column headers and unique id_column in the file being processed
+    # Class vars set on each subclass
 
-    __nan_handler = "###ignorenan"  # Used to fill na values in uploaded file, since float (nan) is error-prone
+    model: type[_Model]
+    """Database table we are processing to"""
+
+    file_structure: FileStructure
+    """Column headers and unique id_column in the file being processed"""
+
+    creation_callback: Callable[..., _Model]
+    """Callback used to instantiate single model instances."""
+
+    callback_exception_class: type[Exception]
+    """Exception class raised when the callback fails."""
+
+    # Default vars
+    __nan_handler = "###ignorenan"
+    """Used to fill na values in uploaded file, since float (nan) is error-prone"""
 
     def __init__(
         self,
@@ -59,6 +78,13 @@ class BaseFileUploadProcessor:
         # Try uploading the file to the database
         if attempt_upload:
             self._upload_file_content(file=csv_file)
+
+    @classmethod
+    def create_new(cls, create_new_dict: dict[str, str]) -> None:
+        """
+        Create a single model instance given some parameters.
+        """
+        cls.creation_callback(**create_new_dict)
 
     def _upload_file_content(self, file: UploadedFile) -> None:
         """
@@ -110,15 +136,14 @@ class BaseFileUploadProcessor:
             try:
                 with transaction.atomic():
                     for n, create_new_dict in enumerate(create_new_dict_list):
-                        self.model.create_new(**create_new_dict)
+                        self.create_new(create_new_dict)
 
                 # Reaching this point means the upload processing has been successful
                 self.n_model_instances_created = len(create_new_dict_list)
 
             except (
-                ValidationError,  # Model does not pass the full_clean checks
-                TypeError,  # Model was missing a required field (via the create_new method)
-                ValueError,  # A string was passed to int(id_field)
+                self.callback_exception_class,
+                TypeError,  # Signature did nt match that of the callback
             ) as debug_only_message:
                 error = (
                     f"Could not interpret values in row {n+1} as a {self.model.Constant.human_string_singular}!"
@@ -130,13 +155,6 @@ class BaseFileUploadProcessor:
             except IntegrityError as debug_only_message:
                 error = f"ID given for {self.model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
-                if settings.DEBUG:
-                    self.upload_error_message = str(debug_only_message)
-            except ObjectDoesNotExist as debug_only_message:
-                self.upload_error_message = (
-                    f"Row {n + 1} of your file referenced a year group / pupil / teacher / classroom / "
-                    f"timetable slot id which does not exist!\n Please check this!"
-                )
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)
 

@@ -4,6 +4,7 @@ import pandas as pd
 # Local application imports
 from data import models
 from domain.data_management.constants import Header, UploadFileStructure
+from domain.data_management.pupils import exceptions, operations
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
@@ -18,6 +19,8 @@ class PupilFileUploadProcessor(BaseFileUploadProcessor, RelationalUploadProcesso
 
     model = models.Pupil
     file_structure = UploadFileStructure.PUPILS
+    creation_callback = operations.create_new_pupil
+    callback_exception_class = exceptions.CouldNotCreatePupil
 
     def _get_data_dict_from_row_for_create_new(
         self, row: pd.Series, row_number: int

@@ -401,8 +401,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         )
 
         # Check outcome
-        assert "does not exist" in error_message
-        assert "Row 1" in error_message
+        assert "Could not interpret values in row 1" in error_message
 
     def test_file_referencing_non_existent_classroom_is_unsuccessful(self):
         # Make some data - note we do not make a pupil
@@ -445,8 +444,7 @@ class TestLessonFileUploadProcessorInvalidUploads:
         )
 
         # Check outcome
-        assert "does not exist" in error_message
-        assert "Row 1" in error_message
+        assert "Could not interpret values in row 1" in error_message
 
     def test_file_referencing_non_existent_slot_is_unsuccessful(self):
         # Make some data - note we do not make a pupil

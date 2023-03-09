@@ -128,4 +128,7 @@ class TestPupilFileUploadProcessor:
         assert not upload_processor.upload_successful
         assert upload_processor.n_model_instances_created == 0
         assert models.Pupil.objects.filter(school=school).count() == 0
-        assert "does not exist" in upload_processor.upload_error_message
+        assert (
+            "Could not interpret values in row 1"
+            in upload_processor.upload_error_message
+        )
