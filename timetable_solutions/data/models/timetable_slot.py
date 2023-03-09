@@ -149,17 +149,11 @@ class TimetableSlot(models.Model):
         day_of_week: constants.Day,
         starts_at: dt.time,
         ends_at: dt.time,
-        relevant_year_groups: YearGroupQuerySet,
+        relevant_year_groups: YearGroupQuerySet | None = None,
     ) -> "TimetableSlot":
-        """Method to create a new TimetableSlot instance."""
-        try:
-            day_of_week = constants.Day(day_of_week).value
-        except ValueError:
-            raise ValueError(
-                f"Tried to create TimetableSlot instance with day_of_week: {day_of_week} of type: "
-                f"{type(day_of_week)}"
-            )
-
+        """
+        Create a new TimetableSlot instance.
+        """
         slot = cls.objects.create(
             school_id=school_id,
             slot_id=slot_id,
@@ -167,11 +161,9 @@ class TimetableSlot(models.Model):
             starts_at=starts_at,
             ends_at=ends_at,
         )
-        slot.full_clean()
-
         if relevant_year_groups is not None:
             slot.add_year_groups(year_groups=relevant_year_groups)
-
+        slot.full_clean()
         return slot
 
     @classmethod
