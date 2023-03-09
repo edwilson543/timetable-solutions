@@ -45,7 +45,7 @@ class TestCreateNewTimetableSlot:
         with pytest.raises(exceptions.CouldNotCreateTimetableSlot):
             operations.create_new_timetable_slot(
                 school_id=slot.school.school_access_key,
-                slot_id=1,
+                slot_id=slot.slot_id,
                 day_of_week=constants.Day.MONDAY,
                 starts_at=dt.time(hour=9),
                 ends_at=dt.time(hour=10),
