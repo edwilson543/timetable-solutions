@@ -65,8 +65,8 @@ class TestCreateNewLesson:
             subject_name="test",
             total_required_slots=4,
             total_required_double_periods=2,
-            teacher_id=teacher.teacher_id,
-            classroom_id=classroom.classroom_id,
+            teacher=teacher,
+            classroom=classroom,
             pupils=models.Pupil.objects.all(),
             user_defined_time_slots=models.TimetableSlot.objects.all(),
         )

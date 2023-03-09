@@ -139,31 +139,14 @@ class Lesson(models.Model):
         subject_name: str,
         total_required_slots: int,
         total_required_double_periods: int,
-        teacher_id: int | None = None,
-        classroom_id: int
-        | None = None,  # ID for classroom & teacher since they're foreign keys
+        teacher: Teacher | None = None,
+        classroom: Classroom | None = None,
         pupils: PupilQuerySet | None = None,
         user_defined_time_slots: TimetableSlotQuerySet | None = None,
     ) -> "Lesson":
         """
-        Method to create a new Lesson instance.
-        Note that pupils and timetable slots get added separately, since they have a many-to-many relationship to the
-        model, so the lesson instance must be saved first.
+        Create a new Lesson instance.
         """
-        if teacher_id is not None:
-            teacher = Teacher.objects.get_individual_teacher(
-                school_id=school_id, teacher_id=teacher_id
-            )
-        else:
-            teacher = None
-
-        if classroom_id is not None:
-            classroom = Classroom.objects.get_individual_classroom(
-                school_id=school_id, classroom_id=classroom_id
-            )
-        else:
-            classroom = None
-
         lesson = cls.objects.create(
             school_id=school_id,
             lesson_id=lesson_id,
@@ -174,9 +157,9 @@ class Lesson(models.Model):
             classroom=classroom,
         )
 
-        if pupils is not None:
+        if pupils:
             lesson.add_pupils(pupils=pupils)
-        if user_defined_time_slots is not None:
+        if user_defined_time_slots:
             lesson.add_user_defined_time_slots(time_slots=user_defined_time_slots)
 
         return lesson
