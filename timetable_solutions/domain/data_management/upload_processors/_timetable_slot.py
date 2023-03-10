@@ -8,6 +8,7 @@ import pandas as pd
 # Local application imports
 from data import models
 from domain.data_management.constants import Header, UploadFileStructure
+from domain.data_management.timetable_slot import exceptions, operations
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
@@ -23,6 +24,8 @@ class TimetableSlotFileUploadProcessor(
 
     model = models.TimetableSlot
     file_structure = UploadFileStructure.TIMETABLE
+    creation_callback = operations.create_new_timetable_slot
+    callback_exception_class = exceptions.CouldNotCreateTimetableSlot
 
     def _get_data_dict_from_row_for_create_new(  # type: ignore  # mypy flags changed return type versus base class
         self, row: pd.Series, row_number: int

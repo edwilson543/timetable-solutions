@@ -85,12 +85,9 @@ class Pupil(models.Model):
         pupil_id: int,
         firstname: str,
         surname: str,
-        year_group_id: int,
+        year_group: YearGroup,
     ) -> "Pupil":
         """Method to create a new Pupil instance."""
-        year_group = YearGroup.objects.get_individual_year_group(
-            school_id=school_id, year_group_id=year_group_id
-        )
 
         pupil = cls.objects.create(
             school_id=school_id,
@@ -99,7 +96,6 @@ class Pupil(models.Model):
             surname=surname,
             year_group=year_group,
         )
-        pupil.full_clean()
         return pupil
 
     @classmethod

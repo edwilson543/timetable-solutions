@@ -24,7 +24,7 @@ class TestCreateNewPupil:
         # Create a new pupil for the school
         models.Pupil.create_new(
             school_id=school.school_access_key,
-            year_group_id=yg.year_group_id,
+            year_group=yg,
             pupil_id=100,
             firstname="test",
             surname="test",
@@ -49,7 +49,7 @@ class TestCreateNewPupil:
                 pupil_id=pupil.pupil_id,
                 firstname="test",
                 surname="test",
-                year_group_id=pupil.year_group.year_group_id,
+                year_group=pupil.year_group,
             )
 
 

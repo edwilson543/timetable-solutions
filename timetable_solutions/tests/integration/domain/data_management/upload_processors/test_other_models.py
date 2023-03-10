@@ -149,7 +149,10 @@ class TestClassroomUploadProcessor:
         # Check the upload was unsuccessful
         assert not upload_processor.upload_successful
         assert upload_processor.n_model_instances_created == 0
-        assert "not unique" in upload_processor.upload_error_message
+        assert (
+            "Could not interpret values in row 2"
+            in upload_processor.upload_error_message
+        )
 
         # Inspect the db
         classrooms = models.Classroom.objects.filter(school=school)

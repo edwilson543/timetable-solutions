@@ -5,6 +5,7 @@ import datetime as dt
 import pytest
 
 # Django imports
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 # Local application imports
@@ -149,6 +150,22 @@ class TestCreateNewBreak:
                 starts_at=dt.time(hour=12),
                 ends_at=dt.time(hour=12),  # Note ends at same time
                 day_of_week=constants.Day.MONDAY,
+                teachers=models.Teacher.objects.none(),
+                relevant_year_groups=models.YearGroup.objects.none(),
+            )
+
+    def test_create_new_raises_for_invalid_day_of_week(self):
+        school = data_factories.School()
+
+        # Try to make another break with the same id
+        with pytest.raises(ValidationError):
+            models.Break.create_new(
+                school_id=school.school_access_key,
+                break_id="morning-break",
+                break_name="test",
+                starts_at=dt.time(hour=12),
+                ends_at=dt.time(hour=13),
+                day_of_week=100,
                 teachers=models.Teacher.objects.none(),
                 relevant_year_groups=models.YearGroup.objects.none(),
             )

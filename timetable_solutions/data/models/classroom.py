@@ -97,7 +97,6 @@ class Classroom(models.Model):
             building=building,
             room_number=room_number,
         )
-        classroom.full_clean()
         return classroom
 
     @classmethod

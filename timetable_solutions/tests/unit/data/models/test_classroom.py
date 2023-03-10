@@ -20,10 +20,6 @@ from tests import data_factories as factories
 
 @pytest.mark.django_db
 class TestCreateNewClassroom:
-    # --------------------
-    # Factories tests
-    # --------------------
-
     def test_create_new_valid_classroom(self):
         """
         Tests that we can create and save a Classroom via the create_new method

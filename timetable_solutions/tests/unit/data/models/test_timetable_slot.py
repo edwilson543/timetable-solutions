@@ -10,6 +10,7 @@ import datetime as dt
 import pytest
 
 # Django imports
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 # Local application imports
@@ -147,7 +148,7 @@ class TestCreateNewTimetableSlot:
         school = factories.School()
 
         # Try making a slot with invalid day of week
-        with pytest.raises(ValueError):
+        with pytest.raises(ValidationError):
             models.TimetableSlot.create_new(
                 school_id=school.school_access_key,
                 slot_id=1,
