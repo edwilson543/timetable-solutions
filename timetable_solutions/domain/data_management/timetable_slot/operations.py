@@ -11,8 +11,12 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import constants, models
+from domain.data_management import base_exceptions
+from domain.data_management.timetable_slot import queries
 
-from . import exceptions, queries
+
+class UnableToCreateTimetableSlot(base_exceptions.UnableToCreateModelInstance):
+    pass
 
 
 def create_new_timetable_slot(
@@ -41,7 +45,9 @@ def create_new_timetable_slot(
             ends_at=ends_at,
             relevant_year_groups=relevant_year_groups,
         )
-    except (IntegrityError, ValueError, ValidationError) as exc:
-        raise exceptions.CouldNotCreateTimetableSlot from exc
+    except (IntegrityError, ValidationError) as exc:
+        raise UnableToCreateTimetableSlot(
+            human_error_message="Could not create lesson with the given data."
+        ) from exc
 
     return slot

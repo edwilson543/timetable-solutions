@@ -8,7 +8,7 @@ import pytest
 
 # Local application imports
 from data import constants, models
-from domain.data_management.timetable_slot import exceptions, operations
+from domain.data_management.timetable_slot import operations
 from tests import data_factories
 
 
@@ -42,7 +42,7 @@ class TestCreateNewTimetableSlot:
     def test_raises_when_slot_id_not_unique_for_school(self):
         slot = data_factories.TimetableSlot()
 
-        with pytest.raises(exceptions.CouldNotCreateTimetableSlot):
+        with pytest.raises(operations.UnableToCreateTimetableSlot) as exc:
             operations.create_new_timetable_slot(
                 school_id=slot.school.school_access_key,
                 slot_id=slot.slot_id,
@@ -51,3 +51,8 @@ class TestCreateNewTimetableSlot:
                 ends_at=dt.time(hour=10),
                 relevant_year_groups=models.YearGroup.objects.all(),
             )
+
+        assert (
+            "Could not create lesson with the given data."
+            in exc.value.human_error_message
+        )

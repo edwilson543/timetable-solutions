@@ -5,7 +5,7 @@ import pytest
 
 # Local application imports
 from data import models
-from domain.data_management.lesson import exceptions, operations
+from domain.data_management.lesson import operations
 from tests import data_factories
 
 
@@ -51,7 +51,7 @@ class TestCreateNewLesson:
     def test_raises_when_teacher_does_not_exist(self):
         school = data_factories.School()
 
-        with pytest.raises(exceptions.CouldNotCreateLesson):
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
             operations.create_new_lesson(
                 school_id=school.school_access_key,
                 lesson_id="test",
@@ -61,10 +61,12 @@ class TestCreateNewLesson:
                 teacher_id=1,  # Does not exist
             )
 
+        assert "Teacher with id 1 does not exist!" in exc.value.human_error_message
+
     def test_raises_when_classroom_does_not_exist(self):
         school = data_factories.School()
 
-        with pytest.raises(exceptions.CouldNotCreateLesson):
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
             operations.create_new_lesson(
                 school_id=school.school_access_key,
                 lesson_id="test",
@@ -74,10 +76,12 @@ class TestCreateNewLesson:
                 classroom_id=1,  # Does not exist
             )
 
+        assert "Classroom with id 1 does not exist!" in exc.value.human_error_message
+
     def test_raises_when_lesson_id_not_unique(self):
         lesson = data_factories.Lesson()
 
-        with pytest.raises(exceptions.CouldNotCreateLesson):
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
             operations.create_new_lesson(
                 school_id=lesson.school.school_access_key,
                 lesson_id=lesson.lesson_id,
@@ -85,3 +89,25 @@ class TestCreateNewLesson:
                 total_required_slots=4,
                 total_required_double_periods=2,
             )
+
+        assert (
+            "Could not create lesson with the given data."
+            in exc.value.human_error_message
+        )
+
+    def test_raises_when_double_slots_exceeds_single_slots(self):
+        school = data_factories.School()
+
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
+            operations.create_new_lesson(
+                school_id=school.school_access_key,
+                lesson_id="Maths-A",
+                subject_name="test",
+                total_required_slots=2,
+                total_required_double_periods=5,
+            )
+
+        assert (
+            "Could not create lesson with the given data."
+            in exc.value.human_error_message
+        )

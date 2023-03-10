@@ -28,6 +28,10 @@ class School(models.Model):
         """String representation of the model for the django admin site"""
         return str(self.school_name)
 
+    def __repr__(self) -> str:
+        """String representation of the model for debugging"""
+        return str(self.school_name)
+
     # --------------------
     # Factories tests
     # --------------------

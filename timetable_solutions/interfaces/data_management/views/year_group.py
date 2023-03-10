@@ -11,7 +11,7 @@ from django.contrib import messages
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import ExampleFile
-from domain.data_management.year_groups import exceptions, operations, queries
+from domain.data_management.year_groups import operations, queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
@@ -65,14 +65,11 @@ class YearGroupCreate(base_views.CreateView):
     ) -> models.YearGroup | None:
         """Create a year group in the db using the clean form details."""
         year_group_id = form.cleaned_data.get("year_group_id", None)
-        try:
-            return operations.create_new_year_group(
-                school_id=self.school_id,
-                year_group_id=year_group_id,
-                year_group_name=form.cleaned_data["year_group_name"],
-            )
-        except exceptions.CouldNotCreateYearGroup:
-            return None
+        return operations.create_new_year_group(
+            school_id=self.school_id,
+            year_group_id=year_group_id,
+            year_group_name=form.cleaned_data["year_group_name"],
+        )
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Set the next available year group id as an initial value."""
@@ -104,26 +101,14 @@ class YearGroupUpdate(base_views.UpdateView):
     ) -> models.YearGroup | None:
         """Update a year group's name in the db."""
         year_group_name = form.cleaned_data.get("year_group_name", None)
-        try:
-            return operations.update_year_group(
-                year_group=self.model_instance,
-                year_group_name=year_group_name,
-            )
-        except exceptions.CouldNotUpdateYearGroup:
-            return None
+        return operations.update_year_group(
+            year_group=self.model_instance,
+            year_group_name=year_group_name,
+        )
 
-    def delete_model_instance(self) -> http.HttpResponse:
+    def delete_model_instance(self) -> None:
         """Delete the Teacher stored as an instance attribute."""
-        try:
-            msg = f"{self.model_instance} was deleted."
-            operations.delete_year_group(year_group=self.model_instance)
-            messages.success(request=self.request, message=msg)
-            return http.HttpResponseRedirect(self.delete_success_url)
-        except exceptions.CouldNotDeleteYearGroup:
-            context = super().get_context_data()
-            msg = "Could not delete this year group, try deleting all associated data"
-            context["deletion_error_message"] = msg
-            return super().render_to_response(context=context)
+        operations.delete_year_group(year_group=self.model_instance)
 
 
 class YearGroupUpload(base_views.UploadView):

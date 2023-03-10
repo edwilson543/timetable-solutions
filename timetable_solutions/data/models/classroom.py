@@ -59,11 +59,6 @@ class Classroom(models.Model):
             ),
         ]
 
-        unique_together = [
-            ["school", "classroom_id"],
-            ["school", "building", "room_number"],
-        ]
-
     class Constant:
         """
         Additional constants to store about the Classroom model (that aren't an option in Meta)
@@ -107,6 +102,21 @@ class Classroom(models.Model):
         instances = cls.objects.get_all_instances_for_school(school_id=school_id)
         outcome = instances.delete()
         return outcome
+
+    # --------------------
+    # Mutators
+    # --------------------
+
+    def update(
+        self, building: str | None = None, room_number: int | None = None
+    ) -> "Classroom":
+        """
+        Update the editable fields of a classroom in the db.
+        """
+        self.building = building or self.building
+        self.room_number = room_number or self.room_number
+        self.save(update_fields=["building", "room_number"])
+        return self
 
     # --------------------
     # Queries

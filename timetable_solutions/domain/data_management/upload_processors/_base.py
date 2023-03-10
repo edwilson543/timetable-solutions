@@ -15,7 +15,6 @@ from dateutil import parser as dateutil_parser  # type: ignore
 
 # Django imports
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.uploadedfile import UploadedFile
 from django.db import IntegrityError
 from django.db import models as django_models
@@ -23,6 +22,7 @@ from django.db import transaction
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
 from domain.data_management.constants import FileStructure, Header
 
 _Model = TypeVar("_Model", bound=django_models.Model)
@@ -47,9 +47,6 @@ class BaseFileUploadProcessor(Generic[_Model]):
 
     creation_callback: Callable[..., _Model]
     """Callback used to instantiate single model instances."""
-
-    callback_exception_class: type[Exception]
-    """Exception class raised when the callback fails."""
 
     # Default vars
     __nan_handler = "###ignorenan"
@@ -142,18 +139,13 @@ class BaseFileUploadProcessor(Generic[_Model]):
                 self.n_model_instances_created = len(create_new_dict_list)
 
             except (
-                self.callback_exception_class,
+                base_exceptions.UnableToCreateModelInstance,
                 TypeError,  # Signature did nt match that of the callback
             ) as debug_only_message:
                 error = (
                     f"Could not interpret values in row {n+1} as a {self.model.Constant.human_string_singular}!"
                     f"\nPlease check that all data is of the correct type and all ids referenced are in use!"
                 )
-                self.upload_error_message = error
-                if settings.DEBUG:
-                    self.upload_error_message = str(debug_only_message)
-            except IntegrityError as debug_only_message:
-                error = f"ID given for {self.model.Constant.human_string_singular} in row {n + 1} was not unique!"
                 self.upload_error_message = error
                 if settings.DEBUG:
                     self.upload_error_message = str(debug_only_message)

@@ -2,10 +2,6 @@
 Implementation for the special case of handling the Lesson file upload
 """
 
-
-# Standard library imports
-import re
-
 # Third party imports
 import pandas as pd
 
@@ -15,7 +11,7 @@ from django.core.files.uploadedfile import UploadedFile
 # Local application imports
 from data import models
 from domain.data_management.constants import Header, UploadFileStructure
-from domain.data_management.lesson import exceptions, operations
+from domain.data_management.lesson import operations
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
     RelationalUploadProcessorMixin,
@@ -34,7 +30,6 @@ class LessonFileUploadProcessor(
     model = models.Lesson
     file_structure = UploadFileStructure.LESSON
     creation_callback = operations.create_new_lesson
-    callback_exception_class = exceptions.CouldNotCreateLesson
 
     def __init__(
         self,

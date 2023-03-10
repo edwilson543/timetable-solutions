@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import UploadedFile
 
 # Local application imports
 from data import models
-from domain.data_management.break_ import exceptions, operations
+from domain.data_management.break_ import operations
 from domain.data_management.constants import Header, UploadFileStructure
 from domain.data_management.upload_processors._base import (
     BaseFileUploadProcessor,
@@ -20,7 +20,6 @@ class BreakFileUploadProcessor(BaseFileUploadProcessor, RelationalUploadProcesso
     model = models.Break
     file_structure = UploadFileStructure.BREAK
     creation_callback = operations.create_new_break
-    callback_exception_class = exceptions.CouldNotCreateBreak
 
     def __init__(
         self,

@@ -1,13 +1,15 @@
 """Operations on the Break model affecting db state."""
 
 # Django imports
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
 
-from . import exceptions
+
+class UnableToCreateLesson(base_exceptions.UnableToCreateModelInstance):
+    pass
 
 
 def create_new_lesson(
@@ -33,7 +35,9 @@ def create_new_lesson(
                 school_id=school_id, teacher_id=teacher_id
             )
         except models.Teacher.DoesNotExist as exc:
-            raise exceptions.CouldNotCreateLesson from exc
+            raise UnableToCreateLesson(
+                human_error_message=f"Teacher with id {teacher_id} does not exist!"
+            ) from exc
     else:
         teacher = None
 
@@ -43,7 +47,9 @@ def create_new_lesson(
                 school_id=school_id, classroom_id=classroom_id
             )
         except models.Classroom.DoesNotExist as exc:
-            raise exceptions.CouldNotCreateLesson from exc
+            raise UnableToCreateLesson(
+                human_error_message=f"Classroom with id {classroom_id} does not exist!"
+            ) from exc
     else:
         classroom = None
 
@@ -59,5 +65,7 @@ def create_new_lesson(
             pupils=pupils,
             user_defined_time_slots=user_defined_time_slots,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreateLesson from exc
+    except IntegrityError as exc:
+        raise UnableToCreateLesson(
+            human_error_message="Could not create lesson with the given data."
+        ) from exc

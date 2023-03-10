@@ -11,6 +11,7 @@ from django.db import models as django_models
 from django.views import generic
 
 # Local application imports
+from domain.data_management import base_exceptions
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -49,19 +50,21 @@ class CreateView(
     """The model instance that has been created."""
 
     @abc.abstractmethod
-    def create_model_from_clean_form(self, form: _CreateFormT) -> _ModelT | None:
+    def create_model_from_clean_form(self, form: _CreateFormT) -> _ModelT:
         """Create a model instance using the clean form data."""
         raise NotImplemented
 
     def form_valid(self, form: _CreateFormT) -> http.HttpResponse:
         """Try to call the model creating function when we get some valid form data."""
-        if form.is_valid():
-            self.created_model_instance = self.create_model_from_clean_form(form=form)
-            if self.created_model_instance:
-                msg = f"New {self.model_class.Constant.human_string_singular} successfully created!"
-                messages.success(request=self.request, message=msg)
-                return super().form_valid(form=form)
-        return super().form_invalid(form=form)
+        try:
+            self.create_model_from_clean_form(form=form)
+        except base_exceptions.UnableToCreateModelInstance as exc:
+            form.add_error(None, error=exc.human_error_message)
+            return super().form_invalid(form=form)
+
+        msg = f"New {self.model_class.Constant.human_string_singular} successfully created!"
+        messages.success(request=self.request, message=msg)
+        return super().form_valid(form=form)
 
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object

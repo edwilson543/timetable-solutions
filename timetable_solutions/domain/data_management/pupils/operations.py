@@ -6,8 +6,13 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
 
-from . import exceptions, queries
+from . import queries
+
+
+class UnableToCreatePupil(base_exceptions.UnableToCreateModelInstance):
+    pass
 
 
 def create_new_pupil(
@@ -28,8 +33,8 @@ def create_new_pupil(
             school_id=school_id, year_group_id=year_group_id
         )
     except models.YearGroup.DoesNotExist:
-        raise exceptions.CouldNotCreatePupil(
-            f"Year group with ID: {year_group_id} does not exist!"
+        raise UnableToCreatePupil(
+            human_error_message=f"Year group with id {year_group_id} does not exist!"
         )
 
     if not pupil_id:
@@ -43,5 +48,7 @@ def create_new_pupil(
             surname=surname,
             year_group=year_group,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreatePupil from exc
+    except (IntegrityError, ValidationError) as exc:
+        raise UnableToCreatePupil(
+            human_error_message="Could not create pupil with the given data."
+        ) from exc
