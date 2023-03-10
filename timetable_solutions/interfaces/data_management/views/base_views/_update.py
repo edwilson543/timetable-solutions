@@ -15,6 +15,7 @@ from django.template import loader
 from django.views import generic
 
 # Local application imports
+from domain.data_management import base_exceptions
 from interfaces.constants import UrlName
 from interfaces.data_management.forms import base_forms
 from interfaces.utils.typing_utils import (
@@ -82,9 +83,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     """Id of the model instance, within the context of the school."""
 
     @abc.abstractmethod
-    def update_model_from_clean_form(
-        self, form: base_forms.CreateUpdate
-    ) -> _ModelT | None:
+    def update_model_from_clean_form(self, form: base_forms.CreateUpdate) -> _ModelT:
         """
         Method used to try to update the target model instance from a clean form.
 
@@ -93,7 +92,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
         raise NotImplemented
 
     @abc.abstractmethod
-    def delete_model_instance(self) -> http.HttpResponse:
+    def delete_model_instance(self) -> None:
         """
         Method used to delete the targeted model instance, as if handling HTTP delete requests.
         """
@@ -121,7 +120,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     ) -> http.HttpResponse:
         """Pivot to either updating or deleting the data."""
         if self.is_delete_request:
-            return self.delete_model_instance()
+            return self._handle_deletion()
         elif self.is_update_request:
             return super().post(request, *args, **kwargs)
 
@@ -145,15 +144,18 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     # --------------------
     # Handle the update form
     # --------------------
+
     def form_valid(self, form: base_forms.CreateUpdate) -> http.HttpResponse:
         """Use the form to update the relevant data."""
-        if new_instance := self.update_model_from_clean_form(form=form):
-            msg = f"Details for {new_instance} were successfully updated!"
-            messages.success(request=self.request, message=msg)
-            return http.HttpResponseRedirect(self.get_success_url())
-        else:
-            msg = f"Could not update details for {self.model_instance}."
-            messages.error(request=self.request, message=msg)
+        try:
+            new_instance = self.update_model_from_clean_form(form=form)
+        except base_exceptions.UnableToUpdateModelInstance as exc:
+            form.add_error(None, error=exc.human_error_message)
+            return super().form_invalid(form=form)
+
+        msg = f"Details for {new_instance} were successfully updated!"
+        messages.success(request=self.request, message=msg)
+        return http.HttpResponseRedirect(self.get_success_url())
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Add the model instance to the form kwargs so the values can be set as initials."""
@@ -169,6 +171,24 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     def get_success_url(self) -> str:
         """Redirect a posted form back to the same page."""
         return self.page_url
+
+    # --------------------
+    # Handle the delete form
+    # --------------------
+
+    def _handle_deletion(self) -> http.HttpResponse:
+        """
+        Delete the model instance and handle any exceptions.
+        """
+        try:
+            msg = f"{self.model_instance} was deleted."
+            self.delete_model_instance()
+            messages.success(request=self.request, message=msg)
+        except base_exceptions.UnableToDeleteModelInstance as exc:
+            context = super().get_context_data()
+            context["deletion_error_message"] = exc.human_error_message
+            return super().render_to_response(context=context)
+        return http.HttpResponseRedirect(self.delete_success_url)
 
     # --------------------
     # Helper methods

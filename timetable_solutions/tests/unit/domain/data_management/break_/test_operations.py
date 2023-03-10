@@ -8,7 +8,7 @@ import pytest
 
 # Local application imports
 from data import constants, models
-from domain.data_management.break_ import exceptions, operations
+from domain.data_management.break_ import operations
 from tests import data_factories
 
 
@@ -45,7 +45,7 @@ class TestCreateNewBreak:
         break_ = data_factories.Break()
 
         # Try to make another break with the same id
-        with pytest.raises(exceptions.CouldNotCreateBreak):
+        with pytest.raises(operations.UnableToCreateBreak) as exc:
             operations.create_new_break(
                 school_id=break_.school.school_access_key,
                 break_id=break_.break_id,
@@ -56,3 +56,8 @@ class TestCreateNewBreak:
                 teachers=models.Teacher.objects.all(),
                 relevant_year_groups=models.YearGroup.objects.all(),
             )
+
+        assert (
+            "Could not create break with the given data."
+            in exc.value.human_error_message
+        )

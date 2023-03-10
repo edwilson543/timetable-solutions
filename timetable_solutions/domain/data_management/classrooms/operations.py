@@ -2,14 +2,25 @@
 
 
 # Django imports
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
+from domain.data_management.classrooms import queries
 
-from . import exceptions, queries
+
+class UnableToCreateClassroom(base_exceptions.UnableToCreateModelInstance):
+    pass
+
+
+class UnableToUpdateClassroom(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeleteClassroom(base_exceptions.UnableToDeleteModelInstance):
+    pass
 
 
 def create_new_classroom(
@@ -29,15 +40,17 @@ def create_new_classroom(
             building=building,
             room_number=room_number,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreateClassroom from exc
+    except IntegrityError as exc:
+        raise UnableToCreateClassroom(
+            human_error_message=f"Classroom with this data already exists."
+        ) from exc
 
 
 def update_classroom(
     classroom: models.Classroom,
     *,
     building: str | None = None,
-    room_number: int | None = None
+    room_number: int | None = None,
 ) -> models.Classroom:
     """
     Update a classroom in the db.
@@ -46,8 +59,10 @@ def update_classroom(
     """
     try:
         return classroom.update(building=building, room_number=room_number)
-    except (ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotUpdateClassroom from exc
+    except Exception as exc:
+        raise UnableToUpdateClassroom(
+            human_error_message="Unable to update details for this classroom"
+        ) from exc
 
 
 def delete_classroom(
@@ -61,4 +76,10 @@ def delete_classroom(
     try:
         return classroom.delete()
     except ProtectedError as exc:
-        raise exceptions.CouldNotDeleteClassroom from exc
+        protected_relations = {
+            model.Constant.human_string_singular for model in exc.protected_objects
+        }
+        protected_str = ", ".join(protected_relations)
+        raise UnableToDeleteClassroom(
+            human_error_message=f"Unable to delete classroom - at least one {protected_str} still use this classroom!"
+        ) from exc

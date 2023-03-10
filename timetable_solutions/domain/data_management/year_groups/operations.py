@@ -1,14 +1,24 @@
 """Operations on the YearGroup model affecting db state."""
 
 # Django imports
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
+from domain.data_management.year_groups import queries
 
-from . import exceptions, queries
+
+class UnableToCreateYearGroup(base_exceptions.UnableToCreateModelInstance):
+    pass
+
+
+class UnableToUpdateYearGroup(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeleteYearGroup(base_exceptions.UnableToDeleteModelInstance):
+    pass
 
 
 def create_new_year_group(
@@ -27,8 +37,10 @@ def create_new_year_group(
             year_group_id=year_group_id,
             year_group_name=year_group_name,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreateYearGroup from exc
+    except IntegrityError as exc:
+        raise UnableToCreateYearGroup(
+            human_error_message=f"Year group with this data already exists!"
+        ) from exc
 
 
 def update_year_group(
@@ -43,8 +55,10 @@ def update_year_group(
     """
     try:
         return year_group.update(year_group_name=year_group_name)
-    except (ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotUpdateYearGroup from exc
+    except Exception as exc:
+        raise UnableToUpdateYearGroup(
+            human_error_message="Unable to update details for this year group."
+        ) from exc
 
 
 def delete_year_group(year_group: models.YearGroup) -> tuple[int, dict[str, int]]:
@@ -57,5 +71,7 @@ def delete_year_group(year_group: models.YearGroup) -> tuple[int, dict[str, int]
     """
     try:
         return year_group.delete()
-    except ProtectedError as exc:
-        raise exceptions.CouldNotDeleteYearGroup from exc
+    except Exception as exc:
+        raise UnableToDeleteYearGroup(
+            human_error_message="Unable to delete this year group."
+        ) from exc

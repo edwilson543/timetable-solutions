@@ -5,7 +5,7 @@ import pytest
 
 # Local application imports
 from data import models
-from domain.data_management.year_groups import exceptions, operations
+from domain.data_management.year_groups import operations
 from tests import data_factories
 
 
@@ -36,22 +36,33 @@ class TestCreateNewYearGroup:
         school = yg.school
 
         # Try making a year group with the same school / id
-        with pytest.raises(exceptions.CouldNotCreateYearGroup):
+        with pytest.raises(operations.UnableToCreateYearGroup) as exc:
             operations.create_new_year_group(
                 school_id=school.school_access_key,
                 year_group_id=yg.year_group_id,
                 year_group_name="test",
             )
 
-    def test_raises_when_year_group_id_given_as_string(self):
-        school = data_factories.School()
+        assert f"Year group with this data already exists!" in str(
+            exc.value.human_error_message
+        )
 
-        with pytest.raises(exceptions.CouldNotCreateYearGroup):
+    def test_raises_when_year_group_name_not_unique_for_school(self):
+        # Make a year group to occupy an id value
+        yg = data_factories.YearGroup()
+        school = yg.school
+
+        # Try making a year group with the same school / id
+        with pytest.raises(operations.UnableToCreateYearGroup) as exc:
             operations.create_new_year_group(
                 school_id=school.school_access_key,
-                year_group_id="not-an-integer",
-                year_group_name="test",
+                year_group_id=yg.year_group_id + 1,
+                year_group_name=yg.year_group_name,
             )
+
+        assert f"Year group with this data already exists!" in str(
+            exc.value.human_error_message
+        )
 
 
 @pytest.mark.django_db

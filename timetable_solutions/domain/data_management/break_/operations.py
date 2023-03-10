@@ -8,8 +8,11 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import constants, models
+from domain.data_management import base_exceptions
 
-from . import exceptions
+
+class UnableToCreateBreak(base_exceptions.UnableToCreateModelInstance):
+    pass
 
 
 def create_new_break(
@@ -39,5 +42,7 @@ def create_new_break(
             teachers=teachers,
             relevant_year_groups=relevant_year_groups,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreateBreak from exc
+    except (IntegrityError, ValidationError) as exc:
+        raise UnableToCreateBreak(
+            human_error_message="Could not create break with the given data."
+        ) from exc

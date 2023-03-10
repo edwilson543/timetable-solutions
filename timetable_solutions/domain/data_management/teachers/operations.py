@@ -1,14 +1,25 @@
 """Operations on the Teacher model affecting db state."""
 
 # Django imports
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
+from domain.data_management import base_exceptions
+from domain.data_management.teachers import queries
 
-from . import exceptions, queries
+
+class UnableToCreateTeacher(base_exceptions.UnableToCreateModelInstance):
+    pass
+
+
+class UnableToUpdateTeacher(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeleteTeacher(base_exceptions.UnableToDeleteModelInstance):
+    pass
 
 
 def create_new_teacher(
@@ -29,8 +40,10 @@ def create_new_teacher(
             surname=surname,
             title=title,
         )
-    except (IntegrityError, ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotCreateTeacher from exc
+    except IntegrityError as exc:
+        raise UnableToCreateTeacher(
+            human_error_message=f"Teacher with id {teacher_id} already exists!"
+        ) from exc
 
 
 def update_teacher(
@@ -38,7 +51,7 @@ def update_teacher(
     *,
     firstname: str | None = None,
     surname: str | None,
-    title: str | None = None
+    title: str | None = None,
 ) -> models.Teacher:
     """
     Update a teacher in the db.
@@ -47,8 +60,10 @@ def update_teacher(
     """
     try:
         return teacher.update(firstname=firstname, surname=surname, title=title)
-    except (ValidationError, ValueError) as exc:
-        raise exceptions.CouldNotUpdateTeacher from exc
+    except Exception as exc:
+        raise UnableToUpdateTeacher(
+            human_error_message="Unable to update details for this teacher."
+        ) from exc
 
 
 def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
@@ -62,4 +77,10 @@ def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
     try:
         return teacher.delete()
     except ProtectedError as exc:
-        raise exceptions.CouldNotDeleteTeacher from exc
+        protected_relations = {
+            model.Constant.human_string_singular for model in exc.protected_objects
+        }
+        protected_str = ", ".join(protected_relations)
+        raise UnableToDeleteTeacher(
+            human_error_message=f"Unable to delete teacher - at least one {protected_str} still references this teacher!"
+        ) from exc

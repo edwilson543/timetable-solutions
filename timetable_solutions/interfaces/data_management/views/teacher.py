@@ -4,15 +4,13 @@
 from typing import Any
 
 # Django imports
-from django import http
-from django.contrib import messages
 from django.db.models import Prefetch
 
 # Local application imports
 from data import models
 from domain.data_management import upload_processors
 from domain.data_management.constants import ExampleFile
-from domain.data_management.teachers import exceptions, operations, queries
+from domain.data_management.teachers import operations, queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
@@ -78,16 +76,13 @@ class TeacherCreate(base_views.CreateView):
     ) -> models.Teacher | None:
         """Create a teacher in the db using the clean form details."""
         teacher_id = form.cleaned_data.get("teacher_id", None)
-        try:
-            return operations.create_new_teacher(
-                school_id=self.school_id,
-                teacher_id=teacher_id,
-                firstname=form.cleaned_data["firstname"],
-                surname=form.cleaned_data["surname"],
-                title=form.cleaned_data["title"],
-            )
-        except exceptions.CouldNotCreateTeacher:
-            return None
+        return operations.create_new_teacher(
+            school_id=self.school_id,
+            teacher_id=teacher_id,
+            firstname=form.cleaned_data["firstname"],
+            surname=form.cleaned_data["surname"],
+            title=form.cleaned_data["title"],
+        )
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """Set the next available teacher id as an initial value."""
@@ -116,38 +111,21 @@ class TeacherUpdate(base_views.UpdateView):
     page_url_prefix = UrlName.TEACHER_UPDATE
     delete_success_url = UrlName.TEACHER_LIST.url(lazy=True)
 
-    def update_model_from_clean_form(
-        self, form: forms.TeacherUpdate
-    ) -> models.Teacher | None:
+    def update_model_from_clean_form(self, form: forms.TeacherUpdate) -> models.Teacher:
         """Update a teacher's details in the db."""
         firstname = form.cleaned_data.get("firstname", None)
         surname = form.cleaned_data.get("surname", None)
         title = form.cleaned_data.get("title", None)
-        try:
-            return operations.update_teacher(
-                teacher=self.model_instance,
-                firstname=firstname,
-                surname=surname,
-                title=title,
-            )
-        except exceptions.CouldNotUpdateTeacher:
-            return None
+        return operations.update_teacher(
+            teacher=self.model_instance,
+            firstname=firstname,
+            surname=surname,
+            title=title,
+        )
 
-    def delete_model_instance(self) -> http.HttpResponse:
+    def delete_model_instance(self) -> None:
         """Delete the Teacher stored as an instance attribute."""
-        try:
-            msg = f"{self.model_instance} was deleted."
-            operations.delete_teacher(teacher=self.model_instance)
-            messages.success(request=self.request, message=msg)
-            return http.HttpResponseRedirect(self.delete_success_url)
-        except exceptions.CouldNotDeleteTeacher:
-            msg = (
-                "This teacher is still assigned to at least one lesson!\n"
-                "To delete this teacher, first delete or reassign their lessons"
-            )
-            context = super().get_context_data()
-            context["deletion_error_message"] = msg
-            return super().render_to_response(context=context)
+        operations.delete_teacher(teacher=self.model_instance)
 
 
 class TeacherUpload(base_views.UploadView):

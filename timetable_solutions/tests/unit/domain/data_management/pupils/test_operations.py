@@ -5,7 +5,7 @@ import pytest
 
 # Local application imports
 from data import models
-from domain.data_management.pupils import exceptions, operations
+from domain.data_management.pupils import operations
 from tests import data_factories
 
 
@@ -36,7 +36,7 @@ class TestCreateNewPupil:
     def test_raises_when_pupil_id_not_unique_for_school(self):
         pupil = data_factories.Pupil()
 
-        with pytest.raises(exceptions.CouldNotCreatePupil):
+        with pytest.raises(operations.UnableToCreatePupil) as exc:
             operations.create_new_pupil(
                 school_id=pupil.school.school_access_key,
                 year_group_id=pupil.year_group.year_group_id,
@@ -45,10 +45,15 @@ class TestCreateNewPupil:
                 surname="test",
             )
 
+        assert (
+            "Could not create pupil with the given data."
+            in exc.value.human_error_message
+        )
+
     def test_raises_when_year_group_does_not_exist(self):
         school = data_factories.School()
 
-        with pytest.raises(exceptions.CouldNotCreatePupil):
+        with pytest.raises(operations.UnableToCreatePupil) as exc:
             operations.create_new_pupil(
                 school_id=school.school_access_key,
                 year_group_id=100,  # Does not exist
@@ -56,3 +61,7 @@ class TestCreateNewPupil:
                 firstname="test",
                 surname="test",
             )
+
+        assert (
+            f"Year group with id 100 does not exist!" in exc.value.human_error_message
+        )

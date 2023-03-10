@@ -5,7 +5,7 @@ import pytest
 
 # Local application imports
 from data import models
-from domain.data_management.teachers import exceptions, operations
+from domain.data_management.teachers import operations
 from tests import data_factories
 
 
@@ -40,7 +40,7 @@ class TestCreateNewTeacher:
         teacher = data_factories.Teacher()
 
         # Try making a teacher with the same school / id
-        with pytest.raises(exceptions.CouldNotCreateTeacher):
+        with pytest.raises(operations.UnableToCreateTeacher) as exc:
             operations.create_new_teacher(
                 school_id=teacher.school.school_access_key,
                 teacher_id=teacher.teacher_id,
@@ -48,6 +48,11 @@ class TestCreateNewTeacher:
                 surname="test-2",
                 title="mrs",
             )
+
+        assert (
+            f"Teacher with id {teacher.teacher_id} already exists!"
+            in exc.value.human_error_message
+        )
 
 
 @pytest.mark.django_db
@@ -76,7 +81,10 @@ class TestDeleteTeacher:
             teacher.refresh_from_db()
 
     def test_delete_teacher_unsuccessful_if_has_lessons(self):
+        # Note the lesson -> teacher foreign key is protected
         lesson = data_factories.Lesson()
 
-        with pytest.raises(exceptions.CouldNotDeleteTeacher):
+        with pytest.raises(operations.UnableToDeleteTeacher) as exc:
             operations.delete_teacher(lesson.teacher)
+
+        assert "at least one lesson" in exc.value.human_error_message
