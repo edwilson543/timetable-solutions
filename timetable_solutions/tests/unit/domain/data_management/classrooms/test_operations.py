@@ -53,7 +53,7 @@ class TestUpdatedClassroom:
         assert classroom.building == "Science"
         assert classroom.room_number == 100
 
-    def test_raises_when_classroom_id_not_unique_for_school(self):
+    def test_raises_when_classroom_room_number_not_an_integer(self):
         classroom = data_factories.Classroom()
 
         with pytest.raises(exceptions.CouldNotUpdateClassroom):
