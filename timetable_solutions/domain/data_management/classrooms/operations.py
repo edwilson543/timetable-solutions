@@ -30,3 +30,20 @@ def create_new_classroom(
         )
     except (IntegrityError, ValidationError, ValueError) as exc:
         raise exceptions.CouldNotCreateClassroom from exc
+
+
+def update_classroom(
+    classroom: models.Classroom,
+    *,
+    building: str | None = None,
+    room_number: int | None = None
+) -> models.Classroom:
+    """
+    Update a classroom in the db.
+
+    raises CouldNotUpdateClassroom if it wasn't possible.
+    """
+    try:
+        return classroom.update(building=building, room_number=room_number)
+    except (ValidationError, ValueError) as exc:
+        raise exceptions.CouldNotUpdateClassroom from exc

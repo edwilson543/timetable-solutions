@@ -38,3 +38,26 @@ class TestCreateNewClassroom:
                 building="Test",
                 room_number=33,
             )
+
+
+@pytest.mark.django_db
+class TestUpdatedClassroom:
+    def test_updated_classroom_updates_details_in_db(self):
+        classroom = data_factories.Classroom()
+
+        # Create the classroom
+        operations.update_classroom(classroom, building="Science", room_number=100)
+
+        # Check the classroom was updated
+        classroom.refresh_from_db()
+        assert classroom.building == "Science"
+        assert classroom.room_number == 100
+
+    def test_raises_when_classroom_id_not_unique_for_school(self):
+        classroom = data_factories.Classroom()
+
+        with pytest.raises(exceptions.CouldNotUpdateClassroom):
+            operations.update_classroom(
+                classroom,
+                room_number="thirty three",
+            )
