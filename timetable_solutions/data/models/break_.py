@@ -93,8 +93,6 @@ class Break(models.Model):
             ),
         ]
 
-        unique_together = [["school", "break_id"]]
-
     class Constant:
         """
         Additional constants to store about the Lesson model (that aren't an option in Meta)

@@ -111,7 +111,6 @@ class TimetableSlot(models.Model):
                 name="slot_ends_after_it_starts",
             ),
         ]
-        unique_together = [["school", "slot_id"]]
         ordering = ["day_of_week", "starts_at"]
 
     class Constant:

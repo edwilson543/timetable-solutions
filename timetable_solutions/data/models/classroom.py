@@ -59,11 +59,6 @@ class Classroom(models.Model):
             ),
         ]
 
-        unique_together = [
-            ["school", "classroom_id"],
-            ["school", "building", "room_number"],
-        ]
-
     class Constant:
         """
         Additional constants to store about the Classroom model (that aren't an option in Meta)
