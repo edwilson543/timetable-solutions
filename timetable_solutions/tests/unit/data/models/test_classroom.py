@@ -15,7 +15,7 @@ from django.db.models import ProtectedError
 
 # Local application imports
 from data import constants, models
-from tests import data_factories as factories
+from tests import data_factories
 
 
 @pytest.mark.django_db
@@ -25,7 +25,7 @@ class TestCreateNewClassroom:
         Tests that we can create and save a Classroom via the create_new method
         """
         # Make a school for the classroom
-        school = factories.School()
+        school = data_factories.School()
 
         # Create the classroom
         classroom = models.Classroom.create_new(
@@ -41,7 +41,7 @@ class TestCreateNewClassroom:
         assert all_classrooms.first() == classroom
 
     def test_create_new_fails_when_classroom_id_not_unique_for_school(self):
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
 
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(
@@ -52,7 +52,7 @@ class TestCreateNewClassroom:
             )
 
     def test_create_new_fails_when_building_and_room_number_not_unique_for_school(self):
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
 
         with pytest.raises(IntegrityError):
             models.Classroom.create_new(
@@ -64,6 +64,26 @@ class TestCreateNewClassroom:
 
 
 @pytest.mark.django_db
+class TestUpdate:
+    @pytest.mark.parametrize("building", ["English", None])
+    @pytest.mark.parametrize("room_number", [100, None])
+    def test_update_updates_teacher_details_with_params(
+        self, building: str, room_number: int
+    ):
+        classroom = data_factories.Classroom()
+
+        classroom.update(building=building, room_number=room_number)
+
+        expected_building = building or classroom.building
+        expected_room_number = room_number or classroom.room_number
+
+        classroom.refresh_from_db()
+
+        assert classroom.building == expected_building
+        assert classroom.room_number == expected_room_number
+
+
+@pytest.mark.django_db
 class TestDeleteAllInstancesForSchool:
     def test_delete_all_instances_for_school_successful(self):
         """
@@ -71,7 +91,7 @@ class TestDeleteAllInstancesForSchool:
         instances referencing the classrooms as foreign keys.
         """
         # Get a classroom
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
 
         # Delete all the classrooms at our new classroom's school
         outcome = models.Classroom.delete_all_instances_for_school(
@@ -91,7 +111,7 @@ class TestDeleteAllInstancesForSchool:
         referencing the classrooms we are trying to delete.
         """
         # Make a lesson, with a classroom
-        lesson = factories.Lesson()
+        lesson = data_factories.Lesson()
         classroom = lesson.classroom
 
         # Check cannot delete classrooms
@@ -103,17 +123,16 @@ class TestDeleteAllInstancesForSchool:
         # Check classroom still exists
         assert classroom in models.Classroom.objects.all()
 
-    # --------------------
-    # Queries tests
-    # --------------------
 
+@pytest.mark.django_db
+class TestClassroomQueries:
     def test_check_if_occupied_at_time_of_timeslot_classroom_occupied_at_slot(self):
         """Test that the check_if_occupied_at_timeslot method returns 'True' when we expect it to"""
         # Make a classroom with a lesson fixed at some slot
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
         school = classroom.school
-        slot = factories.TimetableSlot(school=school)
-        factories.Lesson(
+        slot = data_factories.TimetableSlot(school=school)
+        data_factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(slot,)
         )
 
@@ -128,15 +147,15 @@ class TestDeleteAllInstancesForSchool:
     ):
         """Test that the check_if_occupied_at_timeslot method returns 'True' when we expect it to"""
         # Make a classroom with a lesson fixed at some slot
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
         school = classroom.school
-        busy_slot = factories.TimetableSlot(school=school)
-        factories.Lesson(
+        busy_slot = data_factories.TimetableSlot(school=school)
+        data_factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot with the exact same times (and day) to check business against
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=school,
             day_of_week=busy_slot.day_of_week,
             starts_at=busy_slot.starts_at,
@@ -152,19 +171,19 @@ class TestDeleteAllInstancesForSchool:
     def test_check_if_occupied_at_time_of_timeslot_partially_overlapping(self):
         """Test that a classroom is busy if it's in use during another slot with overlapiong times."""
         # Make a classroom with a lesson fixed at some slot
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
         school = classroom.school
-        busy_slot = factories.TimetableSlot(
+        busy_slot = data_factories.TimetableSlot(
             school=school,
             starts_at=dt.time(hour=9),
             ends_at=dt.time(hour=10),
         )
-        factories.Lesson(
+        data_factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot with the exact same times (and day) to check business against
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=school,
             day_of_week=busy_slot.day_of_week,
             starts_at=dt.time(hour=9, minute=30),
@@ -182,17 +201,17 @@ class TestDeleteAllInstancesForSchool:
         # Make a classroom with a lesson fixed at some slot
         # The business isn't really necessary, but ensures having one lesson doesn't
         # make the teacher constantly 'busy'
-        classroom = factories.Classroom()
+        classroom = data_factories.Classroom()
         school = classroom.school
-        busy_slot = factories.TimetableSlot(
+        busy_slot = data_factories.TimetableSlot(
             school=school, day_of_week=constants.Day.MONDAY
         )
-        factories.Lesson(
+        data_factories.Lesson(
             school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
         )
 
         # Make another slot, which has a different day
-        check_slot = factories.TimetableSlot(
+        check_slot = data_factories.TimetableSlot(
             school=school, day_of_week=constants.Day.TUESDAY
         )
 
@@ -207,7 +226,7 @@ class TestDeleteAllInstancesForSchool:
         Test that the correct number of lessons per week is retrieved for a classroom.
         """
         # Get a lesson & classroom
-        lesson = factories.Lesson()
+        lesson = data_factories.Lesson()
         classroom = lesson.classroom
 
         # Execute test unit
