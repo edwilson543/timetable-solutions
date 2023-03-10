@@ -4,6 +4,7 @@
 # Django imports
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
@@ -47,3 +48,17 @@ def update_classroom(
         return classroom.update(building=building, room_number=room_number)
     except (ValidationError, ValueError) as exc:
         raise exceptions.CouldNotUpdateClassroom from exc
+
+
+def delete_classroom(
+    classroom: models.Classroom,
+) -> models.Classroom:
+    """
+    Delete a classroom from the db.
+
+    raises CouldNotDeleteClassroom if it wasn't possible.
+    """
+    try:
+        return classroom.delete()
+    except ProtectedError as exc:
+        raise exceptions.CouldNotDeleteClassroom from exc

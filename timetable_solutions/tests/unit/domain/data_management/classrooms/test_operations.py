@@ -61,3 +61,23 @@ class TestUpdatedClassroom:
                 classroom,
                 room_number="thirty three",
             )
+
+
+@pytest.mark.django_db
+class TestDeleteClassroom:
+    def test_can_delete_unprotected_classroom(self):
+        classroom = data_factories.Classroom()
+
+        # Create the classroom
+        operations.delete_classroom(classroom)
+
+        # Check the classroom was deleted
+        with pytest.raises(models.Classroom.DoesNotExist):
+            classroom.refresh_from_db()
+
+    def test_raises_when_classroom_protected(self):
+        # Note the lesson -> classroom foreign key is protected
+        lesson = data_factories.Lesson()
+
+        with pytest.raises(exceptions.CouldNotDeleteClassroom):
+            operations.delete_classroom(lesson.classroom)

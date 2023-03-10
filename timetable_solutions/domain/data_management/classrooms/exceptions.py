@@ -11,3 +11,9 @@ class CouldNotUpdateClassroom(Exception):
     """Raised if a classroom cannot be updated in the database."""
 
     pass
+
+
+class CouldNotDeleteClassroom(Exception):
+    """Raised if a classroom cannot be deleted from the database."""
+
+    pass
