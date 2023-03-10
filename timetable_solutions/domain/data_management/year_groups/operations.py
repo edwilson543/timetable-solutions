@@ -32,8 +32,8 @@ def create_new_year_group(
 
 
 def update_year_group(
-    *,
     year_group: models.YearGroup,
+    *,
     year_group_name: str | None = None,
 ) -> models.YearGroup:
     """

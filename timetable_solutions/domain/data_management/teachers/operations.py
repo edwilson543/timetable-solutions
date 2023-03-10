@@ -34,8 +34,8 @@ def create_new_teacher(
 
 
 def update_teacher(
-    *,
     teacher: models.Teacher,
+    *,
     firstname: str | None = None,
     surname: str | None,
     title: str | None = None
