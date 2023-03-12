@@ -27,16 +27,46 @@ class TestTeacherSerializer:
 
         assert serialized_teacher == serializers_helpers.expected_teacher(teacher)
 
-    def test_serialize_teacher_queryset(self):
-        teacher_a = data_factories.Teacher(firstname="AAA")
-        teacher_b = data_factories.Teacher(firstname="BBB")
-        queryset = models.Teacher.objects.all().order_by("firstname")
+    def test_serialize_multiple_teachers(self):
+        teacher_a = data_factories.Teacher()
+        teacher_b = data_factories.Teacher()
 
-        serialized_teacher = serializers.Teacher(queryset, many=True).data
+        serialized_teacher = serializers.Teacher([teacher_a, teacher_b], many=True).data
 
         assert serialized_teacher == [
             serializers_helpers.expected_teacher(teacher_a),
             serializers_helpers.expected_teacher(teacher_b),
+        ]
+
+
+@pytest.mark.django_db
+class TestClassroomSerializer:
+    def test_serialize_individual_instance(self):
+        classroom = data_factories.Classroom()
+
+        serialized_classroom = serializers.Classroom(classroom).data
+
+        assert serialized_classroom == serializers_helpers.expected_classroom(classroom)
+
+    def test_serialize_individual_instance_with_lesson(self):
+        lesson = data_factories.Lesson.with_n_pupils()
+        classroom = lesson.classroom
+
+        serialized_classroom = serializers.Classroom(classroom).data
+
+        assert serialized_classroom == serializers_helpers.expected_classroom(classroom)
+
+    def test_serialize_multiple_classrooms(self):
+        classroom_a = data_factories.Classroom()
+        classroom_b = data_factories.Classroom()
+
+        serialized_classrooms = serializers.Classroom(
+            [classroom_a, classroom_b], many=True
+        ).data
+
+        assert serialized_classrooms == [
+            serializers_helpers.expected_classroom(classroom_a),
+            serializers_helpers.expected_classroom(classroom_b),
         ]
 
 
@@ -61,12 +91,11 @@ class TestYearGroupSerializer:
             year_group
         )
 
-    def test_serialize_teacher_queryset(self):
-        yg_a = data_factories.YearGroup(year_group_name="AAA")
-        yg_b = data_factories.YearGroup(year_group_name="BBB")
-        queryset = models.YearGroup.objects.all().order_by("year_group_name")
+    def test_serialize_multiple_year_groups(self):
+        yg_a = data_factories.YearGroup()
+        yg_b = data_factories.YearGroup()
 
-        serialized_year_groups = serializers.YearGroup(queryset, many=True).data
+        serialized_year_groups = serializers.YearGroup([yg_a, yg_b], many=True).data
 
         assert serialized_year_groups == [
             serializers_helpers.expected_year_group(yg_a),
@@ -83,12 +112,11 @@ class TestLessonSerializer:
 
         assert serialized_lesson == serializers_helpers.expected_lesson(lesson)
 
-    def test_serialize_lesson_queryset(self):
-        lesson_a = data_factories.Lesson.with_n_pupils(lesson_id="AAA")
-        lesson_b = data_factories.Lesson.with_n_pupils(lesson_id="BBB")
-        lessons = models.Lesson.objects.all().order_by("lesson_id")
+    def test_serialize_multiple_lessons(self):
+        lesson_a = data_factories.Lesson.with_n_pupils()
+        lesson_b = data_factories.Lesson.with_n_pupils()
 
-        serialized_lesson = serializers.Lesson(lessons, many=True).data
+        serialized_lesson = serializers.Lesson([lesson_a, lesson_b], many=True).data
 
         assert serialized_lesson == [
             serializers_helpers.expected_lesson(lesson_a),

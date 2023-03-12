@@ -12,7 +12,9 @@ from interfaces.constants import UrlName
 
 
 def expected_teacher(teacher: models.Teacher) -> OrderedDict:
-    """Get the expected serialized data from a single teacher."""
+    """
+    Get the expected serialized data from a single teacher.
+    """
     return OrderedDict(
         [
             ("teacher_id", teacher.teacher_id),
@@ -25,8 +27,31 @@ def expected_teacher(teacher: models.Teacher) -> OrderedDict:
     )
 
 
+def expected_classroom(classroom: models.Classroom) -> OrderedDict:
+    """
+    Get the expected serialized data from a single classroom.
+    """
+    return OrderedDict(
+        [
+            ("classroom_id", classroom.classroom_id),
+            ("building", classroom.building),
+            ("room_number", classroom.room_number),
+            (
+                "lessons",
+                [expected_lesson(lesson) for lesson in classroom.lessons.all()],
+            ),
+            (
+                "update_url",
+                UrlName.CLASSROOM_UPDATE.url(classroom_id=classroom.classroom_id),
+            ),
+        ]
+    )
+
+
 def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
-    """Get the expected serialized data from a single year group."""
+    """
+    Get the expected serialized data from a single year group.
+    """
     return OrderedDict(
         [
             ("year_group_id", year_group.year_group_id),
@@ -41,7 +66,9 @@ def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
 
 
 def expected_lesson(lesson: models.Lesson) -> OrderedDict:
-    """Get the expected serialized data from a single year group."""
+    """
+    Get the expected serialized data from a single year group.
+    """
     return OrderedDict(
         [
             ("lesson_id", lesson.lesson_id),
