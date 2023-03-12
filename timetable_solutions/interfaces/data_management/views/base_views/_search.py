@@ -97,6 +97,7 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
         This is either the return of the user's search, or all model data for their school.
         """
         context = super().get_context_data(**kwargs)
+        context["is_search"] = self.is_search
         context["page_url"] = self.page_url
         context["form"] = self.form
         return context
