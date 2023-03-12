@@ -1,5 +1,8 @@
 """Forms relating to the Teacher model."""
 
+# Standard library imports
+from typing import Any
+
 # Django imports
 from django import forms as django_forms
 
@@ -8,10 +11,35 @@ from domain.data_management.teachers import queries
 from interfaces.data_management.forms import base_forms
 
 
-class TeacherSearch(base_forms.Search):
-    """Single field search form for the teacher model."""
+class TeacherSearch(django_forms.Form):
+    """
+    Single field search form for the teacher model.
+    """
 
-    pass
+    search_term = django_forms.CharField(
+        required=True,
+        label="Search term",
+        initial="",
+        help_text="Search for a teacher by name or id.",
+        error_messages={"required": "Please enter a search term!"},
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        if kwargs.get("search_help_text"):
+            self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
+        super().__init__(*args, **kwargs)
+
+    def clean_search_term(self) -> str:
+        """Prevent single letter searches."""
+        if search_term := self.cleaned_data.get("search_term"):
+            try:
+                int(search_term)
+            except ValueError:
+                if len(search_term) < 2:
+                    raise django_forms.ValidationError(
+                        "Non-numeric search terms must be more than one character!"
+                    )
+        return search_term
 
 
 class _TeacherCreateUpdateBase(base_forms.CreateUpdate):

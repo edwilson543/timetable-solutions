@@ -45,7 +45,6 @@ class TeacherSearch(base_views.SearchView):
         "surname": "Surname",
         "title": "Title",
     }
-    search_help_text = "Search for a teacher by name or id."
     page_url = UrlName.TEACHER_LIST.url(lazy=True)
     update_url = UrlName.TEACHER_UPDATE
 

@@ -33,9 +33,6 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
     page_url: ClassVar[str]
     """URL for this page and where the search form should be submitted."""
 
-    search_help_text: ClassVar[str]
-    """User prompt for the fields they can search by."""
-
     form: _SearchFormT
     """
     The form instance to be provided as context.
@@ -59,21 +56,23 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object
     ) -> None:
-        """Set some instance attributes used in later logic."""
+        """
+        Set some instance attributes used in later logic.
+        """
         super().setup(request, *args, **kwargs)
         self.form = self.get_form()
 
     def get_form(self) -> _SearchFormT:
-        """If the user searched something, filter the queryset, otherwise return all data."""
+        """
+        If the user searched something, filter the queryset, otherwise return all data.
+        """
         if self.is_search:
-            form = self.form_class(
-                search_help_text=self.search_help_text, data=self.request.GET
-            )
+            form = self.form_class(data=self.request.GET)
             form.full_clean()
             for field, value in form.cleaned_data.items():
                 form.fields[field].initial = value
         else:
-            form = self.form_class(search_help_text=self.search_help_text)
+            form = self.form_class()
         return form
 
     def get_queryset(self) -> list[dict]:
@@ -101,5 +100,9 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
     # --------------------
     @property
     def is_search(self) -> bool:
-        """Whether the request includes a search attempt or not."""
-        return "search-submit" in self.request.GET.keys()
+        """
+        Whether the request includes a search attempt or not.
+        """
+        return any(
+            field in self.request.GET.keys() for field in self.form_class.base_fields
+        )

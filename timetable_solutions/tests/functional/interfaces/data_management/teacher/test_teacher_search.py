@@ -1,4 +1,6 @@
-"""Tests for the teacher search view in the data management app."""
+"""
+Tests for the teacher search view in the data management app.
+"""
 
 # Standard library imports
 from unittest import mock

@@ -11,6 +11,30 @@ from interfaces.data_management.forms import teacher as teacher_forms
 from tests import data_factories
 
 
+class TestTeacherSearch:
+    @pytest.mark.parametrize("search_term", ["john", "1"])
+    def test_search_term_valid(self, search_term: str | int):
+        form = teacher_forms.TeacherSearch(data={"search_term": search_term})
+
+        assert form.is_valid()
+        assert form.cleaned_data["search_term"] == search_term
+
+    def test_no_search_term_invalid(self):
+        form = teacher_forms.TeacherSearch(data={})
+
+        assert not form.is_valid()
+        assert "Please enter a search term!" in form.errors.as_text()
+
+    def test_single_character_search_term_invalid(self):
+        form = teacher_forms.TeacherSearch(data={"search_term": "a"})
+
+        assert not form.is_valid()
+        assert (
+            "Non-numeric search terms must be more than one character!"
+            in form.errors.as_text()
+        )
+
+
 @mock.patch(
     "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
 )
