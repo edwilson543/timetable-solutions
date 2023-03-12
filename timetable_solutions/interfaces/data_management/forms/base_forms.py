@@ -19,7 +19,6 @@ class Search(forms.Form):
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Set any field parameters provided by constructor."""
         if kwargs.get("search_help_text"):
             self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
         super().__init__(*args, **kwargs)
