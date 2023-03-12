@@ -6,7 +6,7 @@ from tests.functional.client import TestClient
 
 
 class TestTeacherCreate(TestClient):
-    def test_valid_add_teacher_form_creates_teacher_in_db(self):
+    def test_valid_create_teacher_form_creates_teacher_in_db(self):
         # Create existing db content
         school = data_factories.School()
         teacher = data_factories.Teacher(school=school)
