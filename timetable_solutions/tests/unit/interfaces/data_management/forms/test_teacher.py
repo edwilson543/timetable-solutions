@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 
 # Local application imports
-from interfaces.data_management import forms
+from interfaces.data_management.forms import teacher as teacher_forms
 from tests import data_factories
 
 
@@ -18,7 +18,7 @@ from tests import data_factories
     "interfaces.data_management.forms.teacher.queries.get_teacher_for_school",
 )
 @pytest.mark.django_db
-class TestTeacherCreate:
+class TestTeacherCreateUpdateBase:
     def test_form_valid_if_teacher_id_unique_for_school(
         self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
     ):
@@ -26,7 +26,7 @@ class TestTeacherCreate:
 
         school = data_factories.School()
 
-        form = forms.TeacherCreate(
+        form = teacher_forms._TeacherCreateUpdateBase(
             school_id=school.school_access_key,
             data={
                 "teacher_id": 1,
@@ -42,6 +42,15 @@ class TestTeacherCreate:
         assert form.cleaned_data["surname"] == "test-surname"
         assert form.cleaned_data["title"] == "test-title"
 
+
+@mock.patch(
+    "interfaces.data_management.forms.teacher.queries.get_next_teacher_id_for_school",
+)
+@mock.patch(
+    "interfaces.data_management.forms.teacher.queries.get_teacher_for_school",
+)
+@pytest.mark.django_db
+class TestTeacherCreate:
     def test_form_invalid_if_teacher_id_already_exists_for_school(
         self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
     ):
@@ -50,7 +59,7 @@ class TestTeacherCreate:
         mock_get_next_teacher.return_value = 123456
         mock_get_teacher.return_value = teacher
 
-        form = forms.TeacherCreate(
+        form = teacher_forms.TeacherCreate(
             school_id=teacher.school.school_access_key,
             data={
                 "teacher_id": teacher.teacher_id,
