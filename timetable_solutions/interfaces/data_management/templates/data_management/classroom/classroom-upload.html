@@ -2,8 +2,8 @@
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item active" aria-current="page">
-        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
-            teachers
+        <a href="{% url 'classroom-landing-page' %}" class="link-secondary text-decoration-none">
+            classrooms
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
@@ -15,7 +15,7 @@
 
 <div class="row mx-3">
     <div class="card-header">
-        <h3>Bulk upload teachers</h3>
+        <h3>Bulk upload classrooms</h3>
     </div>
 </div>
 
@@ -41,35 +41,31 @@
             <table class="table table-striped w-100 text-nowrap">
                 <thead>
                     <tr>
-                        <th>teacher_id</th>
-                        <th>firstname</th>
-                        <th>surname</th>
-                        <th>title</th>
+                        <th>classroom_id</th>
+                        <th>building</th>
+                        <th>room_number</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>1</td>
-                        <td>Victor</td>
-                        <td>Hugo</td>
-                        <td>Monsieur</td>
+                        <td>Maths</td>
+                        <td>10</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <b>teacher_id*:</b> A positive integer (1, 2, 3, ...) used to identify this teacher.
+                <b>classroom_id*:</b> A positive integer (1, 2, 3, ...) used to identify this classroom.
                 Note that these must be unique
             </li>
             <li class="list-group-item">
-                <b>firstname*:</b> The teacher's firstname
+                <b>building*:</b> The building the classroom is in
             </li>
             <li class="list-group-item">
-                <b>surname*:</b> The teacher's surname
-            </li>
-            <li class="list-group-item">
-                <b>title*:</b> The teacher's title (Mr / Mrs etc.)
+                <b>room_number*:</b> The room number of the classroom.
+                These must be unique within each building.
             </li>
             <li class="list-group-item">
                 <i>*required - no empty values are allowed in these columns</i>

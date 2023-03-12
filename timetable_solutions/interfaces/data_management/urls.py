@@ -40,7 +40,40 @@ urlpatterns = [
     path(
         "teachers/download/",
         views.TeacherExampleDownload.as_view(),
-        name="teacher-download",
+        name=UrlName.TEACHER_DOWNLOAD.value,
+    ),
+    # --------------------
+    # Classrooms
+    # --------------------
+    path(
+        "classrooms/",
+        views.ClassroomLanding.as_view(),
+        name=UrlName.CLASSROOM_LANDING_PAGE.value,
+    ),
+    path(
+        "classrooms/create/",
+        views.ClassroomCreate.as_view(),
+        name=UrlName.CLASSROOM_CREATE.value,
+    ),
+    path(
+        "classrooms/list/",
+        views.ClassroomSearch.as_view(),
+        name=UrlName.CLASSROOM_LIST.value,
+    ),
+    path(
+        "classrooms/list/<int:classroom_id>/",
+        views.ClassroomUpdate.as_view(),
+        name=UrlName.CLASSROOM_UPDATE.value,
+    ),
+    path(
+        "classrooms/upload/",
+        views.ClassroomUpload.as_view(),
+        name=UrlName.CLASSROOM_UPLOAD.value,
+    ),
+    path(
+        "classrooms/download/",
+        views.ClassroomExampleDownload.as_view(),
+        name=UrlName.CLASSROOM_DOWNLOAD.value,
     ),
     # --------------------
     # Year groups

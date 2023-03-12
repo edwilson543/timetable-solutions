@@ -49,7 +49,7 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Classrooms",
-                    url=UrlName.CUSTOM_ADMIN_CLASSROOM_LIST.url(),
+                    url=UrlName.CLASSROOM_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-school",
                 ),
                 Page(

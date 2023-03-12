@@ -4,7 +4,8 @@ A table showing a list of objects with appropriate headers
 Context variables:
 ------------------
 form: base_forms.Search
-search_term: str | None  Must be explicitly passed to include
+is_search: bool
+search_term: str | None
 page_obj: django_paginator.Page
 paginator: django_paginate.Paginator
 human_field_names: list[str]
@@ -31,7 +32,7 @@ model_name_plural: str
 
 <!--        Explanatory text-->
         <div class="card-text">
-            {% if search_term and paginator.count > 0 and not form.errors %}
+            {% if is_search and paginator.count > 0 and not form.errors %}
                 <p>
                     <b>
                         Found {{ paginator.count }}
@@ -40,12 +41,12 @@ model_name_plural: str
                         {% else %}
                             {{ model_name_singular }}
                         {% endif %}
-                        for search: "{{ search_term }}"
+                        for search {{ search_term }}
                     </b>
                 </p>
-            {% elif search_term and not form.errors %}
+            {% elif is_search and not form.errors %}
                 <p>
-                    <b>Search for "{{ search_term }}" did not give any results!</b>
+                    <b>{{ search_term|default:"Search term" }} did not give any results!</b>
                 </p>
             {% else %}
                 <p>

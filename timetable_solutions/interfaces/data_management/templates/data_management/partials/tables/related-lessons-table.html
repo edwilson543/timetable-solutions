@@ -39,10 +39,22 @@ lessons: models.LessonQuerySet
                                 {{ lesson.year_group }}
                             </td>
                             <td>
-                                {{ lesson.teacher }}
+                                {% if lesson.teacher %}
+                                    <a href="{{ lesson.teacher.url }}" class="text-dark text-decoration-none">
+                                        {{ lesson.teacher.name }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
-                                {{ lesson.classroom }}
+                                {% if lesson.classroom %}
+                                    <a href="{{ lesson.classroom.url }}" class="text-dark text-decoration-none">
+                                        {{ lesson.classroom.name }}
+                                    </a>
+                                {% else %}
+                                    -
+                                {% endif %}
                             </td>
                             <td>
                                 {{ lesson.total_required_slots }}
