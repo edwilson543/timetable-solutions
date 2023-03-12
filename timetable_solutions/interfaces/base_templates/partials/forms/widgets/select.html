@@ -1,0 +1,21 @@
+<!--An individual input widget for constructing a form field with
+------------------
+Context variables:
+------------------
+field: django_forms.BoundField
+-->
+<select
+    id="{{ field.id_for_label }}"
+    name="{{ field.name }}"
+    class="form-select"
+    {% if field.field.required %}required{% endif %}
+>
+    {% for value, label  in field.field.choices %}
+        <option
+            value="{{ value }}"
+            {% if field.initial == value %} selected {% endif %}
+        >
+            {{ label }}
+        </option>
+    {% endfor %}
+</select>

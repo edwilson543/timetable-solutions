@@ -20,11 +20,13 @@ field: django_forms.Field
     {% endif %}
 
     {% if field|is_text_or_number_input %}
-        {% include 'partials/forms/widgets/input.html' %}
+        {% include 'partials/forms/widgets/input.html' with field=field only %}
     {% elif field.widget_type == "clearablefile" %}
-        {% include 'partials/forms/widgets/upload.html' %}
+        {% include 'partials/forms/widgets/upload.html' with field=field only %}
     {% elif field.widget_type == "checkbox" %}
-        {% include 'partials/forms/widgets/checkbox.html' %}
+        {% include 'partials/forms/widgets/checkbox.html' with field=field only %}
+    {% elif field.widget_type == "select" %}
+        {% include 'partials/forms/widgets/select.html' with field=field only %}
     {% endif %}
 
   <div id="{{ field.id_for_label }}-help-text" class="form-text">
