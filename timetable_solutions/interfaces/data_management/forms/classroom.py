@@ -94,6 +94,7 @@ class ClassroomUpdate(_ClassroomCreateUpdateBase):
 
 class ClassroomCreate(_ClassroomCreateUpdateBase):
     classroom_id = django_forms.IntegerField(
+        min_value=1,
         required=False,
         label="Classroom ID",
         help_text="Unique identifier to be used for this classroom. "

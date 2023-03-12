@@ -26,6 +26,7 @@ class YearGroupUpdate(_YearGroupCreateUpdateBase):
 
 class YearGroupCreate(YearGroupUpdate):
     year_group_id = django_forms.IntegerField(
+        min_value=1,
         required=False,
         label="Year group ID",
         help_text="Unique identifier to be used for this year group. "

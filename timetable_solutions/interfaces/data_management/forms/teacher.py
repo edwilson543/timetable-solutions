@@ -69,6 +69,7 @@ class TeacherUpdate(_TeacherCreateUpdateBase):
 
 class TeacherCreate(_TeacherCreateUpdateBase):
     teacher_id = django_forms.IntegerField(
+        min_value=1,
         required=False,
         label="Teacher ID",
         help_text="Unique identifier to be used for this teacher. "
