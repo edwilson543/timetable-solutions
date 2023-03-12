@@ -55,6 +55,14 @@ class UrlName(StrEnum):
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
     TEACHER_UPLOAD = "teacher-upload"
 
+    # Teachers
+    CLASSROOM_CREATE = "classroom-create"
+    CLASSROOM_DOWNLOAD = "classroom-download"
+    CLASSROOM_LANDING_PAGE = "classroom-landing-page"
+    CLASSROOM_LIST = "classroom-list"
+    CLASSROOM_UPDATE = "classroom-update"  # kwargs: classroom_id: str
+    CLASSROOM_UPLOAD = "classroom-upload"
+
     # Year groups
     YEAR_GROUP_CREATE = "year-group-create"
     YEAR_GROUP_DOWNLOAD = "year-group-download"
