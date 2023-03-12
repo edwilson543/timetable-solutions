@@ -45,7 +45,7 @@ class TestClassroomSearch:
 
         assert not form.is_valid()
 
-        assert "You must provide at least one search term!" in form.errors.as_text()
+        assert "Please enter a search term!" in form.errors.as_text()
 
 
 @mock.patch("interfaces.data_management.forms.classroom.queries.get_classrooms")

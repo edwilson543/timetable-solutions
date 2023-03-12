@@ -1,0 +1,40 @@
+{% extends 'new-base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'classroom-landing-page' %}" class="link-secondary text-decoration-none">
+            classrooms
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'classroom-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        classroom id: {{ serialized_model_instance.classroom_id }}
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>
+            View and update details for room {{ serialized_model_instance.room_number }}
+            in building {{ serialized_model_instance.building }}
+        </h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card p-2">
+            {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+        </div>
+    </div>
+</div>
+
+{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=serialized_model_instance.lessons %}
+
+{% endblock %}

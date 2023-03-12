@@ -1,5 +1,13 @@
 """All views relating to data management."""
 
+from .classroom import (
+    ClassroomCreate,
+    ClassroomExampleDownload,
+    ClassroomLanding,
+    ClassroomSearch,
+    ClassroomUpdate,
+    ClassroomUpload,
+)
 from .teacher import (
     TeacherCreate,
     TeacherExampleDownload,

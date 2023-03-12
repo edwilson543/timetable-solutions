@@ -67,13 +67,19 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
         If the user searched something, filter the queryset, otherwise return all data.
         """
         if self.is_search:
-            form = self.form_class(data=self.request.GET)
+            form = self.form_class(data=self.request.GET, **self.get_form_kwargs())
             form.full_clean()
             for field, value in form.cleaned_data.items():
                 form.fields[field].initial = value
         else:
-            form = self.form_class()
+            form = self.form_class(**self.get_form_kwargs())
         return form
+
+    def get_form_kwargs(self) -> dict[str, Any]:
+        """
+        Get kwargs used to instantiate the form class (except the search kwargs).
+        """
+        return {}
 
     def get_queryset(self) -> list[dict]:
         """Get the queryset based on the search term or retrieve the full queryset."""

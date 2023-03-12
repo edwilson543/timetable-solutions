@@ -50,9 +50,7 @@ class ClassroomSearch(django_forms.Form):
         building = self.cleaned_data.get("building")
         room_number = self.cleaned_data.get("room_number")
         if not building and not room_number and not classroom_id:
-            raise django_forms.ValidationError(
-                "You must provide at least one search term!"
-            )
+            raise django_forms.ValidationError("Please enter a search term!")
         return self.cleaned_data
 
 
