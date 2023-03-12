@@ -97,13 +97,28 @@ class Lesson(serializers.Serializer):
     subject_name = serializers.CharField()
     year_group = serializers.SerializerMethodField(method_name="_year_group")
     teacher = serializers.SerializerMethodField(method_name="_teacher")
+    classroom = serializers.SerializerMethodField(method_name="_classroom")
     total_required_slots = serializers.IntegerField()
 
     def _year_group(self, obj: models.Lesson) -> str:
         return obj.get_associated_year_group().year_group_name
 
-    def _teacher(self, obj: models.Lesson) -> str:
-        """
-        Return a simple string rep of the teacher.
-        """
-        return str(obj.teacher)
+    def _teacher(self, obj: models.Lesson) -> dict[str, str]:
+        if obj.teacher:
+            return {
+                "name": str(obj.teacher),
+                "url": UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher.teacher_id),
+            }
+        else:
+            return {}
+
+    def _classroom(self, obj: models.Lesson) -> dict[str, str]:
+        if obj.classroom:
+            return {
+                "name": str(obj.classroom),
+                "url": UrlName.CLASSROOM_UPDATE.url(
+                    classroom_id=obj.classroom.classroom_id
+                ),
+            }
+        else:
+            return {}
