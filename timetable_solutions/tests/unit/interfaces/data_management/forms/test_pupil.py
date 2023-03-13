@@ -6,7 +6,7 @@ Tests for forms relating to the Pupil model.
 import pytest
 
 # Local application imports
-from interfaces.data_management.forms import pupil
+from interfaces.data_management.forms import pupil as pupil_forms
 from tests import data_factories
 
 
@@ -18,7 +18,7 @@ class TestPupilSearch:
         yg_b = data_factories.YearGroup(school=school, year_group_name="bbb")
         data_factories.YearGroup()
 
-        form = pupil.PupilSearch(
+        form = pupil_forms.PupilSearch(
             school_id=school.school_access_key, data={"year_group": yg_a.pk}
         )
 
@@ -35,7 +35,7 @@ class TestPupilSearch:
     def test_form_valid_for_just_search_term(self):
         school = data_factories.School()
 
-        form = pupil.PupilSearch(
+        form = pupil_forms.PupilSearch(
             school_id=school.school_access_key, data={"search_term": "Dave"}
         )
 
@@ -44,6 +44,19 @@ class TestPupilSearch:
     def test_form_invalid_for_no_search_term(self):
         school = data_factories.School()
 
-        form = pupil.PupilSearch(school_id=school.school_access_key, data={})
+        form = pupil_forms.PupilSearch(school_id=school.school_access_key, data={})
 
         assert not form.is_valid()
+
+
+@pytest.mark.django_db
+class TestPupilCreateUpdateBase:
+    def test_form_valid_for_valid_pupil(self):
+        yg = data_factories.YearGroup()
+
+        form = pupil_forms._PupilCreateUpdateBase(
+            school_id=yg.school.school_access_key,
+            data={"firstname": "Ed", "surname": "Wilson", "year_group": yg.pk},
+        )
+
+        assert form.is_valid()

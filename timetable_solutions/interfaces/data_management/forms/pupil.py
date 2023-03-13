@@ -10,6 +10,7 @@ from django import forms as django_forms
 
 # Local application imports
 from data import models
+from interfaces.data_management.forms import base_forms
 
 
 class PupilSearch(django_forms.Form):
@@ -29,7 +30,7 @@ class PupilSearch(django_forms.Form):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """
-        Get and set the classrooms and room number choices
+        Get and set the year group choices.
         """
         school_id = kwargs.pop("school_id")
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
@@ -49,3 +50,31 @@ class PupilSearch(django_forms.Form):
             raise django_forms.ValidationError("Please enter a search term!")
 
         return self.cleaned_data
+
+
+class _PupilCreateUpdateBase(django_forms.Form):
+    """
+    Base form for the pupil create and update forms.
+    """
+
+    firstname = django_forms.CharField(required=True, label="Firstname")
+
+    surname = django_forms.CharField(required=True, label="Surname")
+
+    year_group = django_forms.ModelChoiceField(
+        required=True,
+        label="Year group",
+        empty_label="",
+        queryset=models.YearGroupQuerySet().none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Get and set the year group choices.
+        """
+        school_id = kwargs.pop("school_id")
+        year_groups = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=school_id
+        ).order_by("year_group_name")
+        self.base_fields["year_group"].queryset = year_groups
+        super().__init__(*args, **kwargs)
