@@ -2,6 +2,9 @@
 Tests for forms relating to the Pupil model.
 """
 
+# Standard library imports
+from unittest import mock
+
 # Third party imports
 import pytest
 
@@ -60,3 +63,36 @@ class TestPupilCreateUpdateBase:
         )
 
         assert form.is_valid()
+
+
+@mock.patch(
+    "interfaces.data_management.forms.pupil.queries.get_next_pupil_id_for_school",
+)
+@mock.patch(
+    "interfaces.data_management.forms.pupil.queries.get_pupils",
+)
+@pytest.mark.django_db
+class TestPupilCreate:
+    def test_form_invalid_if_pupil_id_already_exists_for_school(
+        self, mock_get_pupils: mock.Mock(), mock_get_next_pupil_id: mock.Mock()
+    ):
+        pupil = data_factories.Pupil()
+
+        mock_get_next_pupil_id.return_value = 123456
+        mock_get_pupils.return_value = pupil
+
+        form = pupil_forms.PupilCreate(
+            school_id=pupil.school.school_access_key,
+            data={
+                "pupil_id": pupil.pupil_id,
+                "firstname": "test-firstname",
+                "surname": "test-surname",
+                "year_group": pupil.year_group,
+            },
+        )
+
+        assert not form.is_valid()
+        errors = form.errors.as_text()
+
+        assert f"Pupil with id: {pupil.pupil_id} already exists!" in errors
+        assert f"The next available id is: 123456" in errors

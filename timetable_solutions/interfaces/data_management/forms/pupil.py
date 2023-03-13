@@ -10,7 +10,7 @@ from django import forms as django_forms
 
 # Local application imports
 from data import models
-from interfaces.data_management.forms import base_forms
+from domain.data_management.pupils import queries
 
 
 class PupilSearch(django_forms.Form):
@@ -72,9 +72,48 @@ class _PupilCreateUpdateBase(django_forms.Form):
         """
         Get and set the year group choices.
         """
-        school_id = kwargs.pop("school_id")
+        self.school_id = kwargs.pop("school_id")
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
-            school_id=school_id
+            school_id=self.school_id
         ).order_by("year_group_name")
         self.base_fields["year_group"].queryset = year_groups
         super().__init__(*args, **kwargs)
+
+
+class PupilUpdate(_PupilCreateUpdateBase):
+    """
+    Form for updating pupils with.
+    """
+
+    pass
+
+
+class PupilCreate(_PupilCreateUpdateBase):
+    """
+    Form for creating pupils with.
+    """
+
+    pupil_id = django_forms.IntegerField(
+        min_value=1,
+        required=False,
+        label="Pupil ID",
+        help_text="Unique identifier to be used for this pupil. "
+        "If unspecified we will use the next ID available.",
+    )
+
+    field_order = ["pupil_id", "firstname", "surname", "year_group"]
+
+    def clean_pupil_id(self) -> int:
+        """
+        Check the given pupil id does not already exist for the school.
+        """
+        pupil_id = self.cleaned_data.get("pupil_id")
+        if queries.get_pupils(school_id=self.school_id, search_term=pupil_id):
+            next_available_id = queries.get_next_pupil_id_for_school(
+                school_id=self.school_id
+            )
+            raise django_forms.ValidationError(
+                f"Pupil with id: {pupil_id} already exists! "
+                f"The next available id is: {next_available_id}"
+            )
+        return pupil_id
