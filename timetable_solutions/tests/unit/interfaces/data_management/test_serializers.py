@@ -4,10 +4,63 @@
 import pytest
 
 # Local application imports
-from data import models
 from interfaces.data_management import serializers
 from tests import data_factories
 from tests.helpers import serializers as serializers_helpers
+
+
+@pytest.mark.django_db
+class TestYearGroupSerializer:
+    def test_serialize_individual_instance_no_pupils(self):
+        year_group = data_factories.YearGroup()
+
+        serialized_year_group = serializers.YearGroup(year_group).data
+
+        assert serialized_year_group == serializers_helpers.expected_year_group(
+            year_group
+        )
+
+    def test_serialize_individual_instance_with_pupils(self):
+        pupil = data_factories.Pupil()
+        year_group = pupil.year_group
+
+        serialized_year_group = serializers.YearGroup(year_group).data
+
+        assert serialized_year_group == serializers_helpers.expected_year_group(
+            year_group
+        )
+
+    def test_serialize_multiple_year_groups(self):
+        yg_a = data_factories.YearGroup()
+        yg_b = data_factories.YearGroup()
+
+        serialized_year_groups = serializers.YearGroup([yg_a, yg_b], many=True).data
+
+        assert serialized_year_groups == [
+            serializers_helpers.expected_year_group(yg_a),
+            serializers_helpers.expected_year_group(yg_b),
+        ]
+
+
+@pytest.mark.django_db
+class TestLessonSerializer:
+    def test_serialize_individual_instance(self):
+        lesson = data_factories.Lesson.with_n_pupils()
+
+        serialized_lesson = serializers.Lesson(lesson).data
+
+        assert serialized_lesson == serializers_helpers.expected_lesson(lesson)
+
+    def test_serialize_multiple_lessons(self):
+        lesson_a = data_factories.Lesson.with_n_pupils()
+        lesson_b = data_factories.Lesson.with_n_pupils()
+
+        serialized_lessons = serializers.Lesson([lesson_a, lesson_b], many=True).data
+
+        assert serialized_lessons == [
+            serializers_helpers.expected_lesson(lesson_a),
+            serializers_helpers.expected_lesson(lesson_b),
+        ]
 
 
 @pytest.mark.django_db
@@ -71,54 +124,21 @@ class TestClassroomSerializer:
 
 
 @pytest.mark.django_db
-class TestYearGroupSerializer:
-    def test_serialize_individual_instance_no_pupils(self):
-        year_group = data_factories.YearGroup()
-
-        serialized_year_group = serializers.YearGroup(year_group).data
-
-        assert serialized_year_group == serializers_helpers.expected_year_group(
-            year_group
-        )
-
-    def test_serialize_individual_instance_with_pupils(self):
-        pupil = data_factories.Pupil()
-        year_group = pupil.year_group
-
-        serialized_year_group = serializers.YearGroup(year_group).data
-
-        assert serialized_year_group == serializers_helpers.expected_year_group(
-            year_group
-        )
-
-    def test_serialize_multiple_year_groups(self):
-        yg_a = data_factories.YearGroup()
-        yg_b = data_factories.YearGroup()
-
-        serialized_year_groups = serializers.YearGroup([yg_a, yg_b], many=True).data
-
-        assert serialized_year_groups == [
-            serializers_helpers.expected_year_group(yg_a),
-            serializers_helpers.expected_year_group(yg_b),
-        ]
-
-
-@pytest.mark.django_db
-class TestLessonSerializer:
+class TestPupilSerializer:
     def test_serialize_individual_instance(self):
-        lesson = data_factories.Lesson.with_n_pupils()
+        pupil = data_factories.Pupil()
 
-        serialized_lesson = serializers.Lesson(lesson).data
+        serialized_pupil = serializers.Pupil(pupil).data
 
-        assert serialized_lesson == serializers_helpers.expected_lesson(lesson)
+        assert serialized_pupil == serializers_helpers.expected_pupil(pupil)
 
-    def test_serialize_multiple_lessons(self):
-        lesson_a = data_factories.Lesson.with_n_pupils()
-        lesson_b = data_factories.Lesson.with_n_pupils()
+    def test_serialize_multiple_pupils(self):
+        pupil_a = data_factories.Pupil()
+        pupil_b = data_factories.Pupil()
 
-        serialized_lesson = serializers.Lesson([lesson_a, lesson_b], many=True).data
+        serialized_pupils = serializers.Pupil([pupil_a, pupil_b], many=True).data
 
-        assert serialized_lesson == [
-            serializers_helpers.expected_lesson(lesson_a),
-            serializers_helpers.expected_lesson(lesson_b),
+        assert serialized_pupils == [
+            serializers_helpers.expected_pupil(pupil_a),
+            serializers_helpers.expected_pupil(pupil_b),
         ]
