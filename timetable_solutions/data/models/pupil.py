@@ -108,6 +108,25 @@ class Pupil(models.Model):
         return outcome
 
     # --------------------
+    # Mutators
+    # --------------------
+    def update(
+        self,
+        *,
+        firstname: str | None = None,
+        surname: str | None = None,
+        year_group: YearGroup | None = None,
+    ) -> "Pupil":
+        """
+        Update the editable details for this pupil in the db.
+        """
+        self.firstname = firstname or self.firstname
+        self.surname = surname or self.surname
+        self.year_group = year_group or self.year_group
+        self.save(update_fields=["firstname", "surname", "year_group"])
+        return self
+
+    # --------------------
     # Queries
     # --------------------
 
