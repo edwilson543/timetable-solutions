@@ -75,7 +75,7 @@ class TestUpdatePupil:
         pupil = data_factories.Pupil()
         new_yg = data_factories.YearGroup(school=pupil.school)
 
-        updated_pupil = operations.update_pupil(
+        operations.update_pupil(
             pupil, firstname="Ed", surname="Wilson", year_group=new_yg
         )
 
@@ -83,3 +83,14 @@ class TestUpdatePupil:
         assert pupil.firstname == "Ed"
         assert pupil.surname == "Wilson"
         assert pupil.year_group == new_yg
+
+
+@pytest.mark.django_db
+class TestDeletePupil:
+    def test_deletes_pupil_from_the_db(self):
+        pupil = data_factories.Pupil()
+
+        operations.delete_pupil(pupil)
+
+        with pytest.raises(models.Pupil.DoesNotExist):
+            pupil.refresh_from_db()

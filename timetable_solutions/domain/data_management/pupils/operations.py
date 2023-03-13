@@ -80,3 +80,19 @@ def update_pupil(
         raise UnableToUpdatePupil(
             human_error_message="Unable to update details for this pupil."
         )
+
+
+def delete_pupil(pupil: models.Pupil) -> tuple[int, dict[str, int]]:
+    """
+    Delete a pupil from the db.
+
+    :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
+    of that model that were deleted.
+    :raises CouldNotDeletePupil: If the year pupil couldn't be deleted
+    """
+    try:
+        return pupil.delete()
+    except Exception as exc:
+        raise UnableToDeletePupil(
+            human_error_message="Unable to delete this year pupil."
+        ) from exc
