@@ -15,6 +15,14 @@ class UnableToCreatePupil(base_exceptions.UnableToCreateModelInstance):
     pass
 
 
+class UnableToUpdatePupil(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeletePupil(base_exceptions.UnableToDeleteModelInstance):
+    pass
+
+
 def create_new_pupil(
     *,
     school_id: int,
@@ -52,3 +60,23 @@ def create_new_pupil(
         raise UnableToCreatePupil(
             human_error_message="Could not create pupil with the given data."
         ) from exc
+
+
+def update_pupil(
+    pupil: models.Pupil,
+    *,
+    firstname: str | None = None,
+    surname: str | None = None,
+    year_group: models.YearGroup | None = None,
+) -> models.Pupil:
+    """
+    Update a pupil in the db.
+
+    raises CouldNotUpdatePupil if it wasn't possible.
+    """
+    try:
+        return pupil.update(firstname=firstname, surname=surname, year_group=year_group)
+    except Exception:
+        raise UnableToUpdatePupil(
+            human_error_message="Unable to update details for this pupil."
+        )
