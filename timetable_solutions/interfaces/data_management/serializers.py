@@ -124,5 +124,8 @@ class Pupil(serializers.Serializer):
     surname = serializers.CharField()
 
     # Relational data
-    year_group = YearGroup()
+    year_group = serializers.SerializerMethodField(method_name="_year_group_name")
     lessons = Lesson(many=True)
+
+    def _year_group_name(self, obj: models.Pupil) -> str:
+        return obj.year_group.year_group_name
