@@ -127,5 +127,14 @@ class Pupil(serializers.Serializer):
     year_group = serializers.SerializerMethodField(method_name="_year_group_name")
     lessons = Lesson(many=True)
 
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
     def _year_group_name(self, obj: models.Pupil) -> str:
         return obj.year_group.year_group_name
+
+    def _get_update_url(self, obj: models.Pupil) -> str:
+        """
+        Get the url for this pupil's update / detail view page.
+        """
+        return UrlName.PUPIL_UPDATE.url(pupil_id=obj.pupil_id)

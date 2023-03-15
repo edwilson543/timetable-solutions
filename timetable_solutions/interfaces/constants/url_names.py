@@ -71,6 +71,14 @@ class UrlName(StrEnum):
     YEAR_GROUP_UPDATE = "year-group-update"
     YEAR_GROUP_UPLOAD = "year-group-upload"
 
+    # Pupils
+    PUPIL_CREATE = "pupil-create"
+    PUPIL_DOWNLOAD = "pupil-download"
+    PUPIL_LANDING_PAGE = "pupil-landing-page"
+    PUPIL_LIST = "pupil-list"
+    PUPIL_UPDATE = "pupil-update"
+    PUPIL_UPLOAD = "pupil-upload"
+
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 

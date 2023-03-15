@@ -1,12 +1,13 @@
-"""Urls for data management views."""
+"""
+Urls for data management views.
+"""
 
 # Django imports
 from django.urls import path
 
 # Local application imports
 from interfaces.constants import UrlName
-
-from . import views
+from interfaces.data_management import views
 
 urlpatterns = [
     # --------------------
@@ -106,6 +107,39 @@ urlpatterns = [
     path(
         "yeargroups/download/",
         views.YearGroupExampleDownload.as_view(),
-        name="year-group-download",
+        name=UrlName.YEAR_GROUP_DOWNLOAD.value,
+    ),
+    # --------------------
+    # Pupils
+    # --------------------
+    path(
+        "pupils/",
+        views.PupilLanding.as_view(),
+        name=UrlName.PUPIL_LANDING_PAGE.value,
+    ),
+    path(
+        "pupils/create/",
+        views.PupilCreate.as_view(),
+        name=UrlName.PUPIL_CREATE.value,
+    ),
+    path(
+        "pupils/list/",
+        views.PupilSearch.as_view(),
+        name=UrlName.PUPIL_LIST.value,
+    ),
+    path(
+        "pupils/list/<int:pupil_id>/",
+        views.PupilUpdate.as_view(),
+        name=UrlName.PUPIL_UPDATE.value,
+    ),
+    path(
+        "pupils/upload/",
+        views.PupilUpload.as_view(),
+        name=UrlName.PUPIL_UPLOAD.value,
+    ),
+    path(
+        "pupils/download/",
+        views.PupilExampleDownload.as_view(),
+        name=UrlName.PUPIL_DOWNLOAD.value,
     ),
 ]

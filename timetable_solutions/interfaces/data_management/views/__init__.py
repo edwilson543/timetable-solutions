@@ -8,6 +8,14 @@ from .classroom import (
     ClassroomUpdate,
     ClassroomUpload,
 )
+from .pupil import (
+    PupilCreate,
+    PupilExampleDownload,
+    PupilLanding,
+    PupilSearch,
+    PupilUpdate,
+    PupilUpload,
+)
 from .teacher import (
     TeacherCreate,
     TeacherExampleDownload,

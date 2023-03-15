@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'pupil-landing-page' %}" class="link-secondary text-decoration-none">
+            pupils
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        upload
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>Bulk upload pupils</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        <div class="card-header">
+            <b>Upload a csv file with the required structure</b>
+        </div>
+        <div class="card-body">
+            {% include 'partials/forms/basic-form.html' with enctype="multipart/form-data" form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" other_button_url=example_download_url other_button_text="Download example" %}
+        </div>
+    </div>
+</div>
+
+<!--Documentation-->
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3">
+        <div class="card-header">
+            <b>Required file structure</b>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped w-100 text-nowrap">
+                <thead>
+                    <tr>
+                        <th>pupil_id</th>
+                        <th>firstname</th>
+                        <th>surname</th>
+                        <th>year_group_id</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Teemu</td>
+                        <td>Pukki</td>
+                        <td>3</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <b>pupil_id*:</b> A positive integer (1, 2, 3, ...) used to identify this pupil.
+                Note that these must be unique
+            </li>
+            <li class="list-group-item">
+                <b>firstname*:</b> The pupil's firstname
+            </li>
+            <li class="list-group-item">
+                <b>surname*:</b> The pupil's surname
+            </li>
+            <li class="list-group-item">
+                <b>year_group_id*:</b> The id of the year group that the pupil is in
+            </li>
+            <li class="list-group-item">
+                <i>*required - no empty values are allowed in these columns</i>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+{% endblock %}

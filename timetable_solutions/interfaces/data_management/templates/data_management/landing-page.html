@@ -24,9 +24,15 @@
                     <p>
                         Upload a file containing all or some of your {{ model_name_plural }}
                     </p>
-                    <a class="btn btn-primary w-25" href="{{ upload_url }}">
-                        Add
-                    </a>
+                    {% if cannot_add_data_reason %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ cannot_add_data_reason }}
+                        </div>
+                    {% else %}
+                        <a class="btn btn-primary w-25" href="{{ upload_url }}">
+                            Add
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -40,9 +46,15 @@
                     <p>
                         Add data for a single {{ model_name_singular }} to your school
                     </p>
-                    <a class="btn btn-primary w-25" href="{{ create_url }}">
-                        Add
-                    </a>
+                    {% if cannot_add_data_reason %}
+                        <div class="alert alert-warning" role="alert">
+                            {{ cannot_add_data_reason }}
+                        </div>
+                    {% else %}
+                        <a class="btn btn-primary w-25" href="{{ create_url }}">
+                            Add
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -113,5 +113,6 @@ def expected_pupil(pupil: models.Pupil) -> OrderedDict:
             ("surname", pupil.surname),
             ("year_group", pupil.year_group.year_group_name),
             ("lessons", [expected_lesson(lesson) for lesson in pupil.lessons.all()]),
+            ("update_url", UrlName.PUPIL_UPDATE.url(pupil_id=pupil.pupil_id)),
         ]
     )

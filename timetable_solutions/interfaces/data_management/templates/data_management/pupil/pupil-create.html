@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'pupil-landing-page' %}" class="link-secondary text-decoration-none">
+            pupils
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        add
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>Add a new pupil</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        {% include 'partials/forms/basic-form.html' with form=form form_id="create-form" submit_url=page_url submit_text="Create" %}
+    </div>
+</div>
+
+{% endblock %}
