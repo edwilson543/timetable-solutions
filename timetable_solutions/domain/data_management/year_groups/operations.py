@@ -67,7 +67,7 @@ def delete_year_group(year_group: models.YearGroup) -> tuple[int, dict[str, int]
 
     :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
     of that model that were deleted.
-    :raises CouldNotDeleteYearGroup: If the year group couldn't be deleted (e.g due to a protected foreign key)
+    :raises CouldNotDeleteYearGroup: If the year group couldn't be deleted
     """
     try:
         return year_group.delete()

@@ -65,7 +65,7 @@ def sitemap() -> list[PageCollection]:
                 Page("Breaks", url="", fa_icon="fa-solid fa-baseball-bat-ball"),
                 Page(
                     "Pupils",
-                    url=UrlName.CUSTOM_ADMIN_PUPIL_LIST.url(),
+                    url=UrlName.PUPIL_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-child",
                 ),
                 Page(

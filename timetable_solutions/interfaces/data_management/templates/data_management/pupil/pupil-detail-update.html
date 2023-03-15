@@ -2,17 +2,17 @@
 
 {% block breadcrumbs %}
     <li class="breadcrumb-item active" aria-current="page">
-        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
-            teachers
+        <a href="{% url 'pupil-landing-page' %}" class="link-secondary text-decoration-none">
+            pupils
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        <a href="{% url 'teacher-list' %}" class="link-secondary text-decoration-none">
+        <a href="{% url 'pupil-list' %}" class="link-secondary text-decoration-none">
             list
         </a>
     </li>
     <li class="breadcrumb-item active" aria-current="page">
-        teacher id: {{ serialized_model_instance.teacher_id }}
+        pupil id: {{ serialized_model_instance.pupil_id }}
     </li>
 {% endblock %}
 
@@ -21,7 +21,7 @@
 <div class="row mx-3">
     <div class="card-header">
         <h3>
-            View and update details for {{ serialized_model_instance.title }} {{ serialized_model_instance.surname }}
+            View and update details for {{ serialized_model_instance.firstname }} {{ serialized_model_instance.surname }}
         </h3>
     </div>
 </div>

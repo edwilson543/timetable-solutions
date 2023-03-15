@@ -1,4 +1,6 @@
-"""Unit tests for pupil operations"""
+"""
+Unit tests for pupil operations
+"""
 
 # Third party imports
 import pytest
@@ -65,3 +67,30 @@ class TestCreateNewPupil:
         assert (
             f"Year group with id 100 does not exist!" in exc.value.human_error_message
         )
+
+
+@pytest.mark.django_db
+class TestUpdatePupil:
+    def test_updates_pupils_details_in_db(self):
+        pupil = data_factories.Pupil()
+        new_yg = data_factories.YearGroup(school=pupil.school)
+
+        operations.update_pupil(
+            pupil, firstname="Ed", surname="Wilson", year_group=new_yg
+        )
+
+        pupil.refresh_from_db()
+        assert pupil.firstname == "Ed"
+        assert pupil.surname == "Wilson"
+        assert pupil.year_group == new_yg
+
+
+@pytest.mark.django_db
+class TestDeletePupil:
+    def test_deletes_pupil_from_the_db(self):
+        pupil = data_factories.Pupil()
+
+        operations.delete_pupil(pupil)
+
+        with pytest.raises(models.Pupil.DoesNotExist):
+            pupil.refresh_from_db()

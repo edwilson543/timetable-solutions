@@ -11,59 +11,6 @@ from data import models
 from interfaces.constants import UrlName
 
 
-class Teacher(serializers.Serializer):
-    """
-    Serialize teachers for use in template context.
-    """
-
-    teacher_id = serializers.IntegerField()
-    firstname = serializers.CharField()
-    surname = serializers.CharField()
-    title = serializers.CharField()
-
-    # Relational data
-    lessons = serializers.SerializerMethodField(method_name="_lessons")
-
-    # Non-field data
-    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
-
-    def _lessons(self, obj: models.Teacher) -> list[OrderedDict]:
-        """Serialize the lessons associated with this teacher."""
-        return Lesson(instance=obj.lessons, many=True).data
-
-    def _get_update_url(self, obj: models.Teacher) -> str:
-        """Get the url leading to this teacher's update / detail view page."""
-        return UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher_id)
-
-
-class Classroom(serializers.Serializer):
-    """
-    Serialize classrooms for use in template context.
-    """
-
-    classroom_id = serializers.IntegerField()
-    building = serializers.CharField()
-    room_number = serializers.IntegerField()
-
-    # Relational data
-    lessons = serializers.SerializerMethodField(method_name="_lessons")
-
-    # Non-field data
-    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
-
-    def _lessons(self, obj: models.Classroom) -> list[OrderedDict]:
-        """
-        Serialize the lessons associated with this classroom.
-        """
-        return Lesson(instance=obj.lessons, many=True).data
-
-    def _get_update_url(self, obj: models.Classroom) -> str:
-        """
-        Get the url for this classroom's update / detail view page.
-        """
-        return UrlName.CLASSROOM_UPDATE.url(classroom_id=obj.classroom_id)
-
-
 class YearGroup(serializers.Serializer):
     """
     Serialize year groups for use in template context.
@@ -122,3 +69,72 @@ class Lesson(serializers.Serializer):
             }
         else:
             return {}
+
+
+class Teacher(serializers.Serializer):
+    """
+    Serialize teachers for use in template context.
+    """
+
+    teacher_id = serializers.IntegerField()
+    firstname = serializers.CharField()
+    surname = serializers.CharField()
+    title = serializers.CharField()
+
+    # Relational data
+    lessons = Lesson(many=True)
+
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _get_update_url(self, obj: models.Teacher) -> str:
+        """Get the url leading to this teacher's update / detail view page."""
+        return UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher_id)
+
+
+class Classroom(serializers.Serializer):
+    """
+    Serialize classrooms for use in template context.
+    """
+
+    classroom_id = serializers.IntegerField()
+    building = serializers.CharField()
+    room_number = serializers.IntegerField()
+
+    # Relational data
+    lessons = Lesson(many=True)
+
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _get_update_url(self, obj: models.Classroom) -> str:
+        """
+        Get the url for this classroom's update / detail view page.
+        """
+        return UrlName.CLASSROOM_UPDATE.url(classroom_id=obj.classroom_id)
+
+
+class Pupil(serializers.Serializer):
+    """
+    Serailize pupils for use in template context:
+    """
+
+    pupil_id = serializers.IntegerField()
+    firstname = serializers.CharField()
+    surname = serializers.CharField()
+
+    # Relational data
+    year_group = serializers.SerializerMethodField(method_name="_year_group_name")
+    lessons = Lesson(many=True)
+
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _year_group_name(self, obj: models.Pupil) -> str:
+        return obj.year_group.year_group_name
+
+    def _get_update_url(self, obj: models.Pupil) -> str:
+        """
+        Get the url for this pupil's update / detail view page.
+        """
+        return UrlName.PUPIL_UPDATE.url(pupil_id=obj.pupil_id)

@@ -11,43 +11,6 @@ from data import models
 from interfaces.constants import UrlName
 
 
-def expected_teacher(teacher: models.Teacher) -> OrderedDict:
-    """
-    Get the expected serialized data from a single teacher.
-    """
-    return OrderedDict(
-        [
-            ("teacher_id", teacher.teacher_id),
-            ("firstname", teacher.firstname),
-            ("surname", teacher.surname),
-            ("title", teacher.title),
-            ("lessons", [expected_lesson(lesson) for lesson in teacher.lessons.all()]),
-            ("update_url", UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id)),
-        ]
-    )
-
-
-def expected_classroom(classroom: models.Classroom) -> OrderedDict:
-    """
-    Get the expected serialized data from a single classroom.
-    """
-    return OrderedDict(
-        [
-            ("classroom_id", classroom.classroom_id),
-            ("building", classroom.building),
-            ("room_number", classroom.room_number),
-            (
-                "lessons",
-                [expected_lesson(lesson) for lesson in classroom.lessons.all()],
-            ),
-            (
-                "update_url",
-                UrlName.CLASSROOM_UPDATE.url(classroom_id=classroom.classroom_id),
-            ),
-        ]
-    )
-
-
 def expected_year_group(year_group: models.YearGroup) -> OrderedDict:
     """
     Get the expected serialized data from a single year group.
@@ -98,5 +61,58 @@ def expected_lesson(lesson: models.Lesson) -> OrderedDict:
             ("teacher", _teacher()),
             ("classroom", _classroom()),
             ("total_required_slots", lesson.total_required_slots),
+        ]
+    )
+
+
+def expected_teacher(teacher: models.Teacher) -> OrderedDict:
+    """
+    Get the expected serialized data from a single teacher.
+    """
+    return OrderedDict(
+        [
+            ("teacher_id", teacher.teacher_id),
+            ("firstname", teacher.firstname),
+            ("surname", teacher.surname),
+            ("title", teacher.title),
+            ("lessons", [expected_lesson(lesson) for lesson in teacher.lessons.all()]),
+            ("update_url", UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id)),
+        ]
+    )
+
+
+def expected_classroom(classroom: models.Classroom) -> OrderedDict:
+    """
+    Get the expected serialized data from a single classroom.
+    """
+    return OrderedDict(
+        [
+            ("classroom_id", classroom.classroom_id),
+            ("building", classroom.building),
+            ("room_number", classroom.room_number),
+            (
+                "lessons",
+                [expected_lesson(lesson) for lesson in classroom.lessons.all()],
+            ),
+            (
+                "update_url",
+                UrlName.CLASSROOM_UPDATE.url(classroom_id=classroom.classroom_id),
+            ),
+        ]
+    )
+
+
+def expected_pupil(pupil: models.Pupil) -> OrderedDict:
+    """
+    Get the expected serialized data from a single pupil.
+    """
+    return OrderedDict(
+        [
+            ("pupil_id", pupil.pupil_id),
+            ("firstname", pupil.firstname),
+            ("surname", pupil.surname),
+            ("year_group", pupil.year_group.year_group_name),
+            ("lessons", [expected_lesson(lesson) for lesson in pupil.lessons.all()]),
+            ("update_url", UrlName.PUPIL_UPDATE.url(pupil_id=pupil.pupil_id)),
         ]
     )

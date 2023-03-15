@@ -13,7 +13,8 @@ field: django_forms.BoundField
     {% for value, label  in field.field.choices %}
         <option
             value="{{ value }}"
-            {% if field.initial == value %} selected {% endif %}
+            {#    Check the field initial id, incase this is a model choice select #}
+            {% if field.initial == value or field.initial.id == value %} selected {% endif %}
         >
             {{ label }}
         </option>

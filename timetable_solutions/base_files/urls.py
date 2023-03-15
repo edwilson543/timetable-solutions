@@ -13,11 +13,9 @@ from django.views import generic
 from interfaces.constants import UrlName
 from interfaces.custom_admin.admin.custom_admin_site import user_admin
 
-
 urlpatterns = (
     [
         path("", generic.RedirectView.as_view(url=reverse_lazy(UrlName.LOGIN.value))),
-        path("empty/", generic.TemplateView.as_view(template_name="new-base.html")),
         path("view/", include("interfaces.view_timetables.urls")),
         path("data/", include("interfaces.data_management.urls")),
         path("create/", include("interfaces.create_timetables.urls")),

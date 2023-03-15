@@ -1,5 +1,5 @@
 """
-Forms relating to the Teacher model.
+Forms relating to the Classroom model.
 """
 
 # Standard library imports

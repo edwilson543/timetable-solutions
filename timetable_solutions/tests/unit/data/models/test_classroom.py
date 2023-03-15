@@ -68,7 +68,7 @@ class TestUpdate:
     @pytest.mark.parametrize("building", ["English", None])
     @pytest.mark.parametrize("room_number", [100, None])
     def test_update_updates_teacher_details_with_params(
-        self, building: str, room_number: int
+        self, building: str | None, room_number: int | None
     ):
         classroom = data_factories.Classroom()
 

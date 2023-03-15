@@ -15,6 +15,14 @@ class UnableToCreatePupil(base_exceptions.UnableToCreateModelInstance):
     pass
 
 
+class UnableToUpdatePupil(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeletePupil(base_exceptions.UnableToDeleteModelInstance):
+    pass
+
+
 def create_new_pupil(
     *,
     school_id: int,
@@ -51,4 +59,40 @@ def create_new_pupil(
     except (IntegrityError, ValidationError) as exc:
         raise UnableToCreatePupil(
             human_error_message="Could not create pupil with the given data."
+        ) from exc
+
+
+def update_pupil(
+    pupil: models.Pupil,
+    *,
+    firstname: str | None = None,
+    surname: str | None = None,
+    year_group: models.YearGroup | None = None,
+) -> models.Pupil:
+    """
+    Update a pupil in the db.
+
+    raises CouldNotUpdatePupil if it wasn't possible.
+    """
+    try:
+        return pupil.update(firstname=firstname, surname=surname, year_group=year_group)
+    except Exception:
+        raise UnableToUpdatePupil(
+            human_error_message="Unable to update details for this pupil."
+        )
+
+
+def delete_pupil(pupil: models.Pupil) -> tuple[int, dict[str, int]]:
+    """
+    Delete a pupil from the db.
+
+    :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
+    of that model that were deleted.
+    :raises CouldNotDeletePupil: If the year pupil couldn't be deleted
+    """
+    try:
+        return pupil.delete()
+    except Exception as exc:
+        raise UnableToDeletePupil(
+            human_error_message="Unable to delete this year pupil."
         ) from exc

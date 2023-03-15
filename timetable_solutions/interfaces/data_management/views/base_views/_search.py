@@ -87,6 +87,7 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
             queryset = self.execute_search_from_clean_form(self.form)
             if self.prefetch_related:
                 queryset = queryset.prefetch_related(*self.prefetch_related)
+                queryset = queryset.order_by(*self.ordering)
             return super().serialize_queryset(queryset)
         return super().get_queryset()
 

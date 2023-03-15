@@ -71,6 +71,7 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
         )
         if self.prefetch_related:
             queryset = queryset.prefetch_related(*self.prefetch_related)
+        queryset = queryset.order_by(*self.ordering)
         return self.serialize_queryset(queryset)
 
     def serialize_queryset(
