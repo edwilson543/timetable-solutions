@@ -29,7 +29,7 @@ def create_new_classroom(
     """
     Create a new classroom in the db.
 
-    :raises CouldNotCreateClassroom: if the parameters could not be used to create a classroom.
+    :raises UnableToCreateClassroom: if the parameters could not be used to create a classroom.
     """
     if not classroom_id:
         classroom_id = queries.get_next_classroom_id_for_school(school_id=school_id)
@@ -55,7 +55,7 @@ def update_classroom(
     """
     Update a classroom in the db.
 
-    raises CouldNotUpdateClassroom if it wasn't possible.
+    raises UnableToUpdateClassroom if it wasn't possible.
     """
     try:
         return classroom.update(building=building, room_number=room_number)
@@ -67,11 +67,11 @@ def update_classroom(
 
 def delete_classroom(
     classroom: models.Classroom,
-) -> models.Classroom:
+) -> tuple[int, dict[str, int]]:
     """
     Delete a classroom from the db.
 
-    raises CouldNotDeleteClassroom if it wasn't possible.
+    raises UnableToDeleteClassroom if it wasn't possible.
     """
     try:
         return classroom.delete()
