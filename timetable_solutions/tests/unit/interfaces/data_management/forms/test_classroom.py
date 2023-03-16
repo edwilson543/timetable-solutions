@@ -18,7 +18,7 @@ from tests import data_factories
 @pytest.mark.django_db
 class TestClassroomSearch:
     def test_init_sets_building_room_number_choices(
-        self, mock_get_classrooms: mock.Mock()
+        self, mock_get_classrooms: mock.Mock
     ):
         # Mock the query used to retrieve all classrooms
         school = data_factories.School()
@@ -37,7 +37,7 @@ class TestClassroomSearch:
         ]
         assert form.base_fields["room_number"].choices == [("", ""), (1, 1), (2, 2)]
 
-    def test_form_with_no_search_term_not_valid(self, mock_get_classrooms: mock.Mock()):
+    def test_form_with_no_search_term_not_valid(self, mock_get_classrooms: mock.Mock):
         school = data_factories.School()
         form = classroom_forms.ClassroomSearch(
             school_id=school.school_access_key, data={}
@@ -51,7 +51,7 @@ class TestClassroomSearch:
 @mock.patch("interfaces.data_management.forms.classroom.queries.get_classrooms")
 @pytest.mark.django_db
 class TestClassroomCreateUpdateBase:
-    def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock()):
+    def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock):
         mock_get_classrooms.return_value = models.ClassroomQuerySet().none()
         school = data_factories.School()
 
@@ -63,7 +63,7 @@ class TestClassroomCreateUpdateBase:
         assert form.is_valid()
 
     def test_form_invalid_for_non_unique_building_room_number_combination(
-        self, mock_get_classrooms: mock.Mock()
+        self, mock_get_classrooms: mock.Mock
     ):
         classroom = data_factories.Classroom()
         mock_get_classrooms.return_value = models.Classroom.objects.all()
@@ -84,7 +84,7 @@ class TestClassroomCreateUpdateBase:
 @mock.patch("interfaces.data_management.forms.classroom.queries.get_classrooms")
 @pytest.mark.django_db
 class TestClassroomCreate:
-    def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock()):
+    def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock):
         mock_get_classrooms.return_value = models.ClassroomQuerySet().none()
         school = data_factories.School()
 
@@ -96,7 +96,7 @@ class TestClassroomCreate:
         assert form.is_valid()
 
     def test_form_invalid_for_non_unique_classroom_id(
-        self, mock_get_classrooms: mock.Mock()
+        self, mock_get_classrooms: mock.Mock
     ):
         classroom = data_factories.Classroom(building="science", room_number=100)
         mock_get_classrooms.return_value = models.Classroom.objects.all()

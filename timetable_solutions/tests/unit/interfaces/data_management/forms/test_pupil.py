@@ -74,7 +74,7 @@ class TestPupilCreateUpdateBase:
 @pytest.mark.django_db
 class TestPupilCreate:
     def test_form_invalid_if_pupil_id_already_exists_for_school(
-        self, mock_get_pupils: mock.Mock(), mock_get_next_pupil_id: mock.Mock()
+        self, mock_get_pupils: mock.Mock, mock_get_next_pupil_id: mock.Mock
     ):
         pupil = data_factories.Pupil()
 

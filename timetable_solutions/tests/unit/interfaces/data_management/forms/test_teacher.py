@@ -44,7 +44,7 @@ class TestTeacherSearch:
 @pytest.mark.django_db
 class TestTeacherCreateUpdateBase:
     def test_form_valid_if_teacher_id_unique_for_school(
-        self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
+        self, mock_get_teacher: mock.Mock, mock_get_next_teacher: mock.Mock
     ):
         mock_get_teacher.return_value = False
 
@@ -76,7 +76,7 @@ class TestTeacherCreateUpdateBase:
 @pytest.mark.django_db
 class TestTeacherCreate:
     def test_form_invalid_if_teacher_id_already_exists_for_school(
-        self, mock_get_teacher: mock.Mock(), mock_get_next_teacher: mock.Mock()
+        self, mock_get_teacher: mock.Mock, mock_get_next_teacher: mock.Mock
     ):
         teacher = data_factories.Teacher()
 

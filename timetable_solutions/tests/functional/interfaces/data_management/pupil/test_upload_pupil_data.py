@@ -20,7 +20,7 @@ from tests.helpers.csv import get_csv_from_lists
 class TestUploadPupilData(TestClient):
     @mock.patch("django.contrib.messages.success")
     def test_valid_csv_file_gets_processed_to_db(
-        self, mock_success_messages: mock.Mock()
+        self, mock_success_messages: mock.Mock
     ):
         yg = data_factories.YearGroup()
         self.authorise_client_for_school(yg.school)
@@ -59,7 +59,7 @@ class TestUploadPupilData(TestClient):
         assert pupil.year_group == yg
 
     @mock.patch("django.contrib.messages.error")
-    def test_invalid_upload_rejected(self, mock_error_messages: mock.Mock()):
+    def test_invalid_upload_rejected(self, mock_error_messages: mock.Mock):
         yg = data_factories.YearGroup()
         self.authorise_client_for_school(yg.school)
 
