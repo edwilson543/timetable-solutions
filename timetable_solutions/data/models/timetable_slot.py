@@ -161,7 +161,7 @@ class TimetableSlot(models.Model):
             ends_at=ends_at,
         )
         if relevant_year_groups is not None:
-            slot.add_year_groups(year_groups=relevant_year_groups)
+            slot._add_year_groups(year_groups=relevant_year_groups)
         slot.full_clean()
         return slot
 
@@ -178,12 +178,37 @@ class TimetableSlot(models.Model):
     # Mutators
     # --------------------
 
-    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
-        """Method adding a queryset of / yeargroup instance to a TimetableSlot instance"""
-        if isinstance(year_groups, YearGroupQuerySet):
-            self.relevant_year_groups.add(*year_groups)
-        elif isinstance(year_groups, YearGroup):
-            self.relevant_year_groups.add(year_groups)
+    def update_slot_timings(
+        self,
+        *,
+        day_of_week: constants.Day | None = None,
+        starts_at: dt.time | None = None,
+        ends_at: dt.time | None = None,
+    ) -> "TimetableSlot":
+        """
+        Update the time of day that this slot occurs at.
+        """
+        self.day_of_week = day_of_week or self.day_of_week
+        self.starts_at = starts_at or self.starts_at
+        self.ends_at = ends_at or self.ends_at
+        self.save(update_fields=["day_of_week", "starts_at", "ends_at"])
+        return self
+
+    def update_relevant_year_groups(
+        self,
+        relevant_year_groups: YearGroupQuerySet,
+    ) -> "TimetableSlot":
+        """
+        Update the year groups that are relevant to this slot.
+        """
+        self.relevant_year_groups.set(relevant_year_groups)
+        return self
+
+    def _add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+        """
+        Add a queryset of yeargroups to a TimetableSlot instance.
+        """
+        self.relevant_year_groups.add(*year_groups)
 
     # --------------------
     # Queries
