@@ -56,3 +56,31 @@ class TestCreateNewTimetableSlot:
             "Could not create lesson with the given data."
             in exc.value.human_error_message
         )
+
+
+@pytest.mark.django_db
+class TestUpdateTimetableSlotTimings:
+    def test_can_update_slot_to_valid_time(self):
+        slot = data_factories.TimetableSlot()
+
+        updated_slot = operations.update_timetable_slot_timings(
+            slot=slot,
+            day_of_week=constants.Day.FRIDAY,
+            starts_at=dt.time(hour=15),
+            ends_at=dt.time(hour=16),
+        )
+
+        assert updated_slot.day_of_week == constants.Day.FRIDAY
+        assert updated_slot.starts_at == dt.time(hour=15)
+        assert updated_slot.ends_at == dt.time(hour=16)
+
+    def test_raises_if_updating_slot_to_invalid_time(self):
+        slot = data_factories.TimetableSlot()
+
+        with pytest.raises(operations.UnableToUpdateTimetableSlotTimings):
+            operations.update_timetable_slot_timings(
+                slot=slot,
+                day_of_week=constants.Day.FRIDAY,
+                starts_at=dt.time(hour=16),
+                ends_at=dt.time(hour=15),
+            )
