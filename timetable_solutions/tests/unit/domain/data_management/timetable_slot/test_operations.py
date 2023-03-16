@@ -102,3 +102,14 @@ class TestUpdateTimetableSlotYearGroups:
         assert updated_slot.relevant_year_groups.count() == 2
         assert yg_a in updated_slot.relevant_year_groups.all()
         assert yg_b in updated_slot.relevant_year_groups.all()
+
+
+@pytest.mark.django_db
+class TestDeleteTimetableSlot:
+    def test_can_delete_timetable_slot(self):
+        slot = data_factories.TimetableSlot()
+
+        operations.delete_timetable_slot(slot)
+
+        with pytest.raises(models.TimetableSlot.DoesNotExist):
+            slot.refresh_from_db()

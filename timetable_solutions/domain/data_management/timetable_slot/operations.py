@@ -29,6 +29,10 @@ class UnableToUpdateTimetableSlotYearGroups(
     pass
 
 
+class UnableToDeleteTimetableSlot(base_exceptions.UnableToDeleteModelInstance):
+    pass
+
+
 def create_new_timetable_slot(
     *,
     school_id: int,
@@ -102,4 +106,20 @@ def update_timetable_slot_year_groups(
     except Exception as exc:
         raise UnableToUpdateTimetableSlotTimings(
             human_error_message="Could not update this timetable slot's year groups."
+        ) from exc
+
+
+def delete_timetable_slot(slot: models.TimetableSlot) -> tuple[int, dict[str, int]]:
+    """
+    Delete a teacher from the db.
+
+    :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
+    of that model that were deleted.
+    :raises UnableToDeleteTimetableSlot: If the slot couldn't be deleted.
+    """
+    try:
+        return slot.delete()
+    except Exception as exc:
+        raise UnableToDeleteTimetableSlot(
+            human_error_message="Unable to delete this timetable slot!"
         ) from exc
