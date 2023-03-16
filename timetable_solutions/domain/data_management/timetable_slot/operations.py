@@ -85,3 +85,21 @@ def update_timetable_slot_timings(
         raise UnableToUpdateTimetableSlotTimings(
             human_error_message="Could not update timetable slot to the given times."
         ) from exc
+
+
+def update_timetable_slot_year_groups(
+    slot: models.TimetableSlot,
+    *,
+    relevant_year_groups: models.YearGroupQuerySet,
+) -> models.TimetableSlot:
+    """
+    Update the year groups relevant to a timetable slot.
+
+    :raises UnableToUpdateTimetableSlotYearGroups: if the slot could not be created.
+    """
+    try:
+        return slot.update_relevant_year_groups(relevant_year_groups)
+    except Exception as exc:
+        raise UnableToUpdateTimetableSlotTimings(
+            human_error_message="Could not update this timetable slot's year groups."
+        ) from exc

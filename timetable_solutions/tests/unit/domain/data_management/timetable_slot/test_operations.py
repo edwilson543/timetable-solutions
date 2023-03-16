@@ -53,7 +53,7 @@ class TestCreateNewTimetableSlot:
             )
 
         assert (
-            "Could not create lesson with the given data."
+            "Could not create timetable slot with the given data."
             in exc.value.human_error_message
         )
 
@@ -84,3 +84,21 @@ class TestUpdateTimetableSlotTimings:
                 starts_at=dt.time(hour=16),
                 ends_at=dt.time(hour=15),
             )
+
+
+@pytest.mark.django_db
+class TestUpdateTimetableSlotYearGroups:
+    def test_can_update_relevant_year_groups(self):
+        slot = data_factories.TimetableSlot()
+
+        yg_a = data_factories.YearGroup(school=slot.school)
+        yg_b = data_factories.YearGroup(school=slot.school)
+        ygs = models.YearGroup.objects.all()
+
+        updated_slot = operations.update_timetable_slot_year_groups(
+            slot=slot, relevant_year_groups=ygs
+        )
+
+        assert updated_slot.relevant_year_groups.count() == 2
+        assert yg_a in updated_slot.relevant_year_groups.all()
+        assert yg_b in updated_slot.relevant_year_groups.all()
