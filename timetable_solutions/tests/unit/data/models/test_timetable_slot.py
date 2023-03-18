@@ -58,51 +58,6 @@ class TestTimetableSlotQuerySet:
         assert slot in slots
         # Therefore we have that none of the dummy slots were in the result
 
-    @pytest.mark.parametrize("n_expected_clashes", [1, 2, 3])
-    def test_filter_for_clashes_expecting_clashes(self, n_expected_clashes):
-        """
-        Test that a queryset of three clashes is returned for a slot clashing with 3 slots in total
-        (including itself).
-        """
-        school = data_factories.School()
-        monday = constants.Day.MONDAY
-
-        # Make the following slots: 8:30-9:30; 9:00-10:00; 9:30-10:30, 10:00-11:00
-        if n_expected_clashes > 1:
-            clash_slot_1 = data_factories.TimetableSlot(
-                school=school,
-                day_of_week=monday,
-                starts_at=dt.time(hour=8, minute=30),
-                ends_at=dt.time(hour=9, minute=30),
-            )
-            if n_expected_clashes > 2:
-                clash_slot_2 = data_factories.TimetableSlot.get_next_consecutive_slot(
-                    clash_slot_1
-                )
-
-        check_slot = data_factories.TimetableSlot(
-            school=school,
-            day_of_week=monday,
-            starts_at=dt.time(hour=9),
-            ends_at=dt.time(hour=10),
-        )
-        # This slot shouldn't appear in the clashes
-        data_factories.TimetableSlot.get_next_consecutive_slot(check_slot)
-
-        # Get the clashes and check just 3
-        clashes = models.TimetableSlot.objects.filter_for_clashes(check_slot)
-
-        # Check just 3 clashes
-        assert clashes.count() == n_expected_clashes
-
-        assert check_slot in clashes
-
-        if n_expected_clashes > 1:
-            assert clash_slot_1 in clashes
-        if n_expected_clashes > 2:
-            assert clash_slot_2 in clashes
-        # Therefore we have that the 9:00-10:00 slot was not a clash
-
 
 @pytest.mark.django_db
 class TestCreateNewTimetableSlot:
@@ -376,23 +331,3 @@ class TestDeleteAllInstancesForSchool:
 
         # Check outcome
         assert (not consecutive_1) and (not consecutive_2)
-
-    # --------------------
-    # Properties tests
-    # --------------------
-
-    def test_open_interval(self):
-        """
-        Test the correct open start / finish time is returned for a timetable slot.
-        """
-        # Get the test slot
-        slot = data_factories.TimetableSlot(
-            starts_at=dt.time(hour=9), ends_at=dt.time(hour=10)
-        )
-
-        # Get the open interval
-        open_start, open_end = slot.open_interval
-
-        # Check a second is incremented either way
-        assert open_start == dt.time(hour=9, minute=0, second=1)
-        assert open_end == dt.time(hour=9, minute=59, second=59)

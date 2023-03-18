@@ -6,7 +6,6 @@ from django.db import models
 
 # Local application imports
 from data.models.school import School
-from data.models.timetable_slot import TimetableSlot
 
 
 class TeacherQuerySet(models.QuerySet):
@@ -136,30 +135,6 @@ class Teacher(models.Model):
     # --------------------
     # Queries
     # --------------------
-
-    def check_if_busy_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
-        """
-        Method to check whether the teacher is busy AT ANY POINT during the passed time slot.
-        :return - True if busy.
-        """
-
-        # Get number of commitments
-        user_defined_slots = TimetableSlot.objects.filter(user_lessons__teacher=self)
-        lesson_clashes = user_defined_slots.filter_for_clashes(slot)
-
-        teacher_break_clashes = self.breaks.filter_for_clashes(slot)
-
-        n_commitments = lesson_clashes.count() + teacher_break_clashes.count()
-
-        # Decide what should happen
-        if n_commitments == 1:
-            return True
-        elif n_commitments == 0:
-            return False
-        else:
-            raise ValueError(
-                f"Teacher {self}, {self.pk} has ended up with more than 1 lesson at {slot}"
-            )
 
     def get_lessons_per_week(self) -> int:
         """

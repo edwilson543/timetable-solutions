@@ -49,40 +49,6 @@ class TimetableSlotQuerySet(models.QuerySet):
             & models.Q(relevant_year_groups=year_group)
         )
 
-    # --------------------
-    # Filters
-    # --------------------
-
-    def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
-        """
-        Filter a queryset of slots against an individual slot.
-        :return The slots in the queryset (self) that clash with the passed slot, non-inclusively.
-
-        The use case for this is to check whether teachers / classrooms / (pupil) are busy at a give slot,
-        at any point during that slot.
-        """
-        clash_range = slot.open_interval
-        # Note the django __range filter is inclusive, hence the open interval is essential,
-        # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
-
-        return self.filter(
-            (
-                (
-                    # OVERLAPPING clashes
-                    models.Q(starts_at__range=clash_range)
-                    | models.Q(ends_at__range=clash_range)
-                )
-                | (
-                    # EXACT MATCH clashes
-                    # We do however want slots to clash with themselves / other slots starting and finishing
-                    # at the same time, since a user may have defined slots covering the same time pan
-                    models.Q(starts_at=slot.starts_at)
-                    | models.Q(ends_at=slot.ends_at)
-                )
-            )
-            & models.Q(day_of_week=slot.day_of_week)
-        )
-
 
 class TimetableSlot(models.Model):
     """Model for stating the unique timetable slots when classes can take place"""
