@@ -11,7 +11,7 @@ from domain.solver.filters import clashes
 
 
 def check_if_classroom_occupied_at_time(
-    classroom: models.Teacher,
+    classroom: models.Classroom,
     *,
     starts_at: dt.time,
     ends_at: dt.time,
