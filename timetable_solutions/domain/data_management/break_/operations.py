@@ -1,4 +1,6 @@
-"""Operations on the Break model affecting db state."""
+"""
+Operations on the Break model affecting db state.
+"""
 # Standard library imports
 import datetime as dt
 

@@ -5,7 +5,6 @@
 import datetime as dt
 
 # Django imports
-from django.core import exceptions
 from django.db import models
 
 # Local application imports

@@ -6,7 +6,6 @@ from django.db import models
 
 # Local application imports
 from data.models.school import School
-from data.models.timetable_slot import TimetableSlot
 
 
 class ClassroomQuerySet(models.QuerySet):

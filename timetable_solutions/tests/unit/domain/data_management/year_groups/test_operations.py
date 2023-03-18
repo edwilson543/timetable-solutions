@@ -43,7 +43,7 @@ class TestCreateNewYearGroup:
                 year_group_name="test",
             )
 
-        assert f"Year group with this data already exists!" in str(
+        assert "Year group with this data already exists!" in str(
             exc.value.human_error_message
         )
 
@@ -60,7 +60,7 @@ class TestCreateNewYearGroup:
                 year_group_name=yg.year_group_name,
             )
 
-        assert f"Year group with this data already exists!" in str(
+        assert "Year group with this data already exists!" in str(
             exc.value.human_error_message
         )
 

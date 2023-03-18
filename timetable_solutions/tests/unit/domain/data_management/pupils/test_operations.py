@@ -64,9 +64,7 @@ class TestCreateNewPupil:
                 surname="test",
             )
 
-        assert (
-            f"Year group with id 100 does not exist!" in exc.value.human_error_message
-        )
+        assert "Year group with id 100 does not exist!" in exc.value.human_error_message
 
 
 @pytest.mark.django_db

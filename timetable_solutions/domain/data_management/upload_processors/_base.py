@@ -16,7 +16,6 @@ from dateutil import parser as dateutil_parser  # type: ignore
 # Django imports
 from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
-from django.db import IntegrityError
 from django.db import models as django_models
 from django.db import transaction
 

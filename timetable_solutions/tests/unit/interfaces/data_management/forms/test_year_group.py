@@ -56,4 +56,4 @@ class TestYearGROUPCreate:
         errors = form.errors.as_text()
 
         assert f"Year group with id: {yg.year_group_id} already exists!" in errors
-        assert f"The next available id is: 123456" in errors
+        assert "The next available id is: 123456" in errors

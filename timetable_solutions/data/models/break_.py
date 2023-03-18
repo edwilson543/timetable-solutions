@@ -2,7 +2,6 @@
 Module defining the model for a SchoolClass, and its manager.
 """
 
-
 # Standard library imports
 import datetime as dt
 
@@ -13,7 +12,6 @@ from django.db import models
 from data import constants
 from data.models.school import School
 from data.models.teacher import Teacher, TeacherQuerySet
-from data.models.timetable_slot import TimetableSlot
 from data.models.year_group import YearGroup, YearGroupQuerySet
 
 

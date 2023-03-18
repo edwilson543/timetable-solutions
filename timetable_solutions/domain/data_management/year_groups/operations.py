@@ -1,4 +1,6 @@
-"""Operations on the YearGroup model affecting db state."""
+"""
+Operations on the YearGroup model affecting db state.
+"""
 
 # Django imports
 from django.db import IntegrityError
@@ -39,7 +41,7 @@ def create_new_year_group(
         )
     except IntegrityError as exc:
         raise UnableToCreateYearGroup(
-            human_error_message=f"Year group with this data already exists!"
+            human_error_message="Year group with this data already exists!"
         ) from exc
 
 

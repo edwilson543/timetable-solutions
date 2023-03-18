@@ -59,4 +59,4 @@ class Command(management.base.BaseCommand):
         else:
             management.call_command("loaddata", "lessons_without_solution.json")
 
-        self.stdout.write(self.style.SUCCESS(f"Successfully loaded in all fixtures!"))
+        self.stdout.write(self.style.SUCCESS("Successfully loaded in all fixtures!"))

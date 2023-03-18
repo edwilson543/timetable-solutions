@@ -95,4 +95,4 @@ class TestPupilCreate:
         errors = form.errors.as_text()
 
         assert f"Pupil with id: {pupil.pupil_id} already exists!" in errors
-        assert f"The next available id is: 123456" in errors
+        assert "The next available id is: 123456" in errors

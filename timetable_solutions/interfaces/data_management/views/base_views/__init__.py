@@ -1,4 +1,6 @@
-"""Based views to manage each model in the data management app."""
+"""
+Based views to manage each model in the data management app.
+"""
 
 from ._create import CreateView
 from ._download import ExampleDownloadBase

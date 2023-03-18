@@ -57,7 +57,9 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
 
     def clean(self) -> dict[str, Any]:
         if self.cleaned_data.get("relevant_to_all_year_groups", False):
-            existing_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-                school_id=self.school_id
+            existing_slots = (  # noqa: F841
+                models.TimetableSlot.objects.get_all_instances_for_school(
+                    school_id=self.school_id
+                )
             )
         return self.cleaned_data

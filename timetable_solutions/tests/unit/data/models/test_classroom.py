@@ -10,7 +10,7 @@ from django.db import IntegrityError
 from django.db.models import ProtectedError
 
 # Local application imports
-from data import constants, models
+from data import models
 from tests import data_factories
 
 

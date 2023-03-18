@@ -1,5 +1,4 @@
 # Standard library imports
-from pathlib import Path
 from typing import Any, ClassVar
 
 # Django imports

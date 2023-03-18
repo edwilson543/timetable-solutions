@@ -1,7 +1,6 @@
-"""Serializer classes for the basic school data models."""
-
-# Standard library imports
-from collections import OrderedDict
+"""
+Serializer classes for the basic school data models.
+"""
 
 # Third party imports
 from rest_framework import serializers

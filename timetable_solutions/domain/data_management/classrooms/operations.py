@@ -1,4 +1,6 @@
-"""Operations on the Classroom model affecting db state."""
+"""
+Operations on the Classroom model affecting db state.
+"""
 
 
 # Django imports
@@ -42,7 +44,7 @@ def create_new_classroom(
         )
     except IntegrityError as exc:
         raise UnableToCreateClassroom(
-            human_error_message=f"Classroom with this data already exists."
+            human_error_message="Classroom with this data already exists."
         ) from exc
 
 

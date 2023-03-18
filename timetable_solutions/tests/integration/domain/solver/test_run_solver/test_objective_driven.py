@@ -5,7 +5,6 @@ import datetime as dt
 import pytest
 
 # Local application imports
-from data.constants import Day
 from domain import solver
 from tests import data_factories, domain_factories
 
