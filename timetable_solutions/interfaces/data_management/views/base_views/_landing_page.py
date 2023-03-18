@@ -3,7 +3,6 @@ import abc
 from typing import Any, ClassVar
 
 # Django imports
-from django import http
 from django.contrib.auth import mixins
 from django.views import generic
 
@@ -42,7 +41,7 @@ class LandingView(mixins.LoginRequiredMixin, generic.TemplateView):
         Whether the school currently has any data for the relevant model.
         The user won't be given the full management options if they don't have any data to manage.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def cannot_add_data_reason(self) -> str | None:
         """

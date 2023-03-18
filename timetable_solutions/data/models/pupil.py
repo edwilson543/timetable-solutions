@@ -5,7 +5,7 @@ from django.db import models
 
 # Local application imports
 from data.models.school import School
-from data.models.timetable_slot import TimetableSlot, TimetableSlotQuerySet
+from data.models.timetable_slot import TimetableSlotQuerySet
 from data.models.year_group import YearGroup
 
 
@@ -129,27 +129,6 @@ class Pupil(models.Model):
     # --------------------
     # Queries
     # --------------------
-
-    def check_if_busy_at_timeslot(self, slot: TimetableSlot) -> bool:
-        """
-        Method to check whether the given pupil has already been assigned a lesson at the given slot.
-        :return - True if BUSY at the given timeslot.
-        """
-        user_defined_slots = TimetableSlot.objects.filter(user_lessons__pupils=self)
-        lesson_clashes = user_defined_slots.filter_for_clashes(slot)
-
-        break_clashes = self.year_group.breaks.filter_for_clashes(slot)
-
-        n_commitments = lesson_clashes.count() + break_clashes.count()
-
-        if n_commitments == 1:
-            return True
-        elif n_commitments == 0:
-            return False
-        else:
-            raise ValueError(
-                f"Pupil {self.__str__}, {self.pk} has ended up with more than 1 lesson at {slot}"
-            )
 
     def get_associated_timeslots(self) -> TimetableSlotQuerySet:
         """

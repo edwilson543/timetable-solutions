@@ -19,7 +19,7 @@ field: django_forms.Field
       </div>
     {% endif %}
 
-    {% if field|is_text_or_number_input %}
+    {% if field|is_text_or_number_input or field.widget_type == "time" %}
         {% include 'partials/forms/widgets/input.html' with field=field only %}
     {% elif field.widget_type == "clearablefile" %}
         {% include 'partials/forms/widgets/upload.html' with field=field only %}

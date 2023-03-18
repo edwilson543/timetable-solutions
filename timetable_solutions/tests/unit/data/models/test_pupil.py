@@ -108,68 +108,9 @@ class TestDeleteAllInstancesForSchool:
         assert all_pupils.count() == 1
         assert all_pupils.first() == safe_from_deletion_yg
 
-    # --------------------
-    # Queries tests
-    # --------------------
 
-    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_lesson(self):
-        """
-        Pupil should be busy if they're in another lesson at passed slot.
-        """
-        # Make a pupil and ensure they are busy for some slot
-        pupil = data_factories.Pupil()
-        slot = data_factories.TimetableSlot(
-            school=pupil.school, relevant_year_groups=(pupil.year_group,)
-        )
-        data_factories.Lesson(
-            school=pupil.school, pupils=(pupil,), user_defined_time_slots=(slot,)
-        )
-
-        # Execute test unit
-        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
-
-        # Check outcome
-        assert is_busy
-
-    def test_check_if_busy_at_time_slot_when_pupil_is_busy_with_break(self):
-        """
-        Pupil should be busy if they're in a break at passed slot.
-        """
-        # Make a pupil and ensure they are busy for some slot
-        pupil = data_factories.Pupil()
-        slot = data_factories.TimetableSlot(
-            school=pupil.school, relevant_year_groups=(pupil.year_group,)
-        )
-        data_factories.Break(
-            school=pupil.school,
-            relevant_year_groups=(pupil.year_group,),
-            starts_at=slot.starts_at,
-            ends_at=slot.ends_at,
-            day_of_week=slot.day_of_week,
-        )
-
-        # Execute test unit
-        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
-
-        # Check outcome
-        assert is_busy
-
-    def test_check_if_busy_at_time_slot_when_pupil_is_not_busy(self):
-        """
-        Test that the check_if_busy_at_time_slot method returns 'False' when we expect it to
-        """
-        # Make a pupil and slot, so in the absence of any lessons the pupil is not bust
-        pupil = data_factories.Pupil()
-        slot = data_factories.TimetableSlot(
-            school=pupil.school, relevant_year_groups=(pupil.year_group,)
-        )
-
-        # Execute test unit
-        is_busy = pupil.check_if_busy_at_timeslot(slot=slot)
-
-        # Check outcome
-        assert not is_busy
-
+@pytest.mark.django_db
+class TestQueries:
     def test_get_associated_timeslots(self):
         """
         Test that the correct TimetableSlots are associated with a pupil.

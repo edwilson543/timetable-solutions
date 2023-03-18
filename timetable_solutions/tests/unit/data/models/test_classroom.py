@@ -2,10 +2,6 @@
 Unit tests for methods on the Classroom class
 """
 
-
-# Standard library imports
-import datetime as dt
-
 # Third party imports
 import pytest
 
@@ -14,7 +10,7 @@ from django.db import IntegrityError
 from django.db.models import ProtectedError
 
 # Local application imports
-from data import constants, models
+from data import models
 from tests import data_factories
 
 
@@ -126,101 +122,6 @@ class TestDeleteAllInstancesForSchool:
 
 @pytest.mark.django_db
 class TestClassroomQueries:
-    def test_check_if_occupied_at_time_of_timeslot_classroom_occupied_at_slot(self):
-        """Test that the check_if_occupied_at_timeslot method returns 'True' when we expect it to"""
-        # Make a classroom with a lesson fixed at some slot
-        classroom = data_factories.Classroom()
-        school = classroom.school
-        slot = data_factories.TimetableSlot(school=school)
-        data_factories.Lesson(
-            school=school, classroom=classroom, user_defined_time_slots=(slot,)
-        )
-
-        # Call test function
-        is_occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=slot)
-
-        # Check classroom successfully made busy
-        assert is_occupied
-
-    def test_check_if_occupied_at_time_of_timeslot_classroom_occupied_at_exact_times_of_slot(
-        self,
-    ):
-        """Test that the check_if_occupied_at_timeslot method returns 'True' when we expect it to"""
-        # Make a classroom with a lesson fixed at some slot
-        classroom = data_factories.Classroom()
-        school = classroom.school
-        busy_slot = data_factories.TimetableSlot(school=school)
-        data_factories.Lesson(
-            school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
-        )
-
-        # Make another slot with the exact same times (and day) to check business against
-        check_slot = data_factories.TimetableSlot(
-            school=school,
-            day_of_week=busy_slot.day_of_week,
-            starts_at=busy_slot.starts_at,
-            ends_at=busy_slot.ends_at,
-        )
-
-        # Call test function
-        is_occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=check_slot)
-
-        # Check classroom successfully made busy
-        assert is_occupied
-
-    def test_check_if_occupied_at_time_of_timeslot_partially_overlapping(self):
-        """Test that a classroom is busy if it's in use during another slot with overlapiong times."""
-        # Make a classroom with a lesson fixed at some slot
-        classroom = data_factories.Classroom()
-        school = classroom.school
-        busy_slot = data_factories.TimetableSlot(
-            school=school,
-            starts_at=dt.time(hour=9),
-            ends_at=dt.time(hour=10),
-        )
-        data_factories.Lesson(
-            school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
-        )
-
-        # Make another slot with the exact same times (and day) to check business against
-        check_slot = data_factories.TimetableSlot(
-            school=school,
-            day_of_week=busy_slot.day_of_week,
-            starts_at=dt.time(hour=9, minute=30),
-            ends_at=dt.time(hour=10, minute=30),
-        )
-
-        # Call test function
-        is_occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=check_slot)
-
-        # Check classroom successfully made busy
-        assert is_occupied
-
-    def test_check_if_busy_at_time_slot_when_classroom_is_not_occupied(self):
-        """Test that the check_if_occupied_at_timeslot method returns 'False' when we expect it to"""
-        # Make a classroom with a lesson fixed at some slot
-        # The business isn't really necessary, but ensures having one lesson doesn't
-        # make the teacher constantly 'busy'
-        classroom = data_factories.Classroom()
-        school = classroom.school
-        busy_slot = data_factories.TimetableSlot(
-            school=school, day_of_week=constants.Day.MONDAY
-        )
-        data_factories.Lesson(
-            school=school, classroom=classroom, user_defined_time_slots=(busy_slot,)
-        )
-
-        # Make another slot, which has a different day
-        check_slot = data_factories.TimetableSlot(
-            school=school, day_of_week=constants.Day.TUESDAY
-        )
-
-        # Call test function
-        is_occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=check_slot)
-
-        # Check classroom unoccupied
-        assert not is_occupied
-
     def test_get_lessons_per_week(self):
         """
         Test that the correct number of lessons per week is retrieved for a classroom.

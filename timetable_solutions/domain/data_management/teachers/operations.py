@@ -28,7 +28,7 @@ def create_new_teacher(
     """
     Create a new teacher in the db.
 
-    :raises CouldNotCreateTeacher: if the parameters could not be used to create a teacher.
+    :raises UnableToCreateTeacher: if the parameters could not be used to create a teacher.
     """
     if not teacher_id:
         teacher_id = queries.get_next_teacher_id_for_school(school_id=school_id)
@@ -56,7 +56,7 @@ def update_teacher(
     """
     Update a teacher in the db.
 
-    raises CouldNotUpdateTeacher if it wasn't possible.
+    raises UnableToUpdateTeacher if it wasn't possible.
     """
     try:
         return teacher.update(firstname=firstname, surname=surname, title=title)
@@ -72,7 +72,7 @@ def delete_teacher(teacher: models.Teacher) -> tuple[int, dict[str, int]]:
 
     :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
     of that model that were deleted.
-    :raises CouldNotDeleteTeacher: If the teacher couldn't be deleted (e.g due to a protected foreign key)
+    :raises UnableToDeleteTeacher: If the teacher couldn't be deleted (e.g due to a protected foreign key)
     """
     try:
         return teacher.delete()

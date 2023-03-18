@@ -82,7 +82,7 @@ class TestIsTextOrNumberInput:
             assert "Is text or number input" in outcome
             assert "True" in outcome
         else:
-            assert not "Is text or number input" in outcome
+            assert "Is text or number input" not in outcome
             assert "False" in outcome
 
     def test_is_text_or_number_input_bound_field(self):

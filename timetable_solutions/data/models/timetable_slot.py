@@ -5,7 +5,6 @@
 import datetime as dt
 
 # Django imports
-from django.core import exceptions
 from django.db import models
 
 # Local application imports
@@ -47,40 +46,6 @@ class TimetableSlotQuerySet(models.QuerySet):
             models.Q(school_id=school_id)
             & models.Q(day_of_week=day_of_week)
             & models.Q(relevant_year_groups=year_group)
-        )
-
-    # --------------------
-    # Filters
-    # --------------------
-
-    def filter_for_clashes(self, slot: "TimetableSlot") -> "TimetableSlotQuerySet":
-        """
-        Filter a queryset of slots against an individual slot.
-        :return The slots in the queryset (self) that clash with the passed slot, non-inclusively.
-
-        The use case for this is to check whether teachers / classrooms / (pupil) are busy at a give slot,
-        at any point during that slot.
-        """
-        clash_range = slot.open_interval
-        # Note the django __range filter is inclusive, hence the open interval is essential,
-        # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
-
-        return self.filter(
-            (
-                (
-                    # OVERLAPPING clashes
-                    models.Q(starts_at__range=clash_range)
-                    | models.Q(ends_at__range=clash_range)
-                )
-                | (
-                    # EXACT MATCH clashes
-                    # We do however want slots to clash with themselves / other slots starting and finishing
-                    # at the same time, since a user may have defined slots covering the same time pan
-                    models.Q(starts_at=slot.starts_at)
-                    | models.Q(ends_at=slot.ends_at)
-                )
-            )
-            & models.Q(day_of_week=slot.day_of_week)
         )
 
 
@@ -161,7 +126,7 @@ class TimetableSlot(models.Model):
             ends_at=ends_at,
         )
         if relevant_year_groups is not None:
-            slot.add_year_groups(year_groups=relevant_year_groups)
+            slot._add_year_groups(year_groups=relevant_year_groups)
         slot.full_clean()
         return slot
 
@@ -178,12 +143,37 @@ class TimetableSlot(models.Model):
     # Mutators
     # --------------------
 
-    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
-        """Method adding a queryset of / yeargroup instance to a TimetableSlot instance"""
-        if isinstance(year_groups, YearGroupQuerySet):
-            self.relevant_year_groups.add(*year_groups)
-        elif isinstance(year_groups, YearGroup):
-            self.relevant_year_groups.add(year_groups)
+    def update_slot_timings(
+        self,
+        *,
+        day_of_week: constants.Day | None = None,
+        starts_at: dt.time | None = None,
+        ends_at: dt.time | None = None,
+    ) -> "TimetableSlot":
+        """
+        Update the time of day that this slot occurs at.
+        """
+        self.day_of_week = day_of_week or self.day_of_week
+        self.starts_at = starts_at or self.starts_at
+        self.ends_at = ends_at or self.ends_at
+        self.save(update_fields=["day_of_week", "starts_at", "ends_at"])
+        return self
+
+    def update_relevant_year_groups(
+        self,
+        relevant_year_groups: YearGroupQuerySet,
+    ) -> "TimetableSlot":
+        """
+        Update the year groups that are relevant to this slot.
+        """
+        self.relevant_year_groups.set(relevant_year_groups)
+        return self
+
+    def _add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+        """
+        Add a queryset of yeargroups to a TimetableSlot instance.
+        """
+        self.relevant_year_groups.add(*year_groups)
 
     # --------------------
     # Queries

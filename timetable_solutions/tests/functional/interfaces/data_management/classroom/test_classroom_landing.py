@@ -15,10 +15,8 @@ class TestClassroomLanding(TestClient):
     @pytest.mark.parametrize("has_existing_data", [True, False])
     def test_landing_page_loads(self, has_existing_data: bool):
         """
-        Smoke test that a logged-in user can access the classroom landing page.
-
-        The markup is slightly different depending on whether they have existing data,
-        so test both cases.
+        Test that an authenticated user can access the classroom landing page,
+        and click through to view this data.
         """
         # Authorise the client for some school
         school = data_factories.School()
@@ -37,6 +35,13 @@ class TestClassroomLanding(TestClient):
         assert response.context["create_url"] == UrlName.CLASSROOM_CREATE.url()
         assert response.context["upload_url"] == UrlName.CLASSROOM_UPLOAD.url()
         assert response.context["list_url"] == UrlName.CLASSROOM_LIST.url()
+
+        # If the user has data, they should be able to click through to this data
+        if has_existing_data:
+            response.click(href=UrlName.CLASSROOM_LIST.url())
+        else:
+            with pytest.raises(IndexError):
+                response.click(href=UrlName.CLASSROOM_LIST.url())
 
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user

@@ -1,7 +1,6 @@
 """
-Forms related to allowing users to specify their requirements for how the timetable solutions are found
+Forms relating to generating timetable solutions.
 """
-
 
 # Standard library imports
 import datetime as dt
@@ -72,7 +71,6 @@ class SolutionSpecification(forms.Form):
         free period choice field, and so in particular need to produce a dt.time instance from the time strings.
         :return: the dictionary of cleaned form data, with the field names as keys
         """
-        cleaned_data = super().clean()
         optimal_free_period = self.cleaned_data["optimal_free_period_time_of_day"]
         try:
             optimal_free_period = dt.datetime.strptime(

@@ -20,7 +20,7 @@ from tests import data_factories
 @pytest.mark.django_db
 class TestYearGROUPCreate:
     def test_form_valid_if_year_group_id_unique_for_school(
-        self, mock_get_year_group: mock.Mock(), mock_get_next_year_group: mock.Mock()
+        self, mock_get_year_group: mock.Mock, mock_get_next_year_group: mock.Mock
     ):
         mock_get_year_group.return_value = False
         school = data_factories.School()
@@ -38,7 +38,7 @@ class TestYearGROUPCreate:
         assert form.cleaned_data["year_group_name"] == "test"
 
     def test_form_invalid_if_year_group_id_already_exists_for_school(
-        self, mock_get_year_group: mock.Mock(), mock_get_next_year_group: mock.Mock()
+        self, mock_get_year_group: mock.Mock, mock_get_next_year_group: mock.Mock
     ):
         mock_get_next_year_group.return_value = 123456
 
@@ -56,4 +56,4 @@ class TestYearGROUPCreate:
         errors = form.errors.as_text()
 
         assert f"Year group with id: {yg.year_group_id} already exists!" in errors
-        assert f"The next available id is: 123456" in errors
+        assert "The next available id is: 123456" in errors

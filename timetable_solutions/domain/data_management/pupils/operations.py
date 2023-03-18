@@ -34,7 +34,7 @@ def create_new_pupil(
     """
     Create a new pupil in the db.
 
-    :raises CouldNotCreatePupil: if the parameters could not be used to create a pupil.
+    :raises UnableToCreatePupil: if the parameters could not be used to create a pupil.
     """
     try:
         year_group = models.YearGroup.objects.get_individual_year_group(
@@ -72,7 +72,7 @@ def update_pupil(
     """
     Update a pupil in the db.
 
-    raises CouldNotUpdatePupil if it wasn't possible.
+    raises UnableToUpdatePupil if it wasn't possible.
     """
     try:
         return pupil.update(firstname=firstname, surname=surname, year_group=year_group)
@@ -88,7 +88,7 @@ def delete_pupil(pupil: models.Pupil) -> tuple[int, dict[str, int]]:
 
     :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
     of that model that were deleted.
-    :raises CouldNotDeletePupil: If the year pupil couldn't be deleted
+    :raises UnableToDeletePupil: If the year pupil couldn't be deleted
     """
     try:
         return pupil.delete()

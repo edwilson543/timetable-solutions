@@ -1,9 +1,8 @@
 """
-Module defining the constraints on the timetabling problem
+Declares the class handling timetable constraints.
 """
 
 # Standard library imports
-import itertools
 from typing import Generator
 
 # Third party imports
@@ -11,20 +10,23 @@ import pulp as lp
 
 # Local application imports
 from data import constants, models
+from domain.solver.filters import clashes
 from domain.solver.linear_programming.solver_variables import (
     TimetableSolverVariables,
     doubles_var_key,
     var_key,
 )
+from domain.solver.queries import classroom as classroom_queries
+from domain.solver.queries import pupil as pupil_queries
+from domain.solver.queries import teacher as teacher_queries
 from domain.solver.solver_input_data import TimetableSolverInputs
 
 
 class TimetableSolverConstraints:
     """
-    Class used to define the constraints for the given timetabling problem, and then add them a LpProblem instance
+    Define the constraints on a school's timetabling problem.
 
-    The methods are grouped as follows:
-        - Entry point method (add_constraints_to_problem)
+    The constraints are grouped as follows:
         - Basic constraints relating to fulfilling timetable criteria, and avoiding clashes
         - Constraints relating to double periods
         - Structural / optional constraints
@@ -39,65 +41,57 @@ class TimetableSolverConstraints:
 
     def add_constraints_to_problem(self, problem: lp.LpProblem) -> None:
         """
-        Method to add all constraints to the passed problem - what this class is used for outside this module.
-        :param problem - an instance of pulp.LpProblem, which collects constraints/objective and solves
-        :return None - since the passed problem will be modified in-place
+        Add all relevant constraints to the passed problem.
+
+        :param problem: A timetabling problem for a single school.
+        :return None: The problem is mutated.
         """
-        # BASIC CONSTRAINTS
-        fulfillment_constraints = self._get_all_fulfillment_constraints()
-        for constraint in fulfillment_constraints:
+        # Fulfillment
+        for constraint in self._get_all_fulfillment_constraints():
             problem += constraint
 
-        pupil_constraints = self._get_all_pupil_constraints()
-        for constraint in pupil_constraints:
+        # One place at a time constraints
+        for constraint in self._get_all_pupil_constraints():
             problem += constraint
 
-        teacher_constraints = self._get_all_teacher_constraints()
-        for constraint in teacher_constraints:
+        for constraint in self._get_all_teacher_constraints():
             problem += constraint
 
-        classroom_constraints = self._get_all_classroom_constraints()
-        for constraint in classroom_constraints:
-            problem += constraint
-        # DOUBLE PERIOD CONSTRAINTS
-        double_period_fulfillment_constraints = (
-            self._get_all_double_period_fulfillment_constraints()
-        )
-        for constraint in double_period_fulfillment_constraints:
+        for constraint in self._get_all_classroom_constraints():
             problem += constraint
 
-        double_period_dependency_constraints = (
-            self._get_all_double_period_dependency_constraints()
-        )
-        for constraint in double_period_dependency_constraints:
+        # Double period constraints
+        for constraint in self._get_all_double_period_fulfillment_constraints():
             problem += constraint
-        # OPTIONAL CONSTRAINTS
+
+        for constraint in self._get_all_double_period_dependency_constraints():
+            problem += constraint
+
+        # Structural constraints
         if not self._inputs.solution_specification.allow_split_lessons_within_each_day:
-            no_split_constraints = self._get_all_no_split_lessons_in_a_day_constraints()
-            for constraint in no_split_constraints:
+            for constraint in self._get_all_no_split_lessons_in_a_day_constraints():
                 problem += constraint
 
         if not self._inputs.solution_specification.allow_triple_periods_and_above:
-            triple_period_constraints = (
-                self._get_all_no_two_doubles_in_a_day_constraints()
-            )
-            for constraint in triple_period_constraints:
+            for constraint in self._get_all_no_two_doubles_in_a_day_constraints():
                 problem += constraint
 
-    # BASIC CONSTRAINTS ON FULFILLMENT AND CLASH AVOIDANCE
+    # --------------------
+    # Fulfillment constraints
+    # --------------------
+
     def _get_all_fulfillment_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining the constraints that each lesson must be taught for the required number of periods.
+        Ensure every lesson is assigned the required number of slots.
         """
 
         def __fulfillment_constraint(
             lesson: models.Lesson,
         ) -> tuple[lp.LpConstraint, str]:
             """
-            States that the passed lesson must be taught for the number of required periods, that have not been
-            defined by the user.
+            Ensure this lesson is assigned the required number of slots.
             """
             n_solver_slots_variable = lp.lpSum(
                 [
@@ -113,30 +107,29 @@ class TimetableSolverConstraints:
             )
             return constraint
 
-        constraints = (
-            __fulfillment_constraint(lesson) for lesson in self._inputs.lessons
-        )
-        return constraints
+        yield from (__fulfillment_constraint(lesson) for lesson in self._inputs.lessons)
+
+    # --------------------
+    # One place at a time constraints
+    # --------------------
 
     def _get_all_pupil_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining the constraints that each pupil can only be in one lesson at a time, and returning these as a
-        generator that is iterated through once to add each constraint to the LpProblem.
+        Ensure every pupil is only assigned one lesson at a time.
         """
 
         def __one_place_at_a_slot_constraint(
             pupil: models.Pupil, time_slot: models.TimetableSlot
         ) -> tuple[lp.LpConstraint, str]:
             """
-            Defines a 'one-place-at-a-slot' constraint for an individual pupil, and individual timeslot.
-            We sum the decision variables relevant to the pupil, and force this to 0 if the pupil has an
-            existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+            Ensure this pupil is only assigned one lesson at the given time slot.
 
-            This is a SLOT based constraint, rather than a TIME based one.
+            Equation: sum the decision variables relevant to the pupil at the time slot.
+            Force to 0 if they have an existing lesson at any of the times.
+            Otherwise, their sum must be at most 1.
             """
-            existing_commitment = pupil.check_if_busy_at_timeslot(slot=time_slot)
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
@@ -148,6 +141,13 @@ class TimetableSolverConstraints:
                     )
                     in self._decision_variables.keys()
                 ]
+            )
+
+            existing_commitment = pupil_queries.check_if_pupil_busy_at_time(
+                pupil,
+                starts_at=time_slot.starts_at,
+                ends_at=time_slot.ends_at,
+                day_of_week=time_slot.day_of_week,
             )
             if existing_commitment:
                 constraint = (
@@ -161,19 +161,17 @@ class TimetableSolverConstraints:
                 )
             return constraint
 
-        constraints = (
+        yield from (
             __one_place_at_a_slot_constraint(pupil=pupil, time_slot=time_slot)
             for pupil in self._inputs.pupils
             for time_slot in pupil.get_associated_timeslots()
         )
-        return constraints
 
     def _get_all_teacher_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining the constraints that each teacher can only teach one class at a time, and returning these as a
-        generator that is iterated through once to add each constraint to the LpProblem.
+        Ensure every teacher is only assigned one lesson at a time.
         """
 
         def __one_place_at_a_time_constraint(
@@ -181,17 +179,18 @@ class TimetableSolverConstraints:
             time_slot: models.TimetableSlot,
         ) -> tuple[lp.LpConstraint, str]:
             """
-            Defines a 'one-place-at-a-time' constraint for an individual teacher, and individual timeslot.
-            We sum the decision variables relevant to the teacher, and force this to 0 if the teacher has an
-            existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+            Ensure this teacher is only assigned one lesson at the time spanned by the given time slot.
 
-            This is a TIME based constraint, rather than a SLOT based one.
+            Equation: sum the decision variables relevant to the teacher at the time
+            of the time slot. Force to 0 if they have an existing lesson at any of the times.
+            Otherwise, their sum must be at most 1.
             """
-            existing_commitment = teacher.check_if_busy_at_time_of_timeslot(
-                slot=time_slot
+            # Need to constrain against ALL slots clashing with this one,
+            # since the teacher can only be utilised for ONE of these slots
+            clashing_slots = clashes.filter_queryset_for_clashes(
+                queryset=self._inputs.timetable_slots,
+                time_of_week=clashes.TimeOfWeek.from_slot(slot=time_slot),
             )
-            # Need to constrain against ALL slots clashing with this one
-            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
 
             possible_commitments = lp.lpSum(
                 [
@@ -207,6 +206,12 @@ class TimetableSolverConstraints:
                 ]
             )
 
+            existing_commitment = teacher_queries.check_if_teacher_busy_at_time(
+                teacher,
+                starts_at=time_slot.starts_at,
+                ends_at=time_slot.ends_at,
+                day_of_week=time_slot.day_of_week,
+            )
             if existing_commitment:
                 constraint = (
                     possible_commitments == 0,
@@ -219,32 +224,35 @@ class TimetableSolverConstraints:
                 )
             return constraint
 
-        constraints = (
+        yield from (
             __one_place_at_a_time_constraint(teacher=teacher, time_slot=time_slot)
             for teacher in self._inputs.teachers
             for time_slot in self._inputs.timetable_slots
         )
-        return constraints
 
     def _get_all_classroom_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining the constraints that each classroom can only host one class at a time, and returning these as a
-        generator that is iterated through once to add each constraint to the LpProblem.
+        Ensure every classroom is only assigned one lesson at a time.
         """
 
         def __one_class_at_a_time_constraint(
             classroom: models.Classroom, time_slot: models.TimetableSlot
         ) -> tuple[lp.LpConstraint, str]:
             """
-            Defines a 'one-class-at-a-time' constraint for an individual classroom, and individual timeslot.
-            We sum the decision variables relevant to the classroom, and force this to 0 if the teacher has an
-            existing commitment at the fixed time slot. Otherwise, their sum must be max 1.
+            Ensure this classroom is only assigned one lesson at the time spanned by the given time slot.
+
+            Equation: sum the decision variables relevant to the classroom at the time
+            of the time slot. Force to 0 if it has an existing lesson at any of the times.
+            Otherwise, their sum must be at most 1.
             """
-            occupied = classroom.check_if_occupied_at_time_of_timeslot(slot=time_slot)
             # Need to constrain against ALL slots clashing with this one
-            clashing_slots = self._inputs.timetable_slots.filter_for_clashes(time_slot)
+            # since the teacher can only be utilised for ONE of these slots
+            clashing_slots = clashes.filter_queryset_for_clashes(
+                queryset=self._inputs.timetable_slots,
+                time_of_week=clashes.TimeOfWeek.from_slot(slot=time_slot),
+            )
             possible_uses = lp.lpSum(
                 [
                     self._decision_variables.get(key)
@@ -256,7 +264,14 @@ class TimetableSolverConstraints:
                     in self._decision_variables.keys()
                 ]
             )
-            if occupied:
+
+            existing_use = classroom_queries.check_if_classroom_occupied_at_time(
+                classroom,
+                starts_at=time_slot.starts_at,
+                ends_at=time_slot.ends_at,
+                day_of_week=time_slot.day_of_week,
+            )
+            if existing_use:
                 constraint = (
                     possible_uses == 0,
                     f"classroom_{classroom.classroom_id}_occupied_at_{time_slot.slot_id}",
@@ -268,33 +283,37 @@ class TimetableSolverConstraints:
                 )
             return constraint
 
-        constraints = (
+        yield from (
             __one_class_at_a_time_constraint(classroom=classroom, time_slot=time_slot)
             for classroom in self._inputs.classrooms
             for time_slot in self._inputs.timetable_slots
         )
-        return constraints
 
-    # DOUBLE PERIOD CONSTRAINTS
+    # --------------------
+    # Double period constraints
+    # --------------------
+
     def _get_all_double_period_fulfillment_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining all constraints on the number of double periods of each class has each week, and returning them
-        as a generator.
+        Ensure the required number of double periods for each lesson is fulfilled.
         """
 
         def __fulfillment_constraint(
             lesson: models.Lesson,
         ) -> tuple[lp.LpConstraint, str]:
             """
-            States that the sum of the double period variables for a particular class must equal the number of double
-            periods the user has specified.
+            Ensure the required number of double periods for a single lesson is fulfilled.
+
+            Equation: Sum of the double period variables for this lesson must equal the
+            number of additional double periods the user has specified. The number of additional
+            periods required will just be zero if the user has defined them all.
 
             Note: A solution involving a user defined lesson, followed by a solver defined lesson in
-            consecutive TimeSlots DOES count as a double. This is because there is not a decision variable for the
-            user defined lesson, so the double period dependent variable relates to a single decision variable,
-            so we have that either both are 0 or both are 1.
+            consecutive TimeSlots IS counted as a double. This is because there is not a decision
+            variable for the user defined lesson, so the double period dependent variable relates to
+            a single decision variable, so we have that either both are 0 or both are 1.
             """
             variables_sum = lp.lpSum(
                 [
@@ -311,32 +330,33 @@ class TimetableSolverConstraints:
             )
             return constraint
 
-        constraints = (
+        yield from (
             __fulfillment_constraint(lesson=lesson)
             for lesson in self._inputs.lessons
             if lesson.total_required_double_periods != 0
         )
-        return constraints
 
-    def _get_all_double_period_dependency_constraints(self) -> itertools.chain:
+    def _get_all_double_period_dependency_constraints(
+        self,
+    ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining all constraints relating the decision variables and the dependent double period variables.
-        We crete 2 separate generators and then chain them together, 1 generator for the first/second slot in each
-        double period.
-        Note that the core point is that the double period variable >= both decision variables corresponding to the
-        same class / time-slot.
-        Note also that a double period IS created by adding a solver defined slot to a user defined slot, which is
-        implemented in the second try in the nested try/except blocks below.
+        Relate the dependent double period variables to the decision variables.
+
+        A double period can happen if and only if the decision variables for each of the
+        covered slots equal 1.
+
+        Note that a double period created by adding a solver defined slot to a user defined slot,
+        is counted.
         """
 
         def __dependency_constraint(
             key: doubles_var_key, is_slot_1: bool
-        ) -> tuple | None:
+        ) -> tuple[lp.LpConstraint, str] | None:
             """
-            Function defining the individual constraint that decision variable corresponding to the first / second slot
-            of a double period must be non-zero if the double period variable is non-zero.
+            Relate a single double period variable to the decision variables for its first and second slot.
+
             :param key - the key for the double period variables dictionary, which contains info on the class + 2 slots
-            :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2
+            :param is_slot_1 - whether we are creating a constraint on slot_1, or on slot_2.
             """
             double_period_var = self._double_period_variables[key]
             # Set a name for the new constraint
@@ -370,30 +390,30 @@ class TimetableSolverConstraints:
                     constraint = None
             return constraint
 
-        # Now create and chain two generators, for the first / second slot of each possible double
-        slot_1_constraints = (
+        # Yield a constraint for the first and second slot of each possible double
+        yield from (
             constraint
             for key in self._double_period_variables.keys()
             if (constraint := __dependency_constraint(key=key, is_slot_1=True))
             is not None
         )
-        slot_2_constraints = (
+        yield from (
             constraint
             for key in self._double_period_variables.keys()
             if (constraint := __dependency_constraint(key=key, is_slot_1=False))
             is not None
         )
 
-        all_constraints = itertools.chain(slot_1_constraints, slot_2_constraints)
-        return all_constraints
+    # --------------------
+    # Structural constraints
+    # These get added depending on the solution specification
+    # --------------------
 
-    # STRUCTURAL CONSTRAINTS THAT ONLY GET ADDED DEPENDING ON USER SOLUTION SPECIFICATION
     def _get_all_no_split_lessons_in_a_day_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method defining all constraints to disallow lessons to be taught at split times across a single day.
-        :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
+        Disallow all lessons being taught at split times in a single day.
 
         Note: These constraints still allow a stacked triple or quadruple period, hence the need for the constraints
         below restricting the solution to no two double periods in a day (if we do not want triple periods).
@@ -403,8 +423,11 @@ class TimetableSolverConstraints:
             lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
-            We limit: (total number of periods - total number of double periods) to 1 each day, noting that the double
-            periods count towards 2 in the total number of periods, and we also count fixed period in the total number.
+            Disallow a single lesson being taught at split times in a single day.
+
+            Equation: (total number of periods - total number of double periods) <= 1, every day.
+            Note that the double periods count towards 2 in the total number of periods,
+            and we also count user defined slots in the total number.
 
             :param lesson: the lesson we are disallowing the splitting of within a single day
             :param day_of_week: the day of week we are disallowing the splitting on
@@ -426,8 +449,9 @@ class TimetableSolverConstraints:
                 ]
             )
 
+            # Checking slot_1_id is in slot_ids is sufficient, since 1 & 2 are on same day
             double_periods_on_day = lp.lpSum(
-                [  # We only check slot_1_id is in slot_ids, since 1 & 2 are on same day
+                [
                     var
                     for key, var in self._double_period_variables.items()
                     if (key.lesson_id == lesson.lesson_id)
@@ -458,29 +482,27 @@ class TimetableSolverConstraints:
             )
             return constraint
 
-        constraints = (
+        yield from (
             __no_split_lessons_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
             for day in lesson.get_usable_days_of_week()
         )
-        return constraints
 
     def _get_all_no_two_doubles_in_a_day_constraints(
         self,
     ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
         """
-        Method restricting the number of double periods that can be taught for a single class on a single day to 1.
-        :return - A generator of pulp constraints and associated names that can be iteratively added to the LpProblem.
+        Restrict the number of double periods each day to 1, for all lessons.
 
-        Note: this also has the effect of preventing triple periods and above
+        Note: this has the effect of preventing triple periods and above, since a triple
+        period is implemented as two doubles.
         """
 
         def __no_two_doubles_in_a_day_constraint(
             lesson: models.Lesson, day_of_week: constants.Day
         ) -> tuple[lp.LpConstraint, str]:
             """
-            States that the given lesson can only have one double period on the given day.
-            :return dp_constraint - a tuple consisting of a pulp constraint and a name for this constraint
+            Restrict the number of double periods on a single day to 1, for a single lesson.
             """
             year_group = lesson.get_associated_year_group()
             slot_ids_on_day = models.TimetableSlot.get_timeslot_ids_on_given_day(
@@ -512,9 +534,8 @@ class TimetableSolverConstraints:
             )
             return dp_constraint
 
-        constraints = (
+        yield from (
             __no_two_doubles_in_a_day_constraint(lesson=lesson, day_of_week=day)
             for lesson in self._inputs.lessons
             for day in lesson.get_usable_days_of_week()
         )
-        return constraints

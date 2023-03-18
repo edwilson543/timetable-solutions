@@ -74,7 +74,7 @@ class TestPupilCreateUpdateBase:
 @pytest.mark.django_db
 class TestPupilCreate:
     def test_form_invalid_if_pupil_id_already_exists_for_school(
-        self, mock_get_pupils: mock.Mock(), mock_get_next_pupil_id: mock.Mock()
+        self, mock_get_pupils: mock.Mock, mock_get_next_pupil_id: mock.Mock
     ):
         pupil = data_factories.Pupil()
 
@@ -95,4 +95,4 @@ class TestPupilCreate:
         errors = form.errors.as_text()
 
         assert f"Pupil with id: {pupil.pupil_id} already exists!" in errors
-        assert f"The next available id is: 123456" in errors
+        assert "The next available id is: 123456" in errors

@@ -52,7 +52,7 @@ class CreateView(
     @abc.abstractmethod
     def create_model_from_clean_form(self, form: _CreateFormT) -> _ModelT:
         """Create a model instance using the clean form data."""
-        raise NotImplemented
+        raise NotImplementedError
 
     def form_valid(self, form: _CreateFormT) -> http.HttpResponse:
         """Try to call the model creating function when we get some valid form data."""

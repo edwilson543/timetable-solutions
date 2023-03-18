@@ -1,4 +1,6 @@
-"""Operations on the YearGroup model affecting db state."""
+"""
+Operations on the YearGroup model affecting db state.
+"""
 
 # Django imports
 from django.db import IntegrityError
@@ -27,7 +29,7 @@ def create_new_year_group(
     """
     Create a new year group in the db.
 
-    :raises CouldNotCreateYearGroup: if the parameters could not be used to create a year group.
+    :raises UnableToCreateYearGroup: if the parameters could not be used to create a year group.
     """
     if not year_group_id:
         year_group_id = queries.get_next_year_group_id_for_school(school_id=school_id)
@@ -39,7 +41,7 @@ def create_new_year_group(
         )
     except IntegrityError as exc:
         raise UnableToCreateYearGroup(
-            human_error_message=f"Year group with this data already exists!"
+            human_error_message="Year group with this data already exists!"
         ) from exc
 
 
@@ -51,7 +53,7 @@ def update_year_group(
     """
     Update a year group in the db.
 
-    raises CouldNotUpdateYearGroup if it wasn't possible.
+    raises UnableToUpdateYearGroup if it wasn't possible.
     """
     try:
         return year_group.update(year_group_name=year_group_name)
@@ -67,7 +69,7 @@ def delete_year_group(year_group: models.YearGroup) -> tuple[int, dict[str, int]
 
     :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
     of that model that were deleted.
-    :raises CouldNotDeleteYearGroup: If the year group couldn't be deleted
+    :raises UnableToDeleteYearGroup: If the year group couldn't be deleted
     """
     try:
         return year_group.delete()

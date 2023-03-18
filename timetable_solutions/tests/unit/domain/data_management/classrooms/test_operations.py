@@ -40,7 +40,7 @@ class TestCreateNewClassroom:
             )
 
         assert (
-            f"Classroom with this data already exists."
+            "Classroom with this data already exists."
             in exc.value.human_error_message
             in str(exc.value.human_error_message)
         )
@@ -59,7 +59,7 @@ class TestCreateNewClassroom:
             )
 
         assert (
-            f"Classroom with this data already exists." in exc.value.human_error_message
+            "Classroom with this data already exists." in exc.value.human_error_message
         )
 
 

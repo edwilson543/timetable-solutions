@@ -51,7 +51,7 @@ class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
         Note this must return an ordinary queryset. Conversion to the relevant subset
         of fields with .values_list() is handled by the base form_valid method.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     def setup(
         self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object

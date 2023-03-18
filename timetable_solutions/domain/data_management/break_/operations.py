@@ -1,4 +1,6 @@
-"""Operations on the Break model affecting db state."""
+"""
+Operations on the Break model affecting db state.
+"""
 # Standard library imports
 import datetime as dt
 
@@ -29,7 +31,7 @@ def create_new_break(
     """
     Create a new break in the db.
 
-    :raises CouldNotCreateBreak: if the parameters could not be used to create a break.
+    :raises UnableToCreateBreak: if the parameters could not be used to create a break.
     """
     try:
         return models.Break.create_new(

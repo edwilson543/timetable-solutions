@@ -15,17 +15,24 @@ repos:
         language_version: python3.11
 
     # isort
-- repo: https://github.com/pycqa/isort
-  rev: 5.12.0
-  hooks:
-  - id: isort
-    args: [--profile, black]
-    name: isort (python)
+-   repo: https://github.com/pycqa/isort
+    rev: 5.12.0
+    hooks:
+    -   id: isort
+        args: [--profile, black]
+        name: isort (python)
+
+    # flake8
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    -   id: flake8
+        args: [--config=timetable_solutions/.flake8]
 
     # Basic pre-commit hooks provided by default
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.3.0
-  hooks:
-      - id: check-yaml
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v2.3.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace

@@ -27,7 +27,7 @@ def create_new_lesson(
     """
     Create a new lesson in the db.
 
-    :raises CouldNotCreateLesson: if the parameters could not be used to create a lesson.
+    :raises UnableToCreateLesson: if the parameters could not be used to create a lesson.
     """
     if teacher_id:
         try:

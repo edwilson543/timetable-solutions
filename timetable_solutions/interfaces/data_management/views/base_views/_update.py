@@ -89,14 +89,14 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
 
         Should handle any exceptions, and return None if an instance could not be created.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @abc.abstractmethod
     def delete_model_instance(self) -> None:
         """
         Method used to delete the targeted model instance, as if handling HTTP delete requests.
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     # --------------------
     # Implementation of django hooks

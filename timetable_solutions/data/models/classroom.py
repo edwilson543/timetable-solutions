@@ -6,7 +6,6 @@ from django.db import models
 
 # Local application imports
 from data.models.school import School
-from data.models.timetable_slot import TimetableSlot
 
 
 class ClassroomQuerySet(models.QuerySet):
@@ -121,26 +120,6 @@ class Classroom(models.Model):
     # --------------------
     # Queries
     # --------------------
-
-    def check_if_occupied_at_time_of_timeslot(self, slot: TimetableSlot) -> bool:
-        """
-        Method to check whether the classroom is occupied AT ANY POINT during the passed timeslot.
-        :return - True if occupied.
-        """
-        # Get number of commitments
-        user_defined_slots = TimetableSlot.objects.filter(user_lessons__classroom=self)
-        clashes = user_defined_slots.filter_for_clashes(slot)
-        n_commitments = clashes.count()
-
-        # Decide what should happen
-        if n_commitments == 1:
-            return True
-        elif n_commitments == 0:
-            return False
-        else:
-            raise ValueError(
-                f"Classroom {self} has ended up with more than 1 Lesson at {slot}"
-            )
 
     def get_lessons_per_week(self) -> int:
         """

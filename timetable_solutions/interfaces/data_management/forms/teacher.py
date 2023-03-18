@@ -1,4 +1,6 @@
-"""Forms relating to the Teacher model."""
+"""
+Forms relating to the Teacher model.
+"""
 
 # Standard library imports
 from typing import Any
@@ -43,7 +45,9 @@ class TeacherSearch(django_forms.Form):
 
 
 class _TeacherCreateUpdateBase(base_forms.CreateUpdate):
-    """Base form for the teacher create and update forms."""
+    """
+    Base form for the teacher create and update forms.
+    """
 
     firstname = django_forms.CharField(
         required=True,

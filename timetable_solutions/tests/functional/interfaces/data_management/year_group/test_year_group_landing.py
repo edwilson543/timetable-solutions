@@ -1,4 +1,6 @@
-"""Tests for the year group landing page in the data management app."""
+"""
+Tests for the year group landing page in the data management app.
+"""
 
 # Third party imports
 import pytest
@@ -13,10 +15,8 @@ class TestYearGroupLanding(TestClient):
     @pytest.mark.parametrize("has_existing_data", [True, False])
     def test_landing_page_loads(self, has_existing_data: bool):
         """
-        Smoke test that a logged-in user can access the year group landing page.
-
-        The markup is slightly different depending on whether they have existing data,
-        so test both cases.
+        Test that an authenticated user can access the classroom landing page,
+        and click through to view this data.
         """
         # Authorise the client for some school
         school = data_factories.School()
@@ -35,6 +35,13 @@ class TestYearGroupLanding(TestClient):
         assert response.context["create_url"] == UrlName.YEAR_GROUP_CREATE.url()
         assert response.context["upload_url"] == UrlName.YEAR_GROUP_UPLOAD.url()
         assert response.context["list_url"] == UrlName.YEAR_GROUP_LIST.url()
+
+        # If the user has data, they should be able to click through to this data
+        if has_existing_data:
+            response.click(href=UrlName.YEAR_GROUP_LIST.url())
+        else:
+            with pytest.raises(IndexError):
+                response.click(href=UrlName.YEAR_GROUP_LIST.url())
 
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user
