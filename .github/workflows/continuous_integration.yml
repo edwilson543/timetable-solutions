@@ -3,7 +3,7 @@ name: Continuous integration
 on:
   # Pull requests, pushes to main, or manual execution can all run the test suite
   push:
-    branches: ['main', '62-diff-tts-for-year-groups']
+    branches: ['main']
   pull_request:
   workflow_dispatch:
 
@@ -36,7 +36,7 @@ jobs:
         python-version: "3.11"
     - name: Install mypy
       run: |
-        pip install mypy==1.0.1
+        pip install mypy via -r timetable_solutions/dev-requirements.txt
     - name: Run mypy in project layers
       run: |
         cd timetable_solutions
@@ -54,7 +54,7 @@ jobs:
         python-version: "3.11"
     - name: Install black
       run: |
-        pip install black==23.1.0
+        pip install black via -r timetable_solutions/dev-requirements.txt
     - name: Run black on all python code
       run: |
         cd timetable_solutions
@@ -70,8 +70,24 @@ jobs:
         python-version: "3.11"
     - name: Install isort
       run: |
-        pip install isort==5.12.0
+        pip install isort via -r timetable_solutions/dev-requirements.txt
     - name: Run isort on all python code
       run: |
         cd timetable_solutions
         isort . --profile=black
+
+  flake8-linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install python 3.11
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11"
+      - name: Install flake8
+        run: |
+          pip install flake8 via -r timetable_solutions/dev-requirements.txt
+      - name: Run flake8 on all python code
+        run: |
+          cd timetable_solutions
+          flake8 .
