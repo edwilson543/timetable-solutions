@@ -1,5 +1,8 @@
 """Base forms that are subclassed or just used directly for managing individual models."""
 
+# Standard library imports
+from typing import Any
+
 # Django imports
 from django import forms
 from django.core.files import uploadedfile
@@ -8,7 +11,7 @@ from django.core.files import uploadedfile
 class CreateUpdate(forms.Form):
     """Base form for creating and updating individual models."""
 
-    def __init__(self, *args: object, **kwargs: int) -> None:
+    def __init__(self, *args: object, **kwargs: Any) -> None:
         """
         Set the school, which may be used as context in validation.
 

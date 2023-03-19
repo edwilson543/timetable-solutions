@@ -14,6 +14,58 @@ from domain.solver.filters import clashes as clash_filters
 from interfaces.data_management.forms import base_forms
 
 
+class TimetableSlotSearch(django_forms.Form):
+    slot_id = django_forms.IntegerField(required=False, label="Slot ID")
+
+    day_of_week = django_forms.TypedChoiceField(
+        required=False, choices=constants.Day.choices, label="Day of week", coerce=int
+    )
+
+    year_group = django_forms.ModelChoiceField(
+        required=False,
+        label="Year group",
+        empty_label="",
+        queryset=models.YearGroupQuerySet().none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Get and set the year group choices.
+        """
+        self.school_id = kwargs.pop("school_id")
+        year_groups = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        ).order_by("year_group_name")
+        self.base_fields["year_group"].queryset = year_groups
+
+        super().__init__(*args, **kwargs)
+
+    def clean(self) -> dict[str, Any]:
+        """
+        Ensure some search criteria was given.
+        """
+        slot_id = self.cleaned_data.get("slot_id", None)
+        day = self.cleaned_data.get("day_of_week", None)
+        year_group = self.cleaned_data["year_group"]
+        if not (slot_id or day or year_group):
+            raise django_forms.ValidationError("Please enter a search term!")
+
+        return self.cleaned_data
+
+    def clean_slot_id(self) -> int | None:
+        if not (slot_id := self.cleaned_data.get("slot_id", None)):
+            return None
+        try:
+            models.TimetableSlot.objects.get_individual_timeslot(
+                school_id=self.school_id, slot_id=slot_id
+            )
+            return slot_id
+        except models.TimetableSlot.DoesNotExist:
+            raise django_forms.ValidationError(
+                f"No timetable slot with id: {slot_id} exists!"
+            )
+
+
 class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
     """
     Base form for the timetable slot create and update forms.
