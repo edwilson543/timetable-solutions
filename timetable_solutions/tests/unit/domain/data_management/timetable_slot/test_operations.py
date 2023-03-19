@@ -1,4 +1,6 @@
-"""Unit tests for timetable slot operations"""
+"""
+Unit tests for timetable slot operations
+"""
 
 # Standard library imports
 import datetime as dt
@@ -14,7 +16,8 @@ from tests import data_factories
 
 @pytest.mark.django_db
 class TestCreateNewTimetableSlot:
-    def test_create_new_valid_slot(self):
+    @pytest.mark.parametrize("relevant_to_all_year_groups", [True, False])
+    def test_create_new_valid_slot(self, relevant_to_all_year_groups: bool):
         # Make a school and year group for the slot to be associated with
         school = data_factories.School()
         yg = data_factories.YearGroup(school=school)
@@ -26,7 +29,7 @@ class TestCreateNewTimetableSlot:
             day_of_week=constants.Day.MONDAY,
             starts_at=dt.time(hour=9),
             ends_at=dt.time(hour=10),
-            relevant_year_groups=models.YearGroup.objects.all(),
+            relevant_to_all_year_groups=relevant_to_all_year_groups,
         )
 
         # Check slot was created
@@ -37,7 +40,10 @@ class TestCreateNewTimetableSlot:
         assert slot.day_of_week == constants.Day.MONDAY
         assert slot.starts_at == dt.time(hour=9)
         assert slot.ends_at == dt.time(hour=10)
-        assert slot.relevant_year_groups.get() == yg
+        if relevant_to_all_year_groups:
+            assert slot.relevant_year_groups.get() == yg
+        else:
+            assert slot.relevant_year_groups.count() == 0
 
     def test_raises_when_slot_id_not_unique_for_school(self):
         slot = data_factories.TimetableSlot()
@@ -49,7 +55,7 @@ class TestCreateNewTimetableSlot:
                 day_of_week=constants.Day.MONDAY,
                 starts_at=dt.time(hour=9),
                 ends_at=dt.time(hour=10),
-                relevant_year_groups=models.YearGroup.objects.all(),
+                relevant_to_all_year_groups=False,
             )
 
         assert (

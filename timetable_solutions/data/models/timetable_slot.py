@@ -125,7 +125,7 @@ class TimetableSlot(models.Model):
             starts_at=starts_at,
             ends_at=ends_at,
         )
-        if relevant_year_groups is not None:
+        if relevant_year_groups:
             slot._add_year_groups(year_groups=relevant_year_groups)
         slot.full_clean()
         return slot
