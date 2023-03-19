@@ -142,3 +142,24 @@ class TestPupilSerializer:
             serializers_helpers.expected_pupil(pupil_a),
             serializers_helpers.expected_pupil(pupil_b),
         ]
+
+
+@pytest.mark.django_db
+class TestTimetableSlotSerializer:
+    def test_serialize_individual_instance(self):
+        slot = data_factories.TimetableSlot()
+
+        serialized_slot = serializers.TimetableSlot(slot).data
+
+        assert serialized_slot == serializers_helpers.expected_slot(slot)
+
+    def test_serialize_multiple_pupils(self):
+        slot_a = data_factories.TimetableSlot()
+        slot_b = data_factories.TimetableSlot()
+
+        serialized_slots = serializers.TimetableSlot([slot_a, slot_b], many=True).data
+
+        assert serialized_slots == [
+            serializers_helpers.expected_slot(slot_a),
+            serializers_helpers.expected_slot(slot_b),
+        ]

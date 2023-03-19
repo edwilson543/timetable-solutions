@@ -7,7 +7,7 @@ These are used when testing for the expected serialized content of some test sub
 from collections import OrderedDict
 
 # Local application imports
-from data import models
+from data import constants, models
 from interfaces.constants import UrlName
 
 
@@ -114,5 +114,24 @@ def expected_pupil(pupil: models.Pupil) -> OrderedDict:
             ("year_group", pupil.year_group.year_group_name),
             ("lessons", [expected_lesson(lesson) for lesson in pupil.lessons.all()]),
             ("update_url", UrlName.PUPIL_UPDATE.url(pupil_id=pupil.pupil_id)),
+        ]
+    )
+
+
+def expected_slot(slot: models.TimetableSlot) -> OrderedDict:
+    """
+    Get the expected serialized data from a single timetable slot.
+    """
+    return OrderedDict(
+        [
+            ("slot_id", slot.slot_id),
+            ("day_of_week", constants.Day(slot.day_of_week).label),
+            ("starts_at", slot.starts_at),
+            ("ends_at", slot.ends_at),
+            (
+                "relevant_year_groups",
+                [expected_year_group(yg) for yg in slot.relevant_year_groups.all()],
+            ),
+            ("update_url", ""),  # TODO
         ]
     )
