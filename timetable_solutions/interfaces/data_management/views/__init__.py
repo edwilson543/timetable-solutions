@@ -1,4 +1,6 @@
-"""All views relating to data management."""
+"""
+All views relating to data management.
+"""
 
 from .classroom import (
     ClassroomCreate,
@@ -23,6 +25,14 @@ from .teacher import (
     TeacherSearch,
     TeacherUpdate,
     TeacherUpload,
+)
+from .timetable_slot import (
+    TimetableSlotCreate,
+    TimetableSlotExampleDownload,
+    TimetableSlotLanding,
+    TimetableSlotSearch,
+    TimetableSlotUpdateTimings,
+    TimetableSlotUpload,
 )
 from .year_group import (
     YearGroupCreate,

@@ -4,15 +4,22 @@ Context variables:
 ------------------
 field: django_forms.BoundField
 -->
+{% load form_tags %}
+
 <select
     id="{{ field.id_for_label }}"
     name="{{ field.name }}"
     class="form-select"
     {% if field.field.required %}required{% endif %}
 >
+    <option value={{ field.empty_value }}>{{ field.field.empty_label }}</option>
     {% for value, label  in field.field.choices %}
         <option
-            value="{{ value }}"
+            {% if value|is_string %}
+                value="{{ value }}"
+            {% else %}
+                value={{ value }}
+            {% endif %}
             {#    Check the field initial id, incase this is a model choice select #}
             {% if field.initial == value or field.initial.id == value %} selected {% endif %}
         >

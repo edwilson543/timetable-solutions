@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'timetable-slot-landing-page' %}" class="link-secondary text-decoration-none">
+            timetable slots
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'timetable-slot-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        {{ serialized_model_instance.slot_id }}
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>
+            View and update details for slot {{ serialized_model_instance.slot_id }}
+        </h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card p-2">
+            {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

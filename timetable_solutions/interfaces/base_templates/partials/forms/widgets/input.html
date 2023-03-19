@@ -4,10 +4,13 @@ Context variables:
 ------------------
 field: django_forms.BoundField
 -->
+{% load form_tags %}
 
 <input type="{{ field.widget_type }}"
-    {% if field.initial %}
+    {% if field.initial|is_string %}
         value="{{ field.initial }}"
+    {% elif field.initial %}
+        value={{ field.initial }}
     {% endif %}
     name="{{ field.name }}"
     id="{{ field.id_for_label }}"

@@ -18,7 +18,12 @@ class TimetableSlotSearch(django_forms.Form):
     slot_id = django_forms.IntegerField(required=False, label="Slot ID")
 
     day_of_week = django_forms.TypedChoiceField(
-        required=False, choices=constants.Day.choices, label="Day of week", coerce=int
+        required=False,
+        choices=constants.Day.choices,
+        label="Day of week",
+        empty_value=None,
+        initial=None,
+        coerce=int,
     )
 
     year_group = django_forms.ModelChoiceField(
@@ -71,8 +76,8 @@ class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
     Base form for the timetable slot create and update forms.
     """
 
-    day_of_week = django_forms.ChoiceField(
-        required=True, choices=constants.Day.choices, label="Day of week"
+    day_of_week = django_forms.TypedChoiceField(
+        required=False, choices=constants.Day.choices, label="Day of week", coerce=int
     )
 
     starts_at = django_forms.TimeField(required=True, label="When the slot starts")
@@ -181,7 +186,7 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
         required=False,
         label="Relevant to all year groups",
         help_text="Select this if this timetable slot is relevant to all of your year groups. "
-        "You can change the year groups this timetable slot is for once created.",
+        "You can update the year groups this timetable slot is relevant to once created.",
     )
 
     field_order = [
