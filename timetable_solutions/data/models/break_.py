@@ -21,8 +21,20 @@ class BreakQuerySet(models.QuerySet):
     """
 
     def get_all_instances_for_school(self, school_id: int) -> "BreakQuerySet":
-        """Method to return the full queryset of lessons for a given school"""
+        """
+        Get all breaks for a given school.
+        """
         return self.filter(school_id=school_id)
+
+    def get_all_instances_for_school_with_year_groups(
+        self, school_id: int
+    ) -> "BreakQuerySet":
+        """
+        Get a school's breaks that have at least one year group.
+        """
+        return self.annotate(
+            n_relevant_year_groups=models.Count("relevant_year_groups")
+        ).filter(models.Q(school_id=school_id) & models.Q(n_relevant_year_groups__gt=0))
 
 
 class Break(models.Model):

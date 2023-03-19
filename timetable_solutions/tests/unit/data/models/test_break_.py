@@ -14,6 +14,37 @@ from tests import data_factories
 
 
 @pytest.mark.django_db
+class TestBreakQuerySet:
+    def test_get_all_instances_for_school(self):
+        break_ = data_factories.Break()
+
+        # Make a break at another school
+        data_factories.Break()
+
+        breaks = models.Break.objects.get_all_instances_for_school(
+            school_id=break_.school.school_access_key
+        )
+
+        assert breaks.get() == break_
+
+    def test_get_all_instances_for_school_with_breaks(self):
+        yg = data_factories.YearGroup()
+        break_ = data_factories.Break(relevant_year_groups=(yg,), school=yg.school)
+
+        # Make a break with no year groups
+        data_factories.Break(school=yg.school)
+
+        # Make a break at another school
+        data_factories.Break()
+
+        breaks = models.Break.objects.get_all_instances_for_school_with_year_groups(
+            school_id=break_.school.school_access_key
+        )
+
+        assert breaks.get() == break_
+
+
+@pytest.mark.django_db
 class TestCreateNewBreak:
     def test_create_new_for_valid_break(self):
         # Get some teachers and year groups to add
