@@ -33,7 +33,7 @@ class TestTimetableSlotUpdate(TestClient):
         ] == serializers_helpers.expected_slot(slot)
 
         # Check the initial form values match the slot's
-        form = page.forms["disabled-change-form"]
+        form = page.forms["disabled-update-form"]
         assert form["day_of_week"].value == str(slot.day_of_week)
         assert form["starts_at"].value == "8"
         assert form["ends_at"].value == "9"

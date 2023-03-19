@@ -28,7 +28,7 @@ class TestClassroomUpdate(TestClient):
         ] == serializers_helpers.expected_classroom(classroom)
 
         # Check the initial form values match the classroom's
-        form = page.forms["disabled-change-form"]
+        form = page.forms["disabled-update-form"]
         assert form["building"].value == classroom.building
         assert form["room_number"].value == str(classroom.room_number)
 
