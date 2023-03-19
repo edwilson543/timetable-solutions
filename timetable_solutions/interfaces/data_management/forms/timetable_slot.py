@@ -34,6 +34,14 @@ class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
             )
 
 
+class TimetableSlotUpdateYearGroups(django_forms.Form):
+    """
+    Form for updating the year groups relevant to a particular timetable slot.
+    """
+
+    # TODO -> use a model multiple choice field
+
+
 class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
     """
     Form to update the time of a timetable slots with.
