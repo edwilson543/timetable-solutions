@@ -148,8 +148,8 @@ class TimetableSlot(serializers.Serializer):
 
     slot_id = serializers.IntegerField()
     day_of_week = serializers.SerializerMethodField(method_name="_day_of_week")
-    starts_at = serializers.TimeField(format=None)
-    ends_at = serializers.TimeField(format=None)
+    starts_at = serializers.TimeField(format="H:i")
+    ends_at = serializers.TimeField(format="H:i")
 
     # Relational data
     relevant_year_groups = YearGroup(many=True)

@@ -126,8 +126,8 @@ def expected_slot(slot: models.TimetableSlot) -> OrderedDict:
         [
             ("slot_id", slot.slot_id),
             ("day_of_week", constants.Day(slot.day_of_week).label),
-            ("starts_at", slot.starts_at),
-            ("ends_at", slot.ends_at),
+            ("starts_at", slot.starts_at.strftime("H:i")),
+            ("ends_at", slot.ends_at.strftime("H:i")),
             (
                 "relevant_year_groups",
                 [expected_year_group(yg) for yg in slot.relevant_year_groups.all()],

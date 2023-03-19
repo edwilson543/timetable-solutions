@@ -152,7 +152,7 @@ class PupilUpdate(base_views.UpdateView):
 
     def delete_model_instance(self) -> None:
         """
-        Delete the Teacher stored as an instance attribute.
+        Delete the Pupil stored as an instance attribute.
         """
         operations.delete_pupil(pupil=self.model_instance)
 
@@ -172,7 +172,7 @@ class PupilUpload(base_views.UploadView):
 
 class PupilExampleDownload(base_views.ExampleDownloadBase):
     """
-    Provide a response when users want to download an example teacher data file.
+    Provide a response when users want to download an example pupil data file.
     """
 
     example_filepath = ExampleFile.PUPILS.filepath
