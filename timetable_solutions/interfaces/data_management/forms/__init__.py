@@ -6,5 +6,6 @@ from .timetable_slot import (
     TimetableSlotCreate,
     TimetableSlotSearch,
     TimetableSlotUpdateTimings,
+    TimetableSlotUpdateYearGroups,
 )
 from .year_group import YearGroupCreate, YearGroupUpdate

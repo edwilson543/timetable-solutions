@@ -79,8 +79,7 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
     relevant_year_groups = django_forms.ModelMultipleChoiceField(
         required=False,
         queryset=models.TimetableSlotQuerySet().none(),
-        label="Relevant year groups",
-        help_text="Select the year groups that this timetable slot is relevant to",
+        label="Select the year groups that this timetable slot is relevant to",
     )
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
@@ -90,11 +89,16 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
             school_id=self.school_id, slot_id=slot.slot_id
         )
 
+        # Set all this school's year groups as the options
         self.base_fields[
             "relevant_year_groups"
         ].queryset = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         )
+        # ...but only the year groups currently assigned to this slot as the initial values
+        self.base_fields[
+            "relevant_year_groups"
+        ].initial = slot.relevant_year_groups.all().values_list("pk", flat=True)
 
         super().__init__(*args, **kwargs)
 
