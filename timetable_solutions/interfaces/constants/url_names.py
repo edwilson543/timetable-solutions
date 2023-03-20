@@ -77,7 +77,7 @@ class UrlName(StrEnum):
     TIMETABLE_SLOT_DOWNLOAD = "timetable-slot-download"
     TIMETABLE_SLOT_LANDING_PAGE = "timetable-slot-landing-page"
     TIMETABLE_SLOT_LIST = "timetable-slot-list"
-    TIMETABLE_SLOT_UPDATE = "timetable-slot-update"  # kwargs: teacher_id: str
+    TIMETABLE_SLOT_UPDATE = "timetable-slot-update"  # kwargs: slot_id: str
     TIMETABLE_SLOT_UPLOAD = "timetable-slot-upload"
 
     # Year groups
@@ -95,7 +95,7 @@ class UrlName(StrEnum):
     PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id
     TEACHERS_NAVIGATOR = "teachers_navigator"
-    TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id
+    TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: pupil_id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 
     # Custom admin app

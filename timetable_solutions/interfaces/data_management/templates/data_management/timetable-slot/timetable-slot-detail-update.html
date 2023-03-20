@@ -27,11 +27,29 @@
 </div>
 
 <div class="row mx-3 my-1">
+
     <div class="col-lg-6 my-3 p-1">
-        <div class="card p-2">
-            {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+        <div class="card h-100 p-2">
+            <div class="card-header">
+                <h5>Update slot timings</h5>
+            </div>
+            <div class="card-body">
+                {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+            </div>
         </div>
     </div>
+
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card h-100 p-2">
+            <div class="card-header">
+                <h5>Update relevant year groups</h5>
+            </div>
+            <div class="card-body">
+                {% include 'partials/forms/basic-form.html' with form=update_year_groups_form form_id="update-year-groups-form" submit_name=update_year_groups_submit submit_url=page_url submit_text="Update" other_button_url=page_url other_button_text="Reset" %}
+            </div>
+        </div>
+    </div>
+
 </div>
 
 {% endblock %}

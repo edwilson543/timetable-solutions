@@ -31,7 +31,7 @@ from .timetable_slot import (
     TimetableSlotExampleDownload,
     TimetableSlotLanding,
     TimetableSlotSearch,
-    TimetableSlotUpdateTimings,
+    TimetableSlotUpdate,
     TimetableSlotUpload,
 )
 from .year_group import (

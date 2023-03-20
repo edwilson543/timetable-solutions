@@ -162,10 +162,10 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
         kwargs = super().get_form_kwargs()
         kwargs["school_id"] = self.school_id
         kwargs["initial"] = self._get_initial_form_kwargs()
-        if self.is_delete_request:
+        if not self.is_update_request:
             # Do not bind any data or files to this form
-            kwargs.pop("data")
-            kwargs.pop("files")
+            kwargs.pop("data", None)
+            kwargs.pop("files", None)
         return kwargs
 
     def get_success_url(self) -> str:

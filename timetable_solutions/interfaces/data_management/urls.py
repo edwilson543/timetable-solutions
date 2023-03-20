@@ -129,7 +129,7 @@ urlpatterns = [
     ),
     path(
         "timetable-slots/list/<int:slot_id>/",
-        views.TimetableSlotUpdateTimings.as_view(),
+        views.TimetableSlotUpdate.as_view(),
         name=UrlName.TIMETABLE_SLOT_UPDATE.value,
     ),
     path(

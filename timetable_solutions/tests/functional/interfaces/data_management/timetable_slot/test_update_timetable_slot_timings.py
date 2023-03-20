@@ -1,5 +1,6 @@
 """
-Tests for updating slot timings via the TimetableSlotUpdateTimings view.
+Tests for updating slot timings via the TimetableSlotUpdate view,
+when we want to update the timings of the slot.
 """
 
 # Standard library imports

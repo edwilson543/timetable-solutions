@@ -6,6 +6,7 @@ Views for timetable slot data management.
 from typing import Any
 
 # Django imports
+from django import http, shortcuts
 from django.db.models import Prefetch
 
 # Local application imports
@@ -16,6 +17,7 @@ from domain.data_management.timetable_slot import operations, queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
 from interfaces.data_management.views import base_views
+from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 
 class TimetableSlotLanding(base_views.LandingView):
@@ -128,7 +130,7 @@ class TimetableSlotCreate(base_views.CreateView):
         return kwargs
 
 
-class TimetableSlotUpdateTimings(base_views.UpdateView):
+class TimetableSlotUpdate(base_views.UpdateView):
     """
     Page displaying information on a single timetable slot, allowing this data to be updated / deleted.
     """
@@ -145,6 +147,18 @@ class TimetableSlotUpdateTimings(base_views.UpdateView):
     model_attributes_for_form_initials = ["day_of_week", "starts_at", "ends_at"]
     page_url_prefix = UrlName.TIMETABLE_SLOT_UPDATE
     delete_success_url = UrlName.TIMETABLE_SLOT_LIST.url(lazy=True)
+
+    UPDATE_YEAR_GROUPS_SUBMIT = "update-year-groups-submit"
+
+    def post(
+        self, request: AuthenticatedHttpRequest, *args: object, **kwargs: object
+    ) -> http.HttpResponse:
+        """
+        Override to allow handling of an additional form.
+        """
+        if self._is_update_year_groups_request:
+            return self._handle_update_year_groups_request()
+        return super().post(request, *args, **kwargs)
 
     def update_model_from_clean_form(
         self, form: forms.TimetableSlotUpdateTimings
@@ -168,10 +182,74 @@ class TimetableSlotUpdateTimings(base_views.UpdateView):
         """
         operations.delete_timetable_slot(slot=self.model_instance)
 
+    def get_context_data(self, **kwargs: object) -> dict[str, Any]:
+        """
+        Add a second form for updating timetable slot year groups to the context.
+        """
+        context = super().get_context_data(**kwargs)
+        if not kwargs.get("update_year_groups_form"):
+            context["update_year_groups_form"] = self._get_update_year_groups_form()
+        context["update_year_groups_submit"] = self.UPDATE_YEAR_GROUPS_SUBMIT
+        return context
+
     def get_form_kwargs(self) -> dict[str, Any]:
         kwargs = super().get_form_kwargs()
         kwargs["slot"] = self.model_instance
         return kwargs
+
+    # --------------------
+    # Handle the second form for updating the timetable slot's relevant year groups
+    # --------------------
+
+    def _handle_update_year_groups_request(self) -> http.HttpResponse:
+        """ "
+        Try to update the year groups assigned to this slot based on the user's selection.
+        """
+        form = self._get_update_year_groups_form()
+        if form.is_valid():
+            try:
+                operations.update_timetable_slot_year_groups(
+                    slot=self.model_instance,
+                    relevant_year_groups=form.cleaned_data["relevant_year_groups"],
+                )
+                return shortcuts.redirect(self._get_update_year_groups_success_url())
+            except operations.UnableToUpdateTimetableSlotYearGroups as exc:
+                form.add_error(field=None, error=exc.human_error_message)
+
+        return self.render_to_response(
+            context=self.get_context_data(update_year_groups_form=form)
+        )
+
+    def _get_update_year_groups_form(self) -> forms.TimetableSlotUpdateYearGroups:
+        """
+        Get the form used for updating the year groups assigned to a timetable slot.
+        """
+        return forms.TimetableSlotUpdateYearGroups(
+            **self._get_update_year_groups_form_kwargs()
+        )
+
+    def _get_update_year_groups_form_kwargs(self) -> dict[str, Any]:
+        kwargs = super(base_views.UpdateView, self).get_form_kwargs()
+        kwargs["school_id"] = self.school_id
+        kwargs["slot"] = self.model_instance
+        if not self._is_update_year_groups_request:
+            # Do not bind any data or files to this form
+            kwargs.pop("data", None)
+            kwargs.pop("files", None)
+        return kwargs
+
+    def _get_update_year_groups_success_url(self) -> str:
+        """
+        Redirect to the update view of the targeted timetable slot.
+        """
+        return UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=self.model_instance.slot_id)
+
+    @property
+    def _is_update_year_groups_request(self) -> bool:
+        """
+        Test whether the user has submitted the relevant year groups form.
+        """
+        return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
 
 
 class TimetableSlotUpload(base_views.UploadView):
