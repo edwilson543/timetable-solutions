@@ -9,7 +9,9 @@ field: django_forms.BoundField
 <input type="{{ field.widget_type }}"
     {% if field.initial|is_string %}
         value="{{ field.initial }}"
-    {% elif field.initial %}
+   {% elif field.initial|is_time %}
+       value="{{ field.initial|time:'H:i' }}"
+   {% elif field.initial %}
         value={{ field.initial }}
     {% endif %}
     name="{{ field.name }}"

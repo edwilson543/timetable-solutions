@@ -35,8 +35,8 @@ class TestTimetableSlotUpdate(TestClient):
         # Check the initial form values match the slot's
         form = page.forms["disabled-update-form"]
         assert form["day_of_week"].value == str(slot.day_of_week)
-        assert form["starts_at"].value == "8"
-        assert form["ends_at"].value == "9"
+        assert form["starts_at"].value == "08:00"
+        assert form["ends_at"].value == "09:00"
 
     def test_hx_get_enables_form_then_valid_details_submitted(self):
         # Make a slot's data to access
@@ -55,8 +55,8 @@ class TestTimetableSlotUpdate(TestClient):
 
         form = form_partial.forms["update-form"]
         assert form["day_of_week"].value == str(slot.day_of_week)
-        assert form["starts_at"].value == "5"
-        assert form["ends_at"].value == "5:45"
+        assert form["starts_at"].value == "17:00"
+        assert form["ends_at"].value == "17:45"
 
         # Fill in and post the form
         form["day_of_week"] = constants.Day.MONDAY.value

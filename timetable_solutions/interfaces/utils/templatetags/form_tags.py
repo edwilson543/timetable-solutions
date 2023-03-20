@@ -3,6 +3,7 @@ Module defining custom template tags related to form rendering.
 """
 
 # Standard library imports
+import datetime as dt
 import re
 from typing import Any
 
@@ -63,3 +64,11 @@ def is_string(value: Any) -> bool:
     Test if some context variable is a string.
     """
     return isinstance(value, str)
+
+
+@register.filter(name="is_time")
+def is_time(value: Any) -> bool:
+    """
+    Test if some context variable is a datetime time.
+    """
+    return isinstance(value, dt.time)
