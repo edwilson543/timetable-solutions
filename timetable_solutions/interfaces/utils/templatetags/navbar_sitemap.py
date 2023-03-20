@@ -59,7 +59,7 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Timetable slots",
-                    url=UrlName.CUSTOM_ADMIN_TIMETABLE_LIST.url(),
+                    url=UrlName.TIMETABLE_SLOT_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-clock",
                 ),
                 Page("Breaks", url="", fa_icon="fa-solid fa-baseball-bat-ball"),
