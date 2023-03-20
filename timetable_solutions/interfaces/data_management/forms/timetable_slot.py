@@ -123,8 +123,21 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
             day_of_week=self.cleaned_data["day_of_week"],
         )
 
-        slot_clash_str = self._get_slot_clash_str(new_time_of_week)
-        break_clash_str = self._get_break_clash_str(new_time_of_week)
+        # Check for clashes with slots
+        check_against_slots = models.TimetableSlot.objects.filter(
+            relevant_year_groups__in=self.slot.relevant_year_groups.all()
+        ).exclude(slot_id=self.slot.slot_id)
+        slot_clash_str = _get_slot_clash_str(
+            time_of_week=new_time_of_week, check_against_slots=check_against_slots
+        )
+
+        # Check for clashes with breaks
+        check_against_breaks = models.Break.objects.filter(
+            relevant_year_groups__in=self.slot.relevant_year_groups.all()
+        )
+        break_clash_str = _get_break_clash_str(
+            time_of_week=new_time_of_week, check_against_breaks=check_against_breaks
+        )
 
         if slot_clash_str and break_clash_str:
             raise django_forms.ValidationError(
@@ -141,41 +154,6 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
                 "This slot cannot be updated to this time since at least one of its assigned year groups has a "
                 f"break at {break_clash_str} clashing with this time."
             )
-
-    def _get_slot_clash_str(self, new_time_of_week: clash_filters.TimeOfWeek) -> str:
-        all_slots = models.TimetableSlot.objects.filter(
-            relevant_year_groups__in=self.slot.relevant_year_groups.all()
-        )
-        slot_clashes = clash_filters.filter_queryset_for_clashes(
-            queryset=all_slots, time_of_week=new_time_of_week
-        )
-
-        # A slot clashes with itself, so don't raise for this
-        slot_clashes = [slot for slot in slot_clashes if not slot == self.slot]
-        if slot_clashes:
-            return ", ".join(
-                [
-                    f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
-                    for slot in slot_clashes
-                ]
-            )
-        return ""
-
-    def _get_break_clash_str(self, new_time_of_week: clash_filters.TimeOfWeek) -> str:
-        breaks = models.Break.objects.filter(
-            relevant_year_groups__in=self.slot.relevant_year_groups.all()
-        )
-        break_clashes = clash_filters.filter_queryset_for_clashes(
-            queryset=breaks, time_of_week=new_time_of_week
-        )
-        if break_clashes:
-            return ", ".join(
-                [
-                    f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
-                    for break_ in break_clashes
-                ]
-            )
-        return ""
 
 
 class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
@@ -219,8 +197,21 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
             day_of_week=self.cleaned_data["day_of_week"],
         )
 
-        slot_clash_str = self._get_slot_clash_str(time_of_week)
-        break_clash_str = self._get_break_clash_str(time_of_week)
+        # Check for clashes with slots
+        check_against_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        )
+        slot_clash_str = _get_slot_clash_str(
+            time_of_week=time_of_week, check_against_slots=check_against_slots
+        )
+
+        # Check for clashes with breaks
+        check_against_breaks = models.Break.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        )
+        break_clash_str = _get_break_clash_str(
+            time_of_week=time_of_week, check_against_breaks=check_against_breaks
+        )
 
         if slot_clash_str and break_clash_str:
             raise django_forms.ValidationError(
@@ -238,34 +229,43 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
                 f"break at {break_clash_str} clashing with this time."
             )
 
-    def _get_slot_clash_str(self, time_of_week: clash_filters.TimeOfWeek) -> str:
-        all_slots = models.TimetableSlot.objects.get_all_instances_for_school(
-            school_id=self.school_id
-        )
-        slot_clashes = clash_filters.filter_queryset_for_clashes(
-            queryset=all_slots, time_of_week=time_of_week
-        )
-        if slot_clashes:
-            return ", ".join(
-                [
-                    f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
-                    for slot in slot_clashes
-                ]
-            )
-        return ""
 
-    def _get_break_clash_str(self, time_of_week: clash_filters.TimeOfWeek) -> str:
-        all_breaks = models.Break.objects.get_all_instances_for_school(
-            school_id=self.school_id
+def _get_slot_clash_str(
+    time_of_week: clash_filters.TimeOfWeek,
+    check_against_slots: models.TimetableSlotQuerySet,
+) -> str:
+    """
+    Get part of a potential error message stating the times of the
+    slots that an updated slot causes clashes with.
+    """
+    slot_clashes = clash_filters.filter_queryset_for_clashes(
+        queryset=check_against_slots, time_of_week=time_of_week
+    )
+    if slot_clashes:
+        return ", ".join(
+            [
+                f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
+                for slot in slot_clashes
+            ]
         )
-        break_clashes = clash_filters.filter_queryset_for_clashes(
-            queryset=all_breaks, time_of_week=time_of_week
+    return ""
+
+
+def _get_break_clash_str(
+    time_of_week: clash_filters.TimeOfWeek, check_against_breaks: models.BreakQuerySet
+) -> str:
+    """
+    Get part of a potential error message stating the times of the
+    breaks that an updated slot causes clashes with.
+    """
+    break_clashes = clash_filters.filter_queryset_for_clashes(
+        queryset=check_against_breaks, time_of_week=time_of_week
+    )
+    if break_clashes:
+        return ", ".join(
+            [
+                f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
+                for break_ in break_clashes
+            ]
         )
-        if break_clashes:
-            return ", ".join(
-                [
-                    f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
-                    for break_ in break_clashes
-                ]
-            )
-        return ""
+    return ""

@@ -169,6 +169,7 @@ class TestTimetableSlotCreate:
         assert form.is_valid()
 
     def test_new_slot_with_slot_clash_invalid(self):
+        # Include a year group so the year group validation logic runs
         slot = data_factories.TimetableSlot()
 
         # Submit data for a new slot, which is forced to clash with the fake clashes
