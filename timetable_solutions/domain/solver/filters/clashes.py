@@ -126,4 +126,4 @@ def filter_queryset_for_clashes(
             )
         )
         & django_models.Q(day_of_week=time_of_week.day_of_week)
-    )
+    ).distinct()

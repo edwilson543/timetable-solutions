@@ -129,17 +129,17 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
         if slot_clash_str and break_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be updated to this time since at least one of its assigned year groups has a "
-                f"slot(s) at {slot_clash_str} and break(s) at {break_clash_str} clashing with this time."
+                f"slot at {slot_clash_str} and break(s) at {break_clash_str} clashing with this time."
             )
         elif slot_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be updated to this time since at least one of its assigned year groups has a "
-                f"slot(s) at {slot_clash_str} clashing with this time."
+                f"slot at {slot_clash_str} clashing with this time."
             )
         elif break_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be updated to this time since at least one of its assigned year groups has a "
-                f"break(s) at {break_clash_str} clashing with this time."
+                f"break at {break_clash_str} clashing with this time."
             )
 
     def _get_slot_clash_str(self, new_time_of_week: clash_filters.TimeOfWeek) -> str:
@@ -149,9 +149,15 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
         slot_clashes = clash_filters.filter_queryset_for_clashes(
             queryset=all_slots, time_of_week=new_time_of_week
         )
+
+        # A slot clashes with itself, so don't raise for this
+        slot_clashes = [slot for slot in slot_clashes if not slot == self.slot]
         if slot_clashes:
             return ", ".join(
-                [f"{slot.starts_at}-{slot.ends_at}" for slot in slot_clashes]
+                [
+                    f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
+                    for slot in slot_clashes
+                ]
             )
         return ""
 
@@ -164,7 +170,10 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
         )
         if break_clashes:
             return ", ".join(
-                [f"{break_.starts_at}-{break_.ends_at}" for break_ in break_clashes]
+                [
+                    f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
+                    for break_ in break_clashes
+                ]
             )
         return ""
 
@@ -216,17 +225,17 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
         if slot_clash_str and break_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be assigned to all year groups since your school has a "
-                f"slot(s) at {slot_clash_str} and break(s) at {break_clash_str} clashing with this time."
+                f"slot at {slot_clash_str} and break at {break_clash_str} clashing with this time."
             )
         elif slot_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be assigned to all year groups since your school has a "
-                f"slot(s) at {slot_clash_str} clashing with this time."
+                f"slot at {slot_clash_str} clashing with this time."
             )
         elif break_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be assigned to all year groups since your school has a "
-                f"break(s) at {break_clash_str} clashing with this time."
+                f"break at {break_clash_str} clashing with this time."
             )
 
     def _get_slot_clash_str(self, time_of_week: clash_filters.TimeOfWeek) -> str:
@@ -238,7 +247,10 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
         )
         if slot_clashes:
             return ", ".join(
-                [f"{slot.starts_at}-{slot.ends_at}" for slot in slot_clashes]
+                [
+                    f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
+                    for slot in slot_clashes
+                ]
             )
         return ""
 
@@ -251,6 +263,9 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
         )
         if break_clashes:
             return ", ".join(
-                [f"{break_.starts_at}-{break_.ends_at}" for break_ in break_clashes]
+                [
+                    f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
+                    for break_ in break_clashes
+                ]
             )
         return ""

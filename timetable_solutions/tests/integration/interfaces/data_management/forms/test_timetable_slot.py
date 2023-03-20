@@ -17,8 +17,14 @@ from tests import data_factories
 @pytest.mark.django_db
 class TestTimetableSlotUpdateTimings:
     @pytest.mark.parametrize("relevant_to_all_year_groups", [True, False])
-    def test_new_slot_with_no_clashes_valid(self, relevant_to_all_year_groups: bool):
-        slot = data_factories.TimetableSlot()
+    def test_updated_slot_with_no_clashes_valid(
+        self, relevant_to_all_year_groups: bool
+    ):
+        # Some validation only runs for slots with year groups, so make one
+        yg = data_factories.YearGroup()
+        slot = data_factories.TimetableSlot(
+            relevant_year_groups=(yg,), school=yg.school
+        )
 
         form = timetable_slot_forms.TimetableSlotUpdateTimings(
             school_id=slot.school.school_access_key,
@@ -33,7 +39,27 @@ class TestTimetableSlotUpdateTimings:
 
         assert form.is_valid()
 
-    def test_updating_slot_to_clash_with_one_of_its_year_group_clashes_invalid(self):
+    def test_updating_slot_to_same_time_valid(self):
+        # Some validation only runs for slots with year grups, so make one
+        yg = data_factories.YearGroup()
+        slot = data_factories.TimetableSlot(
+            relevant_year_groups=(yg,), school=yg.school
+        )
+
+        form = timetable_slot_forms.TimetableSlotUpdateTimings(
+            school_id=slot.school.school_access_key,
+            slot=slot,
+            data={
+                "starts_at": slot.starts_at,
+                "ends_at": slot.ends_at,
+                "day_of_week": slot.day_of_week,
+                "relevant_to_all_year_groups": False,
+            },
+        )
+
+        assert form.is_valid()
+
+    def test_updated_slot_with_year_group_clash_invalid(self):
         school = data_factories.School()
         yg = data_factories.YearGroup(school=school)
         slot = data_factories.TimetableSlot(relevant_year_groups=(yg,), school=school)
@@ -57,9 +83,12 @@ class TestTimetableSlotUpdateTimings:
         assert not form.is_valid()
 
         error_message = form.errors.as_text()
-        assert f"{slot.starts_at}-{slot.ends_at}" in error_message
+        assert (
+            f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
+            in error_message
+        )
 
-    def test_new_slot_with_break_clash_invalid(self):
+    def test_updated_slot_with_break_clash_invalid(self):
         school = data_factories.School()
         yg = data_factories.YearGroup(school=school)
         slot = data_factories.TimetableSlot(relevant_year_groups=(yg,), school=school)
@@ -81,9 +110,12 @@ class TestTimetableSlotUpdateTimings:
         assert not form.is_valid()
 
         error_message = form.errors.as_text()
-        assert f"{break_.starts_at}-{break_.ends_at}" in error_message
+        assert (
+            f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
+            in error_message
+        )
 
-    def test_new_slot_with_slot_and_break_clash_invalid(self):
+    def test_updated_slot_with_slot_and_break_clash_invalid(self):
         school = data_factories.School()
         yg = data_factories.YearGroup(school=school)
         slot = data_factories.TimetableSlot(relevant_year_groups=(yg,), school=school)
@@ -153,7 +185,10 @@ class TestTimetableSlotCreate:
         assert not form.is_valid()
 
         error_message = form.errors.as_text()
-        assert f"{slot.starts_at}-{slot.ends_at}" in error_message
+        assert (
+            f'{slot.starts_at.strftime("%H:%M")}-{slot.ends_at.strftime("%H:%M")}'
+            in error_message
+        )
 
     def test_new_slot_with_break_clash_invalid(self):
         break_ = data_factories.Break()
@@ -172,7 +207,10 @@ class TestTimetableSlotCreate:
         assert not form.is_valid()
 
         error_message = form.errors.as_text()
-        assert f"{break_.starts_at}-{break_.ends_at}" in error_message
+        assert (
+            f'{break_.starts_at.strftime("%H:%M")}-{break_.ends_at.strftime("%H:%M")}'
+            in error_message
+        )
 
     def test_new_slot_with_slot_and_break_clash_invalid(self):
         school = data_factories.School()
