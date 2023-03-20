@@ -1,0 +1,28 @@
+<!--A multiselect input widget for constructing a form field with
+Note this renders a switch per option, so is only really suitable for < 10 or so choices
+------------------
+Context variables:
+------------------
+field: django_forms.BoundField
+-->
+{% load form_tags %}
+
+{% for value, label in field.field.choices %}
+    <div class="form-check form-switch m-2">
+        <input
+            id="flexSwitchCheckDefault-{{ forloop.counter }}"
+            name="{{ field.name }}"
+            {% if value|is_string %}
+                value="{{ value }}"
+            {% else %}
+                value={{ value }}
+            {% endif %}
+            class="form-check-input"
+            type="checkbox"
+            {% if value in field.initial %}checked {% endif %}
+        >
+        <label class="form-check-label" for="flexSwitchCheckDefault-{{ forloop.counter }}">
+            {{ label }}
+        </label>
+    </div>
+{% endfor %}
