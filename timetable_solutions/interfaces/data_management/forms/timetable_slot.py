@@ -71,6 +71,83 @@ class TimetableSlotSearch(django_forms.Form):
             )
 
 
+class TimetableSlotUpdateYearGroups(django_forms.Form):
+    """
+    Form for updating the year groups relevant to a particular timetable slot.
+    """
+
+    relevant_year_groups = django_forms.ModelMultipleChoiceField(
+        required=False,
+        queryset=models.TimetableSlotQuerySet().none(),
+        label="Relevant year groups",
+        help_text="Select the year groups that this timetable slot is relevant to",
+    )
+
+    def __init__(self, *args: object, **kwargs: Any) -> None:
+        self.school_id = kwargs.pop("school_id")
+        slot = kwargs.pop("slot")
+        self.slot = models.TimetableSlot.objects.get_individual_timeslot(
+            school_id=self.school_id, slot_id=slot.slot_id
+        )
+
+        self.base_fields[
+            "relevant_year_groups"
+        ].queryset = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        )
+
+        super().__init__(*args, **kwargs)
+
+    def clean(self) -> dict[str, Any]:
+        """
+        Check the slot can be made relevant to the selected year groups
+        """
+        self._raise_if_no_year_group_selected()
+        self._raise_if_clashes_produced_for_a_year_group()
+        return self.cleaned_data
+
+    def _raise_if_no_year_group_selected(self) -> None:
+        if not self.cleaned_data["relevant_year_groups"]:
+            raise django_forms.ValidationError(
+                "You must select at least one year group!"
+            )
+
+    def _raise_if_clashes_produced_for_a_year_group(self) -> None:
+        time_of_week = clash_filters.TimeOfWeek.from_slot(self.slot)
+
+        # Check for clashes with slots
+        check_against_slots = models.TimetableSlot.objects.filter(
+            relevant_year_groups__in=self.cleaned_data["relevant_year_groups"]
+        ).exclude(slot_id=self.slot.slot_id)
+        slot_clash_str = _get_slot_clash_str(
+            time_of_week=time_of_week, check_against_slots=check_against_slots
+        )
+
+        # Check for clashes with breaks
+        check_against_breaks = models.Break.objects.filter(
+            relevant_year_groups__in=self.cleaned_data["relevant_year_groups"]
+        )
+        break_clash_str = _get_break_clash_str(
+            time_of_week=time_of_week, check_against_breaks=check_against_breaks
+        )
+
+        if slot_clash_str and break_clash_str:
+            raise django_forms.ValidationError(
+                "This slot cannot be assigned to these year groups, since at least one year group has a "
+                f"slot at {slot_clash_str} and break at {break_clash_str} clashing with this time."
+            )
+        elif slot_clash_str:
+            raise django_forms.ValidationError(
+                "This slot cannot be assigned to these year groups, since at least one year group has a "
+                f"slot at {slot_clash_str} clashing with this time."
+            )
+        elif break_clash_str:
+            raise django_forms.ValidationError(
+                "This slot cannot be assigned to these year groups, since at least one year group has a "
+                f"break at {break_clash_str} clashing with this time."
+            )
+
+
 class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
     """
     Base form for the timetable slot create and update forms.
@@ -89,14 +166,6 @@ class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
             raise django_forms.ValidationError(
                 "The slot must end after it has started!"
             )
-
-
-class TimetableSlotUpdateYearGroups(django_forms.Form):
-    """
-    Form for updating the year groups relevant to a particular timetable slot.
-    """
-
-    # TODO -> use a model multiple choice field
 
 
 class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
@@ -142,7 +211,7 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
         if slot_clash_str and break_clash_str:
             raise django_forms.ValidationError(
                 "This slot cannot be updated to this time since at least one of its assigned year groups has a "
-                f"slot at {slot_clash_str} and break(s) at {break_clash_str} clashing with this time."
+                f"slot at {slot_clash_str} and break at {break_clash_str} clashing with this time."
             )
         elif slot_clash_str:
             raise django_forms.ValidationError(
