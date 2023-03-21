@@ -55,6 +55,34 @@ class TestTimetableSlotUpdateYearGroups:
         assert not form.is_valid()
         assert "You must select at least one year group!" in form.errors.as_text()
 
+    def test_form_invalid_if_slot_in_use_for_lesson_for_removed_year_group(self):
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+        slot = data_factories.TimetableSlot(school=school, relevant_year_groups=(yg,))
+
+        # Make a lesson using this slot
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        data_factories.Lesson(
+            school=school, pupils=(pupil,), user_defined_time_slots=(slot,)
+        )
+
+        # Create some other yg to select so we don't get the no year groups error
+        other_yg = data_factories.YearGroup(school=school)
+
+        form = timetable_slot_forms.TimetableSlotUpdateYearGroups(
+            school_id=slot.school.school_access_key,
+            slot=slot,
+            data={
+                "relevant_year_groups": [other_yg.pk],
+            },
+        )
+
+        assert not form.is_valid()
+        assert (
+            f"Cannot unassign year group(s) {yg.year_group_name} from this slot"
+            in form.errors.as_text()
+        )
+
     def test_updated_slot_with_year_group_clash_invalid(self):
         school = data_factories.School()
         slot = data_factories.TimetableSlot(school=school)

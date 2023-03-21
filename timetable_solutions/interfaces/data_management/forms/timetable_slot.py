@@ -108,6 +108,7 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
         """
         self._raise_if_no_year_group_selected()
         self._raise_if_clashes_produced_for_a_year_group()
+        self._raise_if_slot_in_use_for_a_lesson()
         return self.cleaned_data
 
     def _raise_if_no_year_group_selected(self) -> None:
@@ -150,6 +151,35 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
                 "This slot cannot be assigned to these year groups, since at least one year group has a "
                 f"break at {break_clash_str} clashing with this time."
             )
+
+    def _raise_if_slot_in_use_for_a_lesson(self) -> None:
+        """
+        If trying to unassign a slot as relevant to a year group but there is already a lesson
+        using this slot for that year group, then raise.
+        """
+        selected_ygs = self.cleaned_data["relevant_year_groups"]
+        removed_year_groups = [
+            # Note qs.difference(other_qs) not available for SQLite
+            yg
+            for yg in self.slot.relevant_year_groups.all()
+            if yg not in selected_ygs
+        ]
+        if removed_year_groups:
+            lessons = self.slot.get_all_lessons()
+            protected_year_groups = [
+                lesson.get_associated_year_group() for lesson in lessons
+            ]
+            invalid_removals = [
+                yg for yg in removed_year_groups if yg in protected_year_groups
+            ]
+            if invalid_removals:
+                invalid_removals_str = ", ".join(
+                    yg.year_group_name for yg in invalid_removals
+                )
+                raise django_forms.ValidationError(
+                    f"Cannot unassign year group(s) {invalid_removals_str} from this slot since each "
+                    "of them has at least one lesson using this slot."
+                )
 
 
 class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
