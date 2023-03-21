@@ -7,6 +7,7 @@ from typing import Any
 
 # Django imports
 from django import http, shortcuts
+from django.contrib import messages
 from django.db.models import Prefetch
 
 # Local application imports
@@ -211,6 +212,10 @@ class TimetableSlotUpdate(base_views.UpdateView):
                 operations.update_timetable_slot_year_groups(
                     slot=self.model_instance,
                     relevant_year_groups=form.cleaned_data["relevant_year_groups"],
+                )
+                messages.success(
+                    self.request,
+                    message="Relevant year groups for this slot were updated!",
                 )
                 return shortcuts.redirect(self._get_update_year_groups_success_url())
             except operations.UnableToUpdateTimetableSlotYearGroups as exc:
