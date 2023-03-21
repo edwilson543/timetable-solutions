@@ -3,6 +3,7 @@
 
 # Standard library imports
 import datetime as dt
+from typing import TYPE_CHECKING
 
 # Django imports
 from django.db import models
@@ -11,6 +12,10 @@ from django.db import models
 from data import constants
 from data.models.school import School
 from data.models.year_group import YearGroup, YearGroupQuerySet
+
+if TYPE_CHECKING:
+    # Local application imports
+    from data.models import lesson
 
 
 class TimetableSlotQuerySet(models.QuerySet):
@@ -125,7 +130,7 @@ class TimetableSlot(models.Model):
             starts_at=starts_at,
             ends_at=ends_at,
         )
-        if relevant_year_groups is not None:
+        if relevant_year_groups:
             slot._add_year_groups(year_groups=relevant_year_groups)
         slot.full_clean()
         return slot
@@ -204,6 +209,12 @@ class TimetableSlot(models.Model):
         sorted_times = sorted(list(unique_rounded_hours))
 
         return sorted_times
+
+    def get_all_lessons(self) -> "lesson.LessonQuerySet":
+        """
+        Get all the lessons this slot is in use for
+        """
+        return self.user_lessons.all() | self.solver_lessons.all()
 
     def check_if_slots_are_consecutive(self, other_slot: "TimetableSlot") -> bool:
         """

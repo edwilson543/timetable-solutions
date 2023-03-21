@@ -47,29 +47,14 @@ class UrlName(StrEnum):
     # --------------------
     # Data management
     # --------------------
-    # Teachers
-    TEACHER_CREATE = "teacher-create"
-    TEACHER_DOWNLOAD = "teacher-download"
-    TEACHER_LANDING_PAGE = "teacher-landing-page"
-    TEACHER_LIST = "teacher-list"
-    TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
-    TEACHER_UPLOAD = "teacher-upload"
 
-    # Teachers
+    # Classrooms
     CLASSROOM_CREATE = "classroom-create"
     CLASSROOM_DOWNLOAD = "classroom-download"
     CLASSROOM_LANDING_PAGE = "classroom-landing-page"
     CLASSROOM_LIST = "classroom-list"
     CLASSROOM_UPDATE = "classroom-update"  # kwargs: classroom_id: str
     CLASSROOM_UPLOAD = "classroom-upload"
-
-    # Year groups
-    YEAR_GROUP_CREATE = "year-group-create"
-    YEAR_GROUP_DOWNLOAD = "year-group-download"
-    YEAR_GROUP_LANDING_PAGE = "year-group-landing-page"
-    YEAR_GROUP_LIST = "year-group-list"
-    YEAR_GROUP_UPDATE = "year-group-update"
-    YEAR_GROUP_UPLOAD = "year-group-upload"
 
     # Pupils
     PUPIL_CREATE = "pupil-create"
@@ -79,6 +64,30 @@ class UrlName(StrEnum):
     PUPIL_UPDATE = "pupil-update"
     PUPIL_UPLOAD = "pupil-upload"
 
+    # Teachers
+    TEACHER_CREATE = "teacher-create"
+    TEACHER_DOWNLOAD = "teacher-download"
+    TEACHER_LANDING_PAGE = "teacher-landing-page"
+    TEACHER_LIST = "teacher-list"
+    TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: str
+    TEACHER_UPLOAD = "teacher-upload"
+
+    # Timetable slot
+    TIMETABLE_SLOT_CREATE = "timetable-slot-create"
+    TIMETABLE_SLOT_DOWNLOAD = "timetable-slot-download"
+    TIMETABLE_SLOT_LANDING_PAGE = "timetable-slot-landing-page"
+    TIMETABLE_SLOT_LIST = "timetable-slot-list"
+    TIMETABLE_SLOT_UPDATE = "timetable-slot-update"  # kwargs: slot_id: str
+    TIMETABLE_SLOT_UPLOAD = "timetable-slot-upload"
+
+    # Year groups
+    YEAR_GROUP_CREATE = "year-group-create"
+    YEAR_GROUP_DOWNLOAD = "year-group-download"
+    YEAR_GROUP_LANDING_PAGE = "year-group-landing-page"
+    YEAR_GROUP_LIST = "year-group-list"
+    YEAR_GROUP_UPDATE = "year-group-update"
+    YEAR_GROUP_UPLOAD = "year-group-upload"
+
     # Create timetables app
     CREATE_TIMETABLES = "create_timetables"
 
@@ -86,7 +95,7 @@ class UrlName(StrEnum):
     PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id
     TEACHERS_NAVIGATOR = "teachers_navigator"
-    TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id
+    TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: pupil_id
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 
     # Custom admin app

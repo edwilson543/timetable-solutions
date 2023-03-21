@@ -11,39 +11,6 @@ from interfaces.data_management import views
 
 urlpatterns = [
     # --------------------
-    # Teachers
-    # --------------------
-    path(
-        "teachers/",
-        views.TeacherLanding.as_view(),
-        name=UrlName.TEACHER_LANDING_PAGE.value,
-    ),
-    path(
-        "teachers/create/",
-        views.TeacherCreate.as_view(),
-        name=UrlName.TEACHER_CREATE.value,
-    ),
-    path(
-        "teachers/list/",
-        views.TeacherSearch.as_view(),
-        name=UrlName.TEACHER_LIST.value,
-    ),
-    path(
-        "teachers/list/<int:teacher_id>/",
-        views.TeacherUpdate.as_view(),
-        name=UrlName.TEACHER_UPDATE.value,
-    ),
-    path(
-        "teachers/upload/",
-        views.TeacherUpload.as_view(),
-        name=UrlName.TEACHER_UPLOAD.value,
-    ),
-    path(
-        "teachers/download/",
-        views.TeacherExampleDownload.as_view(),
-        name=UrlName.TEACHER_DOWNLOAD.value,
-    ),
-    # --------------------
     # Classrooms
     # --------------------
     path(
@@ -77,39 +44,6 @@ urlpatterns = [
         name=UrlName.CLASSROOM_DOWNLOAD.value,
     ),
     # --------------------
-    # Year groups
-    # --------------------
-    path(
-        "yeargroups/",
-        views.YearGroupLanding.as_view(),
-        name=UrlName.YEAR_GROUP_LANDING_PAGE.value,
-    ),
-    path(
-        "yeargroups/create/",
-        views.YearGroupCreate.as_view(),
-        name=UrlName.YEAR_GROUP_CREATE.value,
-    ),
-    path(
-        "yeargroups/list/",
-        views.YearGroupList.as_view(),
-        name=UrlName.YEAR_GROUP_LIST.value,
-    ),
-    path(
-        "yeargroups/list/<int:year_group_id>/",
-        views.YearGroupUpdate.as_view(),
-        name=UrlName.YEAR_GROUP_UPDATE.value,
-    ),
-    path(
-        "yeargroups/upload/",
-        views.YearGroupUpload.as_view(),
-        name=UrlName.YEAR_GROUP_UPLOAD.value,
-    ),
-    path(
-        "yeargroups/download/",
-        views.YearGroupExampleDownload.as_view(),
-        name=UrlName.YEAR_GROUP_DOWNLOAD.value,
-    ),
-    # --------------------
     # Pupils
     # --------------------
     path(
@@ -141,5 +75,104 @@ urlpatterns = [
         "pupils/download/",
         views.PupilExampleDownload.as_view(),
         name=UrlName.PUPIL_DOWNLOAD.value,
+    ),
+    # --------------------
+    # Teachers
+    # --------------------
+    path(
+        "teachers/",
+        views.TeacherLanding.as_view(),
+        name=UrlName.TEACHER_LANDING_PAGE.value,
+    ),
+    path(
+        "teachers/create/",
+        views.TeacherCreate.as_view(),
+        name=UrlName.TEACHER_CREATE.value,
+    ),
+    path(
+        "teachers/list/",
+        views.TeacherSearch.as_view(),
+        name=UrlName.TEACHER_LIST.value,
+    ),
+    path(
+        "teachers/list/<int:teacher_id>/",
+        views.TeacherUpdate.as_view(),
+        name=UrlName.TEACHER_UPDATE.value,
+    ),
+    path(
+        "teachers/upload/",
+        views.TeacherUpload.as_view(),
+        name=UrlName.TEACHER_UPLOAD.value,
+    ),
+    path(
+        "teachers/download/",
+        views.TeacherExampleDownload.as_view(),
+        name=UrlName.TEACHER_DOWNLOAD.value,
+    ),
+    # --------------------
+    # Pupils
+    # --------------------
+    path(
+        "timetable-slots/",
+        views.TimetableSlotLanding.as_view(),
+        name=UrlName.TIMETABLE_SLOT_LANDING_PAGE.value,
+    ),
+    path(
+        "timetable-slots/create/",
+        views.TimetableSlotCreate.as_view(),
+        name=UrlName.TIMETABLE_SLOT_CREATE.value,
+    ),
+    path(
+        "timetable-slots/list/",
+        views.TimetableSlotSearch.as_view(),
+        name=UrlName.TIMETABLE_SLOT_LIST.value,
+    ),
+    path(
+        "timetable-slots/list/<int:slot_id>/",
+        views.TimetableSlotUpdate.as_view(),
+        name=UrlName.TIMETABLE_SLOT_UPDATE.value,
+    ),
+    path(
+        "timetable-slots/upload/",
+        views.TimetableSlotUpload.as_view(),
+        name=UrlName.TIMETABLE_SLOT_UPLOAD.value,
+    ),
+    path(
+        "timetable-slots/download/",
+        views.TimetableSlotExampleDownload.as_view(),
+        name=UrlName.TIMETABLE_SLOT_DOWNLOAD.value,
+    ),
+    # --------------------
+    # Year groups
+    # --------------------
+    path(
+        "yeargroups/",
+        views.YearGroupLanding.as_view(),
+        name=UrlName.YEAR_GROUP_LANDING_PAGE.value,
+    ),
+    path(
+        "yeargroups/create/",
+        views.YearGroupCreate.as_view(),
+        name=UrlName.YEAR_GROUP_CREATE.value,
+    ),
+    path(
+        "yeargroups/list/",
+        views.YearGroupList.as_view(),
+        name=UrlName.YEAR_GROUP_LIST.value,
+    ),
+    path(
+        "yeargroups/list/<int:year_group_id>/",
+        views.YearGroupUpdate.as_view(),
+        name=UrlName.YEAR_GROUP_UPDATE.value,
+    ),
+    path(
+        "yeargroups/upload/",
+        views.YearGroupUpload.as_view(),
+        name=UrlName.YEAR_GROUP_UPLOAD.value,
+    ),
+    path(
+        "yeargroups/download/",
+        views.YearGroupExampleDownload.as_view(),
+        name=UrlName.YEAR_GROUP_DOWNLOAD.value,
     ),
 ]

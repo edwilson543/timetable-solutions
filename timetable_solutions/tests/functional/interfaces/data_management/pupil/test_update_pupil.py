@@ -26,7 +26,7 @@ class TestPupilUpdate(TestClient):
         ] == serializers_helpers.expected_pupil(pupil)
 
         # Check the initial form values match the pupil's
-        form = page.forms["disabled-change-form"]
+        form = page.forms["disabled-update-form"]
         assert form["firstname"].value == pupil.firstname
         assert form["surname"].value == pupil.surname
         assert form["year_group"].value == str(pupil.year_group.id)

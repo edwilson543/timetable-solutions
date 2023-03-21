@@ -26,7 +26,7 @@ class TestTeacherUpdate(TestClient):
         ] == serializers_helpers.expected_teacher(teacher)
 
         # Check the initial form values match the teacher's
-        form = page.forms["disabled-change-form"]
+        form = page.forms["disabled-update-form"]
         assert form["firstname"].value == teacher.firstname
         assert form["surname"].value == teacher.surname
         assert form["title"].value == teacher.title

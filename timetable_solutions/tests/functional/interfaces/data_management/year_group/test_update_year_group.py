@@ -25,7 +25,7 @@ class TestYearGroupUpdate(TestClient):
         ] == serializers_helpers.expected_year_group(yg)
 
         # Check the initial form values match the year_group's
-        form = page.forms["disabled-change-form"]
+        form = page.forms["disabled-update-form"]
         assert form["year_group_name"].value == yg.year_group_name
 
     def test_hx_get_enables_form_then_valid_details_submitted(self):

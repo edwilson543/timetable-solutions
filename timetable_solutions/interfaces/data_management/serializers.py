@@ -6,7 +6,7 @@ Serializer classes for the basic school data models.
 from rest_framework import serializers
 
 # Local application imports
-from data import models
+from data import constants, models
 from interfaces.constants import UrlName
 
 
@@ -87,7 +87,9 @@ class Teacher(serializers.Serializer):
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
 
     def _get_update_url(self, obj: models.Teacher) -> str:
-        """Get the url leading to this teacher's update / detail view page."""
+        """
+        Get the url for this teacher's update / detail view page.
+        """
         return UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher_id)
 
 
@@ -115,7 +117,7 @@ class Classroom(serializers.Serializer):
 
 class Pupil(serializers.Serializer):
     """
-    Serailize pupils for use in template context:
+    Serialize pupils for use in template context.
     """
 
     pupil_id = serializers.IntegerField()
@@ -134,6 +136,35 @@ class Pupil(serializers.Serializer):
 
     def _get_update_url(self, obj: models.Pupil) -> str:
         """
-        Get the url for this pupil's update / detail view page.
+        Get the url for this year group's update / detail view page.
         """
         return UrlName.PUPIL_UPDATE.url(pupil_id=obj.pupil_id)
+
+
+class TimetableSlot(serializers.Serializer):
+    """
+    Serialize timetable slots for use in template context.
+    """
+
+    slot_id = serializers.IntegerField()
+    day_of_week = serializers.SerializerMethodField(method_name="_day_of_week")
+    starts_at = serializers.TimeField(format="%H:%M")
+    ends_at = serializers.TimeField(format="%H:%M")
+
+    # Relational data
+    relevant_year_groups = YearGroup(many=True)
+
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _day_of_week(self, obj: models.TimetableSlot) -> str:
+        """
+        Get the day of the week label from the value.
+        """
+        return constants.Day(obj.day_of_week).label
+
+    def _get_update_url(self, obj: models.TimetableSlot) -> str:
+        """
+        Get the url for this slot's update / detail view page.
+        """
+        return UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=obj.slot_id)

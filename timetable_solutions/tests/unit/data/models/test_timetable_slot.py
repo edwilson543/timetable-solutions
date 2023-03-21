@@ -271,6 +271,24 @@ class TestDeleteAllInstancesForSchool:
         # Check outcome
         assert timeslots == [dt.time(hour=9), dt.time(hour=10), dt.time(hour=14)]
 
+    def test_get_all_lessons_gives_solver_and_user_lessons(self):
+        school = data_factories.School()
+        slot = data_factories.TimetableSlot(school=school)
+        user_lesson = data_factories.Lesson(
+            school=school, user_defined_time_slots=(slot,)
+        )
+        solver_lesson = data_factories.Lesson(
+            school=school, solver_defined_time_slots=(slot,)
+        )
+        # Make some random other lesson
+        data_factories.Lesson(school=school)
+
+        lessons = slot.get_all_lessons()
+
+        assert lessons.count() == 2
+        assert user_lesson in lessons
+        assert solver_lesson in lessons
+
     def test_if_slots_are_consecutive_true(self):
         """
         Tests that consecutive time slots are correctly identified.

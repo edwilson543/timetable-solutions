@@ -3,12 +3,13 @@ Module defining custom template tags related to form rendering.
 """
 
 # Standard library imports
+import datetime as dt
 import re
+from typing import Any
 
 # Django imports
 from django import forms, template
 from django.utils import html
-
 
 register = template.Library()
 
@@ -55,3 +56,19 @@ def is_text_or_number_input(field: forms.BoundField | forms.Field) -> bool:
             field.widget.input_type == "number"
         )
     return False
+
+
+@register.filter(name="is_string")
+def is_string(value: Any) -> bool:
+    """
+    Test if some context variable is a string.
+    """
+    return isinstance(value, str)
+
+
+@register.filter(name="is_time")
+def is_time(value: Any) -> bool:
+    """
+    Test if some context variable is a datetime time.
+    """
+    return isinstance(value, dt.time)

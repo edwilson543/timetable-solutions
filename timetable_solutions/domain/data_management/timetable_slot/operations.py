@@ -41,6 +41,7 @@ def create_new_timetable_slot(
     starts_at: dt.time,
     ends_at: dt.time,
     relevant_year_groups: models.YearGroupQuerySet | None = None,
+    relevant_to_all_year_groups: bool = False,
 ) -> models.TimetableSlot:
     """
     Create a new timetable slot in the db.
@@ -49,6 +50,11 @@ def create_new_timetable_slot(
     """
     if not slot_id:
         slot_id = queries.get_next_slot_id_for_school(school_id=school_id)
+
+    if relevant_to_all_year_groups:
+        relevant_year_groups = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=school_id
+        )
 
     try:
         slot = models.TimetableSlot.create_new(

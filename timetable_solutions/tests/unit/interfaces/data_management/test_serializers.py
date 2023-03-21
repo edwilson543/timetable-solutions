@@ -1,5 +1,8 @@
 """Tests for serializer classes for the basic school data models."""
 
+# Standard library imports
+import datetime as dt
+
 # Third party imports
 import pytest
 
@@ -141,4 +144,32 @@ class TestPupilSerializer:
         assert serialized_pupils == [
             serializers_helpers.expected_pupil(pupil_a),
             serializers_helpers.expected_pupil(pupil_b),
+        ]
+
+
+@pytest.mark.django_db
+class TestTimetableSlotSerializer:
+    @pytest.mark.parametrize(
+        "starts_at,ends_at",
+        [
+            (dt.time(hour=8), dt.time(hour=8, minute=45)),
+            (dt.time(hour=17), dt.time(hour=18)),
+        ],
+    )
+    def test_serialize_individual_instance(self, starts_at: dt.time, ends_at: dt.time):
+        slot = data_factories.TimetableSlot(starts_at=starts_at, ends_at=ends_at)
+
+        serialized_slot = serializers.TimetableSlot(slot).data
+
+        assert serialized_slot == serializers_helpers.expected_slot(slot)
+
+    def test_serialize_multiple_pupils(self):
+        slot_a = data_factories.TimetableSlot()
+        slot_b = data_factories.TimetableSlot()
+
+        serialized_slots = serializers.TimetableSlot([slot_a, slot_b], many=True).data
+
+        assert serialized_slots == [
+            serializers_helpers.expected_slot(slot_a),
+            serializers_helpers.expected_slot(slot_b),
         ]
