@@ -188,7 +188,7 @@ class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
     """
 
     day_of_week = django_forms.TypedChoiceField(
-        required=False, choices=constants.Day.choices, label="Day of week", coerce=int
+        required=True, choices=constants.Day.choices, label="Day of week", coerce=int
     )
 
     starts_at = django_forms.TimeField(required=True, label="When the slot starts")
