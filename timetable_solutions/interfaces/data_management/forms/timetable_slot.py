@@ -208,10 +208,7 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
     """
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
-        slot = kwargs.pop("slot")
-        self.slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=kwargs["school_id"], slot_id=slot.slot_id
-        )
+        self.slot = kwargs.pop("slot")
         super().__init__(*args, **kwargs)
 
     def clean(self) -> dict[str, Any]:
