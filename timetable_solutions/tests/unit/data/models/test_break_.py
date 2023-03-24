@@ -154,3 +154,47 @@ class TestDeleteAllInstancesForSchool:
 
         # Check break was deleted
         assert models.Break.objects.count() == 0
+
+
+@pytest.mark.django_db
+class TestUpdateBreakTimings:
+    def test_can_update_break_to_valid_time(self):
+        break_ = data_factories.Break()
+
+        break_.update_break_timings(
+            day_of_week=constants.Day.FRIDAY,
+            starts_at=dt.time(hour=15),
+            ends_at=dt.time(hour=16),
+        )
+
+        break_.refresh_from_db()
+        assert break_.day_of_week == constants.Day.FRIDAY
+        assert break_.starts_at == dt.time(hour=15)
+        assert break_.ends_at == dt.time(hour=16)
+
+    def test_raises_if_updating_break_to_invalid_time(self):
+        break_ = data_factories.Break()
+
+        with pytest.raises(IntegrityError):
+            break_.update_break_timings(
+                day_of_week=constants.Day.FRIDAY,
+                starts_at=dt.time(hour=16),
+                ends_at=dt.time(hour=16),
+            )
+
+
+@pytest.mark.django_db
+class TestUpdateRelevantYearGroups:
+    def test_can_update_relevant_year_groups(self):
+        break_ = data_factories.Break()
+
+        yg_a = data_factories.YearGroup(school=break_.school)
+        yg_b = data_factories.YearGroup(school=break_.school)
+        ygs = models.YearGroup.objects.all()
+
+        break_.update_relevant_year_groups(relevant_year_groups=ygs)
+
+        break_.refresh_from_db()
+        assert break_.relevant_year_groups.count() == 2
+        assert yg_a in break_.relevant_year_groups.all()
+        assert yg_b in break_.relevant_year_groups.all()

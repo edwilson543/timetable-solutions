@@ -136,6 +136,34 @@ class Break(models.Model):
     # Mutators
     # --------------------
 
+    def update_break_timings(
+        self,
+        *,
+        break_name: str = "",
+        day_of_week: constants.Day | None = None,
+        starts_at: dt.time | None = None,
+        ends_at: dt.time | None = None,
+    ) -> "Break":
+        """
+        Update the time of day that this slot occurs at.
+        """
+        self.break_name = break_name or self.break_name
+        self.day_of_week = day_of_week or self.day_of_week
+        self.starts_at = starts_at or self.starts_at
+        self.ends_at = ends_at or self.ends_at
+        self.save(update_fields=["break_name", "day_of_week", "starts_at", "ends_at"])
+        return self
+
+    def update_relevant_year_groups(
+        self,
+        relevant_year_groups: YearGroupQuerySet,
+    ) -> "Break":
+        """
+        Update the year groups that are relevant to this slot.
+        """
+        self.relevant_year_groups.set(relevant_year_groups)
+        return self
+
     def _add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
         """
         Add one or more teachers to a break instance.
