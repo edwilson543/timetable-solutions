@@ -163,7 +163,7 @@ class TestTimetableSlotSerializer:
 
         assert serialized_slot == serializers_helpers.expected_slot(slot)
 
-    def test_serialize_multiple_pupils(self):
+    def test_serialize_multiple_slots(self):
         slot_a = data_factories.TimetableSlot()
         slot_b = data_factories.TimetableSlot()
 
@@ -172,4 +172,32 @@ class TestTimetableSlotSerializer:
         assert serialized_slots == [
             serializers_helpers.expected_slot(slot_a),
             serializers_helpers.expected_slot(slot_b),
+        ]
+
+
+@pytest.mark.django_db
+class TestBreakSerializer:
+    @pytest.mark.parametrize(
+        "starts_at,ends_at",
+        [
+            (dt.time(hour=8), dt.time(hour=8, minute=45)),
+            (dt.time(hour=17), dt.time(hour=18)),
+        ],
+    )
+    def test_serialize_individual_instance(self, starts_at: dt.time, ends_at: dt.time):
+        break_ = data_factories.Break(starts_at=starts_at, ends_at=ends_at)
+
+        serialized_break = serializers.Break(break_).data
+
+        assert serialized_break == serializers_helpers.expected_break(break_)
+
+    def test_serialize_multiple_breaks(self):
+        break_a = data_factories.Break()
+        break_b = data_factories.Break()
+
+        serialized_breaks = serializers.Break([break_a, break_b], many=True).data
+
+        assert serialized_breaks == [
+            serializers_helpers.expected_break(break_a),
+            serializers_helpers.expected_break(break_b),
         ]
