@@ -105,7 +105,7 @@ def update_timetable_slot_year_groups(
     """
     Update the year groups relevant to a timetable slot.
 
-    :raises UnableToUpdateTimetableSlotYearGroups: if the slot could not be created.
+    :raises UnableToUpdateTimetableSlotYearGroups: if the slot could not be updated.
     """
     try:
         return slot.update_relevant_year_groups(relevant_year_groups)
@@ -117,7 +117,7 @@ def update_timetable_slot_year_groups(
 
 def delete_timetable_slot(slot: models.TimetableSlot) -> tuple[int, dict[str, int]]:
     """
-    Delete a teacher from the db.
+    Delete a timetable slot from the db.
 
     :return: Tuple of the number of objects deleted, and a dict mapping the model to number of instances
     of that model that were deleted.
