@@ -8,6 +8,9 @@ import datetime as dt
 # Third party imports
 import pytest
 
+# Django imports
+from django import forms as django_forms
+
 # Local application imports
 from data import constants
 from interfaces.data_management.forms import timetable_slot as timetable_slot_forms
@@ -74,14 +77,14 @@ class TestTimetableSlotCreateUpdateBase:
 
         form = timetable_slot_forms._TimetableSlotCreateUpdateBase(
             school_id=school.school_access_key,
+            data={
+                "starts_at": dt.time(hour=8),
+                "ends_at": dt.time(hour=9),
+                "day_of_week": constants.Day.MONDAY,
+            },
         )
-        form.cleaned_data = {
-            "starts_at": dt.time(hour=8),
-            "ends_at": dt.time(hour=9),
-            "day_of_week": constants.Day.MONDAY,
-        }
 
-        assert not form.is_valid()
+        assert form.is_valid()
 
     @pytest.mark.parametrize("starts_at", [dt.time(hour=9), dt.time(hour=9, minute=5)])
     def test_slot_starting_at_or_after_ending_invalid(self, starts_at: dt.time):
@@ -89,11 +92,14 @@ class TestTimetableSlotCreateUpdateBase:
 
         form = timetable_slot_forms._TimetableSlotCreateUpdateBase(
             school_id=school.school_access_key,
-            data={
-                "starts_at": starts_at,
-                "ends_at": dt.time(hour=9),
-                "day_of_week": constants.Day.MONDAY,
-            },
         )
+        form.cleaned_data = {
+            "starts_at": starts_at,
+            "ends_at": dt.time(hour=9),
+            "day_of_week": constants.Day.MONDAY,
+        }
 
-        assert form.is_valid()
+        with pytest.raises(django_forms.ValidationError) as exc:
+            form.raise_if_slot_doesnt_end_after_starting()
+
+        assert "The slot must end after it has started!" in exc.value
