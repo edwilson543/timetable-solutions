@@ -120,8 +120,8 @@ class Break(models.Model):
         )
         break_.full_clean()
 
-        break_.add_teachers(teachers)
-        break_.add_year_groups(relevant_year_groups)
+        break_._add_teachers(teachers)
+        break_._add_year_groups(relevant_year_groups)
 
         return break_
 
@@ -136,20 +136,14 @@ class Break(models.Model):
     # Mutators
     # --------------------
 
-    def add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
+    def _add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
         """
         Add one or more teachers to a break instance.
         """
-        if isinstance(teachers, TeacherQuerySet):
-            self.teachers.add(*teachers)
-        elif isinstance(teachers, Teacher):
-            self.teachers.add(teachers)
+        self.teachers.add(*teachers)
 
-    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+    def _add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
         """
         Add one or more year groups to a break instance.
         """
-        if isinstance(year_groups, YearGroupQuerySet):
-            self.relevant_year_groups.add(*year_groups)
-        elif isinstance(year_groups, YearGroup):
-            self.relevant_year_groups.add(year_groups)
+        self.relevant_year_groups.add(*year_groups)

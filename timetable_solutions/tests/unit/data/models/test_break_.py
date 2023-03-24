@@ -49,8 +49,8 @@ class TestCreateNewBreak:
     def test_create_new_for_valid_break(self):
         # Get some teachers and year groups to add
         school = data_factories.School()
-        teacher = data_factories.Teacher()
-        yg = data_factories.YearGroup()
+        teacher = data_factories.Teacher(school=school)
+        yg = data_factories.YearGroup(school=school)
 
         # Make the break
         break_ = models.Break.create_new(
@@ -60,8 +60,8 @@ class TestCreateNewBreak:
             starts_at=dt.time(hour=11, minute=30),
             ends_at=dt.time(hour=12),
             day_of_week=constants.Day.MONDAY,
-            teachers=teacher,
-            relevant_year_groups=yg,
+            teachers=models.Teacher.objects.all(),
+            relevant_year_groups=models.YearGroup.objects.all(),
         )
 
         # Check break in db and defined as expected
@@ -69,13 +69,9 @@ class TestCreateNewBreak:
         assert all_breaks.count() == 1
         assert break_ in all_breaks
 
-        all_teachers = break_.teachers.all()
-        assert all_teachers.count() == 1
-        assert teacher in all_teachers
+        assert break_.teachers.get() == teacher
 
-        all_ygs = break_.relevant_year_groups.all()
-        assert all_ygs.count() == 1
-        assert yg in all_ygs
+        assert break_.relevant_year_groups.get() == yg
 
     def test_create_new_raises_when_break_id_already_taken(self):
         break_ = data_factories.Break()
