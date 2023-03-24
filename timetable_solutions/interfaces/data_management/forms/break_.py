@@ -7,6 +7,7 @@ from typing import Any
 
 # Django imports
 from django import forms as django_forms
+from django.db import models as django_models
 
 # Local application imports
 from data import constants, models
@@ -142,6 +143,191 @@ class BreakUpdateYearGroups(django_forms.Form):
         elif slot_clash_str:
             raise django_forms.ValidationError(
                 "This break cannot be assigned to these year groups, since at least one year group has a "
+                f"slot at {slot_clash_str} clashing with this time."
+            )
+
+
+class _BreakCreateUpdateBase(base_forms.CreateUpdate):
+    """
+    Base form for the break create and update forms.
+    """
+
+    break_name = django_forms.CharField(
+        required=True,
+        label="Break name",
+    )
+
+    day_of_week = django_forms.TypedChoiceField(
+        required=True, choices=constants.Day.choices, label="Day of week", coerce=int
+    )
+
+    starts_at = django_forms.TimeField(required=True, label="When the break starts")
+
+    ends_at = django_forms.TimeField(required=True, label="When the break ends")
+
+    def raise_if_break_doesnt_end_after_starting(self) -> None:
+        if self.cleaned_data["starts_at"] >= self.cleaned_data["ends_at"]:
+            raise django_forms.ValidationError(
+                "The break must end after it has started!"
+            )
+
+
+class BreakUpdateTimings(_BreakCreateUpdateBase):
+    """
+    Form to update the name / time of a break slots with.
+    """
+
+    def __init__(self, *args: object, **kwargs: Any) -> None:
+        self.break_ = kwargs.pop("break_")
+        super().__init__(*args, **kwargs)
+
+    def clean(self) -> dict[str, Any]:
+        self.raise_if_break_doesnt_end_after_starting()
+        self._raise_if_updated_break_would_produce_a_clash()
+        return self.cleaned_data
+
+    def _raise_if_updated_break_would_produce_a_clash(self) -> None:
+        new_time_of_week = clash_filters.TimeOfWeek(
+            starts_at=self.cleaned_data["starts_at"],
+            ends_at=self.cleaned_data["ends_at"],
+            day_of_week=self.cleaned_data["day_of_week"],
+        )
+
+        # Check for clashes with breaks
+        check_against_breaks = models.Break.objects.filter(
+            django_models.Q(
+                relevant_year_groups__in=self.break_.relevant_year_groups.all()
+            )
+            | django_models.Q(teachers__in=self.break_.teachers.all())
+        ).exclude(break_id=self.break_.break_id)
+        break_clash_str = _get_break_clash_str(
+            time_of_week=new_time_of_week, check_against_breaks=check_against_breaks
+        )
+
+        # Check for clashes with slots
+        check_against_slots = models.TimetableSlot.objects.filter(
+            relevant_year_groups__in=self.break_.relevant_year_groups.all()
+        )
+        slot_clash_str = _get_slot_clash_str(
+            time_of_week=new_time_of_week, check_against_slots=check_against_slots
+        )
+
+        if break_clash_str and slot_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be updated to this time since at least one of its assigned year groups or teachers "
+                f"has a slot at {slot_clash_str} and break at {break_clash_str} clashing with this time."
+            )
+        elif break_clash_str:
+            raise django_forms.ValidationError(
+                "This slot cannot be updated to this time since at least one of its assigned year groups has a "
+                f"break at {break_clash_str} clashing with this time."
+            )
+        elif slot_clash_str:
+            raise django_forms.ValidationError(
+                "This slot cannot be updated to this time since at least one of its assigned year groups has a "
+                f"slot at {slot_clash_str} clashing with this time."
+            )
+
+
+class BreakCreate(_BreakCreateUpdateBase):
+    """
+    Form to create individual breaks with.
+    """
+
+    break_id = django_forms.CharField(
+        required=True,
+        label="Break ID",
+        help_text="Unique identifier to be used for this break.",
+    )
+
+    relevant_to_all_year_groups = django_forms.BooleanField(
+        required=False,
+        label="Relevant to all year groups",
+        help_text="Select this if this break is relevant to all of your year groups. "
+        "You can update the year groups this break is relevant to once created.",
+    )
+
+    relevant_to_all_teachers = django_forms.BooleanField(
+        required=False,
+        label="Relevant to all teachers",
+        help_text="Select this if this break is for all of your teachers. "
+        "You can update the teachers this break is relevant to once created.",
+    )
+
+    field_order = [
+        "break_id",
+        "break_name",
+        "day_of_week",
+        "starts_at",
+        "ends_at",
+        "relevant_to_all_year_groups",
+    ]
+
+    def clean(self) -> dict[str, Any]:
+        self.raise_if_break_doesnt_end_after_starting()
+
+        time_of_week = clash_filters.TimeOfWeek(
+            starts_at=self.cleaned_data["starts_at"],
+            ends_at=self.cleaned_data["ends_at"],
+            day_of_week=self.cleaned_data["day_of_week"],
+        )
+        if self.cleaned_data.get("relevant_to_all_year_groups", False):
+            self._raise_if_new_slot_would_produce_a_clash(time_of_week)
+        if self.cleaned_data.get("relevant_to_all_teachers", False):
+            self._raise_if_new_slot_would_produce_teacher_clash(time_of_week)
+        return self.cleaned_data
+
+    def _raise_if_new_slot_would_produce_teacher_clash(
+        self, time_of_week: clash_filters.TimeOfWeek
+    ) -> None:
+        # Get the breaks that have at least one teacher
+        check_against_breaks = models.Break.objects.annotate(
+            n_teachers=django_models.Count("teachers")
+        ).filter(
+            django_models.Q(school_id=self.school_id)
+            & django_models.Q(n_teachers__gt=0)
+        )
+        break_clash_str = _get_break_clash_str(
+            time_of_week=time_of_week, check_against_breaks=check_against_breaks
+        )
+
+        raise django_forms.ValidationError(
+            "This break cannot be assigned to all teachers since your school has a break "
+            f" at {break_clash_str} clashing with this time."
+        )
+
+    def _raise_if_new_slot_would_produce_a_clash(
+        self, time_of_week: clash_filters.TimeOfWeek
+    ) -> None:
+        # Check for clashes with breaks
+        check_against_breaks = models.Break.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        )
+        break_clash_str = _get_break_clash_str(
+            time_of_week=time_of_week, check_against_breaks=check_against_breaks
+        )
+
+        # Check for clashes with slots
+        check_against_slots = models.TimetableSlot.objects.get_all_instances_for_school(
+            school_id=self.school_id
+        )
+        slot_clash_str = _get_slot_clash_str(
+            time_of_week=time_of_week, check_against_slots=check_against_slots
+        )
+
+        if break_clash_str and slot_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be assigned to all year groups since your school has a "
+                f"slot at {slot_clash_str} and break at {break_clash_str} clashing with this time."
+            )
+        elif break_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be assigned to all year groups since your school has a "
+                f"break at {break_clash_str} clashing with this time."
+            )
+        elif slot_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be assigned to all year groups since your school has a "
                 f"slot at {slot_clash_str} clashing with this time."
             )
 

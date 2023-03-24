@@ -54,3 +54,35 @@ class TestBreakSearch:
 
         assert not form.is_valid()
         assert "Please enter a search term!" in form.errors.as_text()
+
+
+@pytest.mark.django_db
+class TestBreakCreateUpdateBase:
+    def test_valid_break_form_valid(self):
+        school = data_factories.School()
+
+        form = break_forms._BreakCreateUpdateBase(
+            school_id=school.school_access_key,
+            data={
+                "break_name": "my-break",
+                "starts_at": dt.time(hour=8),
+                "ends_at": dt.time(hour=9),
+                "day_of_week": constants.Day.MONDAY,
+            },
+        )
+
+        assert form.is_valid()
+
+    @pytest.mark.parametrize("starts_at", [dt.time(hour=9), dt.time(hour=9, minute=5)])
+    def test_break_starting_at_or_after_ending_invalid(self, starts_at: dt.time):
+        school = data_factories.School()
+
+        form = break_forms._BreakCreateUpdateBase(school_id=school.school_access_key)
+        form.cleaned_data = {
+            "break_name": "my-break",
+            "starts_at": starts_at,
+            "ends_at": dt.time(hour=9),
+            "day_of_week": constants.Day.MONDAY,
+        }
+
+        assert not form.is_valid()
