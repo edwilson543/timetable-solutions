@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'break-landing-page' %}" class="link-secondary text-decoration-none">
+            breaks
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        upload
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>Bulk upload breaks</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        <div class="card-header">
+            <b>Upload a csv file with the required structure</b>
+        </div>
+        <div class="card-body">
+            {% include 'partials/forms/basic-form.html' with enctype="multipart/form-data" form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" other_button_url=example_download_url other_button_text="Download example" %}
+        </div>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3">
+        <div class="card-header">
+            <b>Required file structure</b>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped w-100 text-nowrap">
+                <thead>
+                    <tr>
+                        <th>break_id</th>
+                        <th>break_name</th>
+                        <th>day_of_week</th>
+                        <th>starts_at</th>
+                        <th>ends_at</th>
+                        <th>teacher_ids</th>
+                        <th>relevant_year_group_ids</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Monday morning</td>
+                        <td>1</td>
+                        <td>09:00</td>
+                        <td>09:45</td>
+                        <td>1; 2</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <b>break_id*:</b> A positive integer (1, 2, 3, ...) used to identify this break.
+                Note that these must be unique
+            </li>
+            <li class="list-group-item">
+                <b>break_name*:</b> The name for this break
+            </li>
+            <li class="list-group-item">
+                <b>day_of_week*:</b> Day of week the break is on.
+                Please use 1, 2, ..., 7 to represent Monday, Tuesday, ..., Sunday
+            </li>
+            <li class="list-group-item">
+                <b>starts_at*:</b> When the break starts.
+                Give the time in the format HH:MM as shown in the example table.
+            </li>
+            <li class="list-group-item">
+                <b>ends_at*:</b> When the break ends.
+                Give the time in the format HH:MM as shown in the example table.
+            </li>
+            <li class="list-group-item">
+                <b>teacher_ids*:</b> IDs of the year groups this break is relevant to.
+                Separate each id with a semicolon as shown in the example table.
+            </li>
+            <li class="list-group-item">
+                <b>relevant_year_group_ids*:</b> IDs of the year groups this break is relevant to.
+                Separate each id with a semicolon as shown in the example table.
+                <ul>
+                    <li>
+                        Note that each year group can have its own timetable structure. To do this, only
+                        reference certain year group ids in this column
+                    </li>
+                    <li>
+                        Alternatively, you can re-use a break for multiple year groups by including
+                        the relevant year group ids in this column, separated by semicolons
+                    </li>
+                    <li>
+                        Note that no two breaks that are relevant to a year group are allowed to
+                        overlap in time
+                    </li>
+                    <li>
+                        Similarly, a break and a break relevant to the same year group cannot
+                        overlap in time
+                    </li>
+                </ul>
+            </li>
+            <li class="list-group-item">
+                <i>*required - no empty values are allowed in these columns</i>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+<!--Documentation-->
+
+{% endblock %}
