@@ -38,7 +38,7 @@
 <div
     class="row mx-3 my-1"
     hx-get="{% url 'teacher-lessons-partial' serialized_model_instance.teacher_id %}"
-    hx-trigger="revealed"
+    hx-trigger="load"
     hx-target="this"
     hx-swap="innerHTML"
 >

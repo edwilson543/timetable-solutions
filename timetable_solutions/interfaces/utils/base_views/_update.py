@@ -191,7 +191,7 @@ class UpdateView(
             self.delete_model_instance()
             messages.success(request=self.request, message=msg)
         except base_exceptions.UnableToDeleteModelInstance as exc:
-            context = super().get_context_data()
+            context = self.get_context_data()
             context["deletion_error_message"] = exc.human_error_message
             return super().render_to_response(context=context)
         return http.HttpResponseRedirect(self.delete_success_url)

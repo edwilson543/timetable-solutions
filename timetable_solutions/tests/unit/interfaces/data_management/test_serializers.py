@@ -2,6 +2,7 @@
 
 # Standard library imports
 import datetime as dt
+from collections import OrderedDict
 
 # Third party imports
 import pytest
@@ -48,21 +49,63 @@ class TestYearGroupSerializer:
 @pytest.mark.django_db
 class TestLessonSerializer:
     def test_serialize_individual_instance(self):
-        lesson = data_factories.Lesson.with_n_pupils()
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        lesson = data_factories.Lesson(school=school, pupils=(pupil,))
 
         serialized_lesson = serializers.Lesson(lesson).data
 
-        assert serialized_lesson == serializers_helpers.expected_lesson(lesson)
+        assert serialized_lesson == OrderedDict(
+            [
+                ("lesson_id", lesson.lesson_id),
+                ("subject_name", lesson.subject_name),
+                ("year_group", yg.year_group_name),
+                ("teacher", f"{lesson.teacher.title} {lesson.teacher.surname}"),
+                (
+                    "classroom",
+                    f"{lesson.classroom.building} {lesson.classroom.room_number}",
+                ),
+                ("total_required_slots", lesson.total_required_slots),
+            ]
+        )
 
     def test_serialize_multiple_lessons(self):
-        lesson_a = data_factories.Lesson.with_n_pupils()
-        lesson_b = data_factories.Lesson.with_n_pupils()
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+        pupil = data_factories.Pupil(school=school, year_group=yg)
+        lesson_a = data_factories.Lesson(school=school, pupils=(pupil,))
+        lesson_b = data_factories.Lesson(school=school, pupils=(pupil,))
 
         serialized_lessons = serializers.Lesson([lesson_a, lesson_b], many=True).data
 
         assert serialized_lessons == [
-            serializers_helpers.expected_lesson(lesson_a),
-            serializers_helpers.expected_lesson(lesson_b),
+            OrderedDict(
+                [
+                    ("lesson_id", lesson_a.lesson_id),
+                    ("subject_name", lesson_a.subject_name),
+                    ("year_group", yg.year_group_name),
+                    ("teacher", f"{lesson_a.teacher.title} {lesson_a.teacher.surname}"),
+                    (
+                        "classroom",
+                        f"{lesson_a.classroom.building} {lesson_a.classroom.room_number}",
+                    ),
+                    ("total_required_slots", lesson_a.total_required_slots),
+                ]
+            ),
+            OrderedDict(
+                [
+                    ("lesson_id", lesson_b.lesson_id),
+                    ("subject_name", lesson_b.subject_name),
+                    ("year_group", yg.year_group_name),
+                    ("teacher", f"{lesson_b.teacher.title} {lesson_b.teacher.surname}"),
+                    (
+                        "classroom",
+                        f"{lesson_b.classroom.building} {lesson_b.classroom.room_number}",
+                    ),
+                    ("total_required_slots", lesson_b.total_required_slots),
+                ]
+            ),
         ]
 
 
