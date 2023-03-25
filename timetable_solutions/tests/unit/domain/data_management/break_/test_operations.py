@@ -58,8 +58,7 @@ class TestCreateNewBreak:
             )
 
         assert (
-            "Could not create break with the given data."
-            in exc.value.human_error_message
+            "A break with the given id already exists!" in exc.value.human_error_message
         )
 
     def test_creates_new_break_relevant_to_all_year_groups(self):

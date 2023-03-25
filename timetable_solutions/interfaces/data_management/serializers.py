@@ -198,4 +198,4 @@ class Break(serializers.Serializer):
         """
         Get the url for this break's update / detail view page.
         """
-        return ""  # TODO
+        return UrlName.BREAK_UPDATE.url(break_id=obj.break_id)

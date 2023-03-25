@@ -51,19 +51,20 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>1</td>
+                        <td>mon-morn-1</td>
                         <td>Monday morning</td>
                         <td>1</td>
                         <td>09:00</td>
                         <td>09:45</td>
                         <td>1; 2</td>
+                        <td>1; 2; 3</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-                <b>break_id*:</b> A positive integer (1, 2, 3, ...) used to identify this break.
+                <b>break_id*:</b> A text identifier used to identify this break.
                 Note that these must be unique
             </li>
             <li class="list-group-item">
@@ -75,19 +76,19 @@
             </li>
             <li class="list-group-item">
                 <b>starts_at*:</b> When the break starts.
-                Give the time in the format HH:MM as shown in the example table.
+                Give the time in the format HH:MM as shown in the example table
             </li>
             <li class="list-group-item">
                 <b>ends_at*:</b> When the break ends.
-                Give the time in the format HH:MM as shown in the example table.
+                Give the time in the format HH:MM as shown in the example table
             </li>
             <li class="list-group-item">
-                <b>teacher_ids*:</b> IDs of the year groups this break is relevant to.
-                Separate each id with a semicolon as shown in the example table.
+                <b>teacher_ids*:</b> IDs of the teachers this break is relevant to.
+                Separate each id with a semicolon as shown in the example table
             </li>
             <li class="list-group-item">
                 <b>relevant_year_group_ids*:</b> IDs of the year groups this break is relevant to.
-                Separate each id with a semicolon as shown in the example table.
+                Separate each id with a semicolon as shown in the example table
                 <ul>
                     <li>
                         Note that each year group can have its own timetable structure. To do this, only

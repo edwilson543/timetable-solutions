@@ -21,7 +21,7 @@ class BreakSearch(django_forms.Form):
     """
 
     search_term = django_forms.CharField(
-        required=False, label="Search for a break by name or id."
+        required=False, label="Search for a break by name or id"
     )
 
     day_of_week = django_forms.TypedChoiceField(
@@ -56,10 +56,10 @@ class BreakSearch(django_forms.Form):
         """
         Ensure some search criteria was given.
         """
-        slot_id = self.cleaned_data.get("slot_id", None)
+        search_term = self.cleaned_data.get("search_term", None)
         day = self.cleaned_data.get("day_of_week", None)
         year_group = self.cleaned_data["year_group"]
-        if not (slot_id or day or year_group):
+        if not (search_term or day or year_group):
             raise django_forms.ValidationError("Please enter a search term!")
 
         return self.cleaned_data
@@ -219,12 +219,12 @@ class BreakUpdateTimings(_BreakCreateUpdateBase):
             )
         elif break_clash_str:
             raise django_forms.ValidationError(
-                "This slot cannot be updated to this time since at least one of its assigned year groups has a "
+                "This break cannot be updated to this time since at least one of its assigned year groups has a "
                 f"break at {break_clash_str} clashing with this time."
             )
         elif slot_clash_str:
             raise django_forms.ValidationError(
-                "This slot cannot be updated to this time since at least one of its assigned year groups has a "
+                "This break cannot be updated to this time since at least one of its assigned year groups has a "
                 f"slot at {slot_clash_str} clashing with this time."
             )
 
@@ -243,14 +243,14 @@ class BreakCreate(_BreakCreateUpdateBase):
     relevant_to_all_year_groups = django_forms.BooleanField(
         required=False,
         label="Relevant to all year groups",
-        help_text="Select this if this break is relevant to all of your year groups. "
+        help_text="Select this if the break is for all of your year groups. "
         "You can update the year groups this break is relevant to once created.",
     )
 
     relevant_to_all_teachers = django_forms.BooleanField(
         required=False,
         label="Relevant to all teachers",
-        help_text="Select this if this break is for all of your teachers. "
+        help_text="Select this if the break is for all of your teachers. "
         "You can update the teachers this break is relevant to once created.",
     )
 

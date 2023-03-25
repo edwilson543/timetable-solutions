@@ -156,6 +156,6 @@ def expected_break(break_: models.Break) -> OrderedDict:
                 "teachers",
                 [expected_teacher(teacher) for teacher in break_.teachers.all()],
             ),
-            ("update_url", ""),
+            ("update_url", UrlName.BREAK_UPDATE.url(break_id=break_.break_id)),
         ]
     )

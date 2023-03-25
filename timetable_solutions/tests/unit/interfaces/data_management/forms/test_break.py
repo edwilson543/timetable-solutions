@@ -21,10 +21,10 @@ class TestBreakSearch:
 
         form = break_forms.BreakSearch(
             school_id=break_.school.school_access_key,
-            data={"break_id": break_.break_id},
+            data={"search_term": break_.break_id},
         )
 
-        form.is_valid()
+        assert form.is_valid()
 
     def test_form_valid_for_day_of_week_search(self):
         school = data_factories.School()

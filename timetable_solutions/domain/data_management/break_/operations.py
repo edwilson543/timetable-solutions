@@ -68,7 +68,11 @@ def create_new_break(
             teachers=teachers,
             relevant_year_groups=relevant_year_groups,
         )
-    except (IntegrityError, ValidationError) as exc:
+    except IntegrityError as exc:
+        raise UnableToCreateBreak(
+            human_error_message="A break with the given id already exists!"
+        ) from exc
+    except ValidationError as exc:
         raise UnableToCreateBreak(
             human_error_message="Could not create break with the given data."
         ) from exc

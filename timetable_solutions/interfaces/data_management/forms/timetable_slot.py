@@ -272,7 +272,7 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
     relevant_to_all_year_groups = django_forms.BooleanField(
         required=False,
         label="Relevant to all year groups",
-        help_text="Select this if this timetable slot is relevant to all of your year groups. "
+        help_text="Select this if the slot is for all of your year groups. "
         "You can update the year groups this timetable slot is relevant to once created.",
     )
 
