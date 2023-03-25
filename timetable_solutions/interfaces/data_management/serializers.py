@@ -168,3 +168,34 @@ class TimetableSlot(serializers.Serializer):
         Get the url for this slot's update / detail view page.
         """
         return UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=obj.slot_id)
+
+
+class Break(serializers.Serializer):
+    """
+    Serialize breaks for use in template context.
+    """
+
+    break_id = serializers.CharField()
+    break_name = serializers.CharField()
+    day_of_week = serializers.SerializerMethodField(method_name="_day_of_week")
+    starts_at = serializers.TimeField(format="%H:%M")
+    ends_at = serializers.TimeField(format="%H:%M")
+
+    # Relational data
+    relevant_year_groups = YearGroup(many=True)
+    teachers = Teacher(many=True)
+
+    # Non-field data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
+    def _day_of_week(self, obj: models.Break) -> str:
+        """
+        Get the day of the week label from the value.
+        """
+        return constants.Day(obj.day_of_week).label
+
+    def _get_update_url(self, obj: models.Break) -> str:
+        """
+        Get the url for this break's update / detail view page.
+        """
+        return UrlName.BREAK_UPDATE.url(break_id=obj.break_id)

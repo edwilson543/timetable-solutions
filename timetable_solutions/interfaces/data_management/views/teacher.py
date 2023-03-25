@@ -13,7 +13,7 @@ from domain.data_management.constants import ExampleFile
 from domain.data_management.teachers import operations, queries
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
-from interfaces.data_management.views import base_views
+from interfaces.utils import base_views
 
 
 class TeacherLanding(base_views.LandingView):

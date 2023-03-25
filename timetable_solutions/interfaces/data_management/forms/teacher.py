@@ -22,7 +22,7 @@ class TeacherSearch(django_forms.Form):
         required=True,
         label="Search term",
         initial="",
-        help_text="Search for a teacher by name or id.",
+        help_text="Search for a teacher by name or id",
         error_messages={"required": "Please enter a search term!"},
     )
 

@@ -135,3 +135,27 @@ def expected_slot(slot: models.TimetableSlot) -> OrderedDict:
             ("update_url", UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=slot.slot_id)),
         ]
     )
+
+
+def expected_break(break_: models.Break) -> OrderedDict:
+    """
+    Get the expected serialized data from a single break.
+    """
+    return OrderedDict(
+        [
+            ("break_id", break_.break_id),
+            ("break_name", break_.break_name),
+            ("day_of_week", constants.Day(break_.day_of_week).label),
+            ("starts_at", break_.starts_at.strftime("%H:%M")),
+            ("ends_at", break_.ends_at.strftime("%H:%M")),
+            (
+                "relevant_year_groups",
+                [expected_year_group(yg) for yg in break_.relevant_year_groups.all()],
+            ),
+            (
+                "teachers",
+                [expected_teacher(teacher) for teacher in break_.teachers.all()],
+            ),
+            ("update_url", UrlName.BREAK_UPDATE.url(break_id=break_.break_id)),
+        ]
+    )

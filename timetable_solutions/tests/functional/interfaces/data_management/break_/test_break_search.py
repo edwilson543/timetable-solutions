@@ -1,5 +1,5 @@
 """
-Tests for the slot search view in the data management app.
+Tests for the break search view in the data management app.
 """
 
 # Standard library imports
@@ -13,31 +13,31 @@ from tests.functional.client import TestClient
 from tests.helpers import serializers as serializers_helpers
 
 
-class TestTimetableSlotSearch(TestClient):
-    def test_loads_all_slots_for_school_then_filters_by_search_term(self):
+class TestBreakSearch(TestClient):
+    def test_loads_all_breaks_for_school_then_filters_by_search_term(self):
         # Create a school and authorise the test client for this school
         school = data_factories.School()
         self.authorise_client_for_school(school)
 
         # Create some data for the school
         yg = data_factories.YearGroup(school=school)
-        slot_1 = data_factories.TimetableSlot(
-            slot_id=1, school=school, relevant_year_groups=(yg,)
+        break_a = data_factories.Break(
+            break_id="aaa", school=school, relevant_year_groups=(yg,)
         )
-        slot_2 = data_factories.TimetableSlot(slot_id=2, school=school)
+        break_b = data_factories.Break(break_id="bbb", school=school)
 
-        # Create a slot at some other school
-        data_factories.TimetableSlot()
+        # Create a break_ at some other school
+        data_factories.Break()
 
-        # Navigate to the slot search view
-        url = UrlName.TIMETABLE_SLOT_LIST.url()
+        # Navigate to the break_ search view
+        url = UrlName.BREAK_LIST.url()
         response = self.client.get(url)
 
         # Check response ok and has the correct context
         assert response.status_code == 200
         assert response.context["page_obj"].object_list == [
-            serializers_helpers.expected_slot(slot_1),
-            serializers_helpers.expected_slot(slot_2),
+            serializers_helpers.expected_break(break_a),
+            serializers_helpers.expected_break(break_b),
         ]
 
         django_form = response.context["form"]
@@ -52,48 +52,46 @@ class TestTimetableSlotSearch(TestClient):
         # Check response ok and search results
         assert search_response.status_code == 200
 
-        slots = search_response.context["page_obj"].object_list
-        assert slots == [serializers_helpers.expected_slot(slot_1)]
+        breaks = search_response.context["page_obj"].object_list
+        assert breaks == [serializers_helpers.expected_break(break_a)]
 
         # The form should be populated with the existing search
         webtest_form = search_response.forms["search-form"]
-        assert webtest_form["slot_id"].value == ""
+        assert webtest_form["search_term"].value == ""
         assert webtest_form["year_group"].value == str(yg.id)
 
-    @mock.patch.object(views.TimetableSlotSearch, "paginate_by", 1)
-    def test_loads_paginated_slots_then_form_invalid_because_searched_slot_id_has_no_slot(
+    @mock.patch.object(views.BreakSearch, "paginate_by", 1)
+    def test_loads_paginated_breaks_then_form_invalid_because_no_search_term(
         self,
     ):
         # Create a school and authorise the test client to this school
         school = data_factories.School()
         self.authorise_client_for_school(school)
 
-        # Create some slot data for our school
-        slot_1 = data_factories.TimetableSlot(slot_id=1, school=school)
-        slot_2 = data_factories.TimetableSlot(slot_id=2, school=school)
+        # Create some break_ data for our school
+        break_a = data_factories.Break(break_id="aaa", school=school)
+        break_b = data_factories.Break(break_id="bbb", school=school)
 
-        # Navigate to the slot search view
-        url = UrlName.TIMETABLE_SLOT_LIST.url()
+        # Navigate to the break_ search view
+        url = UrlName.BREAK_LIST.url()
         response = self.client.get(url)
 
         # Check response ok
         assert response.status_code == 200
 
-        # Check the slots have been paginated across two pages
+        # Check the breaks have been paginated across two pages
         page_1 = response.context["page_obj"]
-        assert page_1.object_list == [serializers_helpers.expected_slot(slot_1)]
+        assert page_1.object_list == [serializers_helpers.expected_break(break_a)]
         assert page_1.has_next()
 
         paginator = response.context["paginator"]
         assert paginator.object_list == [
-            serializers_helpers.expected_slot(slot_1),
-            serializers_helpers.expected_slot(slot_2),
+            serializers_helpers.expected_break(break_a),
+            serializers_helpers.expected_break(break_b),
         ]
 
-        # Retrieve the html form and submit a search for a non-existent slot id
+        # Retrieve the html form and submit an empty search term
         webtest_form = response.forms["search-form"]
-        invalid_id = slot_1.slot_id + slot_2.slot_id
-        webtest_form["slot_id"] = invalid_id
         search_response = webtest_form.submit(name="search-submit", value="Search")
 
         # Check response ok
@@ -101,12 +99,9 @@ class TestTimetableSlotSearch(TestClient):
 
         # Form should show errors
         django_form = search_response.context["form"]
-        assert (
-            f"No timetable slot with id: {invalid_id} exists!"
-            in django_form.errors.as_text()
-        )
+        assert django_form.errors.as_text()
 
-        # The full slot list should still be shown
+        # The full break_ list should still be shown
         page_1 = search_response.context["page_obj"]
-        assert page_1.object_list == [serializers_helpers.expected_slot(slot_1)]
+        assert page_1.object_list == [serializers_helpers.expected_break(break_a)]
         assert page_1.has_next()

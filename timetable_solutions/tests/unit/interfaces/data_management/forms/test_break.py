@@ -1,5 +1,5 @@
 """
-Unit tests for forms relating to the TimetableSlot model.
+Unit tests for forms relating to the Break model.
 """
 
 # Standard library imports
@@ -8,40 +8,28 @@ import datetime as dt
 # Third party imports
 import pytest
 
-# Django imports
-from django import forms as django_forms
-
 # Local application imports
 from data import constants
-from interfaces.data_management.forms import timetable_slot as timetable_slot_forms
+from interfaces.data_management.forms import break_ as break_forms
 from tests import data_factories
 
 
 @pytest.mark.django_db
-class TestTimetableSlotSearch:
-    def test_form_valid_for_valid_slot_id_search(self):
-        slot = data_factories.TimetableSlot()
+class TestBreakSearch:
+    def test_form_valid_for_valid_break_search_term(self):
+        break_ = data_factories.Break()
 
-        form = timetable_slot_forms.TimetableSlotSearch(
-            school_id=slot.school.school_access_key, data={"slot_id": slot.slot_id}
+        form = break_forms.BreakSearch(
+            school_id=break_.school.school_access_key,
+            data={"search_term": break_.break_id},
         )
 
-        form.is_valid()
-
-    def test_form_invalid_for_invalid_slot_id_search(self):
-        school = data_factories.School()
-
-        form = timetable_slot_forms.TimetableSlotSearch(
-            school_id=school.school_access_key, data={"slot_id": 10}
-        )
-
-        assert not form.is_valid()
-        assert "No timetable slot with id: 10 exists!" in form.errors.as_text()
+        assert form.is_valid()
 
     def test_form_valid_for_day_of_week_search(self):
         school = data_factories.School()
 
-        form = timetable_slot_forms.TimetableSlotSearch(
+        form = break_forms.BreakSearch(
             school_id=school.school_access_key,
             data={"day_of_week": constants.Day.MONDAY.value},
         )
@@ -52,7 +40,7 @@ class TestTimetableSlotSearch:
     def test_form_valid_for_year_group_search(self):
         yg = data_factories.YearGroup()
 
-        form = timetable_slot_forms.TimetableSlotSearch(
+        form = break_forms.BreakSearch(
             school_id=yg.school.school_access_key, data={"year_group": yg.pk}
         )
 
@@ -62,22 +50,21 @@ class TestTimetableSlotSearch:
     def test_form_invalid_when_no_search_term_given(self):
         school = data_factories.School()
 
-        form = timetable_slot_forms.TimetableSlotSearch(
-            school_id=school.school_access_key, data={}
-        )
+        form = break_forms.BreakSearch(school_id=school.school_access_key, data={})
 
         assert not form.is_valid()
         assert "Please enter a search term!" in form.errors.as_text()
 
 
 @pytest.mark.django_db
-class TestTimetableSlotCreateUpdateBase:
-    def test_valid_slot_form_valid(self):
+class TestBreakCreateUpdateBase:
+    def test_valid_break_form_valid(self):
         school = data_factories.School()
 
-        form = timetable_slot_forms._TimetableSlotCreateUpdateBase(
+        form = break_forms._BreakCreateUpdateBase(
             school_id=school.school_access_key,
             data={
+                "break_name": "my-break",
                 "starts_at": dt.time(hour=8),
                 "ends_at": dt.time(hour=9),
                 "day_of_week": constants.Day.MONDAY,
@@ -87,19 +74,15 @@ class TestTimetableSlotCreateUpdateBase:
         assert form.is_valid()
 
     @pytest.mark.parametrize("starts_at", [dt.time(hour=9), dt.time(hour=9, minute=5)])
-    def test_slot_starting_at_or_after_ending_invalid(self, starts_at: dt.time):
+    def test_break_starting_at_or_after_ending_invalid(self, starts_at: dt.time):
         school = data_factories.School()
 
-        form = timetable_slot_forms._TimetableSlotCreateUpdateBase(
-            school_id=school.school_access_key,
-        )
+        form = break_forms._BreakCreateUpdateBase(school_id=school.school_access_key)
         form.cleaned_data = {
+            "break_name": "my-break",
             "starts_at": starts_at,
             "ends_at": dt.time(hour=9),
             "day_of_week": constants.Day.MONDAY,
         }
 
-        with pytest.raises(django_forms.ValidationError) as exc:
-            form.raise_if_slot_doesnt_end_after_starting()
-
-        assert "The slot must end after it has started!" in exc.value
+        assert not form.is_valid()

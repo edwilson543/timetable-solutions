@@ -104,8 +104,8 @@ class Break(models.Model):
         day_of_week: constants.Day,
         starts_at: dt.time,
         ends_at: dt.time,
-        teachers: TeacherQuerySet,
-        relevant_year_groups: YearGroupQuerySet,
+        teachers: TeacherQuerySet | None,
+        relevant_year_groups: YearGroupQuerySet | None,
     ) -> "Break":
         """
         Method for creating a new Break instance in the db.
@@ -120,8 +120,10 @@ class Break(models.Model):
         )
         break_.full_clean()
 
-        break_.add_teachers(teachers)
-        break_.add_year_groups(relevant_year_groups)
+        if teachers:
+            break_._add_teachers(teachers)
+        if relevant_year_groups:
+            break_._add_year_groups(relevant_year_groups)
 
         return break_
 
@@ -136,20 +138,42 @@ class Break(models.Model):
     # Mutators
     # --------------------
 
-    def add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
+    def update_break_timings(
+        self,
+        *,
+        break_name: str = "",
+        day_of_week: constants.Day | None = None,
+        starts_at: dt.time | None = None,
+        ends_at: dt.time | None = None,
+    ) -> "Break":
+        """
+        Update the time of day that this slot occurs at.
+        """
+        self.break_name = break_name or self.break_name
+        self.day_of_week = day_of_week or self.day_of_week
+        self.starts_at = starts_at or self.starts_at
+        self.ends_at = ends_at or self.ends_at
+        self.save(update_fields=["break_name", "day_of_week", "starts_at", "ends_at"])
+        return self
+
+    def update_relevant_year_groups(
+        self,
+        relevant_year_groups: YearGroupQuerySet,
+    ) -> "Break":
+        """
+        Update the year groups that are relevant to this slot.
+        """
+        self.relevant_year_groups.set(relevant_year_groups)
+        return self
+
+    def _add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
         """
         Add one or more teachers to a break instance.
         """
-        if isinstance(teachers, TeacherQuerySet):
-            self.teachers.add(*teachers)
-        elif isinstance(teachers, Teacher):
-            self.teachers.add(teachers)
+        self.teachers.add(*teachers)
 
-    def add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
+    def _add_year_groups(self, year_groups: YearGroupQuerySet | YearGroup) -> None:
         """
         Add one or more year groups to a break instance.
         """
-        if isinstance(year_groups, YearGroupQuerySet):
-            self.relevant_year_groups.add(*year_groups)
-        elif isinstance(year_groups, YearGroup):
-            self.relevant_year_groups.add(year_groups)
+        self.relevant_year_groups.add(*year_groups)

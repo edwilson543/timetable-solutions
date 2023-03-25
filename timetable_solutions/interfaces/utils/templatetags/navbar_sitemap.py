@@ -62,7 +62,11 @@ def sitemap() -> list[PageCollection]:
                     url=UrlName.TIMETABLE_SLOT_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-clock",
                 ),
-                Page("Breaks", url="", fa_icon="fa-solid fa-baseball-bat-ball"),
+                Page(
+                    "Breaks",
+                    url=UrlName.BREAK_LANDING_PAGE.url(),
+                    fa_icon="fa-solid fa-baseball-bat-ball",
+                ),
                 Page(
                     "Pupils",
                     url=UrlName.PUPIL_LANDING_PAGE.url(),

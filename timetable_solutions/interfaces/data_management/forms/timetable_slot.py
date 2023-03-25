@@ -188,7 +188,7 @@ class _TimetableSlotCreateUpdateBase(base_forms.CreateUpdate):
     """
 
     day_of_week = django_forms.TypedChoiceField(
-        required=False, choices=constants.Day.choices, label="Day of week", coerce=int
+        required=True, choices=constants.Day.choices, label="Day of week", coerce=int
     )
 
     starts_at = django_forms.TimeField(required=True, label="When the slot starts")
@@ -208,10 +208,7 @@ class TimetableSlotUpdateTimings(_TimetableSlotCreateUpdateBase):
     """
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
-        slot = kwargs.pop("slot")
-        self.slot = models.TimetableSlot.objects.get_individual_timeslot(
-            school_id=kwargs["school_id"], slot_id=slot.slot_id
-        )
+        self.slot = kwargs.pop("slot")
         super().__init__(*args, **kwargs)
 
     def clean(self) -> dict[str, Any]:
@@ -275,7 +272,7 @@ class TimetableSlotCreate(_TimetableSlotCreateUpdateBase):
     relevant_to_all_year_groups = django_forms.BooleanField(
         required=False,
         label="Relevant to all year groups",
-        help_text="Select this if this timetable slot is relevant to all of your year groups. "
+        help_text="Select this if the slot is for all of your year groups. "
         "You can update the year groups this timetable slot is relevant to once created.",
     )
 
