@@ -34,6 +34,14 @@
     </div>
 </div>
 
-{% include 'data_management/partials/tables/related-lessons-table.html' with lessons=serialized_model_instance.lessons %}
+<!--    Lazy-load the related lessons-->
+<div
+    class="row mx-3 my-1"
+    hx-get="{% url 'pupil-lessons-partial' serialized_model_instance.pupil_id %}"
+    hx-trigger="load"
+    hx-target="this"
+    hx-swap="innerHTML"
+>
+</div>
 
 {% endblock %}

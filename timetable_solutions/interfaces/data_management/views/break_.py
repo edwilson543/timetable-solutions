@@ -65,7 +65,6 @@ class BreakSearch(base_views.SearchView):
         "ends_at": "Ends at",
     }
     page_url = UrlName.BREAK_LIST.url(lazy=True)
-    update_url = UrlName.BREAK_UPDATE
 
     def execute_search_from_clean_form(
         self, form: forms.BreakSearch

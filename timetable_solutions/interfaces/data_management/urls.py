@@ -67,6 +67,11 @@ urlpatterns = [
         name=UrlName.CLASSROOM_UPDATE.value,
     ),
     path(
+        "classrooms/list/<int:classroom_id>/lessons/",
+        views.ClassroomLessonsPartial.as_view(),
+        name=UrlName.CLASSROOM_LESSONS_PARTIAL.value,
+    ),
+    path(
         "classrooms/upload/",
         views.ClassroomUpload.as_view(),
         name=UrlName.CLASSROOM_UPLOAD.value,
@@ -100,6 +105,11 @@ urlpatterns = [
         name=UrlName.PUPIL_UPDATE.value,
     ),
     path(
+        "pupils/list/<int:pupil_id>/lessons/",
+        views.PupilLessonsPartial.as_view(),
+        name=UrlName.PUPIL_LESSONS_PARTIAL.value,
+    ),
+    path(
         "pupils/upload/",
         views.PupilUpload.as_view(),
         name=UrlName.PUPIL_UPLOAD.value,
@@ -131,6 +141,11 @@ urlpatterns = [
         "teachers/list/<int:teacher_id>/",
         views.TeacherUpdate.as_view(),
         name=UrlName.TEACHER_UPDATE.value,
+    ),
+    path(
+        "teachers/list/<int:teacher_id>/lessons/",
+        views.TeacherLessonsPartial.as_view(),
+        name=UrlName.TEACHER_LESSONS_PARTIAL.value,
     ),
     path(
         "teachers/upload/",

@@ -18,6 +18,7 @@ from django.views import generic
 from domain.data_management import base_exceptions
 from interfaces.constants import UrlName
 from interfaces.data_management.forms import base_forms
+from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import (
     AuthenticatedHtmxRequest,
     AuthenticatedHttpRequest,
@@ -31,7 +32,12 @@ _DELETE_SUBMIT = "delete-submit"
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 
 
-class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
+class UpdateView(
+    _htmx_views.HTMXViewMixin,
+    mixins.LoginRequiredMixin,
+    generic.FormView,
+    Generic[_ModelT],
+):
     """
     Page displaying a school's data for a single instance of a model,
     and allowing this data to be updated or deleted.
@@ -65,7 +71,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     delete_success_url: ClassVar[str]
     """URL to redirect to following a successful deletion."""
 
-    enabled_form_template_name = "partials/forms/basic-form.html"
+    enabled_form_template_name = "utils/forms/basic-form.html"
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following
@@ -185,7 +191,7 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
             self.delete_model_instance()
             messages.success(request=self.request, message=msg)
         except base_exceptions.UnableToDeleteModelInstance as exc:
-            context = super().get_context_data()
+            context = self.get_context_data()
             context["deletion_error_message"] = exc.human_error_message
             return super().render_to_response(context=context)
         return http.HttpResponseRedirect(self.delete_success_url)
@@ -246,13 +252,6 @@ class UpdateView(mixins.LoginRequiredMixin, generic.FormView, Generic[_ModelT]):
     def is_delete_request(self) -> bool:
         """Whether this view is handling the attempted deletion of data."""
         return _DELETE_SUBMIT in self.request.POST
-
-    @property
-    def is_htmx_get_request(self) -> bool:
-        """Whether the request being handled is an htmx request."""
-        return (self.request.method == "GET") and (
-            "Http-Hx-Request" in self.request.headers.keys() or bool(self.request.htmx)
-        )
 
     @property
     def page_url(self) -> str:

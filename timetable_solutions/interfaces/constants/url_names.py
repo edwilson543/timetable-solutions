@@ -60,6 +60,7 @@ class UrlName(StrEnum):
     CLASSROOM_CREATE = "classroom-create"
     CLASSROOM_DOWNLOAD = "classroom-download"
     CLASSROOM_LANDING_PAGE = "classroom-landing-page"
+    CLASSROOM_LESSONS_PARTIAL = "classroom-lessons-partial"  # kwargs: classroom_id: int
     CLASSROOM_LIST = "classroom-list"
     CLASSROOM_UPDATE = "classroom-update"  # kwargs: classroom_id: int
     CLASSROOM_UPLOAD = "classroom-upload"
@@ -68,6 +69,7 @@ class UrlName(StrEnum):
     PUPIL_CREATE = "pupil-create"
     PUPIL_DOWNLOAD = "pupil-download"
     PUPIL_LANDING_PAGE = "pupil-landing-page"
+    PUPIL_LESSONS_PARTIAL = "pupil-lessons-partial"  # kwargs: pupil_id: int
     PUPIL_LIST = "pupil-list"
     PUPIL_UPDATE = "pupil-update"  # kwargs: pupil_id: int
     PUPIL_UPLOAD = "pupil-upload"
@@ -76,6 +78,7 @@ class UrlName(StrEnum):
     TEACHER_CREATE = "teacher-create"
     TEACHER_DOWNLOAD = "teacher-download"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
+    TEACHER_LESSONS_PARTIAL = "teacher-lessons-partial"  # kwargs: teacher_id: int
     TEACHER_LIST = "teacher-list"
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: int
     TEACHER_UPLOAD = "teacher-upload"

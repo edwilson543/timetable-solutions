@@ -11,7 +11,7 @@ deletion_error_message: str
 
     <!--    The disabled update form-->
     <form hx-get="{{ page_url }}" hx-target="#edit-delete-wrapper" hx-swap="outerHTML" id="disabled-update-form">
-        {% include 'partials/forms/non-field-errors.html' with form=form %}
+        {% include 'utils/forms/non-field-errors.html' with form=form %}
 
         {% if deletion_error_message %}
             <div class="alert alert-danger p-2" role="alert">{{ deletion_error_message }}</div>
@@ -19,7 +19,7 @@ deletion_error_message: str
 
         <fieldset disabled>
             {% for field in form %}
-                {% include 'partials/forms/form-field.html' with field=field only %}
+                {% include 'utils/forms/form-field.html' with field=field only %}
             {% endfor %}
         </fieldset>
     </form>

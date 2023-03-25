@@ -49,25 +49,15 @@ class Lesson(serializers.Serializer):
     def _year_group(self, obj: models.Lesson) -> str:
         return obj.get_associated_year_group().year_group_name
 
-    def _teacher(self, obj: models.Lesson) -> dict[str, str]:
-        if obj.teacher:
-            return {
-                "name": str(obj.teacher),
-                "url": UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher.teacher_id),
-            }
-        else:
-            return {}
+    def _teacher(self, obj: models.Lesson) -> str:
+        if teacher := obj.teacher:
+            return teacher.title + " " + teacher.surname
+        return "N/A"
 
-    def _classroom(self, obj: models.Lesson) -> dict[str, str]:
-        if obj.classroom:
-            return {
-                "name": str(obj.classroom),
-                "url": UrlName.CLASSROOM_UPDATE.url(
-                    classroom_id=obj.classroom.classroom_id
-                ),
-            }
-        else:
-            return {}
+    def _classroom(self, obj: models.Lesson) -> str:
+        if classroom := obj.classroom:
+            return classroom.building + " " + str(classroom.room_number)
+        return "N/A"
 
 
 class Teacher(serializers.Serializer):
@@ -79,9 +69,6 @@ class Teacher(serializers.Serializer):
     firstname = serializers.CharField()
     surname = serializers.CharField()
     title = serializers.CharField()
-
-    # Relational data
-    lessons = Lesson(many=True)
 
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
@@ -102,9 +89,6 @@ class Classroom(serializers.Serializer):
     building = serializers.CharField()
     room_number = serializers.IntegerField()
 
-    # Relational data
-    lessons = Lesson(many=True)
-
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
 
@@ -123,10 +107,7 @@ class Pupil(serializers.Serializer):
     pupil_id = serializers.IntegerField()
     firstname = serializers.CharField()
     surname = serializers.CharField()
-
-    # Relational data
     year_group = serializers.SerializerMethodField(method_name="_year_group_name")
-    lessons = Lesson(many=True)
 
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")

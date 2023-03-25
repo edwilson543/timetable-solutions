@@ -26,10 +26,10 @@ other_button_text: str | None = None
         {% csrf_token %}
     {% endif %}
 
-    {% include 'partials/forms/non-field-errors.html' with form=form %}
+    {% include 'utils/forms/non-field-errors.html' with form=form %}
 
     {% for field in form %}
-        {% include 'partials/forms/form-field.html' with field=field only %}
+        {% include 'utils/forms/form-field.html' with field=field only %}
     {% endfor %}
 
     <input type="submit" name="{{ submit_name|default:'submit' }}" value="{{ submit_text }}" class="btn btn-success m-1">

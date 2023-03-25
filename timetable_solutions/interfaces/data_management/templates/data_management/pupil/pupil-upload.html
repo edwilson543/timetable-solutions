@@ -25,7 +25,7 @@
             <b>Upload a csv file with the required structure</b>
         </div>
         <div class="card-body">
-            {% include 'partials/forms/basic-form.html' with enctype="multipart/form-data" form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" other_button_url=example_download_url other_button_text="Download example" %}
+            {% include 'utils/forms/basic-form.html' with enctype="multipart/form-data" form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" other_button_url=example_download_url other_button_text="Download example" %}
         </div>
     </div>
 </div>
