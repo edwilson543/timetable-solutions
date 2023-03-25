@@ -133,6 +133,11 @@ urlpatterns = [
         name=UrlName.TEACHER_UPDATE.value,
     ),
     path(
+        "teachers/list/<int:teacher_id>/lessons/",
+        views.TeacherLessonsPartial.as_view(),
+        name=UrlName.TEACHER_LESSONS_PARTIAL.value,
+    ),
+    path(
         "teachers/upload/",
         views.TeacherUpload.as_view(),
         name=UrlName.TEACHER_UPLOAD.value,

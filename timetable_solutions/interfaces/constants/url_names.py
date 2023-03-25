@@ -76,6 +76,7 @@ class UrlName(StrEnum):
     TEACHER_CREATE = "teacher-create"
     TEACHER_DOWNLOAD = "teacher-download"
     TEACHER_LANDING_PAGE = "teacher-landing-page"
+    TEACHER_LESSONS_PARTIAL = "teacher-lessons-partial"  # kwargs: teacher_id: int
     TEACHER_LIST = "teacher-list"
     TEACHER_UPDATE = "teacher-update"  # kwargs: teacher_id: int
     TEACHER_UPLOAD = "teacher-upload"

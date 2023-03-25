@@ -29,6 +29,7 @@ from .teacher import (
     TeacherCreate,
     TeacherExampleDownload,
     TeacherLanding,
+    TeacherLessonsPartial,
     TeacherSearch,
     TeacherUpdate,
     TeacherUpload,

@@ -30,16 +30,11 @@ paginator: django_paginate.Paginator
                 </tr>
             </thead>
             <tbody>
-                {% for object in page_obj.object_list %}
+                {% for object_ordered_dict in page_obj.object_list %}
                     {% for field_name, field_value in object_ordered_dict.items %}
                         {% if field_name in displayed_fields %}
                             <td class="align-middle">
-                                <a
-                                   href="{{ object_ordered_dict.update_url }}"
-                                   class="link-secondary text-decoration-none text-dark"
-                                >
                                 {{ field_value }}
-                                </a>
                             </td>
                         {% endif %}
                     {% endfor %}

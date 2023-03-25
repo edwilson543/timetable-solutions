@@ -58,6 +58,29 @@ class TeacherSearch(base_views.SearchView):
         )
 
 
+class TeacherLessonsPartial(base_views.RelatedListPartialView):
+    """
+    Render a table showing the lessons this teacher has.
+    """
+
+    model_class = models.Teacher
+    related_name = "lessons"
+    related_model_name = "Lessons"
+    object_id_name = "teacher_id"
+    page_url_prefix = UrlName.TEACHER_LESSONS_PARTIAL
+    serializer_class = serializers.Lesson
+    displayed_fields = {
+        "lesson_id": "Lesson ID",
+        "subject": "Subject",
+        "year_group": "Year group",
+        "teacher": "Teacher",
+        "classroom": "Classroom",
+        "total_required_slots": "Lessons / week",
+    }
+    ordering = ["lesson_id"]
+    paginate_by = 10
+
+
 class TeacherCreate(base_views.CreateView):
     """Page allowing the users to create a single teacher."""
 
