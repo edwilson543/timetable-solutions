@@ -71,7 +71,7 @@ class UpdateView(
     delete_success_url: ClassVar[str]
     """URL to redirect to following a successful deletion."""
 
-    enabled_form_template_name = "partials/forms/basic-form.html"
+    enabled_form_template_name = "utils/forms/basic-form.html"
     """
     Location of the form partial to allow users to update object details.
     Note this is not included on initial page load, and is only rendered following

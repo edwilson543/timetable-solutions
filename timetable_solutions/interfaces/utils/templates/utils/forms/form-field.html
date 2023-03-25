@@ -20,15 +20,15 @@ field: django_forms.Field
     {% endif %}
 
     {% if field|is_text_or_number_input or field.widget_type == "time" %}
-        {% include 'partials/forms/widgets/input.html' with field=field only %}
+        {% include 'utils/forms/widgets/input.html' with field=field only %}
     {% elif field.widget_type == "clearablefile" %}
-        {% include 'partials/forms/widgets/upload.html' with field=field only %}
+        {% include 'utils/forms/widgets/upload.html' with field=field only %}
     {% elif field.widget_type == "checkbox" %}
-        {% include 'partials/forms/widgets/checkbox.html' with field=field only %}
+        {% include 'utils/forms/widgets/checkbox.html' with field=field only %}
     {% elif field.widget_type == "select" %}
-        {% include 'partials/forms/widgets/select.html' with field=field only %}
+        {% include 'utils/forms/widgets/select.html' with field=field only %}
     {% elif field.widget_type == "selectmultiple" %}
-        {% include 'partials/forms/widgets/multiselect.html' with field=field only %}
+        {% include 'utils/forms/widgets/multiselect.html' with field=field only %}
     {% endif %}
 
   <div id="{{ field.id_for_label }}-help-text" class="form-text">
