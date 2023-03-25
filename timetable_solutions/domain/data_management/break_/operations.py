@@ -37,14 +37,26 @@ def create_new_break(
     day_of_week: constants.Day,
     starts_at: dt.time,
     ends_at: dt.time,
-    teachers: models.TeacherQuerySet,
-    relevant_year_groups: models.YearGroupQuerySet,
+    teachers: models.TeacherQuerySet | None = None,
+    relevant_year_groups: models.YearGroupQuerySet | None = None,
+    relevant_to_all_teachers: bool = False,
+    relevant_to_all_year_groups: bool = False,
 ) -> models.Break:
     """
     Create a new break in the db.
 
     :raises UnableToCreateBreak: if the parameters could not be used to create a break.
     """
+    if relevant_to_all_teachers:
+        teachers = models.Teacher.objects.get_all_instances_for_school(
+            school_id=school_id
+        )
+
+    if relevant_to_all_year_groups:
+        relevant_year_groups = models.YearGroup.objects.get_all_instances_for_school(
+            school_id=school_id
+        )
+
     try:
         return models.Break.create_new(
             school_id=school_id,

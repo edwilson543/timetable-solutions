@@ -62,6 +62,48 @@ class TestCreateNewBreak:
             in exc.value.human_error_message
         )
 
+    def test_creates_new_break_relevant_to_all_year_groups(self):
+        # Get some teachers and year groups to add
+        school = data_factories.School()
+        yg = data_factories.YearGroup(school=school)
+
+        # Make the break
+        break_ = operations.create_new_break(
+            school_id=school.school_access_key,
+            break_id="1",
+            break_name="Morning break",
+            starts_at=dt.time(hour=11, minute=30),
+            ends_at=dt.time(hour=12),
+            day_of_week=constants.Day.MONDAY,
+            teachers=models.Teacher.objects.none(),
+            relevant_to_all_year_groups=True,
+        )
+
+        # Check break in db and defined as expected
+        assert break_ == models.Break.objects.get()
+        assert break_.relevant_year_groups.get() == yg
+
+    def test_creates_new_break_relevant_to_all_teachers(self):
+        # Get some teachers and year groups to add
+        school = data_factories.School()
+        teachers = data_factories.Teacher(school=school)
+
+        # Make the break
+        break_ = operations.create_new_break(
+            school_id=school.school_access_key,
+            break_id="1",
+            break_name="Morning break",
+            starts_at=dt.time(hour=11, minute=30),
+            ends_at=dt.time(hour=12),
+            day_of_week=constants.Day.MONDAY,
+            relevant_year_groups=models.YearGroup.objects.none(),
+            relevant_to_all_teachers=True,
+        )
+
+        # Check break in db and defined as expected
+        assert break_ == models.Break.objects.get()
+        assert break_.teachers.get() == teachers
+
 
 @pytest.mark.django_db
 class TestUpdateBreakTimings:

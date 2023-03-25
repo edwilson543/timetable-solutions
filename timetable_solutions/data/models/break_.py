@@ -104,8 +104,8 @@ class Break(models.Model):
         day_of_week: constants.Day,
         starts_at: dt.time,
         ends_at: dt.time,
-        teachers: TeacherQuerySet,
-        relevant_year_groups: YearGroupQuerySet,
+        teachers: TeacherQuerySet | None,
+        relevant_year_groups: YearGroupQuerySet | None,
     ) -> "Break":
         """
         Method for creating a new Break instance in the db.
@@ -120,8 +120,10 @@ class Break(models.Model):
         )
         break_.full_clean()
 
-        break_._add_teachers(teachers)
-        break_._add_year_groups(relevant_year_groups)
+        if teachers:
+            break_._add_teachers(teachers)
+        if relevant_year_groups:
+            break_._add_year_groups(relevant_year_groups)
 
         return break_
 
