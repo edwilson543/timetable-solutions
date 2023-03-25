@@ -11,6 +11,39 @@ from interfaces.data_management import views
 
 urlpatterns = [
     # --------------------
+    # Breaks
+    # --------------------
+    path(
+        "breaks/",
+        views.BreakLanding.as_view(),
+        name=UrlName.BREAK_LANDING_PAGE.value,
+    ),
+    path(
+        "breaks/create/",
+        views.BreakCreate.as_view(),
+        name=UrlName.BREAK_CREATE.value,
+    ),
+    path(
+        "breaks/list/",
+        views.BreakSearch.as_view(),
+        name=UrlName.BREAK_LIST.value,
+    ),
+    path(
+        "breaks/list/<str:break_id>/",
+        views.BreakUpdate.as_view(),
+        name=UrlName.BREAK_UPDATE.value,
+    ),
+    path(
+        "breaks/upload/",
+        views.BreakUpload.as_view(),
+        name=UrlName.BREAK_UPLOAD.value,
+    ),
+    path(
+        "breaks/download/",
+        views.BreakExampleDownload.as_view(),
+        name=UrlName.BREAK_DOWNLOAD.value,
+    ),
+    # --------------------
     # Classrooms
     # --------------------
     path(
@@ -110,7 +143,7 @@ urlpatterns = [
         name=UrlName.TEACHER_DOWNLOAD.value,
     ),
     # --------------------
-    # Pupils
+    # Timetable slots
     # --------------------
     path(
         "timetable-slots/",
