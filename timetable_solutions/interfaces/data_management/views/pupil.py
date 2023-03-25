@@ -157,6 +157,28 @@ class PupilUpdate(base_views.UpdateView):
         operations.delete_pupil(pupil=self.model_instance)
 
 
+class PupilLessonsPartial(base_views.RelatedListPartialView):
+    """
+    Render a table showing the lessons this pupil has.
+    """
+
+    model_class = models.Pupil
+    related_name = "lessons"
+    related_model_name = "Lessons"
+    object_id_name = "pupil_id"
+    page_url_prefix = UrlName.PUPIL_LESSONS_PARTIAL
+    serializer_class = serializers.Lesson
+    displayed_fields = {
+        "lesson_id": "Lesson ID",
+        "subject_name": "Subject",
+        "year_group": "Year group",
+        "teacher": "Teacher",
+        "classroom": "Classroom",
+        "total_required_slots": "Lessons / week",
+    }
+    ordering = ["lesson_id"]
+
+
 class PupilUpload(base_views.UploadView):
     """
     Page allowing users to upload a csv file containing pupil data.

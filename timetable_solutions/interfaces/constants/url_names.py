@@ -68,6 +68,7 @@ class UrlName(StrEnum):
     PUPIL_CREATE = "pupil-create"
     PUPIL_DOWNLOAD = "pupil-download"
     PUPIL_LANDING_PAGE = "pupil-landing-page"
+    PUPIL_LESSONS_PARTIAL = "pupil-lessons-partial"  # kwargs: pupil_id: int
     PUPIL_LIST = "pupil-list"
     PUPIL_UPDATE = "pupil-update"  # kwargs: pupil_id: int
     PUPIL_UPLOAD = "pupil-upload"

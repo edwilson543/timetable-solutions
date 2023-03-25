@@ -21,6 +21,7 @@ from .pupil import (
     PupilCreate,
     PupilExampleDownload,
     PupilLanding,
+    PupilLessonsPartial,
     PupilSearch,
     PupilUpdate,
     PupilUpload,

@@ -100,6 +100,11 @@ urlpatterns = [
         name=UrlName.PUPIL_UPDATE.value,
     ),
     path(
+        "pupils/list/<int:pupil_id>/lessons/",
+        views.PupilLessonsPartial.as_view(),
+        name=UrlName.PUPIL_LESSONS_PARTIAL.value,
+    ),
+    path(
         "pupils/upload/",
         views.PupilUpload.as_view(),
         name=UrlName.PUPIL_UPLOAD.value,
