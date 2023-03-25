@@ -37,9 +37,6 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
     serializer_class: type[serializers.Serializer[_ModelT]]
     """Serializer used to convert the queryset context into JSON-like data."""
 
-    prefetch_related: list[django_models.Prefetch] | None = None
-    """Any relationships to prefetch when retrieving the queryset."""
-
     displayed_fields: ClassVar[dict[str, str]]
     """
     The fields to use as column headers in the rendered context.
@@ -69,8 +66,6 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
         queryset = self.model_class.objects.get_all_instances_for_school(
             school_id=self.school_id
         )
-        if self.prefetch_related:
-            queryset = queryset.prefetch_related(*self.prefetch_related)
         queryset = queryset.order_by(*self.ordering)
         return self.serialize_queryset(queryset)
 
