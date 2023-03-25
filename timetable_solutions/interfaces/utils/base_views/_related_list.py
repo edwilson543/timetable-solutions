@@ -12,6 +12,7 @@ from django.views import generic
 
 # Local application imports
 from interfaces.constants import UrlName
+from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -19,7 +20,10 @@ _RelatedModelT = TypeVar("_RelatedModelT", bound=django_models.Model)
 
 
 class RelatedListPartialView(
-    mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT, _RelatedModelT]
+    _htmx_views.HTMXViewMixin,
+    mixins.LoginRequiredMixin,
+    generic.ListView,
+    Generic[_ModelT, _RelatedModelT],
 ):
     """
     View providing some related objects for a single model instance.
@@ -27,8 +31,11 @@ class RelatedListPartialView(
     Note this view will only ever render a template partial
     """
 
+    model_class: type[_ModelT]
+    """The model who's data is rendered on this page."""
+
     related_name: ClassVar[str]
-    """Name of the related manager on the model."""
+    """Name of the related manager on the model class."""
 
     object_id_name: ClassVar[str]
     """Name of this model's id field, that is unique to the school (not the related model's). """
@@ -39,26 +46,22 @@ class RelatedListPartialView(
     The full url is constructed as page_url_prefix/<model_instance_id>/<related_name>.
     """
 
+    serializer_class: type[serializers.Serializer[_ModelT]]
+    """Serializer used to convert the RELATED queryset context into JSON-like data."""
+
+    displayed_fields: ClassVar[dict[str, str]]
+    """
+    The fields of the RELATED object to use as column headers in the rendered context.
+    Given as {field name: displayed name, ...} key-value pairs.
+    The first key should always be the model's id within the school field, e.g. 'teacher_id'.
+    """
+
     # Defaulted django vars
-    paginate_by: ClassVar[int] = 50
+    paginate_by: ClassVar[int] = 10
     """Render 50 items per page, including for search results."""
 
     template_name = "utils/tables/related-objects-table.html"
     """Default partial that will be rendered."""
-
-    # Other class vars
-    model_class: type[_ModelT]
-    """The model who's data is rendered on this page."""
-
-    serializer_class: type[serializers.Serializer[_ModelT]]
-    """Serializer used to convert the queryset context into JSON-like data."""
-
-    displayed_fields: ClassVar[dict[str, str]]
-    """
-    The fields to use as column headers in the rendered context.
-    Given as {field name: displayed name, ...} key-value pairs.
-    The first key should always be the model's id within the school field, e.g. 'teacher_id'.
-    """
 
     # Instance vars
     model_instance_id: int | str
@@ -73,6 +76,16 @@ class RelatedListPartialView(
         super().setup(request, *args, **kwargs)
         self.school_id = request.user.profile.school.school_access_key
         self.model_instance_id = kwargs[self.object_id_name]
+
+    def dispatch(
+        self, request: http.HttpRequest, *args: object, **kwargs: object
+    ) -> http.HttpResponseBase:
+        """
+        Disallow requests that did not come from htmx.
+        """
+        if not self.is_htmx:
+            raise http.Http404()
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """
