@@ -278,7 +278,9 @@ class TestBreakUpdateTimings:
         )
 
         # Create a slot at the time we'll try updating to
-        slot = data_factories.TimetableSlot(school=school)
+        slot = data_factories.TimetableSlot(
+            school=school, relevant_year_groups=(other_yg,)
+        )
         data_factories.Break(
             relevant_year_groups=(other_yg,),
             school=school,

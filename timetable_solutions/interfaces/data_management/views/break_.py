@@ -17,7 +17,7 @@ from domain.data_management.break_ import operations, queries
 from domain.data_management.constants import ExampleFile
 from interfaces.constants import UrlName
 from interfaces.data_management import forms, serializers
-from interfaces.data_management.views import base_views
+from interfaces.utils import base_views
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 
