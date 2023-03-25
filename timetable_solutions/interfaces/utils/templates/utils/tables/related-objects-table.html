@@ -1,0 +1,108 @@
+<!--
+A table showing the related objects for some model
+------------------
+Context variables:
+------------------
+related_name: str
+related_table_url: str
+page_obj: django_paginator.Page
+paginator: django_paginate.Paginator
+-->
+
+<div
+    id="{{ related_name }}-card"
+    class="card p-2 my-3 col-12"
+>
+    <div class="card-title">
+        <h5>
+            {{ model_name_plural }}
+        </h5>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover w-100 text-nowrap">
+            <thead>
+                <tr>
+                    {% for field_name in displayed_fields.values %}
+                        <th>{{ field_name }}</th>
+                    {% endfor %}
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in page_obj.object_list %}
+                    {% for field_name, field_value in object_ordered_dict.items %}
+                        {% if field_name in displayed_fields %}
+                            <td class="align-middle">
+                                <a
+                                   href="{{ object_ordered_dict.update_url }}"
+                                   class="link-secondary text-decoration-none text-dark"
+                                >
+                                {{ field_value }}
+                                </a>
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                        <td class="py-1">
+                            <a href="{{ object_ordered_dict.update_url }}" class="btn btn-secondary py-1">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    <!-- Pagination -->
+    {% if paginator.count > 0 %}
+        <div>
+            <span>
+                {% if page_obj.has_previous %}
+                    <span
+                        hx-get="{{ related_table_url }}?page=1"
+                        hx-trigger="click"
+                        hx-target="#{{ related_name }}-card"
+                        hx-swap="outerHTML"
+                        class="btn btn-secondary p-1"
+                    >
+                        &laquo; first
+                    </span>
+                    <span
+                        hx-get="{{ related_table_url }}?page={{ page_obj.previous_page_number }}"
+                        hx-trigger="click"
+                        hx-target="#{{ related_name }}-card"
+                        hx-swap="outerHTML"
+                        class="btn btn-secondary p-1"
+                    >
+                        previous
+                    </span>
+                {% endif %}
+                <span>
+                    <b>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</b>
+                </span>
+                {% if page_obj.has_next %}
+                    <a
+                        hx-get="{{ related_table_url }}?page={{ page_obj.next_page_number }}"
+                        hx-trigger="click"
+                        hx-target="#{{ related_name }}-card"
+                        hx-swap="outerHTML"
+                        class="btn btn-secondary p-1"
+                    >
+                        next
+                    </a>
+                    <a
+                        hx-get="{{ related_table_url }}?page={{ page_obj.paginator.num_pages }}"
+                        hx-trigger="click"
+                        hx-target="#{{ related_name }}-card"
+                        hx-swap="outerHTML"
+                        class="btn btn-secondary p-1"
+                    >
+                        last &raquo;
+                    </a>
+                {% endif %}
+            </span>
+          </div>
+    {% endif %}
+
+    </div>
+</div>
