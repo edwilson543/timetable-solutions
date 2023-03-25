@@ -37,6 +37,9 @@ class RelatedListPartialView(
     related_name: ClassVar[str]
     """Name of the related manager on the model class."""
 
+    related_model_name: ClassVar[str]
+    """Title of the related model to show in the html template."""
+
     object_id_name: ClassVar[str]
     """Name of this model's id field, that is unique to the school (not the related model's). """
 
@@ -95,7 +98,7 @@ class RelatedListPartialView(
         context["related_name"] = self.related_name
         context["related_table_url"] = self.related_table_url
         context["displayed_fields"] = self.displayed_fields
-        context["model_name_plural"] = self.model_class.Constant.human_string_plural
+        context["related_model_name"] = self.related_model_name
         return context
 
     def get_queryset(self) -> list[dict]:
