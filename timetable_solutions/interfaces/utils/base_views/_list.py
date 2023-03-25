@@ -10,7 +10,6 @@ from django.db import models as django_models
 from django.views import generic
 
 # Local application imports
-from interfaces.constants import UrlName
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
@@ -42,12 +41,6 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
     The fields to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
     The first key should always be the model's id within the school field, e.g. 'teacher_id'.
-    """
-
-    update_url: ClassVar[UrlName]
-    """
-    URL to go through to the detail view of individual objects.
-    Needs reversing with an id kwarg in the template.
     """
 
     # Instance vars
@@ -82,7 +75,6 @@ class ListView(mixins.LoginRequiredMixin, generic.ListView, Generic[_ModelT]):
         This is either the return of the user's search, or all model data for their school.
         """
         context = super().get_context_data(**kwargs)
-        context["update_url"] = self.update_url
         context["displayed_fields"] = self.displayed_fields
         context["model_name_singular"] = self.model_class.Constant.human_string_singular
         context["model_name_plural"] = self.model_class.Constant.human_string_plural

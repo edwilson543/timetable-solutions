@@ -7,15 +7,14 @@ from django import forms as django_forms
 from django.db import models as django_models
 
 # Local application imports
+from interfaces.utils.base_views import _list
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
-
-from ._list import ListView
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
 _SearchFormT = TypeVar("_SearchFormT", bound=django_forms.Form)
 
 
-class SearchView(ListView, Generic[_ModelT, _SearchFormT]):
+class SearchView(_list.ListView, Generic[_ModelT, _SearchFormT]):
     """
     Page displaying a school's data for a single model, and allowing this data to be searched.
 

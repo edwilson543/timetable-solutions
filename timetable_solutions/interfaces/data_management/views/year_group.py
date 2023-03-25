@@ -41,8 +41,6 @@ class YearGroupList(base_views.ListView):
         "number_pupils": "Number pupils",
     }
 
-    update_url = UrlName.YEAR_GROUP_UPDATE
-
 
 class YearGroupCreate(base_views.CreateView):
     """Page allowing users to create a single year group."""

@@ -57,7 +57,6 @@ class PupilSearch(base_views.SearchView):
         "year_group": "Year group",
     }
     page_url = UrlName.PUPIL_LIST.url(lazy=True)
-    update_url = UrlName.PUPIL_UPDATE
 
     def execute_search_from_clean_form(
         self, form: forms.PupilSearch

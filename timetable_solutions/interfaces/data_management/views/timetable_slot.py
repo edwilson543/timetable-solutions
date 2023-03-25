@@ -63,7 +63,6 @@ class TimetableSlotSearch(base_views.SearchView):
         "ends_at": "Ends at",
     }
     page_url = UrlName.TIMETABLE_SLOT_LIST.url(lazy=True)
-    update_url = UrlName.TIMETABLE_SLOT_UPDATE
 
     def execute_search_from_clean_form(
         self, form: forms.TimetableSlotSearch

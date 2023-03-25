@@ -46,7 +46,6 @@ class TeacherSearch(base_views.SearchView):
         "title": "Title",
     }
     page_url = UrlName.TEACHER_LIST.url(lazy=True)
-    update_url = UrlName.TEACHER_UPDATE
 
     def execute_search_from_clean_form(
         self, form: forms.TeacherSearch

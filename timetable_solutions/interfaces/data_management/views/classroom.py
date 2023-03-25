@@ -51,7 +51,6 @@ class ClassroomSearch(base_views.SearchView):
         "room_number": "Room number",
     }
     page_url = UrlName.CLASSROOM_LIST.url(lazy=True)
-    update_url = UrlName.CLASSROOM_UPDATE
 
     def get_form_kwargs(self) -> dict[str, Any]:
         """
