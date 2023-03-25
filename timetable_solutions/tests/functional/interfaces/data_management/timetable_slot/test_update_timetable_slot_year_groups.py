@@ -1,6 +1,5 @@
 """
-Tests for updating slot timings via the TimetableSlotUpdate view,
-when we want to update the timings of the slot.
+Tests for updating a timetable slot's relevant year groups via the TimetableSlotUpdate view.
 """
 
 # Local application imports
@@ -78,7 +77,7 @@ class TestTimetableSlotUpdate(TestClient):
         slot.refresh_from_db()
         assert slot.relevant_year_groups.get() == yg
 
-    def test_cannot_male_slot_relevant_to_a_year_group_leading_to_a_clash(self):
+    def test_cannot_make_slot_relevant_to_a_year_group_leading_to_a_clash(self):
         school = data_factories.School()
         self.authorise_client_for_school(school)
 

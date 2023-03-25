@@ -92,7 +92,13 @@ class TestUploadTimetableSlotData(TestClient):
         form = page.forms["upload-form"]
         csv_file = get_csv_from_lists(
             [
-                ["slot_id", "firstname", "surname", "year_group_id"],
+                [
+                    "slot_id",
+                    "day_of_week",
+                    "starts_at",
+                    "ends_at",
+                    "relevant_year_group_ids",
+                ],
                 [1, "Test", "Testson", yg.year_group_id],
                 [1, "Test", "Testson", yg.year_group_id],
             ]

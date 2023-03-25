@@ -1,6 +1,5 @@
 """
-Tests for updating slot timings via the TimetableSlotUpdate view,
-when we want to update the timings of the slot.
+Tests for updating slot timings via the TimetableSlotUpdate view.
 """
 
 # Standard library imports
@@ -48,7 +47,7 @@ class TestTimetableSlotUpdate(TestClient):
 
         # Navigate to this slot's detail view
         url = UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=slot.slot_id)
-        htmx_headers = {"HTTP_HX-Request": "true"}
+        htmx_headers = {"HX-Request": "true"}
         form_partial = self.client.get(url, headers=htmx_headers)
 
         # Check response ok and correct context
@@ -97,7 +96,7 @@ class TestTimetableSlotUpdate(TestClient):
 
         # Navigate to the first slot's detail view
         url = UrlName.TIMETABLE_SLOT_UPDATE.url(slot_id=slot.slot_id)
-        htmx_headers = {"HTTP_HX-Request": "true"}
+        htmx_headers = {"HX-Request": "true"}
         form_partial = self.client.get(url, headers=htmx_headers)
 
         # Check response ok

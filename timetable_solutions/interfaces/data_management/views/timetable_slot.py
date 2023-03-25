@@ -185,7 +185,7 @@ class TimetableSlotUpdate(base_views.UpdateView):
 
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """
-        Add a second form for updating timetable slot year groups to the context.
+        Add a second form for updating this timetable slot's year groups.
         """
         context = super().get_context_data(**kwargs)
         if not kwargs.get("update_year_groups_form"):

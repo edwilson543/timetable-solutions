@@ -35,7 +35,7 @@ class TestYearGroupUpdate(TestClient):
 
         # Navigate to this year_group's detail view
         url = UrlName.YEAR_GROUP_UPDATE.url(year_group_id=yg.year_group_id)
-        htmx_headers = {"HTTP_HX-Request": "true"}
+        htmx_headers = {"HX-Request": "true"}
         form_partial = self.client.get(url, headers=htmx_headers)
 
         # Check response ok and correct context

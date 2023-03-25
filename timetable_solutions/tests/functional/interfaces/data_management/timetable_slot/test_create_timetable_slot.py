@@ -54,7 +54,6 @@ class TestTimetableSlotCreate(TestClient):
         assert slot.ends_at == dt.time(hour=10)
 
     def test_creating_slot_with_invalid_start_and_end_time_fails(self):
-        # Create a slot whose ID will try to create a new slot with
         school = data_factories.School()
 
         self.authorise_client_for_school(school)

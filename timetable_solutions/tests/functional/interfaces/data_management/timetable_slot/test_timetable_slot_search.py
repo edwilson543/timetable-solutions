@@ -90,7 +90,7 @@ class TestTimetableSlotSearch(TestClient):
             serializers_helpers.expected_slot(slot_2),
         ]
 
-        # Retrieve the html form and submit an empty search term
+        # Retrieve the html form and submit a search for a non-existent slot id
         webtest_form = response.forms["search-form"]
         invalid_id = slot_1.slot_id + slot_2.slot_id
         webtest_form["slot_id"] = invalid_id

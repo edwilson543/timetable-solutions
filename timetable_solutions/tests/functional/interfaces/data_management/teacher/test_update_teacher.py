@@ -38,7 +38,7 @@ class TestTeacherUpdate(TestClient):
 
         # Navigate to this teacher's detail view
         url = UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id)
-        htmx_headers = {"HTTP_HX-Request": "true"}
+        htmx_headers = {"HX-Request": "true"}
         form_partial = self.client.get(url, headers=htmx_headers)
 
         # Check response ok and correct context
