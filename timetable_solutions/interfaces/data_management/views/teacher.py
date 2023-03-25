@@ -71,14 +71,13 @@ class TeacherLessonsPartial(base_views.RelatedListPartialView):
     serializer_class = serializers.Lesson
     displayed_fields = {
         "lesson_id": "Lesson ID",
-        "subject": "Subject",
+        "subject_name": "Subject",
         "year_group": "Year group",
         "teacher": "Teacher",
         "classroom": "Classroom",
         "total_required_slots": "Lessons / week",
     }
     ordering = ["lesson_id"]
-    paginate_by = 10
 
 
 class TeacherCreate(base_views.CreateView):

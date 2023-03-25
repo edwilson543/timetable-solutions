@@ -13,7 +13,7 @@ paginator: django_paginate.Paginator
     id="{{ related_name }}-card"
     class="card p-2 my-3 col-12"
 >
-    <div class="card-title">
+    <div class="card-header p-1">
         <h5>
             {{ related_model_name|title }}
         </h5>
@@ -31,13 +31,14 @@ paginator: django_paginate.Paginator
             </thead>
             <tbody>
                 {% for object_ordered_dict in page_obj.object_list %}
-                    {% for field_name, field_value in object_ordered_dict.items %}
-                        {% if field_name in displayed_fields %}
-                            <td class="align-middle">
-                                {{ field_value }}
-                            </td>
-                        {% endif %}
-                    {% endfor %}
+                    <tr>
+                        {% for field_name, field_value in object_ordered_dict.items %}
+                            {% if field_name in displayed_fields %}
+                                <td class="align-middle">
+                                    {{ field_value }}
+                                </td>
+                            {% endif %}
+                        {% endfor %}
                         <td class="py-1">
                             <a href="{{ object_ordered_dict.update_url }}" class="btn btn-secondary py-1">
                                 View

@@ -120,7 +120,6 @@ class RelatedListPartialView(
     @property
     def related_table_url(self) -> str:
         """Construct the full page url."""
-        base = self.page_url_prefix.url(
+        return self.page_url_prefix.url(
             lazy=False, **{self.object_id_name: self.model_instance_id}
         )
-        return base + self.related_name + "/"
