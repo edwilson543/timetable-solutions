@@ -154,6 +154,28 @@ class ClassroomUpdate(base_views.UpdateView):
         operations.delete_classroom(classroom=self.model_instance)
 
 
+class ClassroomLessonsPartial(base_views.RelatedListPartialView):
+    """
+    Render a table showing the lessons this classroom has.
+    """
+
+    model_class = models.Classroom
+    related_name = "lessons"
+    related_model_name = "Lessons"
+    object_id_name = "classroom_id"
+    page_url_prefix = UrlName.CLASSROOM_LESSONS_PARTIAL
+    serializer_class = serializers.Lesson
+    displayed_fields = {
+        "lesson_id": "Lesson ID",
+        "subject_name": "Subject",
+        "year_group": "Year group",
+        "teacher": "Teacher",
+        "classroom": "Classroom",
+        "total_required_slots": "Lessons / week",
+    }
+    ordering = ["lesson_id"]
+
+
 class ClassroomUpload(base_views.UploadView):
     """
     Page allowing users to upload a csv file containing classroom data.

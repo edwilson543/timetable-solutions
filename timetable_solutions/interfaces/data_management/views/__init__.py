@@ -1,6 +1,7 @@
 """
 All views relating to data management.
 """
+
 from .break_ import (
     BreakCreate,
     BreakExampleDownload,
@@ -13,6 +14,7 @@ from .classroom import (
     ClassroomCreate,
     ClassroomExampleDownload,
     ClassroomLanding,
+    ClassroomLessonsPartial,
     ClassroomSearch,
     ClassroomUpdate,
     ClassroomUpload,

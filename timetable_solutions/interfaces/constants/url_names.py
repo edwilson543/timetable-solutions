@@ -60,6 +60,7 @@ class UrlName(StrEnum):
     CLASSROOM_CREATE = "classroom-create"
     CLASSROOM_DOWNLOAD = "classroom-download"
     CLASSROOM_LANDING_PAGE = "classroom-landing-page"
+    CLASSROOM_LESSONS_PARTIAL = "classroom-lessons-partial"  # kwargs: classroom_id: int
     CLASSROOM_LIST = "classroom-list"
     CLASSROOM_UPDATE = "classroom-update"  # kwargs: classroom_id: int
     CLASSROOM_UPLOAD = "classroom-upload"
