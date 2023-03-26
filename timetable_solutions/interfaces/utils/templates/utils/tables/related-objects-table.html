@@ -22,10 +22,9 @@ paginator: django_paginate.Paginator
     {% if add_form %}
         <form
             hx-post="{{ related_table_url }}"
-            hx-target="{{ related_name }}-card"
+            hx-target="#{{ related_name }}-card"
             hx-swap="outerHTML"
             class="p-1"
-            enctype=application/x-www-form-urlencoded
         >
             {% csrf_token %}
             {% include 'utils/forms/non-field-errors.html' with form=form %}
