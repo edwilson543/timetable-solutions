@@ -349,8 +349,10 @@ class BreakAddTeacher(django_forms.Form):
         # Set the teachers that can be added as those
         # not already assigned to this break
         exclude_pks = self.break_.teachers.values_list("pk", flat=True)
-        teachers = models.Teacher.objects.filter(school=self.break_.school).exclude(
-            pk__in=exclude_pks
+        teachers = (
+            models.Teacher.objects.filter(school=self.break_.school)
+            .exclude(pk__in=exclude_pks)
+            .order_by("surname")
         )
         if teachers:
             self.fields["teacher"].queryset = teachers
