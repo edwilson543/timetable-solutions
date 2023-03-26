@@ -57,6 +57,7 @@ class RelatedListPartialView(
     The fields of the RELATED object to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
     The first key should always be the model's id within the school field, e.g. 'teacher_id'.
+    Note the field names need to match those of the serializer class.
     """
 
     # Defaulted django vars
@@ -67,6 +68,9 @@ class RelatedListPartialView(
     """Default partial that will be rendered."""
 
     # Instance vars
+    model_instance: _ModelT
+    """The model whose related objects we are viewing."""
+
     model_instance_id: int | str
     """A kwarg in any url routed to a subclass of this view."""
 
@@ -79,6 +83,7 @@ class RelatedListPartialView(
         super().setup(request, *args, **kwargs)
         self.school_id = request.user.profile.school.school_access_key
         self.model_instance_id = kwargs[self.object_id_name]
+        self.model_instance = self.get_model_instance()
 
     def dispatch(
         self, request: http.HttpRequest, *args: object, **kwargs: object
@@ -105,17 +110,21 @@ class RelatedListPartialView(
         """
         Retrieve and serialize the related objects of the target model instance.
         """
+        queryset = getattr(self.model_instance, self.related_name).all()
+        return self.serializer_class(instance=queryset, many=True).data
+
+    def get_model_instance(self) -> _ModelT:
+        """
+        Get the object we are viewing the related objects of.
+        """
         objects = self.model_class.objects.prefetch_related(self.related_name)
         try:
-            model_instance = objects.get(
+            return objects.get(
                 school_id=self.school_id,
                 **{self.object_id_name: self.model_instance_id}
             )
         except self.model_class.DoesNotExist:
             raise http.Http404
-
-        queryset = getattr(model_instance, self.related_name).all()
-        return self.serializer_class(instance=queryset, many=True).data
 
     @property
     def related_table_url(self) -> str:
