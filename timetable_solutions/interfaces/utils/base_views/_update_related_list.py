@@ -37,8 +37,16 @@ class UpdateRelatedListPartialView(
             self.update_model_from_clean_form(form=form)
         except base_exceptions.UnableToUpdateModelInstance as exc:
             form.add_error(field=None, error=exc.human_error_message)
-            return super().form_invalid(form=form)
+            return self.form_invalid(form=form)
         return self._get_success_response()
+
+    def form_invalid(self, form: django_forms.Form) -> http.HttpResponse:
+        """
+        Get the response when the form is not valid.
+        """
+        self.object_list = super().get_queryset()
+        context = self.get_context_data(form=form)
+        return super().render_to_response(context=context)
 
     def get_context_data(self, **kwargs: object) -> dict[str, Any]:
         """

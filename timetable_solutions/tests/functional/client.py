@@ -1,6 +1,7 @@
 # Third party imports
 import django_webtest
 import pytest
+import webtest
 
 # Django imports
 from django.contrib.auth import models as auth_models
@@ -39,3 +40,14 @@ class TestClient:
     def anonymize_user(self) -> None:
         """Ensure there is no user authorised on the test client."""
         self.client.set_user(user=None)
+
+    @staticmethod
+    def hx_post_form(
+        form: webtest.Form, **kwargs: object
+    ) -> django_webtest.DjangoWebtestResponse:
+        """
+        Submit a form as if by hx-post.
+        """
+        # Set the method manually since the actual html uses hx-post, and then submit
+        form.method = "POST"
+        return form.submit(headers={"HX-Request": "true"}, **kwargs)

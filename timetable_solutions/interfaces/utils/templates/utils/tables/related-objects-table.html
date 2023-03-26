@@ -24,14 +24,19 @@ paginator: django_paginate.Paginator
             hx-post="{{ related_table_url }}"
             hx-target="#{{ related_name }}-card"
             hx-swap="outerHTML"
+            id="{{ related_name }}-add-form"
             class="p-1"
         >
             {% csrf_token %}
             {% include 'utils/forms/non-field-errors.html' with form=form %}
+
+            <!--This should just be a single multi-select field-->
             {% for field in form %}
-<!--                This should just be a single multi-select field-->
-                {% include 'utils/forms/form-field.html' with field=field only %}
+                <fieldset {% if field.field.disabled %}disabled{% endif %}>
+                    {% include 'utils/forms/form-field.html' with field=field only %}
+                </fieldset>
             {% endfor %}
+
             <input type="submit" name="add-{{ related_name }}" value="Add" class="btn btn-success m-1">
         </form>
     {% endif %}

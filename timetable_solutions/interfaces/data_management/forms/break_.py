@@ -339,7 +339,7 @@ class BreakAddTeacher(django_forms.Form):
         required=True,
         label="Add a teacher to this break",
         empty_label="",
-        queryset=models.TeacherQuerySet().none(),
+        queryset=models.Teacher.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:

@@ -255,6 +255,40 @@ class BreakUpdate(base_views.UpdateView):
         return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
 
 
+class BreakAddRelatedTeachersPartial(base_views.UpdateRelatedListPartialView):
+    """
+    Partial allowing users to view and add teachers to a break.
+    """
+
+    model_class = models.Break
+    form_class = forms.BreakAddTeacher
+    related_name = "teachers"
+    related_model_name = "Teachers"
+    object_id_name = "break_id"
+    page_url_prefix = UrlName.BREAK_ADD_TEACHERS_PARTIAL
+    serializer_class = serializers.Teacher
+    displayed_fields = {
+        "teacher_id": "Teacher ID",
+        "firstname": "Firstname",
+        "surname": "Surname",
+        "title": "Title",
+    }
+    ordering = ["teacher_id"]
+
+    def update_model_from_clean_form(self, form: forms.BreakAddTeacher) -> None:
+        """
+        Try adding a teacher to the break.
+        """
+        teacher = form.cleaned_data["teacher"]
+        operations.add_teacher_to_break(break_=self.model_instance, teacher=teacher)
+
+    def extra_form_kwargs(self) -> dict[str, Any]:
+        """
+        Make sure the break is passed when instantiating the form.
+        """
+        return {"break_": self.model_instance}
+
+
 class BreakUpload(base_views.UploadView):
     """
     Page allowing users to upload a csv file containing break data.
