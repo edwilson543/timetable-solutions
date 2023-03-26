@@ -326,7 +326,7 @@ class TestBreakCreate:
                 "ends_at": dt.time(hour=9),
                 "day_of_week": constants.Day.MONDAY,
                 "relevant_to_all_year_groups": relevant_to_all_year_groups,
-                "relevant_to_all_teacher": relevant_to_all_teachers,
+                "relevant_to_all_teachers": relevant_to_all_teachers,
             },
         )
 

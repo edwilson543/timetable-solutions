@@ -292,11 +292,11 @@ class BreakCreate(_BreakCreateUpdateBase):
         break_clash_str = _get_break_clash_str(
             time_of_week=time_of_week, check_against_breaks=check_against_breaks
         )
-
-        raise django_forms.ValidationError(
-            "This break cannot be assigned to all teachers since your school has a break "
-            f" at {break_clash_str} clashing with this time."
-        )
+        if break_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be assigned to all teachers since your school has a break "
+                f" at {break_clash_str} clashing with this time."
+            )
 
     def _raise_if_new_slot_would_produce_a_clash(
         self, time_of_week: clash_filters.TimeOfWeek
