@@ -198,3 +198,41 @@ class TestUpdateRelevantYearGroups:
         assert break_.relevant_year_groups.count() == 2
         assert yg_a in break_.relevant_year_groups.all()
         assert yg_b in break_.relevant_year_groups.all()
+
+
+@pytest.mark.django_db
+class TestAddTeacher:
+    def test_can_add_teacher(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school)
+
+        break_.add_teacher(teacher)
+
+        assert break_.teachers.get() == teacher
+
+    def test_cannot_add_teacher_from_different_school(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break()
+        assert teacher.school != break_.school
+
+        with pytest.raises(models.SchoolMismatchError):
+            break_.add_teacher(teacher)
+
+
+@pytest.mark.django_db
+class TestRemoveTeacher:
+    def test_can_remove_teacher_from_break(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school, teachers=(teacher,))
+
+        break_.remove_teacher(teacher)
+
+        assert break_.teachers.count() == 0
+
+    def test_removing_teacher_from_break_that_is_not_assigned_does_nothing(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school)
+
+        break_.remove_teacher(teacher)
+
+        assert break_.teachers.count() == 0
