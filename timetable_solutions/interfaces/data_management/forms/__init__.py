@@ -1,5 +1,11 @@
 from .base_forms import BulkUpload
-from .break_ import BreakCreate, BreakSearch, BreakUpdateTimings, BreakUpdateYearGroups
+from .break_ import (
+    BreakAddTeacher,
+    BreakCreate,
+    BreakSearch,
+    BreakUpdateTimings,
+    BreakUpdateYearGroups,
+)
 from .classroom import ClassroomCreate, ClassroomSearch, ClassroomUpdate
 from .pupil import PupilCreate, PupilSearch, PupilUpdate
 from .teacher import TeacherCreate, TeacherSearch, TeacherUpdate

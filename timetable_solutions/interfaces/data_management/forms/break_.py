@@ -12,6 +12,7 @@ from django.db import models as django_models
 # Local application imports
 from data import constants, models
 from domain.solver.filters import clashes as clash_filters
+from domain.solver.queries import teacher as teacher_solver_queries
 from interfaces.data_management.forms import base_forms
 
 
@@ -330,6 +331,46 @@ class BreakCreate(_BreakCreateUpdateBase):
                 "This break cannot be assigned to all year groups since your school has a "
                 f"slot at {slot_clash_str} clashing with this time."
             )
+
+
+class BreakAddTeacher(django_forms.Form):
+    teacher = django_forms.ModelChoiceField(
+        required=True,
+        label="Add a teacher to this break",
+        empty_label="",
+        queryset=models.TeacherQuerySet().none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.break_ = kwargs.pop("break_")
+        super().__init__(*args, **kwargs)
+
+        # Set the teachers that can be added as those
+        # not already assigned to this break
+        exclude_pks = self.break_.teachers.values_list("pk", flat=True)
+        teachers = models.Teacher.objects.filter(school=self.break_.school).exclude(
+            pk__in=exclude_pks
+        )
+        if teachers:
+            self.fields["teacher"].queryset = teachers
+        else:
+            self.fields["teacher"].disabled = True
+            self.fields[
+                "teacher"
+            ].help_text = "All your teachers are currently assigned to this break"
+
+    def clean(self) -> dict[str, Any]:
+        teacher = self.cleaned_data["teacher"]
+        if teacher_solver_queries.check_if_teacher_busy_at_time(
+            teacher=teacher,
+            starts_at=self.break_.starts_at,
+            ends_at=self.break_.ends_at,
+            day_of_week=self.break_.day_of_week,
+        ):
+            raise django_forms.ValidationError(
+                "This teacher is already busy during this break!"
+            )
+        return self.cleaned_data
 
 
 def _get_break_clash_str(
