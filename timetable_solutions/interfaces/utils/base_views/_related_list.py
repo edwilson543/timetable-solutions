@@ -28,7 +28,7 @@ class RelatedListPartialView(
     """
     View providing some related objects for a single model instance.
 
-    Note this view will only ever render a template partial
+    Note this view will only ever render a template partial.
     """
 
     model_class: type[_ModelT]
