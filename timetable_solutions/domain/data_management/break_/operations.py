@@ -25,6 +25,14 @@ class UnableToUpdateBreakYearGroups(base_exceptions.UnableToUpdateModelInstance)
     pass
 
 
+class UnableToAddTeacherToBreak(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToRemoveTeacherFromBreak(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
 class UnableToDeleteBreak(base_exceptions.UnableToDeleteModelInstance):
     pass
 
@@ -119,6 +127,44 @@ def update_break_year_groups(
     except Exception as exc:
         raise UnableToUpdateBreakTimings(
             human_error_message="Could not update this break's year groups."
+        ) from exc
+
+
+def add_teacher_to_break(
+    break_: models.Break,
+    *,
+    teacher: models.Teacher,
+) -> models.Break:
+    """
+    Add a teacher to a break.
+
+    :raises UnableToAddTeacherToBreak: if this was not possible.
+    """
+    try:
+        break_.add_teacher(teacher)
+        return break_
+    except Exception as exc:
+        raise UnableToAddTeacherToBreak(
+            human_error_message="Could not add teacher to this break."
+        ) from exc
+
+
+def remove_teacher_from_break(
+    break_: models.Break,
+    *,
+    teacher: models.Teacher,
+) -> models.Break:
+    """
+    Remove a teacher from a break.
+
+    :raises UnableToRemoveTeacherFromBreak: if this was not possible.
+    """
+    try:
+        break_.remove_teacher(teacher)
+        return break_
+    except Exception as exc:
+        raise UnableToRemoveTeacherFromBreak(
+            human_error_message="Could not remove teacher from this break."
         ) from exc
 
 

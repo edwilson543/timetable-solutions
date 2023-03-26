@@ -151,6 +151,28 @@ class TestUpdateBreakYearGroups:
 
 
 @pytest.mark.django_db
+class TestAddTeacherToBreak:
+    def test_can_add_teacher_to_break(self):
+        break_ = data_factories.Break()
+        teacher = data_factories.Teacher(school=break_.school)
+
+        operations.add_teacher_to_break(break_, teacher=teacher)
+
+        assert break_.teachers.get() == teacher
+
+
+@pytest.mark.django_db
+class TestRemoveTeacherFromBreak:
+    def test_can_remove_teacher_from_break(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school, teachers=(teacher,))
+
+        operations.remove_teacher_from_break(break_, teacher=teacher)
+
+        assert break_.teachers.count() == 0
+
+
+@pytest.mark.django_db
 class TestDeleteBreak:
     def test_can_delete_timetable_break(self):
         break_ = data_factories.Break()
