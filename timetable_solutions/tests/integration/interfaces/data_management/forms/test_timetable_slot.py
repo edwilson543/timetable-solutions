@@ -31,7 +31,7 @@ class TestTimetableSlotUpdateYearGroups:
             },
         )
 
-        pre_checked = form.base_fields["relevant_year_groups"].initial
+        pre_checked = form.fields["relevant_year_groups"].initial
         assert list(pre_checked) == [yg.pk]
         assert form.is_valid()
 

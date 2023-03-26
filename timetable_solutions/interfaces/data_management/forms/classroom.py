@@ -26,9 +26,11 @@ class ClassroomSearch(django_forms.Form):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """
-        Get and set the classrooms and room number choices
+        Get and set the building and room number choices.
         """
         school_id = kwargs.pop("school_id")
+        super().__init__(*args, **kwargs)
+
         classrooms = queries.get_classrooms(school_id=school_id).values(
             "building", "room_number"
         )
@@ -41,9 +43,8 @@ class ClassroomSearch(django_forms.Form):
                 for classroom in classrooms
             }
         )
-        self.base_fields["building"].choices = buildings
-        self.base_fields["room_number"].choices = room_numbers
-        super().__init__(*args, **kwargs)
+        self.fields["building"].choices = buildings
+        self.fields["room_number"].choices = room_numbers
 
     def clean(self) -> dict[str, Any]:
         classroom_id = self.cleaned_data.get("classroom_id")

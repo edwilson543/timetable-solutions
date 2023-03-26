@@ -30,12 +30,12 @@ class TestClassroomSearch:
         form = classroom_forms.ClassroomSearch(school_id=school.school_access_key)
 
         # Check the choices were set as expected
-        assert form.base_fields["building"].choices == [
+        assert form.fields["building"].choices == [
             ("", ""),
             ("maths", "maths"),
             ("science", "science"),
         ]
-        assert form.base_fields["room_number"].choices == [("", ""), (1, 1), (2, 2)]
+        assert form.fields["room_number"].choices == [("", ""), (1, 1), (2, 2)]
 
     def test_form_with_no_search_term_not_valid(self, mock_get_classrooms: mock.Mock):
         school = data_factories.School()
