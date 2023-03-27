@@ -12,7 +12,7 @@ from domain.data_management import base_exceptions
 from interfaces.utils.base_views import _related_list
 
 
-class UpdateRelatedListPartialView(
+class AddToRelatedListPartialView(
     _related_list.RelatedListPartialView,
     edit.BaseFormView,
 ):

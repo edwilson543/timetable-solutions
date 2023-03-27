@@ -255,7 +255,7 @@ class BreakUpdate(base_views.UpdateView):
         return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
 
 
-class BreakAddRelatedTeachersPartial(base_views.UpdateRelatedListPartialView):
+class BreakAddRelatedTeachersPartial(base_views.AddToRelatedListPartialView):
     """
     Partial allowing users to view and add teachers to a break.
     """
