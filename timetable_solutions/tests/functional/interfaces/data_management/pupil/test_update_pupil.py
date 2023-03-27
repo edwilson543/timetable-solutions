@@ -39,8 +39,7 @@ class TestPupilUpdate(TestClient):
 
         # Navigate to this pupil's detail view
         url = UrlName.PUPIL_UPDATE.url(pupil_id=pupil.pupil_id)
-        htmx_headers = {"HX-Request": "true"}
-        form_partial = self.client.get(url, headers=htmx_headers)
+        form_partial = self.hx_get(url)
 
         # Check response ok and correct context
         assert form_partial.status_code == 200

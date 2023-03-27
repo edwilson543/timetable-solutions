@@ -25,7 +25,7 @@ class TestTeacherLessonsPartial(client.TestClient):
 
         # Get the related teachers partial
         url = UrlName.BREAK_ADD_TEACHERS_PARTIAL.url(break_id=break_.break_id)
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         # Ensure response ok and the correct context was loaded
         assert response.status_code == 200
@@ -106,7 +106,7 @@ class TestTeacherLessonsPartial(client.TestClient):
 
         # Get the related teachers partial for the other break
         url = UrlName.BREAK_ADD_TEACHERS_PARTIAL.url(break_id=other_break.break_id)
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         assert response.status_code == 200
 

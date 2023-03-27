@@ -41,13 +41,27 @@ class TestClient:
         """Ensure there is no user authorised on the test client."""
         self.client.set_user(user=None)
 
+    def hx_get(self, url: str, **kwargs: dict) -> django_webtest.DjangoWebtestResponse:
+        """
+        Get a url as if by hx-get.
+        """
+        headers = {"HX-Request": "true"}
+        if extra_headers := kwargs.pop("headers", None):
+            headers = extra_headers | headers
+        return self.client.get(url=url, headers=headers, **kwargs)
+
     @staticmethod
     def hx_post_form(
-        form: webtest.Form, **kwargs: object
+        form: webtest.Form, **kwargs: dict
     ) -> django_webtest.DjangoWebtestResponse:
         """
         Submit a form as if by hx-post.
         """
+        headers = {"HX-Request": "true"}
+        if extra_headers := kwargs.pop("headers", None):
+            headers = extra_headers | headers
+
         # Set the method manually since the actual html uses hx-post, and then submit
         form.method = "POST"
-        return form.submit(headers={"HX-Request": "true"}, **kwargs)
+
+        return form.submit(headers=headers, **kwargs)
