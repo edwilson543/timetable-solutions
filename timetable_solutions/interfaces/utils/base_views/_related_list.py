@@ -74,6 +74,9 @@ class RelatedListPartialView(
     model_instance_id: int | str
     """A kwarg in any url routed to a subclass of this view."""
 
+    object_list: django_models.QuerySet[_RelatedModelT]
+    """The items that will be displayed in the related objects table."""
+
     school_id: int
     """The school who's data will be shown."""
 
