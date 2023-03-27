@@ -52,7 +52,7 @@ class TestClassroomSearch:
 @pytest.mark.django_db
 class TestClassroomCreateUpdateBase:
     def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock):
-        mock_get_classrooms.return_value = models.ClassroomQuerySet().none()
+        mock_get_classrooms.return_value = models.Classroom.objects.none()
         school = data_factories.School()
 
         form = classroom_forms._ClassroomCreateUpdateBase(
@@ -85,7 +85,7 @@ class TestClassroomCreateUpdateBase:
 @pytest.mark.django_db
 class TestClassroomCreate:
     def test_form_valid_for_valid_classroom(self, mock_get_classrooms: mock.Mock):
-        mock_get_classrooms.return_value = models.ClassroomQuerySet().none()
+        mock_get_classrooms.return_value = models.Classroom.objects.none()
         school = data_factories.School()
 
         form = classroom_forms.ClassroomCreate(

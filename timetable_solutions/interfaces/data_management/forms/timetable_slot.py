@@ -30,7 +30,7 @@ class TimetableSlotSearch(django_forms.Form):
         required=False,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -78,7 +78,7 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
 
     relevant_year_groups = django_forms.ModelMultipleChoiceField(
         required=False,
-        queryset=models.TimetableSlotQuerySet().none(),
+        queryset=models.TimetableSlot.objects.none(),
         label="Select the year groups that this timetable slot is relevant to",
     )
 

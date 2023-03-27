@@ -25,7 +25,7 @@ class PupilSearch(django_forms.Form):
         required=False,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -65,7 +65,7 @@ class _PupilCreateUpdateBase(django_forms.Form):
         required=True,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
