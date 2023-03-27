@@ -74,7 +74,7 @@ class BreakUpdateYearGroups(django_forms.Form):
     relevant_year_groups = django_forms.ModelMultipleChoiceField(
         required=False,
         queryset=models.TimetableSlotQuerySet().none(),
-        label="Select the year groups that this break slot is relevant to",
+        label="Select the year groups that this break is relevant to",
     )
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
@@ -176,7 +176,7 @@ class _BreakCreateUpdateBase(base_forms.CreateUpdate):
 
 class BreakUpdateTimings(_BreakCreateUpdateBase):
     """
-    Form to update the name / time of a break slots with.
+    Form to update the name / time of a break with.
     """
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
