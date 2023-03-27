@@ -3,12 +3,12 @@ All views relating to data management.
 """
 
 from .break_ import (
-    BreakAddRelatedTeachersPartial,
     BreakCreate,
     BreakExampleDownload,
     BreakLanding,
     BreakSearch,
     BreakUpdate,
+    BreakUpdateRelatedTeachersPartial,
     BreakUpload,
 )
 from .classroom import (

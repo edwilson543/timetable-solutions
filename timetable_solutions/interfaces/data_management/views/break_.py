@@ -255,17 +255,22 @@ class BreakUpdate(base_views.UpdateView):
         return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
 
 
-class BreakAddRelatedTeachersPartial(base_views.AddToRelatedListPartialView):
+class BreakUpdateRelatedTeachersPartial(base_views.UpdateRelatedListPartialView):
     """
     Partial allowing users to view and add teachers to a break.
     """
 
     model_class = models.Break
     form_class = forms.BreakAddTeacher
-    related_name = "teachers"
-    related_model_name = "Teachers"
     object_id_name = "break_id"
     page_url_prefix = UrlName.BREAK_ADD_TEACHERS_PARTIAL
+
+    # Related object vars
+    related_name = "teachers"
+    related_model_name = "Teachers"
+    related_object_id_name = "teacher_id"
+    related_model_class = models.Teacher
+
     serializer_class = serializers.Teacher
     displayed_fields = {
         "teacher_id": "Teacher ID",
@@ -275,7 +280,7 @@ class BreakAddRelatedTeachersPartial(base_views.AddToRelatedListPartialView):
     }
     ordering = ["teacher_id"]
 
-    def update_model_from_clean_form(self, form: forms.BreakAddTeacher) -> None:
+    def add_related_object(self, form: forms.BreakAddTeacher) -> None:
         """
         Try adding a teacher to the break.
         """

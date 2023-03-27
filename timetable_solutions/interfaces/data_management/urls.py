@@ -35,7 +35,7 @@ urlpatterns = [
     ),
     path(
         "breaks/list/<str:break_id>/teachers/",
-        views.BreakAddRelatedTeachersPartial.as_view(),
+        views.BreakUpdateRelatedTeachersPartial.as_view(),
         name=UrlName.BREAK_ADD_TEACHERS_PARTIAL.value,
     ),
     path(

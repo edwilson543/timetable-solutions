@@ -52,7 +52,7 @@ class TestTeacherLessonsPartial(client.TestClient):
         # Fill out the form
         webtest_form = response.forms["teachers-add-form"]
         webtest_form["teacher"] = other_teacher.pk
-        response = self.hx_post_form(webtest_form)
+        response = self.hx_post_form(webtest_form, name="add-teachers")
 
         # Check the response and that the other teacher is now in the list
         assert response.status_code == 200
@@ -113,7 +113,7 @@ class TestTeacherLessonsPartial(client.TestClient):
         # Fill out the form, trying to add the teacher to the break at the same time
         webtest_form = response.forms["teachers-add-form"]
         webtest_form["teacher"] = teacher.pk
-        response = self.hx_post_form(webtest_form)
+        response = self.hx_post_form(webtest_form, name="add-teachers")
 
         # Check the response and that the operation was unsuccessful
         assert response.status_code == 200

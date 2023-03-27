@@ -15,15 +15,15 @@ from interfaces.constants import UrlName
 from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
-_ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_RelatedModelT = TypeVar("_RelatedModelT", bound=django_models.Model)
+ModelT = TypeVar("ModelT", bound=django_models.Model)
+RelatedModelT = TypeVar("RelatedModelT", bound=django_models.Model)
 
 
 class RelatedListPartialView(
     _htmx_views.HTMXViewMixin,
     mixins.LoginRequiredMixin,
     generic.ListView,
-    Generic[_ModelT, _RelatedModelT],
+    Generic[ModelT, RelatedModelT],
 ):
     """
     View providing some related objects for a single model instance.
@@ -31,7 +31,7 @@ class RelatedListPartialView(
     Note this view will only ever render a template partial.
     """
 
-    model_class: type[_ModelT]
+    model_class: type[ModelT]
     """The model who's data is rendered on this page."""
 
     related_name: ClassVar[str]
@@ -49,7 +49,7 @@ class RelatedListPartialView(
     The full url is constructed as page_url_prefix/<model_instance_id>/<related_name>.
     """
 
-    serializer_class: type[serializers.Serializer[_ModelT]]
+    serializer_class: type[serializers.Serializer[ModelT]]
     """Serializer used to convert the RELATED queryset context into JSON-like data."""
 
     displayed_fields: ClassVar[dict[str, str]]
@@ -68,13 +68,13 @@ class RelatedListPartialView(
     """Default partial that will be rendered."""
 
     # Instance vars
-    model_instance: _ModelT
+    model_instance: ModelT
     """The model whose related objects we are viewing."""
 
     model_instance_id: int | str
     """A kwarg in any url routed to a subclass of this view."""
 
-    object_list: django_models.QuerySet[_RelatedModelT]
+    object_list: django_models.QuerySet[RelatedModelT]
     """The items that will be displayed in the related objects table."""
 
     school_id: int
@@ -116,7 +116,7 @@ class RelatedListPartialView(
         queryset = getattr(self.model_instance, self.related_name).all()
         return self.serializer_class(instance=queryset, many=True).data
 
-    def get_model_instance(self) -> _ModelT:
+    def get_model_instance(self) -> ModelT:
         """
         Get the object we are viewing the related objects of.
         """

@@ -1,3 +1,6 @@
+# Standard library imports
+from typing import Any
+
 # Third party imports
 import django_webtest
 import pytest
@@ -41,7 +44,7 @@ class TestClient:
         """Ensure there is no user authorised on the test client."""
         self.client.set_user(user=None)
 
-    def hx_get(self, url: str, **kwargs: dict) -> django_webtest.DjangoWebtestResponse:
+    def hx_get(self, url: str, **kwargs: Any) -> django_webtest.DjangoWebtestResponse:
         """
         Get a url as if by hx-get.
         """
@@ -52,7 +55,7 @@ class TestClient:
 
     @staticmethod
     def hx_post_form(
-        form: webtest.Form, **kwargs: dict
+        form: webtest.Form, **kwargs: Any
     ) -> django_webtest.DjangoWebtestResponse:
         """
         Submit a form as if by hx-post.
