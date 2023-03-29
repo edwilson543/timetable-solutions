@@ -11,17 +11,16 @@ from tests import data_factories
 from tests.functional import client
 
 
-class TestTeacherLessonsPartial(client.TestClient):
-    def test_loads_table_with_correct_context(self):
-        school = data_factories.School()
-        self.authorise_client_for_school(school=school)
+class TestBreakUpdateRelatedTeachersPartialAdd(client.TestClient):
+    def test_loads_related_teachers_and_can_add_a_new_one_to_break(self):
+        school = self.create_school_and_authorise_client()
 
         # Make a break that already has one teacher
-        teacher = data_factories.Teacher(school=school)
+        teacher = data_factories.Teacher(school=school, teacher_id=1)
         break_ = data_factories.Break(school=school, teachers=(teacher,))
 
-        # Make another teacher, who will be second alphabetically
-        other_teacher = data_factories.Teacher(school=school, surname="zzz")
+        # Make another teacher, who will be second in the queryset
+        other_teacher = data_factories.Teacher(school=school, teacher_id=2)
 
         # Get the related teachers partial
         url = UrlName.BREAK_ADD_TEACHERS_PARTIAL.url(break_id=break_.break_id)
@@ -49,10 +48,10 @@ class TestTeacherLessonsPartial(client.TestClient):
         assert not django_form.errors
         assert django_form.fields["teacher"].queryset.get() == other_teacher
 
-        # Fill out the form
+        # Select a teacher to add from the add form
         webtest_form = response.forms["teachers-add-form"]
         webtest_form["teacher"] = other_teacher.pk
-        response = self.hx_post_form(webtest_form, name="add-teachers")
+        response = self.hx_post_form(webtest_form)
 
         # Check the response and that the other teacher is now in the list
         assert response.status_code == 200
@@ -89,8 +88,7 @@ class TestTeacherLessonsPartial(client.TestClient):
         assert django_form.fields["teacher"].disabled
 
     def test_cannot_add_teacher_that_would_lead_to_a_clash(self):
-        school = data_factories.School()
-        self.authorise_client_for_school(school=school)
+        school = self.create_school_and_authorise_client()
 
         # Make a break that already has one teacher
         teacher = data_factories.Teacher(school=school)
@@ -113,7 +111,7 @@ class TestTeacherLessonsPartial(client.TestClient):
         # Fill out the form, trying to add the teacher to the break at the same time
         webtest_form = response.forms["teachers-add-form"]
         webtest_form["teacher"] = teacher.pk
-        response = self.hx_post_form(webtest_form, name="add-teachers")
+        response = self.hx_post_form(webtest_form)
 
         # Check the response and that the operation was unsuccessful
         assert response.status_code == 200

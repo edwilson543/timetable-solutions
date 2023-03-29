@@ -5,7 +5,7 @@ Context variables:
 ------------------
 related_name: str
 related_table_url: str
-page_obj: django_paginator.Page
+page_obj: django_paginator.Page, which has object_list: list[OrderedDict]
 paginator: django_paginate.Paginator
 -->
 
@@ -79,9 +79,9 @@ paginator: django_paginate.Paginator
                                 hx-delete="{{ related_table_url }}"
                                 hx-target="#{{ related_name }}-card"
                                 hx-swap="outerHTML"
+                                id="{{ related_name }}-remove-form-{% get_object_id serialized_model_instance %}"
                             >
-                                {% csrf_token %}
-                                <!-- The first value in the ordered dict is always the related object id-->
+                                <!-- Htmx requests receive their csrf token from the body tag -->
                                 <input
                                     type="hidden"
                                     name="related-object-id"

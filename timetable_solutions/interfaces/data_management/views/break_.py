@@ -255,7 +255,9 @@ class BreakUpdate(base_views.UpdateView):
         return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
 
 
-class BreakUpdateRelatedTeachersPartial(base_views.UpdateRelatedListPartialView):
+class BreakUpdateRelatedTeachersPartial(
+    base_views.UpdateRelatedListPartialView[models.Break, models.Teacher]
+):
     """
     Partial allowing users to view and add teachers to a break.
     """
@@ -286,6 +288,14 @@ class BreakUpdateRelatedTeachersPartial(base_views.UpdateRelatedListPartialView)
         """
         teacher = form.cleaned_data["teacher"]
         operations.add_teacher_to_break(break_=self.model_instance, teacher=teacher)
+
+    def remove_related_object(self, related_model_instance: models.Teacher) -> None:
+        """
+        Remove a teacher form a break.
+        """
+        operations.remove_teacher_from_break(
+            break_=self.model_instance, teacher=related_model_instance
+        )
 
     def extra_form_kwargs(self) -> dict[str, Any]:
         """
