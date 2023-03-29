@@ -7,7 +7,7 @@ Module containing the view class for the timetable creation page.
 from typing import Any
 
 # Django imports
-from django import http, urls
+from django import urls
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -48,16 +48,11 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         if len(error_messages) == 0:
             message = "Solutions have been found for your timetabling problem!"
             messages.add_message(self.request, level=messages.SUCCESS, message=message)
-            return http.HttpResponse(headers={"HX-Redirect": self.success_url})
+            return super().form_valid(form=form)
         else:
             for message in error_messages:
-                messages.add_message(
-                    self.request, level=messages.ERROR, message=message
-                )
-            context_data = self.get_context_data()
-            return super().render_to_response(
-                context=context_data
-            )  # from views.generic.base.TemplateResponseMixin
+                messages.error(self.request, message=message)
+        return super().form_invalid(form=form)
 
     def _run_solver_from_view(self, form: forms.SolutionSpecification) -> list[str]:
         """
