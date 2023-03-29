@@ -1,44 +1,16 @@
-{% extends "legacy-base.html" %}
+{% extends 'base.html' %}
 
-<head>
-{% block head_content %}
-<title>Dashboard</title>
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        dashboard
+    </li>
 {% endblock %}
-
-<style>
-{% block style_block %}
-@media screen and (max-width: 800px) {
-    #background_image {display: none;}
-}
-#background_image {
-    /* Positioning */
-    position: relative;
-    top: -60px;
-
-    /* Display */
-    height: 60vh;
-    width: 100%;
-    padding: 0px;
-
-    /* Background */
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-{% endblock %}
-</style>
-</head>
 
 {% block content %}
 
-{% load static %}
-
-<div id="background_image">
-    <img src="{% static 'users/img/oxford_skyline.png' %}" alt="Image of Oxford" height=100% width=100%>
+<div class="row mx-3">
+    <h3>Dashbaord</h3>
 </div>
-<hr>
 
-{% include 'partials/dash-tab-data-upload.html' %}
 
 {% endblock %}
