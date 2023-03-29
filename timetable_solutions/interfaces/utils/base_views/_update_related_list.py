@@ -28,6 +28,9 @@ class UpdateRelatedListPartialView(
     Note that all requests to this view are submitted via htmx.
     """
 
+    form_class: type[django_forms.Form]
+    """Form used to add a related object to the model instance."""
+
     related_object_id_name: ClassVar[str]
     """Name of the related object's id field."""
 

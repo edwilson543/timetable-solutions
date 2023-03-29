@@ -7,6 +7,7 @@ from typing import Any, ClassVar, Generic, TypeVar
 from rest_framework import serializers
 
 # Django imports
+from django import forms as django_forms
 from django import http
 from django.contrib import messages
 from django.contrib.auth import mixins
@@ -17,7 +18,6 @@ from django.views import generic
 # Local application imports
 from domain.data_management import base_exceptions
 from interfaces.constants import UrlName
-from interfaces.data_management.forms import base_forms
 from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import (
     AuthenticatedHtmxRequest,
@@ -30,13 +30,14 @@ _DELETE_SUBMIT = "delete-submit"
 
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)
+_UpdateFormT = TypeVar("_UpdateFormT", bound=django_forms.Form)
 
 
 class UpdateView(
     _htmx_views.HTMXViewMixin,
     mixins.LoginRequiredMixin,
     generic.FormView,
-    Generic[_ModelT],
+    Generic[_ModelT, _UpdateFormT],
 ):
     """
     Page displaying a school's data for a single instance of a model,
@@ -47,7 +48,7 @@ class UpdateView(
     model_class: type[_ModelT]
     """The model we are updating an instance of."""
 
-    form_class: type[base_forms.CreateUpdate]
+    form_class: type[_UpdateFormT]
     """Form used to update a model instance (overridden from django's FormView)"""
 
     serializer_class: type[serializers.Serializer[_ModelT]]
@@ -89,7 +90,7 @@ class UpdateView(
     """Id of the model instance, within the context of the school."""
 
     @abc.abstractmethod
-    def update_model_from_clean_form(self, form: base_forms.CreateUpdate) -> _ModelT:
+    def update_model_from_clean_form(self, form: _UpdateFormT) -> _ModelT:
         """
         Method used to try to update the target model instance from a clean form.
 
@@ -151,7 +152,7 @@ class UpdateView(
     # Handle the update form
     # --------------------
 
-    def form_valid(self, form: base_forms.CreateUpdate) -> http.HttpResponse:
+    def form_valid(self, form: _UpdateFormT) -> http.HttpResponse:
         """Use the form to update the relevant data."""
         try:
             new_instance = self.update_model_from_clean_form(form=form)

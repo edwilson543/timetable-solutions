@@ -45,7 +45,7 @@ class BreakLanding(base_views.LandingView):
         return None
 
 
-class BreakSearch(base_views.SearchView):
+class BreakSearch(base_views.SearchView[models.Break, forms.BreakSearch]):
     """
     Page displaying all a school's break data and allowing searching this list.
     """
@@ -89,7 +89,7 @@ class BreakSearch(base_views.SearchView):
         return {"school_id": self.school_id}
 
 
-class BreakCreate(base_views.CreateView):
+class BreakCreate(base_views.CreateView[models.Break, forms.BreakCreate]):
     """
     Page allowing the users to create a single break.
     """
@@ -103,9 +103,7 @@ class BreakCreate(base_views.CreateView):
     success_url = UrlName.BREAK_LIST.url(lazy=True)
     object_id_name = "break_id"
 
-    def create_model_from_clean_form(
-        self, form: forms.BreakCreate
-    ) -> models.Break | None:
+    def create_model_from_clean_form(self, form: forms.BreakCreate) -> models.Break:
         """
         Create a break in the db using the clean form details.
         """
@@ -124,7 +122,7 @@ class BreakCreate(base_views.CreateView):
         )
 
 
-class BreakUpdate(base_views.UpdateView):
+class BreakUpdate(base_views.UpdateView[models.Break, forms.BreakUpdateTimings]):
     """
     Page displaying information on a single break, allowing this data to be updated / deleted.
     """

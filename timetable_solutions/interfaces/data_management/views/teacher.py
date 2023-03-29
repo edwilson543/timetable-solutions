@@ -29,7 +29,7 @@ class TeacherLanding(base_views.LandingView):
         return self.request.user.profile.school.has_teacher_data
 
 
-class TeacherSearch(base_views.SearchView):
+class TeacherSearch(base_views.SearchView[models.Teacher, forms.TeacherSearch]):
     """Page displaying all a school's teacher data and allowing them to search for teachers."""
 
     template_name = "data_management/teacher/teacher-list.html"
@@ -57,7 +57,7 @@ class TeacherSearch(base_views.SearchView):
         )
 
 
-class TeacherCreate(base_views.CreateView):
+class TeacherCreate(base_views.CreateView[models.Teacher, forms.TeacherCreate]):
     """Page allowing the users to create a single teacher."""
 
     template_name = "data_management/teacher/teacher-create.html"
@@ -69,9 +69,7 @@ class TeacherCreate(base_views.CreateView):
     success_url = UrlName.TEACHER_LIST.url(lazy=True)
     object_id_name = "teacher_id"
 
-    def create_model_from_clean_form(
-        self, form: forms.TeacherCreate
-    ) -> models.Teacher | None:
+    def create_model_from_clean_form(self, form: forms.TeacherCreate) -> models.Teacher:
         """Create a teacher in the db using the clean form details."""
         teacher_id = form.cleaned_data.get("teacher_id", None)
         return operations.create_new_teacher(
@@ -93,7 +91,7 @@ class TeacherCreate(base_views.CreateView):
         return kwargs
 
 
-class TeacherUpdate(base_views.UpdateView):
+class TeacherUpdate(base_views.UpdateView[models.Teacher, forms.TeacherUpdate]):
     """Page displaying information on a single teacher, allowing this data to be updated / deleted."""
 
     template_name = "data_management/teacher/teacher-detail-update.html"
@@ -126,7 +124,9 @@ class TeacherUpdate(base_views.UpdateView):
         operations.delete_teacher(teacher=self.model_instance)
 
 
-class TeacherLessonsPartial(base_views.RelatedListPartialView):
+class TeacherLessonsPartial(
+    base_views.RelatedListPartialView[models.Teacher, models.Lesson]
+):
     """
     Render a table showing the lessons this teacher has.
     """

@@ -38,7 +38,7 @@ class PupilLanding(base_views.LandingView):
         return None
 
 
-class PupilSearch(base_views.SearchView):
+class PupilSearch(base_views.SearchView[models.Pupil, forms.PupilSearch]):
     """
     Page displaying all a school's pupil data and allowing them to search for pupils.
     """
@@ -77,7 +77,7 @@ class PupilSearch(base_views.SearchView):
         return {"school_id": self.school_id}
 
 
-class PupilCreate(base_views.CreateView):
+class PupilCreate(base_views.CreateView[models.Pupil, forms.PupilCreate]):
     """
     Page allowing the users to create a single pupil.
     """
@@ -91,9 +91,7 @@ class PupilCreate(base_views.CreateView):
     success_url = UrlName.PUPIL_LIST.url(lazy=True)
     object_id_name = "pupil_id"
 
-    def create_model_from_clean_form(
-        self, form: forms.PupilCreate
-    ) -> models.Pupil | None:
+    def create_model_from_clean_form(self, form: forms.PupilCreate) -> models.Pupil:
         """
         Create a pupil in the db using the clean form details.
         """
@@ -117,7 +115,7 @@ class PupilCreate(base_views.CreateView):
         return kwargs
 
 
-class PupilUpdate(base_views.UpdateView):
+class PupilUpdate(base_views.UpdateView[models.Pupil, forms.PupilUpdate]):
     """
     Page displaying information on a single pupil, allowing this data to be updated / deleted.
     """
@@ -156,7 +154,9 @@ class PupilUpdate(base_views.UpdateView):
         operations.delete_pupil(pupil=self.model_instance)
 
 
-class PupilLessonsPartial(base_views.RelatedListPartialView):
+class PupilLessonsPartial(
+    base_views.RelatedListPartialView[models.Pupil, models.Lesson]
+):
     """
     Render a table showing the lessons this pupil has.
     """
