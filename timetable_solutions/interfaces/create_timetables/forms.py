@@ -52,6 +52,7 @@ class SolutionSpecification(forms.Form):
         label_suffix="",
         choices=IDEAL_PROPORTION_CHOICES,
         required=False,
+        coerce=float,
     )
 
     def __init__(self, *args: Any, **kwargs: Any):
