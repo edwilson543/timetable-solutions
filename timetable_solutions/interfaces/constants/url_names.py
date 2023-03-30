@@ -49,6 +49,7 @@ class UrlName(StrEnum):
     # --------------------
 
     # Breaks
+    BREAK_ADD_TEACHERS_PARTIAL = "break-add-teachers-partial"  # kwargs: break_id: str
     BREAK_CREATE = "break-create"
     BREAK_DOWNLOAD = "break-download"
     BREAK_LANDING_PAGE = "break-landing-page"

@@ -33,7 +33,7 @@ class ClassroomLanding(base_views.LandingView):
         return self.request.user.profile.school.has_classroom_data
 
 
-class ClassroomSearch(base_views.SearchView):
+class ClassroomSearch(base_views.SearchView[models.Classroom, forms.ClassroomSearch]):
     """
     Page displaying all a school's classroom data and allowing them to search for classrooms.
     """
@@ -75,7 +75,7 @@ class ClassroomSearch(base_views.SearchView):
         )
 
 
-class ClassroomCreate(base_views.CreateView):
+class ClassroomCreate(base_views.CreateView[models.Classroom, forms.ClassroomCreate]):
     """
     Page allowing the users to create a single classroom.
     """
@@ -91,7 +91,7 @@ class ClassroomCreate(base_views.CreateView):
 
     def create_model_from_clean_form(
         self, form: forms.ClassroomCreate
-    ) -> models.Classroom | None:
+    ) -> models.Classroom:
         """
         Create a classroom in the db using the clean form details.
         """
@@ -116,7 +116,7 @@ class ClassroomCreate(base_views.CreateView):
         return kwargs
 
 
-class ClassroomUpdate(base_views.UpdateView):
+class ClassroomUpdate(base_views.UpdateView[models.Classroom, forms.ClassroomUpdate]):
     """
     Page displaying information on a single classroom, allowing this data to be updated / deleted.
     """
@@ -153,7 +153,9 @@ class ClassroomUpdate(base_views.UpdateView):
         operations.delete_classroom(classroom=self.model_instance)
 
 
-class ClassroomLessonsPartial(base_views.RelatedListPartialView):
+class ClassroomLessonsPartial(
+    base_views.RelatedListPartialView[models.Classroom, models.Lesson]
+):
     """
     Render a table showing the lessons this classroom has.
     """

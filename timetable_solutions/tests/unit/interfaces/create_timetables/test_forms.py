@@ -2,7 +2,6 @@
 Module containing unit tests for the SolutionSpecification form in the create_timetables app.
 """
 
-
 # Standard library imports
 import datetime as dt
 
@@ -16,7 +15,7 @@ def test_solution_specification_form_instantiation():
     """
     # Set test parameters
     available_time_slots = [dt.time(hour=9), dt.time(hour=10)]
-    slots_as_choices = [(dt.time(hour=9), "09:00"), (dt.time(hour=10), "10:00")]
+    slots_as_choices = [("09:00", "09:00"), ("10:00", "10:00")]
     expected_choices = (
         forms.SolutionSpecification.OPTIMAL_FREE_PERIOD_CHOICES + slots_as_choices
     )

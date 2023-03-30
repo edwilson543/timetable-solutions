@@ -52,4 +52,14 @@
 
 </div>
 
+<!--    Lazy-load the related teachers-->
+<div
+    class="row mx-3 my-1"
+    hx-get="{% url 'break-add-teachers-partial' serialized_model_instance.break_id %}"
+    hx-trigger="load"
+    hx-target="this"
+    hx-swap="innerHTML"
+>
+</div>
+
 {% endblock %}

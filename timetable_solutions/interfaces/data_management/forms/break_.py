@@ -12,6 +12,7 @@ from django.db import models as django_models
 # Local application imports
 from data import constants, models
 from domain.solver.filters import clashes as clash_filters
+from domain.solver.queries import teacher as teacher_solver_queries
 from interfaces.data_management.forms import base_forms
 
 
@@ -37,7 +38,7 @@ class BreakSearch(django_forms.Form):
         required=False,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -45,12 +46,12 @@ class BreakSearch(django_forms.Form):
         Get and set the year group choices.
         """
         self.school_id = kwargs.pop("school_id")
+        super().__init__(*args, **kwargs)
+
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         ).order_by("year_group_name")
-        self.base_fields["year_group"].queryset = year_groups
-
-        super().__init__(*args, **kwargs)
+        self.fields["year_group"].queryset = year_groups
 
     def clean(self) -> dict[str, Any]:
         """
@@ -72,29 +73,30 @@ class BreakUpdateYearGroups(django_forms.Form):
 
     relevant_year_groups = django_forms.ModelMultipleChoiceField(
         required=False,
-        queryset=models.TimetableSlotQuerySet().none(),
-        label="Select the year groups that this break slot is relevant to",
+        queryset=models.TimetableSlot.objects.none(),
+        label="Select the year groups that this break is relevant to",
     )
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
         self.school_id = kwargs.pop("school_id")
         break_ = kwargs.pop("break_")
+        super().__init__(*args, **kwargs)
+
+        # Set the break we are updating
         self.break_ = models.Break.objects.get(
             school_id=self.school_id, break_id=break_.break_id
         )
 
         # Set all this school's year groups as the options
-        self.base_fields[
+        self.fields[
             "relevant_year_groups"
         ].queryset = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         )
         # ...but only the year groups currently assigned to this slot as the initial values
-        self.base_fields[
+        self.fields[
             "relevant_year_groups"
         ].initial = break_.relevant_year_groups.all().values_list("pk", flat=True)
-
-        super().__init__(*args, **kwargs)
 
     def clean(self) -> dict[str, Any]:
         """
@@ -174,7 +176,7 @@ class _BreakCreateUpdateBase(base_forms.CreateUpdate):
 
 class BreakUpdateTimings(_BreakCreateUpdateBase):
     """
-    Form to update the name / time of a break slots with.
+    Form to update the name / time of a break with.
     """
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
@@ -290,11 +292,11 @@ class BreakCreate(_BreakCreateUpdateBase):
         break_clash_str = _get_break_clash_str(
             time_of_week=time_of_week, check_against_breaks=check_against_breaks
         )
-
-        raise django_forms.ValidationError(
-            "This break cannot be assigned to all teachers since your school has a break "
-            f" at {break_clash_str} clashing with this time."
-        )
+        if break_clash_str:
+            raise django_forms.ValidationError(
+                "This break cannot be assigned to all teachers since your school has a break "
+                f" at {break_clash_str} clashing with this time."
+            )
 
     def _raise_if_new_slot_would_produce_a_clash(
         self, time_of_week: clash_filters.TimeOfWeek
@@ -330,6 +332,48 @@ class BreakCreate(_BreakCreateUpdateBase):
                 "This break cannot be assigned to all year groups since your school has a "
                 f"slot at {slot_clash_str} clashing with this time."
             )
+
+
+class BreakAddTeacher(django_forms.Form):
+    teacher = django_forms.ModelChoiceField(
+        required=True,
+        label="Add a teacher to this break",
+        empty_label="",
+        queryset=models.Teacher.objects.none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.break_ = kwargs.pop("break_")
+        super().__init__(*args, **kwargs)
+
+        # Set the teachers that can be added as those
+        # not already assigned to this break
+        exclude_pks = self.break_.teachers.values_list("pk", flat=True)
+        teachers = (
+            models.Teacher.objects.filter(school=self.break_.school)
+            .exclude(pk__in=exclude_pks)
+            .order_by("surname")
+        )
+        if teachers:
+            self.fields["teacher"].queryset = teachers
+        else:
+            self.fields["teacher"].disabled = True
+            self.fields[
+                "teacher"
+            ].help_text = "All your teachers are currently assigned to this break"
+
+    def clean(self) -> dict[str, Any]:
+        teacher = self.cleaned_data["teacher"]
+        if teacher_solver_queries.check_if_teacher_busy_at_time(
+            teacher=teacher,
+            starts_at=self.break_.starts_at,
+            ends_at=self.break_.ends_at,
+            day_of_week=self.break_.day_of_week,
+        ):
+            raise django_forms.ValidationError(
+                "This teacher is already busy during this break!"
+            )
+        return self.cleaned_data
 
 
 def _get_break_clash_str(

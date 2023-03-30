@@ -1,7 +1,6 @@
 """
-Views handling requests submitted by HTTP
+Registration views handling requests submitted by HTMX.
 """
-
 
 # Standard library imports
 import enum
@@ -11,7 +10,6 @@ from django import http, shortcuts
 from django.contrib.auth import models as auth_models
 from django.contrib.auth import validators
 from django.core import exceptions
-from django.views import generic
 
 # Local application imports
 from interfaces.utils import typing_utils
@@ -62,15 +60,3 @@ def username_field_view(
         partial = "partials/username_field.html"
 
         return shortcuts.render(request=request, template_name=partial, context=context)
-
-
-class DataUploadDashTab(generic.TemplateView):
-    template_name = "partials/dash-tab-data-upload.html"
-
-
-class CreateTimetableDashTab(generic.TemplateView):
-    template_name = "partials/dash-tab-create.html"
-
-
-class ViewTimetableDashTab(generic.TemplateView):
-    template_name = "partials/dash-tab-view.html"

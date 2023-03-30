@@ -34,6 +34,11 @@ urlpatterns = [
         name=UrlName.BREAK_UPDATE.value,
     ),
     path(
+        "breaks/list/<str:break_id>/teachers/",
+        views.BreakUpdateRelatedTeachersPartial.as_view(),
+        name=UrlName.BREAK_ADD_TEACHERS_PARTIAL.value,
+    ),
+    path(
         "breaks/upload/",
         views.BreakUpload.as_view(),
         name=UrlName.BREAK_UPLOAD.value,

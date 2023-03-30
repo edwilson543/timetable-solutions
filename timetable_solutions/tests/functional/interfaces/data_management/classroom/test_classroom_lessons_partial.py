@@ -32,7 +32,7 @@ class TestClassroomLessonsPartial(client.TestClient):
 
         # Get the partial
         url = UrlName.CLASSROOM_LESSONS_PARTIAL.url(classroom_id=classroom.classroom_id)
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         # Ensure response ok and the correct context was loaded
         assert response.status_code == 200
@@ -87,7 +87,7 @@ class TestClassroomLessonsPartial(client.TestClient):
         # Get the partial
         url = UrlName.CLASSROOM_LESSONS_PARTIAL.url(classroom_id=classroom.classroom_id)
         url += "?page=2"
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         # Ensure response ok and the correct context was loaded
         assert response.status_code == 200

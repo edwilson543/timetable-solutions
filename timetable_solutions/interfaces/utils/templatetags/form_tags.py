@@ -3,6 +3,7 @@ Module defining custom template tags related to form rendering.
 """
 
 # Standard library imports
+import collections
 import datetime as dt
 import re
 from typing import Any
@@ -72,3 +73,25 @@ def is_time(value: Any) -> bool:
     Test if some context variable is a datetime time.
     """
     return isinstance(value, dt.time)
+
+
+@register.simple_tag(name="get_object_id")
+def get_object_id(serialized_model_instance: collections.OrderedDict) -> int | str:
+    """
+    Test if some context variable is a datetime time.
+    """
+    # Should have called them all the same, 'id_within_school'
+    for id_field_name in [
+        "break_id",
+        "classroom_id",
+        "lesson_id",
+        "pupil_id",
+        "slot_id",
+        "teacher_id",
+        "year_group_id",
+    ]:
+        if object_id := serialized_model_instance.get(id_field_name, None):
+            return object_id
+    raise ValueError(
+        "Serialized model instance given in get_object_id template tag did not have a valid id field."
+    )

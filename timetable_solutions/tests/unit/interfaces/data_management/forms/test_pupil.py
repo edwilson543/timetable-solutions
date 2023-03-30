@@ -30,7 +30,7 @@ class TestPupilSearch:
         assert form.cleaned_data["year_group"] == yg_a
 
         # Check the year group queryset had been correctly set
-        queryset = form.base_fields["year_group"].queryset
+        queryset = form.fields["year_group"].queryset
         assert queryset.count() == 2
         assert queryset.first() == yg_a
         assert yg_b in queryset

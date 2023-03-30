@@ -29,7 +29,7 @@ class TestPupilLessonsPartial(client.TestClient):
 
         # Get the partial
         url = UrlName.PUPIL_LESSONS_PARTIAL.url(pupil_id=pupil.pupil_id)
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         # Ensure response ok and the correct context was loaded
         assert response.status_code == 200
@@ -79,7 +79,7 @@ class TestPupilLessonsPartial(client.TestClient):
         # Get the partial
         url = UrlName.PUPIL_LESSONS_PARTIAL.url(pupil_id=pupil.pupil_id)
         url += "?page=2"
-        response = self.client.get(url, headers={"HX-Request": "true"})
+        response = self.hx_get(url)
 
         # Ensure response ok and the correct context was loaded
         assert response.status_code == 200

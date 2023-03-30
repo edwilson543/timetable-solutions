@@ -25,7 +25,7 @@ class PupilSearch(django_forms.Form):
         required=False,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -33,12 +33,12 @@ class PupilSearch(django_forms.Form):
         Get and set the year group choices.
         """
         school_id = kwargs.pop("school_id")
+        super().__init__(*args, **kwargs)
+
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
             school_id=school_id
         ).order_by("year_group_name")
-        self.base_fields["year_group"].queryset = year_groups
-
-        super().__init__(*args, **kwargs)
+        self.fields["year_group"].queryset = year_groups
 
     def clean(self) -> dict[str, Any]:
         """
@@ -65,7 +65,7 @@ class _PupilCreateUpdateBase(django_forms.Form):
         required=True,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -73,11 +73,12 @@ class _PupilCreateUpdateBase(django_forms.Form):
         Get and set the year group choices.
         """
         self.school_id = kwargs.pop("school_id")
+        super().__init__(*args, **kwargs)
+
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         ).order_by("year_group_name")
-        self.base_fields["year_group"].queryset = year_groups
-        super().__init__(*args, **kwargs)
+        self.fields["year_group"].queryset = year_groups
 
 
 class PupilUpdate(_PupilCreateUpdateBase):

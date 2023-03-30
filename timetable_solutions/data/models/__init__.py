@@ -9,6 +9,9 @@ from typing import Union
 
 from .break_ import Break, BreakQuerySet
 from .classroom import Classroom, ClassroomQuerySet
+
+# Exceptions
+from .exceptions import SchoolMismatchError
 from .lesson import Lesson, LessonQuerySet
 from .pupil import Pupil, PupilQuerySet
 from .school import School, SchoolQuerySet
@@ -16,7 +19,6 @@ from .teacher import Teacher, TeacherQuerySet
 from .timetable_slot import TimetableSlot, TimetableSlotQuerySet
 from .user_profile import Profile, ProfileQuerySet
 from .year_group import YearGroup, YearGroupQuerySet
-
 
 # Type hints
 ModelSubclass = Union[

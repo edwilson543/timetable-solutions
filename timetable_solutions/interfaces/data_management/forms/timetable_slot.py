@@ -30,7 +30,7 @@ class TimetableSlotSearch(django_forms.Form):
         required=False,
         label="Year group",
         empty_label="",
-        queryset=models.YearGroupQuerySet().none(),
+        queryset=models.YearGroup.objects.none(),
     )
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -38,12 +38,12 @@ class TimetableSlotSearch(django_forms.Form):
         Get and set the year group choices.
         """
         self.school_id = kwargs.pop("school_id")
+        super().__init__(*args, **kwargs)
+
         year_groups = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         ).order_by("year_group_name")
-        self.base_fields["year_group"].queryset = year_groups
-
-        super().__init__(*args, **kwargs)
+        self.fields["year_group"].queryset = year_groups
 
     def clean(self) -> dict[str, Any]:
         """
@@ -78,29 +78,29 @@ class TimetableSlotUpdateYearGroups(django_forms.Form):
 
     relevant_year_groups = django_forms.ModelMultipleChoiceField(
         required=False,
-        queryset=models.TimetableSlotQuerySet().none(),
+        queryset=models.TimetableSlot.objects.none(),
         label="Select the year groups that this timetable slot is relevant to",
     )
 
     def __init__(self, *args: object, **kwargs: Any) -> None:
         self.school_id = kwargs.pop("school_id")
         slot = kwargs.pop("slot")
+        super().__init__(*args, **kwargs)
+
         self.slot = models.TimetableSlot.objects.get_individual_timeslot(
             school_id=self.school_id, slot_id=slot.slot_id
         )
 
         # Set all this school's year groups as the options
-        self.base_fields[
+        self.fields[
             "relevant_year_groups"
         ].queryset = models.YearGroup.objects.get_all_instances_for_school(
             school_id=self.school_id
         )
         # ...but only the year groups currently assigned to this slot as the initial values
-        self.base_fields[
+        self.fields[
             "relevant_year_groups"
         ].initial = slot.relevant_year_groups.all().values_list("pk", flat=True)
-
-        super().__init__(*args, **kwargs)
 
     def clean(self) -> dict[str, Any]:
         """

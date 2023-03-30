@@ -2,9 +2,6 @@
 Forms relating to the Teacher model.
 """
 
-# Standard library imports
-from typing import Any
-
 # Django imports
 from django import forms as django_forms
 
@@ -25,11 +22,6 @@ class TeacherSearch(django_forms.Form):
         help_text="Search for a teacher by name or id",
         error_messages={"required": "Please enter a search term!"},
     )
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        if kwargs.get("search_help_text"):
-            self.base_fields["search_term"].help_text = kwargs.pop("search_help_text")
-        super().__init__(*args, **kwargs)
 
     def clean_search_term(self) -> str:
         """Prevent single letter searches."""

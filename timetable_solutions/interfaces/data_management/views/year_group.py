@@ -26,7 +26,7 @@ class YearGroupLanding(base_views.LandingView):
         return self.request.user.profile.school.has_year_group_data
 
 
-class YearGroupList(base_views.ListView):
+class YearGroupList(base_views.ListView[models.YearGroup]):
     """Page displaying all a school's year group data."""
 
     template_name = "data_management/year-group/year-group-list.html"
@@ -42,7 +42,7 @@ class YearGroupList(base_views.ListView):
     }
 
 
-class YearGroupCreate(base_views.CreateView):
+class YearGroupCreate(base_views.CreateView[models.YearGroup, forms.YearGroupCreate]):
     """Page allowing users to create a single year group."""
 
     template_name = "data_management/year-group/year-group-create.html"
@@ -56,7 +56,7 @@ class YearGroupCreate(base_views.CreateView):
 
     def create_model_from_clean_form(
         self, form: forms.YearGroupCreate
-    ) -> models.YearGroup | None:
+    ) -> models.YearGroup:
         """Create a year group in the db using the clean form details."""
         year_group_id = form.cleaned_data.get("year_group_id", None)
         return operations.create_new_year_group(
@@ -76,7 +76,7 @@ class YearGroupCreate(base_views.CreateView):
         return kwargs
 
 
-class YearGroupUpdate(base_views.UpdateView):
+class YearGroupUpdate(base_views.UpdateView[models.YearGroup, forms.YearGroupUpdate]):
     """Page displaying information on a single year group, allowing this data to be updated / deleted."""
 
     template_name = "data_management/year-group/year-group-detail-update.html"
@@ -92,7 +92,7 @@ class YearGroupUpdate(base_views.UpdateView):
 
     def update_model_from_clean_form(
         self, form: forms.YearGroupUpdate
-    ) -> models.YearGroup | None:
+    ) -> models.YearGroup:
         """Update a year group's name in the db."""
         year_group_name = form.cleaned_data.get("year_group_name", None)
         return operations.update_year_group(

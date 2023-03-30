@@ -29,7 +29,7 @@ class TestBreakUpdateYearGroups:
             },
         )
 
-        pre_checked = form.base_fields["relevant_year_groups"].initial
+        pre_checked = form.fields["relevant_year_groups"].initial
         assert list(pre_checked) == [yg.pk]
         assert form.is_valid()
 
@@ -326,7 +326,7 @@ class TestBreakCreate:
                 "ends_at": dt.time(hour=9),
                 "day_of_week": constants.Day.MONDAY,
                 "relevant_to_all_year_groups": relevant_to_all_year_groups,
-                "relevant_to_all_teacher": relevant_to_all_teachers,
+                "relevant_to_all_teachers": relevant_to_all_teachers,
             },
         )
 
@@ -449,3 +449,70 @@ class TestBreakCreate:
         error_message = form.errors.as_text()
         assert "slot" in error_message
         assert "break" in error_message
+
+
+@pytest.mark.django_db
+class TestBreakAddTeacher:
+    def test_init_sets_the_correct_queryset_when_some_teachers_not_added(self):
+        break_ = data_factories.Break()
+        teacher = data_factories.Teacher(school=break_.school)
+
+        # Make a teacher at some other school
+        data_factories.Teacher()
+
+        form = break_forms.BreakAddTeacher(break_=break_)
+
+        assert form.fields["teacher"].queryset.get() == teacher
+
+    def test_init_excludes_teacher_already_set_on_break(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school, teachers=(teacher,))
+
+        # Make some other teacher to include in the qs
+        unassigned_teacher = data_factories.Teacher(school=teacher.school)
+
+        form = break_forms.BreakAddTeacher(break_=break_)
+
+        # The first teacher is already assigned, so shouldn't be an option to add
+        assert form.fields["teacher"].queryset.get() == unassigned_teacher
+
+    def test_init_disables_field_when_all_teachers_already_assigned_to_break(self):
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(school=teacher.school, teachers=(teacher,))
+
+        form = break_forms.BreakAddTeacher(break_=break_)
+
+        # The first teacher is already assigned, so shouldn't be an option to add
+        assert form.fields["teacher"].queryset.count() == 0
+        assert form.fields["teacher"].disabled
+
+    def test_form_valid_if_teacher_not_busy(self):
+        break_ = data_factories.Break()
+        teacher = data_factories.Teacher(school=break_.school)
+
+        form = break_forms.BreakAddTeacher(break_=break_, data={"teacher": teacher.pk})
+
+        assert form.is_valid()
+        assert form.cleaned_data["teacher"] == teacher
+
+    def test_form_invalid_if_teacher_already_busy_during_break(self):
+        # Make a teacher who is busy for some break
+        teacher = data_factories.Teacher()
+        break_ = data_factories.Break(teachers=(teacher,), school=teacher.school)
+
+        # Make some other break we will try adding the teacher to
+        add_to_break = data_factories.Break(
+            school=teacher.school,
+            starts_at=break_.starts_at,
+            ends_at=break_.ends_at,
+            day_of_week=break_.day_of_week,
+        )
+
+        form = break_forms.BreakAddTeacher(
+            break_=add_to_break, data={"teacher": teacher.pk}
+        )
+
+        assert not form.is_valid()
+        assert (
+            "This teacher is already busy during this break!" in form.errors.as_text()
+        )

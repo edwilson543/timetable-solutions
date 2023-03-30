@@ -10,6 +10,7 @@ from django.db import models
 
 # Local application imports
 from data import constants
+from data.models import exceptions
 from data.models.school import School
 from data.models.teacher import Teacher, TeacherQuerySet
 from data.models.year_group import YearGroup, YearGroupQuerySet
@@ -166,9 +167,23 @@ class Break(models.Model):
         self.relevant_year_groups.set(relevant_year_groups)
         return self
 
-    def _add_teachers(self, teachers: TeacherQuerySet | Teacher) -> None:
+    def add_teacher(self, teacher: Teacher) -> None:
         """
-        Add one or more teachers to a break instance.
+        Add a teacher to a break.
+        """
+        if not teacher.school == self.school:
+            raise exceptions.SchoolMismatchError
+        self.teachers.add(teacher)
+
+    def remove_teacher(self, teacher: Teacher) -> None:
+        """
+        Remove a teacher from a break.
+        """
+        self.teachers.remove(teacher)
+
+    def _add_teachers(self, teachers: TeacherQuerySet) -> None:
+        """
+        Add a queryset of teachers to a break instance.
         """
         self.teachers.add(*teachers)
 

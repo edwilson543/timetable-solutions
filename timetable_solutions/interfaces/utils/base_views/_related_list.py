@@ -15,23 +15,23 @@ from interfaces.constants import UrlName
 from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
-_ModelT = TypeVar("_ModelT", bound=django_models.Model)
-_RelatedModelT = TypeVar("_RelatedModelT", bound=django_models.Model)
+ModelT = TypeVar("ModelT", bound=django_models.Model)
+RelatedModelT = TypeVar("RelatedModelT", bound=django_models.Model)
 
 
 class RelatedListPartialView(
     _htmx_views.HTMXViewMixin,
     mixins.LoginRequiredMixin,
     generic.ListView,
-    Generic[_ModelT, _RelatedModelT],
+    Generic[ModelT, RelatedModelT],
 ):
     """
     View providing some related objects for a single model instance.
 
-    Note this view will only ever render a template partial
+    Note this view will only ever render a template partial.
     """
 
-    model_class: type[_ModelT]
+    model_class: type[ModelT]
     """The model who's data is rendered on this page."""
 
     related_name: ClassVar[str]
@@ -49,7 +49,7 @@ class RelatedListPartialView(
     The full url is constructed as page_url_prefix/<model_instance_id>/<related_name>.
     """
 
-    serializer_class: type[serializers.Serializer[_ModelT]]
+    serializer_class: type[serializers.Serializer[ModelT]]
     """Serializer used to convert the RELATED queryset context into JSON-like data."""
 
     displayed_fields: ClassVar[dict[str, str]]
@@ -57,6 +57,7 @@ class RelatedListPartialView(
     The fields of the RELATED object to use as column headers in the rendered context.
     Given as {field name: displayed name, ...} key-value pairs.
     The first key should always be the model's id within the school field, e.g. 'teacher_id'.
+    Note the field names need to match those of the serializer class.
     """
 
     # Defaulted django vars
@@ -67,8 +68,14 @@ class RelatedListPartialView(
     """Default partial that will be rendered."""
 
     # Instance vars
+    model_instance: ModelT
+    """The model whose related objects we are viewing."""
+
     model_instance_id: int | str
     """A kwarg in any url routed to a subclass of this view."""
+
+    object_list: django_models.QuerySet[RelatedModelT]
+    """The items that will be displayed in the related objects table."""
 
     school_id: int
     """The school who's data will be shown."""
@@ -79,6 +86,7 @@ class RelatedListPartialView(
         super().setup(request, *args, **kwargs)
         self.school_id = request.user.profile.school.school_access_key
         self.model_instance_id = kwargs[self.object_id_name]
+        self.model_instance = self.get_model_instance()
 
     def dispatch(
         self, request: http.HttpRequest, *args: object, **kwargs: object
@@ -105,17 +113,21 @@ class RelatedListPartialView(
         """
         Retrieve and serialize the related objects of the target model instance.
         """
+        queryset = getattr(self.model_instance, self.related_name).all()
+        return self.serializer_class(instance=queryset, many=True).data
+
+    def get_model_instance(self) -> ModelT:
+        """
+        Get the object we are viewing the related objects of.
+        """
         objects = self.model_class.objects.prefetch_related(self.related_name)
         try:
-            model_instance = objects.get(
+            return objects.get(
                 school_id=self.school_id,
                 **{self.object_id_name: self.model_instance_id}
             )
         except self.model_class.DoesNotExist:
             raise http.Http404
-
-        queryset = getattr(model_instance, self.related_name).all()
-        return self.serializer_class(instance=queryset, many=True).data
 
     @property
     def related_table_url(self) -> str:

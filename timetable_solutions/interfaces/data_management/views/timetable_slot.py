@@ -44,7 +44,9 @@ class TimetableSlotLanding(base_views.LandingView):
         return None
 
 
-class TimetableSlotSearch(base_views.SearchView):
+class TimetableSlotSearch(
+    base_views.SearchView[models.TimetableSlot, forms.TimetableSlotSearch]
+):
     """
     Page displaying all a school's timetable slot data and allowing them to search this list.
     """
@@ -87,7 +89,9 @@ class TimetableSlotSearch(base_views.SearchView):
         return {"school_id": self.school_id}
 
 
-class TimetableSlotCreate(base_views.CreateView):
+class TimetableSlotCreate(
+    base_views.CreateView[models.TimetableSlot, forms.TimetableSlotCreate]
+):
     """
     Page allowing the users to create a single timetable slot.
     """
@@ -103,7 +107,7 @@ class TimetableSlotCreate(base_views.CreateView):
 
     def create_model_from_clean_form(
         self, form: forms.TimetableSlotCreate
-    ) -> models.TimetableSlot | None:
+    ) -> models.TimetableSlot:
         """
         Create a timetable slot in the db using the clean form details.
         """
@@ -130,7 +134,9 @@ class TimetableSlotCreate(base_views.CreateView):
         return kwargs
 
 
-class TimetableSlotUpdate(base_views.UpdateView):
+class TimetableSlotUpdate(
+    base_views.UpdateView[models.TimetableSlot, forms.TimetableSlotUpdateTimings]
+):
     """
     Page displaying information on a single timetable slot, allowing this data to be updated / deleted.
     """

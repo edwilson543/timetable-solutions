@@ -8,6 +8,7 @@ from .break_ import (
     BreakLanding,
     BreakSearch,
     BreakUpdate,
+    BreakUpdateRelatedTeachersPartial,
     BreakUpload,
 )
 from .classroom import (

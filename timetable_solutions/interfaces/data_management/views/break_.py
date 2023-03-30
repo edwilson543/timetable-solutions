@@ -45,7 +45,7 @@ class BreakLanding(base_views.LandingView):
         return None
 
 
-class BreakSearch(base_views.SearchView):
+class BreakSearch(base_views.SearchView[models.Break, forms.BreakSearch]):
     """
     Page displaying all a school's break data and allowing searching this list.
     """
@@ -89,7 +89,7 @@ class BreakSearch(base_views.SearchView):
         return {"school_id": self.school_id}
 
 
-class BreakCreate(base_views.CreateView):
+class BreakCreate(base_views.CreateView[models.Break, forms.BreakCreate]):
     """
     Page allowing the users to create a single break.
     """
@@ -103,9 +103,7 @@ class BreakCreate(base_views.CreateView):
     success_url = UrlName.BREAK_LIST.url(lazy=True)
     object_id_name = "break_id"
 
-    def create_model_from_clean_form(
-        self, form: forms.BreakCreate
-    ) -> models.Break | None:
+    def create_model_from_clean_form(self, form: forms.BreakCreate) -> models.Break:
         """
         Create a break in the db using the clean form details.
         """
@@ -124,7 +122,7 @@ class BreakCreate(base_views.CreateView):
         )
 
 
-class BreakUpdate(base_views.UpdateView):
+class BreakUpdate(base_views.UpdateView[models.Break, forms.BreakUpdateTimings]):
     """
     Page displaying information on a single break, allowing this data to be updated / deleted.
     """
@@ -253,6 +251,55 @@ class BreakUpdate(base_views.UpdateView):
         Test whether the user has submitted the relevant year groups form.
         """
         return self.UPDATE_YEAR_GROUPS_SUBMIT in self.request.POST
+
+
+class BreakUpdateRelatedTeachersPartial(
+    base_views.UpdateRelatedListPartialView[models.Break, models.Teacher]
+):
+    """
+    Partial allowing users to view and add teachers to a break.
+    """
+
+    model_class = models.Break
+    form_class = forms.BreakAddTeacher
+    object_id_name = "break_id"
+    page_url_prefix = UrlName.BREAK_ADD_TEACHERS_PARTIAL
+
+    # Related object vars
+    related_name = "teachers"
+    related_model_name = "Teachers"
+    related_object_id_name = "teacher_id"
+    related_model_class = models.Teacher
+
+    serializer_class = serializers.Teacher
+    displayed_fields = {
+        "teacher_id": "Teacher ID",
+        "firstname": "Firstname",
+        "surname": "Surname",
+        "title": "Title",
+    }
+    ordering = ["teacher_id"]
+
+    def add_related_object(self, form: forms.BreakAddTeacher) -> None:
+        """
+        Try adding a teacher to the break.
+        """
+        teacher = form.cleaned_data["teacher"]
+        operations.add_teacher_to_break(break_=self.model_instance, teacher=teacher)
+
+    def remove_related_object(self, related_model_instance: models.Teacher) -> None:
+        """
+        Remove a teacher form a break.
+        """
+        operations.remove_teacher_from_break(
+            break_=self.model_instance, teacher=related_model_instance
+        )
+
+    def extra_form_kwargs(self) -> dict[str, Any]:
+        """
+        Make sure the break is passed when instantiating the form.
+        """
+        return {"break_": self.model_instance}
 
 
 class BreakUpload(base_views.UploadView):

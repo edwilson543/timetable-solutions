@@ -6,7 +6,6 @@ from interfaces.constants import UrlName
 
 from . import htmx_views, views
 
-
 urlpatterns = [
     # Views relating to authentication
     re_path(r"^accounts/login", views.CustomLogin.as_view(), name=UrlName.LOGIN.value),
@@ -35,21 +34,5 @@ urlpatterns = [
         "register/username/",
         htmx_views.username_field_view,
         name=UrlName.USERNAME_FIELD_REGISTRATION.value,
-    ),
-    # HTMX views - dashboard
-    path(
-        "dashboard/data-upload-tab/",
-        htmx_views.DataUploadDashTab.as_view(),
-        name=UrlName.DATA_UPLOAD_DASH_TAB.value,
-    ),
-    path(
-        "dashboard/create-timetable-tab/",
-        htmx_views.CreateTimetableDashTab.as_view(),
-        name=UrlName.CREATE_TIMETABLE_DASH_TAB.value,
-    ),
-    path(
-        "dashboard/view-timetable-tab/",
-        htmx_views.ViewTimetableDashTab.as_view(),
-        name=UrlName.VIEW_TIMETABLE_DASH_TAB.value,
     ),
 ]

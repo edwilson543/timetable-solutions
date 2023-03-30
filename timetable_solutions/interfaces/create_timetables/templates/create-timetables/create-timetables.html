@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %} Create - {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        create
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3 my-3 gy-2">
+    <div class="col-lg-6">
+        <div class="card w-100">
+
+            <div class="card-header">
+                <h4>
+                    Generate new timetable solutions
+                </h4>
+            </div>
+
+            <div class="card-body">
+                {% if not ready_to_create %}
+                    <div class="alert alert-warning">
+                        <p>
+                            You have uploaded insufficient data to start creating timetables!
+                            Please finish adding your data before continuing
+                        </p>
+                    </div>
+                {% else %}
+
+                    <div class="alert alert-info">
+                        <p>
+                            Please specify your preferences for how solutions will be generated
+                        </p>
+                        <ul class="ps-2">
+                            <li style="list-style-type: circle">
+                                You can create new solutions by returning to this page at any point
+                            </li>
+                            <li style="list-style-type: circle">
+                                Doing this will reset your existing timetable solution
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="p-3">
+                        {% include 'utils/forms/basic-form.html' with form=form form_id="create-timetables" submit_url=page_url submit_text="Create" %}
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
