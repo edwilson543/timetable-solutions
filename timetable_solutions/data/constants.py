@@ -5,8 +5,6 @@ from django.db import models
 class UserRole(models.IntegerChoices):
     """
     Choices for the different roles that users can have with respect to the site.
-    Note there is no interaction with the default Django authentication tiers (staff / superuser), these roles only
-    relate to the custom admin.
     """
 
     SCHOOL_ADMIN = 1, "Administrator"  # Only role with access to the custom admin site

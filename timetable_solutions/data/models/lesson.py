@@ -311,13 +311,3 @@ class Lesson(models.Model):
             raise NoPupilsError(
                 f"Lesson: {repr(self)} does not have any pupils, therefore cannot retrieve associated year group"
             )
-
-    # --------------------
-    # Queries - admin site logic
-    # --------------------
-
-    def get_number_pupils(self) -> int:
-        """
-        Method returning the number of pupils associated with this Lesson instance.
-        """
-        return self.pupils.all().count()

@@ -16,6 +16,7 @@ from django.views.generic.edit import FormView
 # Local application imports
 from data import models
 from domain import solver
+from domain.solver.queries import school as solver_school_queries
 from interfaces.constants import UrlName
 from interfaces.create_timetables import forms
 
@@ -73,17 +74,11 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         timetables, and False if they need to complete the data upload step.
         """
         context_data = super().get_context_data()
-        school: models.School = self.request.user.profile.school
-        context_data["ready_to_create"] = (
-            # TODO -> some proper query in solutions/ for whether makes sense to try make timetables
-            # TODO -> should have a model level one query (probably still in solutions)
-            school.has_teacher_data
-            and school.has_pupil_data
-            and school.has_classroom_data
-            and school.has_year_group_data
-            and school.has_timetable_structure_data
-            and school.has_break_data
-            and school.has_lesson_data
+        school = self.request.user.profile.school
+        context_data[
+            "ready_to_create"
+        ] = solver_school_queries.check_school_has_sufficient_data_to_create_timetables(
+            school=school
         )
         return context_data
 
