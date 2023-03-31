@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     "interfaces.view_timetables",
     "interfaces.data_management",
     "interfaces.create_timetables",
-    "interfaces.custom_admin",
     "interfaces.utils",
     # Django contrib apps
     "django.contrib.admin",

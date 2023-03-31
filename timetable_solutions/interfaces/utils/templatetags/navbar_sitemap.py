@@ -74,7 +74,7 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Lessons",
-                    url=UrlName.CUSTOM_ADMIN_LESSON_LIST.url(),
+                    url="",
                     fa_icon="fa-solid fa-brain",
                 ),
             ],
@@ -106,7 +106,7 @@ def sitemap() -> list[PageCollection]:
             pages=[
                 Page(
                     "Manage users",
-                    url=UrlName.CUSTOM_ADMIN_PROFILE.url(),
+                    url="",
                     fa_icon="fa-solid fa-user-gear",
                 )
             ],

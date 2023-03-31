@@ -11,7 +11,6 @@ from django.views import generic
 
 # Local application imports
 from interfaces.constants import UrlName
-from interfaces.custom_admin.admin.custom_admin_site import user_admin
 
 urlpatterns = (
     [
@@ -21,7 +20,6 @@ urlpatterns = (
         path("create/", include("interfaces.create_timetables.urls")),
         path("users/", include("interfaces.users.urls")),
         path("admin/", admin.site.urls),
-        path("data/admin/", user_admin.urls),
     ]
     + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

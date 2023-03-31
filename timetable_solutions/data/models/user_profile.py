@@ -56,7 +56,7 @@ class Profile(models.Model):
     )
     approved_by_school_admin = models.BooleanField(default=False)
 
-    # Introduce a custom admin
+    # Introduce a custom manager
     objects = ProfileQuerySet.as_manager()
 
     def __str__(self) -> str:

@@ -110,22 +110,9 @@ class UrlName(StrEnum):
     TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id: int
     VIEW_TIMETABLES_DASH = "selection_dashboard"
 
-    # Custom admin app
-    CUSTOM_ADMIN_HOME = "user_admin:index"
-    CUSTOM_ADMIN_TEACHER_LIST = "user_admin:data_teacher_changelist"
-    CUSTOM_ADMIN_CLASSROOM_LIST = "user_admin:data_classroom_changelist"
-    CUSTOM_ADMIN_YEAR_GROUP_LIST = "user_admin:data_yeargroup_changelist"
-    CUSTOM_ADMIN_TIMETABLE_LIST = "user_admin:data_timetableslot_changelist"
-    CUSTOM_ADMIN_PUPIL_LIST = "user_admin:data_pupil_changelist"
-    CUSTOM_ADMIN_LESSON_LIST = "user_admin:data_lesson_changelist"
-    CUSTOM_ADMIN_PROFILE = "user_admin:data_profile_changelist"
-
     # HTMX #
 
     # Users app
-    DATA_UPLOAD_DASH_TAB = "data-upload-dash-tab"
-    CREATE_TIMETABLE_DASH_TAB = "create-timetable-dash-tab"
-    VIEW_TIMETABLE_DASH_TAB = "view-timetable-dash-tab"
     USERNAME_FIELD_REGISTRATION = "username-field-registration"
 
     # View timetables app
