@@ -120,7 +120,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        &laquo; first
+                        <i class="fa-solid fa-angle-double-left"></i>
                     </span>
                     <span
                         hx-get="{{ related_table_url }}?page={{ page_obj.previous_page_number }}"
@@ -129,7 +129,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        previous
+                        <i class="fa-solid fa-angle-left"></i>
                     </span>
                 {% endif %}
                 <span>
@@ -143,7 +143,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        next
+                        <i class="fa-solid fa-angle-right"></i>
                     </a>
                     <a
                         hx-get="{{ related_table_url }}?page={{ page_obj.paginator.num_pages }}"
@@ -152,7 +152,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        last &raquo;
+                        <i class="fa-solid fa-angle-double-right"></i>
                     </a>
                 {% endif %}
             </span>
