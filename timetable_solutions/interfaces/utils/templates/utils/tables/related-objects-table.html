@@ -70,6 +70,7 @@ paginator: django_paginate.Paginator
                         {% endfor %}
                         <td class="d-flex flex-row justify-content-evenly py-1">
                             <a href="{{ serialized_model_instance.update_url }}" class="btn btn-secondary py-1">
+                                <i class="fa-solid fa-eye"></i>
                                 View
                             </a>
 
@@ -92,6 +93,7 @@ paginator: django_paginate.Paginator
                                     name="remove-{{ related_name }}"
                                     class="btn btn-danger py-1"
                                 >
+                                    <i class="fa-solid fa-delete-left"></i>
                                     Remove
                                 </button>
                             </form>
