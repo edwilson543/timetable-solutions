@@ -15,7 +15,11 @@ other_button_text: str | None = None
 -->
 
 <form
-    enctype="{{ enctype|default:'application/x-www-form-urlencoded' }}"
+    {% if upload %}
+        enctype="multipart/form-data"
+    {% else %}
+        enctype="application/x-www-form-urlencoded"
+    {% endif %}
     method="{{ method|default:'post' }}"
     action="{{ submit_url }}"
     id="{{ form_id }}"
