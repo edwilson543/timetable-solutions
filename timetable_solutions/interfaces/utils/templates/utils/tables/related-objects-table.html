@@ -40,7 +40,10 @@ paginator: django_paginate.Paginator
                 </fieldset>
             {% endfor %}
 
-            <input type="submit" name="add-{{ related_name }}" value="Add" class="btn btn-success m-1">
+            <button type="submit" name="add-{{ related_name }}" class="btn btn-success m-1">
+                <i class="fa-solid fa-plus-circle"></i>
+                Add
+            </button>
         </form>
     {% endif %}
 
