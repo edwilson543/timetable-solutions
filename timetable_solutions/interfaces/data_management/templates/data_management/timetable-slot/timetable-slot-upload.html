@@ -25,7 +25,7 @@
             <b>Upload a csv file with the required structure</b>
         </div>
         <div class="card-body">
-            {% include 'utils/forms/basic-form.html' with upload=True form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" other_button_url=example_download_url other_button_text="Download example" %}
+            {% include 'utils/forms/basic-form.html' with upload=True form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" submit_icon='fa-solid fa-cloud-arrow-up' other_button_url=example_download_url other_button_text="Download example" other_button_icon='fa-solid fa-file-arrow-down' %}
         </div>
     </div>
 </div>
