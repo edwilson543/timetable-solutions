@@ -29,8 +29,14 @@ Head strap goes at the top of every page of the site
 
     {% if user.is_authenticated %}
         <span class="dropdown mx-5 align-items-center">
-            <button class="btn btn-dark dropdown-toggle" type="button"
-                    id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+            <button
+                id="dropdownMenuButton"
+                class="btn btn-dark dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+            >
+                <i class="fa-solid fa-user-gear"></i>
                 {{ user.username }}
             </button>
 
