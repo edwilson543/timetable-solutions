@@ -84,7 +84,7 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
     )
     timetable = view_timetables.get_teacher_timetable(teacher)
 
-    template = loader.get_template("view_timetables/teacher_timetable.html")
+    template = loader.get_template("view_timetables/teacher-timetable.html")
     context = {
         "teacher": teacher,
         "timetable": timetable,
