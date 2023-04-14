@@ -63,7 +63,7 @@ def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpRespon
     )
     timetable = view_timetables.get_pupil_timetable(pupil)
 
-    template = loader.get_template("view_timetables/pupil_timetable.html")
+    template = loader.get_template("view_timetables/pupil-timetable.html")
     context = {
         "pupil": pupil,
         "timetable": timetable,
