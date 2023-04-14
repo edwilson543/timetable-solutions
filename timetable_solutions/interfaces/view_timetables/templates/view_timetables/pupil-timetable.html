@@ -1,33 +1,45 @@
-{% extends "legacy-base.html" %}
+<!-- Page showing a pupil's timetable
+------------------
+Context variables:
+------------------
+pupil: models.Teacher
+timetable: OrderedDict[constants.Day, list[TimetableComponent]
+-->
+{% extends "base.html" %}
 
-<head>
+{% block title %} {{ pupil.firstname }} {{ pupil.surname }} - timetable - {{ block.super }} {% endblock %}
 
-{% block head_content %}
-<title>{{pupil.firstname}} {{pupil.surname}} Timetable</title>
-{% load static %}
-<link rel="stylesheet" href="{% static 'view_timetables/stylesheets/pupil_teacher_timetable.css' %}">
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'pupil-landing-page' %}" class="link-secondary text-decoration-none">
+            pupils
+        </a>
+    </li>˙
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'pupil-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        timetable ({{ pupil.title }} {{ pupil.surname }})
+    </li>
 {% endblock %}
 
-</head>
-
-<body>
 {% block content %}
-{% include 'partials/lesson_detail.html' %}
-<div id="content_container">
-    <div id="heading_back_wrapper">
-        <div id="heading">
-            <b>
-                Timetable for {{pupil.firstname}} {{pupil.surname}}
-            </b>
-        </div>
-        <form id="back_button_form" action="{% url 'pupils_navigator' %}" method="get">
-            <button id="back_button" type="submit">
-                Back
-            </button>
-        </form>
-    </div>
 
-    {% include 'partials/timetable.html' with timetable=timetable %}
+{% include 'partials/lesson_detail.html' %}
+<div class="row h-75 mx-3">
+    <div class="card w-100 px-0">
+        <div class="card-header">
+            <h4>
+                Timetable for {{pupil.firstname}} {{pupil.surname}}
+            </h4>
+        </div>
+
+        <div class="card-body">
+            {% include 'partials/timetable.html' with timetable=timetable %}
+        </div>
+    </div>
 </div>
+
 {% endblock %}
-</body>
