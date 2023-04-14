@@ -1,33 +1,45 @@
-{% extends "legacy-base.html" %}
+<!-- Page showing a teacher's timetable
+------------------
+Context variables:
+------------------
+teacher: models.Teacher
+timetable: OrderedDict[constants.Day, list[TimetableComponent]
+-->
+{% extends "base.html" %}
 
-<head>
-{% block head_content %}
-<title>{{teacher.firstname}} {{teacher.surname}} Timetable</title>
-{% load static %}
-<link rel="stylesheet" href="{% static 'view_timetables/stylesheets/pupil_teacher_timetable.css' %}">
+{% block title %} {{ teacher.title }} {{ teacher.surname }} - timetable - {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
+            teachers
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'teacher-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        timetable ({{ teacher.title }} {{ teacher.surname }})
+    </li>
 {% endblock %}
 
-</head>
-
-<body>
 {% block content %}
-{% include 'partials/lesson_detail.html' %}
-<div id="content_container">
-    <div id="heading_back_wrapper">
-        <div id="heading">
-            <b>
-                Timetable for {{teacher.firstname}} {{teacher.surname}}
-            </b>
-        </div>
-        <form id="back_button_form" action="{% url 'teachers_navigator' %}" method="get">
-            <button id="back_button" type="submit">
-                Back
-            </button>
-        </form>
-    </div>
 
-    {% include 'partials/timetable.html' with timetable=timetable %}
+{% include 'partials/lesson_detail.html' %}
+<div class="row h-75 mx-3">
+    <div class="card w-100 px-0">
+        <div class="card-header">
+            <h4>
+                Timetable for {{teacher.firstname}} {{teacher.surname}}
+            </h4>
+        </div>
+
+        <div class="card-body">
+            {% include 'partials/timetable.html' with timetable=timetable %}
+        </div>
+    </div>
 </div>
 
 {% endblock %}
-</body>
