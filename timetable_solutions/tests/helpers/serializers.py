@@ -39,6 +39,8 @@ def expected_teacher(teacher: models.Teacher) -> OrderedDict:
             ("surname", teacher.surname),
             ("title", teacher.title),
             ("update_url", UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id)),
+            # Since these helpers will be deleted, do not include an actual timetable url
+            ("timetable_url", ""),
         ]
     )
 

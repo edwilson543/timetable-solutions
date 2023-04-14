@@ -41,6 +41,7 @@ class TestBreakUpdateRelatedTeachersPartialRemove(client.TestClient):
                         "update_url",
                         UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id),
                     ),
+                    ("timetable_url", ""),
                 ]
             ),
             OrderedDict(
@@ -55,6 +56,7 @@ class TestBreakUpdateRelatedTeachersPartialRemove(client.TestClient):
                             teacher_id=remove_teacher.teacher_id
                         ),
                     ),
+                    ("timetable_url", ""),
                 ]
             ),
         ]
@@ -83,6 +85,7 @@ class TestBreakUpdateRelatedTeachersPartialRemove(client.TestClient):
                         "update_url",
                         UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id),
                     ),
+                    ("timetable_url", ""),
                 ]
             )
         ]

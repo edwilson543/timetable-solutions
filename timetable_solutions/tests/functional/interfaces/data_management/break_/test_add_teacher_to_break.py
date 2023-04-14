@@ -39,6 +39,7 @@ class TestBreakUpdateRelatedTeachersPartialAdd(client.TestClient):
                         "update_url",
                         UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id),
                     ),
+                    ("timetable_url", ""),
                 ]
             )
         ]
@@ -67,6 +68,7 @@ class TestBreakUpdateRelatedTeachersPartialAdd(client.TestClient):
                         "update_url",
                         UrlName.TEACHER_UPDATE.url(teacher_id=teacher.teacher_id),
                     ),
+                    ("timetable_url", ""),
                 ]
             ),
             OrderedDict(
@@ -79,6 +81,7 @@ class TestBreakUpdateRelatedTeachersPartialAdd(client.TestClient):
                         "update_url",
                         UrlName.TEACHER_UPDATE.url(teacher_id=other_teacher.teacher_id),
                     ),
+                    ("timetable_url", ""),
                 ]
             ),
         ]

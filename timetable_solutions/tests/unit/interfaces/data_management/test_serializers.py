@@ -3,11 +3,13 @@
 # Standard library imports
 import datetime as dt
 from collections import OrderedDict
+from unittest import mock
 
 # Third party imports
 import pytest
 
 # Local application imports
+from interfaces.constants import UrlName
 from interfaces.data_management import serializers
 from tests import data_factories
 from tests.helpers import serializers as serializers_helpers
@@ -117,6 +119,22 @@ class TestTeacherSerializer:
         serialized_teacher = serializers.Teacher(teacher).data
 
         assert serialized_teacher == serializers_helpers.expected_teacher(teacher)
+
+    @mock.patch.object(
+        serializers.school_solver_queries,
+        "check_school_has_timetable_solutions",
+        return_value=True,
+    )
+    def test_serialize_individual_instance_with_timetable_includes_timetable_url(
+        self, mock_has_solutions: mock.Mock
+    ):
+        teacher = data_factories.Teacher()
+
+        serialized_teacher = serializers.Teacher(teacher).data
+
+        assert serialized_teacher["timetable_url"] == UrlName.TEACHER_TIMETABLE.url(
+            teacher_id=teacher.teacher_id
+        )
 
     def test_serialize_individual_instance_with_lesson(self):
         lesson = data_factories.Lesson.with_n_pupils()
