@@ -123,6 +123,7 @@ class Pupil(serializers.Serializer):
 
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+    timetable_url = serializers.SerializerMethodField(method_name="_get_timetable_url")
 
     def _year_group_name(self, obj: models.Pupil) -> str:
         return obj.year_group.year_group_name
@@ -132,6 +133,16 @@ class Pupil(serializers.Serializer):
         Get the url for this year group's update / detail view page.
         """
         return UrlName.PUPIL_UPDATE.url(pupil_id=obj.pupil_id)
+
+    def _get_timetable_url(self, obj: models.Pupil) -> str:
+        """
+        Get the url for this pupils's timetable, if the school has timetable solutions.
+        """
+        if school_solver_queries.check_school_has_timetable_solutions(
+            school=obj.school
+        ):
+            return UrlName.PUPIL_TIMETABLE.url(pupil_id=obj.pupil_id)
+        return ""
 
 
 class TimetableSlot(serializers.Serializer):

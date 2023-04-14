@@ -196,6 +196,22 @@ class TestPupilSerializer:
 
         assert serialized_pupil == serializers_helpers.expected_pupil(pupil)
 
+    @mock.patch.object(
+        serializers.school_solver_queries,
+        "check_school_has_timetable_solutions",
+        return_value=True,
+    )
+    def test_serialize_individual_instance_with_timetable_includes_timetable_url(
+        self, mock_has_solutions: mock.Mock
+    ):
+        pupil = data_factories.Pupil()
+
+        serialized_pupil = serializers.Pupil(pupil).data
+
+        assert serialized_pupil["timetable_url"] == UrlName.PUPIL_TIMETABLE.url(
+            pupil_id=pupil.pupil_id
+        )
+
     def test_serialize_multiple_pupils(self):
         pupil_a = data_factories.Pupil()
         pupil_b = data_factories.Pupil()
