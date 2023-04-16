@@ -94,6 +94,12 @@ model_name_plural: str
                                     <i class="fa-solid fa-eye"></i>
                                     View
                                 </a>
+                                {% if object_ordered_dict.timetable_url %}
+                                    <a href="{{ object_ordered_dict.timetable_url }}" class="btn btn-info py-1">
+                                        <i class="fa-regular fa-calendar-days"></i>
+                                        Timetable
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
