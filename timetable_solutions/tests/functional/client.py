@@ -73,7 +73,8 @@ class TestClient:
         """
         Submit a form as if by hx-post.
         """
-        headers = self._get_htmx_headers(**kwargs)
+        extra_headers = kwargs.pop("extra_headers", None)
+        headers = self._get_htmx_headers(extra_headers=extra_headers)
         # Set the method manually since the actual html uses hx-post, and then submit
         form.method = "POST"
         return form.submit(headers=headers, **kwargs)
@@ -84,7 +85,8 @@ class TestClient:
         """
         Submit a form as if by hx-delete.
         """
-        headers = self._get_htmx_headers(**kwargs)
+        extra_headers = kwargs.pop("extra_headers", None)
+        headers = self._get_htmx_headers(extra_headers=extra_headers)
         fields = form.submit_fields(**kwargs)
         if csrf_token := self.client.cookies["csrftoken"]:
             headers["X-CSRFToken"] = csrf_token
