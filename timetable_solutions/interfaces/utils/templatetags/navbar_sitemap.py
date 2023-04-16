@@ -90,12 +90,12 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Pupil timetables",
-                    url=UrlName.PUPILS_NAVIGATOR.url(),
+                    url=UrlName.PUPIL_LIST.url(),
                     fa_icon="fa-solid fa-child",
                 ),
                 Page(
                     "Teacher timetables",
-                    url=UrlName.TEACHERS_NAVIGATOR.url(),
+                    url=UrlName.TEACHER_LIST.url(),
                     fa_icon="fa-solid fa-person-chalkboard",
                 ),
             ],
