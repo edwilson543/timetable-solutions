@@ -113,5 +113,4 @@ class UrlName(StrEnum):
     USERNAME_FIELD_REGISTRATION = "username-field-registration"
 
     # View timetables app
-    LESSON_DETAIL = "lesson-detail"
-    CLOSE_LESSON_DETAIL = "close-lesson-detail"
+    LESSON_DETAIL = "lesson-detail"  # kwargs: lesson_id: str

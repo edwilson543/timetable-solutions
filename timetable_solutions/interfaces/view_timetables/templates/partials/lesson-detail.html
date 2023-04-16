@@ -134,9 +134,11 @@ Styling of the modal containers + panels
     font-size: 25px;
     font-weight: bold;
     color: white;
+    text-decoration: None;
 }
 .modal_button:hover {
     cursor: pointer;
+    color: white;
 }
 
 #amend_button {
@@ -159,16 +161,8 @@ Styling of the modal containers + panels
 </style>
 
 <div id="modal-htmx-handle">
-
     {% if modal_is_active %}
-        <div
-            hx-get="{% url 'close-lesson-detail' %}"
-            hx-trigger="click"
-            hx-target="#modal-htmx-handle"
-            hx-swap="innerHTML"
-
-            id="modal_container"
-        >
+        <div id="modal_container">
             <div id="modal">
 
                 <div id="modal_title">
@@ -202,20 +196,11 @@ Styling of the modal containers + panels
                     <a id="amend_button" class="modal_button" href="">
                         Amend
                     </a>
-                    <div
-                         hx-get="{% url 'close-lesson-detail' %}"
-                         hx-trigger="click"
-                         hx-target="#modal-htmx-handle"
-                         hx-swap="innerHTML"
-
-                         id="close_button"
-                         class="modal_button">
+                    <a id="close_button" class="modal_button" href="{{ close_modal_url }}">
                         Close
-                    </div>
+                    </a>
                 </div>
-
             </div>
         </div>
     {% endif %}
-
 </div>

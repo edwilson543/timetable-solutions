@@ -6,7 +6,7 @@ from django.urls import path
 # Local application imports
 from interfaces.constants import UrlName
 
-from . import htmx_views, views
+from . import views
 
 urlpatterns = [
     # View timetable URLs
@@ -23,12 +23,7 @@ urlpatterns = [
     # HTMX URLs
     path(
         "lesson-detail-modal/<str:lesson_id>",
-        htmx_views.lesson_detail_modal,
+        views.lesson_detail_modal,
         name=UrlName.LESSON_DETAIL.value,
-    ),
-    path(
-        "close-lesson-detail-modal/",
-        htmx_views.close_lesson_detail_modal,
-        name=UrlName.CLOSE_LESSON_DETAIL.value,
     ),
 ]

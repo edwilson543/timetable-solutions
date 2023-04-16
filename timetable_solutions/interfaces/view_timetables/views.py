@@ -3,13 +3,14 @@ Views used to navigate users towards an individual pupil/teacher's timetable.
 """
 
 # Django imports
-from django import http
+from django import http, shortcuts
 from django.contrib.auth.decorators import login_required
 from django.template import loader
 
 # Local application imports
 from data import models
 from domain import view_timetables
+from interfaces.utils import typing_utils
 
 
 @login_required
@@ -52,3 +53,30 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
         "timetable": timetable,
     }
     return http.HttpResponse(template.render(context, request))
+
+
+@login_required
+def lesson_detail_modal(
+    request: typing_utils.AuthenticatedHtmxRequest, lesson_id: str
+) -> http.HttpResponse:
+    """
+    Populate a modal with the details for a specific Lesson.
+
+    Note the modal can only be populated by a hx-get request.
+    """
+    template_name = "partials/lesson-detail.html"
+
+    if request.htmx and request.method == "GET":
+        school_id = request.user.profile.school.school_access_key
+        lesson = models.Lesson.objects.get_individual_lesson(
+            school_id=school_id, lesson_id=lesson_id
+        )
+        context = {
+            "modal_is_active": True,
+            "lesson": lesson,
+            "lesson_title": lesson.lesson_id.replace("_", " ").title(),
+            "close_modal_url": request.htmx.current_url_abs_path,
+        }
+        return shortcuts.render(
+            template_name=template_name, context=context, request=request
+        )

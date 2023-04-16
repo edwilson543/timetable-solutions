@@ -63,7 +63,8 @@ class TestClient:
         """
         Get a url as if by hx-get.
         """
-        headers = self._get_htmx_headers(**kwargs)
+        extra_headers = kwargs.pop("extra_headers", None)
+        headers = self._get_htmx_headers(extra_headers=extra_headers)
         return self.client.get(url=url, headers=headers, **kwargs)
 
     def hx_post_form(
@@ -89,7 +90,9 @@ class TestClient:
             headers["X-CSRFToken"] = csrf_token
         return self.client.delete(url, params=fields, headers=headers, **kwargs)
 
-    def _get_htmx_headers(self, **kwargs: Any) -> dict[str, str]:
+    def _get_htmx_headers(
+        self, extra_headers: dict[str, str] | None = None
+    ) -> dict[str, str]:
         """
         Get the headers for an htmx request based on some kwargs.
         """
@@ -97,6 +100,13 @@ class TestClient:
         if csrf_token := self.client.cookies.get("csrftoken"):
             # A utility csrf token header is included on the <body> tag, so retrieve this
             headers["X-CSRFToken"] = csrf_token
-        if extra_headers := kwargs.pop("headers", None):
+        if extra_headers:
             headers = extra_headers | headers
         return headers
+
+    @property
+    def http_host(self) -> str:
+        """
+        Get the name of the webtest http post used during testing.
+        """
+        return self.client.extra_environ["HTTP_HOST"]
