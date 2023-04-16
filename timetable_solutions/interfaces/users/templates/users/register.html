@@ -31,7 +31,7 @@ input[type="submit"] {background-color: #004000;}
         {% endfor %}
     {% endif %}
 
-    <form method="post">
+    <form id="register-form" method="post">
         {% csrf_token %}
 <!--        Manually render the form elements, to allow easier use of htmx-->
 

@@ -41,7 +41,7 @@ input[type="submit"] {background-color: #004000;}
         {{error_message}}
     </p>
     {% endif %}
-    <form method="post">
+    <form id="register-profile-form" method="post">
         {% csrf_token %}
         {{ form.as_div }}
         <input type="submit" value="Complete registration">

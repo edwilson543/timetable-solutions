@@ -39,7 +39,7 @@ p {
         {{error_message}}
     </p>
     {% endfor %}
-    <form method="post">
+    <form id="register-school-form" method="post">
         {% csrf_token %}
         {{ form.as_div }}
         <input type="submit" value="Complete registration">

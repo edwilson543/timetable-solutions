@@ -6,9 +6,6 @@ import django_webtest
 import pytest
 import webtest
 
-# Django imports
-from django.contrib.auth import models as auth_models
-
 # Local application imports
 from data import models
 from tests import data_factories
@@ -47,9 +44,7 @@ class TestClient:
         """
         Helper method to authorise the test client as a user at the school.
         """
-        user = auth_models.User.objects.create_user(
-            username="testing", password="unhashed"
-        )
+        user = data_factories.create_user_with_known_password()
         data_factories.Profile(user=user, school=school)
         self.client.set_user(user=user)
 

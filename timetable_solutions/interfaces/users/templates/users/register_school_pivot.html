@@ -52,7 +52,7 @@ label:hover {
     <h4 style="margin-bottom:5px;">
         {{user.first_name}}, do you have an existing access key for your school?
     </h4>
-    <form method="post">
+    <form id="register-pivot-form" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Continue">

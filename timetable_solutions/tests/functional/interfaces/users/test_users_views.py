@@ -1,237 +1,248 @@
-"""
-Unit tests for the views in the users app, which navigate login and registration.
-"""
-
+# Third party imports
+import pytest
 
 # Django imports
-from django.contrib.auth.models import User
-from django.test import TestCase
-from django.urls import reverse
+from django.contrib.auth import models as auth_models
 
 # Local application imports
-from data import constants, models
+from data import constants
 from interfaces.constants import UrlName
-from interfaces.users import forms
+from tests import data_factories
+from tests.functional.client import TestClient
 
 
-class TestRegistration(TestCase):
-    """Tests for the Register view class"""
-
-    fixtures = ["user_school_profile.json"]
-
-    # LOGIN TESTS
+class TestLogin(TestClient):
     def test_login_approved_user(self):
-        """
-        Test that a user whose credentials have been approved by the school admin can login successfully.
-        """
-        # Set test parameters
-        url = reverse(UrlName.LOGIN.value)
-        form_data = {"username": "dummy_teacher", "password": "dt123dt123"}
+        user = data_factories.create_user_with_known_password(password="password")
+        data_factories.Profile(user=user, approved_by_school_admin=True)
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        # Navigate to the login page
+        url = UrlName.LOGIN.url()
+        login_page = self.client.get(url)
 
-        # Check outcome
-        self.assertRedirects(response, expected_url=reverse(UrlName.DASHBOARD.value))
+        # Check response ok
+        assert login_page.status_code == 200
+
+        # Attempt a login with some valid details
+        login_form = login_page.forms["login-form"]
+        login_form["username"] = user.username
+        login_form["password"] = "password"
+
+        response = login_form.submit()
+
+        # Check the user was logged in and redirected to their dashboard
+        assert response.status_code == 302
+        assert response.location == UrlName.DASHBOARD.url()
 
     def test_login_unapproved_user(self):
-        """
-        Test that a user whose credentials have NOT been approved by the school admin is not allowed to login, and is
-        given the correct error message.
-        """
-        # Setup
-        user = User.objects.create_user(
-            username="dummy_teacher2", password="dt123dt123"
-        )
-        models.Profile.create_new(
-            user=user,
-            school_id=123456,
-            role=constants.UserRole.TEACHER.value,
-            approved_by_school_admin=False,
-        )  # This is the key bit
+        user = data_factories.create_user_with_known_password(password="password")
+        data_factories.Profile(user=user, approved_by_school_admin=False)
 
-        # Set test parameters
-        url = reverse(UrlName.LOGIN.value)
-        form_data = {"username": "dummy_teacher2", "password": "dt123dt123"}
+        # Navigate to the login page
+        url = UrlName.LOGIN.url()
+        login_page = self.client.get(url)
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        # Check response ok
+        assert login_page.status_code == 200
 
-        # Check outcome
-        unapproved_error = response.context.get("unapproved_error")
-        self.assertIn("not yet been approved", unapproved_error)
-        self.assertTrue(user.is_authenticated)
-        login_successful = response.wsgi_request.user.is_authenticated
-        self.assertFalse(login_successful)
+        # Attempt a login with some valid details
+        login_form = login_page.forms["login-form"]
+        login_form["username"] = user.username
+        login_form["password"] = "password"
 
-    # REGISTRATION TESTS
-    def test_register_new_user_valid_credentials(self):
-        """
-        Test that successful registration redirects to the correct url at the next stage of registration
-        """
-        # Set test parameters
-        url = reverse(UrlName.REGISTER.value)
-        form_data = {
-            "username": "dummy_teacher2",
-            "email": "dummy_teacher@dt.co.uk",
-            "password1": "dt123dt123",
-            "password2": "dt123dt123",
-            "first_name": "dummy",
-            "last_name": "teacher",
-        }
+        response = login_form.submit()
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        # Check user gets a not yet approved error
+        assert response.status_code == 200
+        errors = response.context["form"].errors.as_text()
+        assert "Your account has not yet been approved" in errors
 
-        # Check outcome
-        self.assertIsNotNone(User.objects.get(username="dummy_teacher2"))
-        self.assertEqual(
-            User.objects.get(username="dummy_teacher2").first_name, "dummy"
-        )
-        self.assertEqual(
-            User.objects.get(username="dummy_teacher2").last_name, "teacher"
-        )
-        self.assertRedirects(response, reverse(UrlName.REGISTER_PIVOT.value))
+    def test_attempt_login_with_invalid_credentials(self):
+        # Navigate to the login page
+        url = UrlName.LOGIN.url()
+        login_page = self.client.get(url)
 
-    def test_register_new_user_invalid_credentials_passwords_different(self):
-        """
-        Test that entering invalid credentials simply leads back to the registration form plus error messages
-        """
-        # Set test parameters
-        url = reverse(UrlName.REGISTER.value)
-        form_data = {
-            "username": "dummy_teacher2",
-            "email": "dummy_teacher@dt.co.uk",
-            "password1": "DIFFERENT_TO_PW_2",
-            "password2": "dt123dt123",
-        }
+        # Check response ok
+        assert login_page.status_code == 200
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
-        response_form = response.context["form"]
+        # Attempt a login with some invalid details
+        login_form = login_page.forms["login-form"]
+        login_form["username"] = "fake_user"
+        login_form["password"] = "fake_password123"
 
-        # Check outcome
-        self.assertEqual(response_form, forms.CustomUserCreation)
-        response_error_message = response.context["error_messages"][0]
-        self.assertIn("password", response_error_message)
+        response = login_form.submit()
 
-    # PIVOT TESTS
-    def login_dummy_user(self) -> None:
-        """
-        Helper method to login users, so that they can reach the later stages of registration.
-        Side-effects - the test client's user becomes authenticated.
-        """
-        User.objects.create_user(username="dummy_teacher2", password="dt123dt123")
-        self.client.login(username="dummy_teacher2", password="dt123dt123")
+        # Check user gets invalid credentials error
+        assert response.status_code == 200
+        errors = response.context["form"].errors.as_text()
+        assert "Please enter a correct username and password" in errors
 
-    def test_register_school_pivot_towards_profile_registration(self):
-        """
-        If the user is part of an existing school_id, they should be redirected to enter profile details (i.e. associate
-        themselves with the relevant school_id)
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.REGISTER_PIVOT.value)
-        form_data = {"existing_school": "EXISTING"}
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+class TestRegistration(TestClient):
+    """
+    Tests for the end-to-end registration process.
+    """
 
-        # Check outcome
-        self.assertRedirects(response, reverse(UrlName.PROFILE_REGISTRATION.value))
+    def test_can_register_new_user_to_a_new_school(self):
+        # Access the registration page
+        register_url = UrlName.REGISTER.url()
+        register_personal_details_step = self.client.get(url=register_url)
 
-    def test_register_school_pivot_towards_school_registration(self):
-        """
-        Test that stating they are not part of an existing school_id redirects user to register their school_id for
-        the first time
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.REGISTER_PIVOT.value)
-        form_data = {"existing_school": "NEW"}
+        # Registration Step 1: Fill out personal details
+        personal_details_form = register_personal_details_step.forms["register-form"]
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        personal_details_form["username"] = "dummy_teacher"
+        personal_details_form["email"] = "dummy_teacher@dt.co.uk"
+        personal_details_form["password1"] = "dt123dt123"
+        personal_details_form["password2"] = "dt123dt123"
+        personal_details_form["first_name"] = "dummy"
+        personal_details_form["last_name"] = "teacher"
 
-        # Check outcome
-        self.assertRedirects(response, reverse(UrlName.SCHOOL_REGISTRATION.value))
+        pivot_step = personal_details_form.submit().follow()
 
-    # SCHOOL REGISTRATION TESTS
-    def test_register_new_school(self):
-        """
-        Test that a school_id can be registered via the relevant form, and the user then gets redirected to their
-        dashboard.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.SCHOOL_REGISTRATION.value)
-        form_data = {"school_name": "Fake School"}
+        # Registration Step 2: State whether registering to a new or existing school
+        pivot_form = pivot_step.forms["register-pivot-form"]
+        pivot_form["existing_school"] = "NEW"
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        register_school_details_step = pivot_form.submit().follow()
 
-        # Check outcome
-        self.assertRedirects(response, reverse(UrlName.DASHBOARD.value))
+        # Registration Step 3a: Register the new school
+        register_school_form = register_school_details_step.forms[
+            "register-school-form"
+        ]
+        register_school_form["school_name"] = "My school"
 
-        # Check the user's profile has been correctly set
-        profile = response.wsgi_request.user.profile
-        user_school_id = profile.school.school_access_key
-        self.assertEqual(
-            user_school_id, 123457
-        )  # Since 123456 is the max access key in the fixture
-        self.assertEqual(profile.role, constants.UserRole.SCHOOL_ADMIN)
-        self.assertTrue(profile.approved_by_school_admin)
+        dashboard = register_school_form.submit()
 
-        # Check the flash message
-        message = response.cookies["messages"].value
-        self.assertIsInstance(message, str)
+        # Registration is now complete, so we now check for a successful outcome
+        assert dashboard.status_code == 302
+        assert dashboard.location == UrlName.DASHBOARD.url()
 
-    # PROFILE REGISTRATION TESTS
-    def test_register_profile_with_existing_school(self):
-        """
-        Test that a teacher can register themselves to an existing school_id
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {
-            "school_access_key": 123456,
-            "position": constants.UserRole.TEACHER.value,
-        }
+        user = auth_models.User.objects.get()
+        assert user.username == "dummy_teacher"
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        profile = user.profile
+        assert profile.approved_by_school_admin
 
-        # Check outcome
-        self.assertRedirects(response, reverse(UrlName.LOGIN.value))
+        school = profile.school
+        assert school.school_name == "My school"
 
-        # Check the user's profile has been correctly set
-        profile = response.wsgi_request.user.profile
-        self.assertEqual(profile.school.school_access_key, 123456)
-        self.assertEqual(profile.role, constants.UserRole.TEACHER)
-        self.assertFalse(profile.approved_by_school_admin)
+    @pytest.mark.parametrize(
+        "position", [constants.UserRole.PUPIL.value, constants.UserRole.TEACHER.value]
+    )
+    def test_can_register_new_user_to_an_existing_school(self, position: str):
+        # Make a school to register the new users to
+        school = data_factories.School()
 
-        # Check the flash message
-        message = response.cookies["messages"].value
-        self.assertIsInstance(message, str)
+        # Access the registration page
+        register_url = UrlName.REGISTER.url()
+        register_personal_details_step = self.client.get(url=register_url)
 
-    def test_register_profile_with_existing_school_access_key_not_found(self):
-        """
-        Should return empty form with an error message that tells user access key was not found.
-        """
-        # Set test parameters
-        self.login_dummy_user()
-        url = reverse(UrlName.PROFILE_REGISTRATION.value)
-        form_data = {
-            "school_access_key": 765432,
-            "position": constants.UserRole.PUPIL.value,
-        }
+        # Registration Step 1: Fill out personal details
+        personal_details_form = register_personal_details_step.forms["register-form"]
 
-        # Execute test unit
-        response = self.client.post(url, data=form_data)
+        personal_details_form["username"] = "dummy_teacher"
+        personal_details_form["email"] = "dummy_teacher@dt.co.uk"
+        personal_details_form["password1"] = "dt123dt123"
+        personal_details_form["password2"] = "dt123dt123"
+        personal_details_form["first_name"] = "dummy"
+        personal_details_form["last_name"] = "teacher"
 
-        # Check outcome
-        self.assertEqual(
-            response.context["error_message"], "Access key not found, please try again"
-        )
-        self.assertEqual(response.context["form"], forms.ProfileRegistration)
+        pivot_step = personal_details_form.submit().follow()
+
+        # Registration Step 2: State whether registering to a new or existing school
+        pivot_form = pivot_step.forms["register-pivot-form"]
+        pivot_form["existing_school"] = "EXISTING"
+
+        register_school_details_step = pivot_form.submit().follow()
+
+        # Registration Step 3b: Register the new user to the existing school
+        register_profile_form = register_school_details_step.forms[
+            "register-profile-form"
+        ]
+        register_profile_form["school_access_key"] = school.school_access_key
+        register_profile_form["position"] = position
+
+        # The user is redirected to login while waiting for approval by their school admin
+        back_to_login = register_profile_form.submit()
+
+        # Registration is now complete, so we now check for a successful outcome
+        assert back_to_login.status_code == 302
+        assert back_to_login.location == UrlName.LOGIN.url()
+
+        user = auth_models.User.objects.get()
+        assert user.username == "dummy_teacher"
+
+        profile = user.profile
+        assert not profile.approved_by_school_admin
+        assert profile.role == position
+
+        assert profile.school == school
+
+    def test_different_passwords_at_first_step_of_registration_process_causes_error(
+        self,
+    ):
+        # Access the registration page
+        register_url = UrlName.REGISTER.url()
+        register_personal_details_step = self.client.get(url=register_url)
+
+        # Registration Step 1: Fill out personal details, with 2 passwords that don't match
+        personal_details_form = register_personal_details_step.forms["register-form"]
+
+        personal_details_form["username"] = "dummy_teacher"
+        personal_details_form["email"] = "dummy_teacher@dt.co.uk"
+        personal_details_form["password1"] = "some password"
+        personal_details_form["password2"] = "some other password"
+        personal_details_form["first_name"] = "dummy"
+        personal_details_form["last_name"] = "teacher"
+
+        response = personal_details_form.submit()
+
+        # Ensure the attempt was unsuccessful, in particular no user was created
+        assert response.status_code == 200
+        assert response.context["form"].errors.as_text()
+
+        assert not auth_models.User.objects.exists()
+
+    def test_invalid_access_key_at_final_stage_of_registration_process_causes_error(
+        self,
+    ):
+        # Access the registration page
+        register_url = UrlName.REGISTER.url()
+        register_personal_details_step = self.client.get(url=register_url)
+
+        # Registration Step 1: Fill out personal details
+        personal_details_form = register_personal_details_step.forms["register-form"]
+
+        personal_details_form["username"] = "dummy_teacher"
+        personal_details_form["email"] = "dummy_teacher@dt.co.uk"
+        personal_details_form["password1"] = "dt123dt123"
+        personal_details_form["password2"] = "dt123dt123"
+        personal_details_form["first_name"] = "dummy"
+        personal_details_form["last_name"] = "teacher"
+
+        pivot_step = personal_details_form.submit().follow()
+
+        # Registration Step 2: State whether registering to a new or existing school
+        pivot_form = pivot_step.forms["register-pivot-form"]
+        pivot_form["existing_school"] = "EXISTING"
+
+        register_school_details_step = pivot_form.submit().follow()
+
+        # Registration Step 3b: Try registering the new user to a non-existent school
+        register_profile_form = register_school_details_step.forms[
+            "register-profile-form"
+        ]
+        register_profile_form["school_access_key"] = 1  # No corresponding school exists
+        register_profile_form["position"] = constants.UserRole.PUPIL.value
+
+        response = register_profile_form.submit()
+
+        # Ensure no profile for the user was created
+        assert response.status_code == 200
+        assert response.context["form"].errors
+
+        user = auth_models.User.objects.get()
+        assert user.username == "dummy_teacher"
+
+        assert not hasattr(user, "profile")

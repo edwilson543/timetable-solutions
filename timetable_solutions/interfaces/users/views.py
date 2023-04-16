@@ -9,7 +9,6 @@ Step 3a - the user must also register themselves with the school
 Step 3b - the user must provide a school access key to associate themselves with a school that is already registered.
 """
 
-
 # Standard library imports
 from typing import Any
 
@@ -20,9 +19,8 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.shortcuts import redirect, render
-from django.template import loader
 from django.urls import reverse
-from django.views import View
+from django.views import View, generic
 
 # Local application imports
 from data import constants, models
@@ -31,54 +29,40 @@ from interfaces.constants import UrlName
 from . import forms
 
 
-# Create your views here.
-class Register(View):
-    """View for step 1 of registering - entering basic details."""
+class Register(generic.FormView):
+    """
+    Step 1 of registering - entering personal details.
+    """
 
-    @staticmethod
-    def get(
-        request: http.HttpRequest, context: dict | None = None
-    ) -> http.HttpResponse:
-        if context is None:
-            context = {"form": forms.CustomUserCreation}
+    template_name = "users/register.html"
+    form_class = forms.CustomUserCreation
+    success_url = UrlName.REGISTER_PIVOT.url(lazy=True)
+
+    def setup(self, request: http.HttpRequest, *args: object, **kwargs: object) -> None:
+        """
+        Ensure authenticated users are logged out if trying to access the registration page.
+        """
+        super().setup(request, *args, **kwargs)
         if request.user.is_authenticated:
             logout(request)
-        return render(request, "users/register.html", context)
 
-    def post(self, request: http.HttpRequest) -> http.HttpResponse:
-        form = forms.CustomUserCreation(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect(reverse(UrlName.REGISTER_PIVOT.value))
-        else:
-            context = {
-                "error_messages": [
-                    error for error_list in form.errors.values() for error in error_list
-                ],
-                "form": forms.CustomUserCreation,
-            }
-            return self.get(request, context=context)
+    def form_valid(self, form: forms.CustomUserCreation) -> http.HttpResponse:
+        user = form.save()
+        login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
+        return super().form_valid(form=form)
 
 
-class SchoolRegisterPivot(View):
+class SchoolRegisterPivot(generic.FormView):
     """View for step 2 of registering - whether the user's school also needs registering"""
 
-    @staticmethod
-    def get(request: http.HttpRequest) -> http.HttpResponse:
-        context = {"form": forms.SchoolRegistrationPivot}
-        return render(request, "users/register_school_pivot.html", context)
+    template_name = "users/register_school_pivot.html"
+    form_class = forms.SchoolRegistrationPivot
 
-    @staticmethod
-    def post(request: http.HttpRequest) -> http.HttpResponse:
-        form = forms.SchoolRegistrationPivot(request.POST)
-        if form.is_valid():
-            if form.cleaned_data.get("existing_school") == "EXISTING":
-                return redirect(reverse(UrlName.PROFILE_REGISTRATION.value))
-            else:
-                return redirect(reverse(UrlName.SCHOOL_REGISTRATION.value))
+    def form_valid(self, form: forms.SchoolRegistrationPivot) -> http.HttpResponse:
+        if form.cleaned_data.get("existing_school") == "EXISTING":
+            return redirect(UrlName.PROFILE_REGISTRATION.url())
         else:
-            return redirect(reverse(UrlName.REGISTER.value))
+            return redirect(UrlName.SCHOOL_REGISTRATION.url())
 
 
 class SchoolRegistration(View):
@@ -189,11 +173,8 @@ class CustomLogin(LoginView):
                 "Your account has not yet been approved by your school's admin account.\n"
                 "Please contact them directly to approve your account."
             )
-
-            template = loader.get_template("registration/login.html")
-            context = super().get_context_data()
-            context["unapproved_error"] = error_message
-            return http.HttpResponse(template.render(context))
+            form.add_error(None, error_message)
+            return super().form_invalid(form=form)
 
 
 def custom_logout(request: http.HttpResponse) -> http.HttpResponseRedirect:
