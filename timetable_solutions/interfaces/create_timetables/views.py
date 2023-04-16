@@ -38,7 +38,7 @@ class CreateTimetable(LoginRequiredMixin, FormView):
     # FormView attributes
     form_class = forms.SolutionSpecification
     template_name = "create-timetables/create-timetables.html"
-    success_url = urls.reverse_lazy(UrlName.VIEW_TIMETABLES_DASH.value)
+    success_url = urls.reverse_lazy(UrlName.PUPIL_LIST.value)
 
     def form_valid(self, form: forms.SolutionSpecification) -> HttpResponse:
         """
