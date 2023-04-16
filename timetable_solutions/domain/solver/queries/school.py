@@ -23,3 +23,16 @@ def check_school_has_sufficient_data_to_create_timetables(
         and school.has_break_data
         and school.has_lesson_data
     )
+
+
+def check_school_has_timetable_solutions(school: models.School) -> bool:
+    """
+    Test whether a school has some timetable solutions.
+
+    Just a simple check for now.
+    """
+    lessons = school.lesson_set.all()
+    solver_defined_slots = models.TimetableSlot.objects.filter(
+        school=school, solver_lessons__in=lessons
+    )
+    return solver_defined_slots.exists()

@@ -146,6 +146,8 @@ class UpdateView(
         context = super().get_context_data(**kwargs)
         context["serialized_model_instance"] = self._get_serialized_model_instance()
         context["page_url"] = self.page_url
+        context["submit_icon"] = "fa-solid fa-wrench"
+        context["other_button_icon"] = "fa-solid fa-arrow-rotate-left"
         return context
 
     # --------------------
@@ -210,8 +212,10 @@ class UpdateView(
             "submit_url": self.page_url,
             "submit_name": _UPDATE_SUBMIT,
             "submit_text": "Update",
+            "submit_icon": "fa-solid fa-wrench",
             "other_button_url": self.page_url,
             "other_button_text": "Revert",
+            "other_button_icon": "fa-solid fa-arrow-rotate-left",
         }
         return http.HttpResponse(template.render(context=context, request=self.request))
 

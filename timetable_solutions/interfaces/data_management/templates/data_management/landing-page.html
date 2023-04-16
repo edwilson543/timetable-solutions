@@ -30,13 +30,17 @@
                         </div>
                     {% else %}
                         <a class="btn btn-primary w-25" href="{{ upload_url }}">
-                            Add
+                            <i class="fa-solid fa-cloud-upload"></i>
+                            Upload
                         </a>
                     {% endif %}
                 </div>
             </div>
         </div>
 
+    </div>
+
+    <div class="row mx-3 my-3 gy-2">
         <div class="col-lg-6">
             <div class="card h-100 p-3">
                 <div class="card-title">
@@ -52,13 +56,13 @@
                         </div>
                     {% else %}
                         <a class="btn btn-primary w-25" href="{{ create_url }}">
+                            <i class="fa-solid fa-plus-circle"></i>
                             Add
                         </a>
                     {% endif %}
                 </div>
             </div>
         </div>
-
     </div>
 
     <div class="row mx-3 my-3 gy-2">
@@ -80,10 +84,11 @@
 
                     {% if has_existing_data %}
                         <a class="btn btn-primary w-25"  href="{{ list_url }}">
+                            <i class="fa-solid fa-eye"></i>
                             View
                         </a>
                     {% else %}
-                        <div class="alert alert-warning" role="alert">
+                        <div id="no-data-alert" class="alert alert-warning" role="alert">
                             No data to view
                         </div>
                     {% endif %}

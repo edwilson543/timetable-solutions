@@ -15,7 +15,11 @@ other_button_text: str | None = None
 -->
 
 <form
-    enctype="{{ enctype|default:'application/x-www-form-urlencoded' }}"
+    {% if upload %}
+        enctype="multipart/form-data"
+    {% else %}
+        enctype="application/x-www-form-urlencoded"
+    {% endif %}
     method="{{ method|default:'post' }}"
     action="{{ submit_url }}"
     id="{{ form_id }}"
@@ -32,10 +36,18 @@ other_button_text: str | None = None
         {% include 'utils/forms/form-field.html' with field=field only %}
     {% endfor %}
 
-    <input type="submit" name="{{ submit_name|default:'submit' }}" value="{{ submit_text }}" class="btn btn-success m-1">
+    <button type="submit" name="{{ submit_name|default:'submit' }}" class="btn btn-success m-1">
+        {% if submit_icon %}
+            <i class="{{ submit_icon }}"></i>
+        {% endif %}
+        {{ submit_text }}
+    </button>
 
     {% if other_button_url and other_button_text %}
         <a href="{{ other_button_url }}" class="btn btn-secondary m-1">
+            {% if other_button_icon %}
+                <i class="{{ other_button_icon }}"></i>
+            {% endif %}
             {{ other_button_text }}
         </a>
     {% endif %}

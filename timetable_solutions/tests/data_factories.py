@@ -26,6 +26,17 @@ class User(factory.django.DjangoModelFactory):
     password = factory.Faker("password")
 
 
+def create_user_with_known_password(
+    username: str = "test_user", password: str = "password"
+) -> auth_models:
+    """
+    Create a user with a known password for testing.
+
+    To be able to test login, we need to know the unhashed password.
+    """
+    return auth_models.User.objects.create_user(username=username, password=password)
+
+
 class School(factory.django.DjangoModelFactory):
     """Factory for the School model. Access keys are sequenced from 1."""
 

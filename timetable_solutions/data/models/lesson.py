@@ -30,7 +30,7 @@ class LessonQuerySet(models.QuerySet):
         """Method to return the full queryset of lessons for a given school"""
         return self.filter(school_id=school_id)
 
-    def get_individual_lesson(self, school_id: int, lesson_id: int) -> "LessonQuerySet":
+    def get_individual_lesson(self, school_id: int, lesson_id: int) -> "Lesson":
         """Method to return an individual Lesson instance"""
         return self.get(models.Q(school_id=school_id) & models.Q(lesson_id=lesson_id))
 

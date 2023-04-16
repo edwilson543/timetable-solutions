@@ -86,17 +86,17 @@ def sitemap() -> list[PageCollection]:
                 Page(
                     "Create timetables",
                     url=UrlName.CREATE_TIMETABLES.url(),
-                    fa_icon="fa-solid fa-arrows-turn-to-dots",
+                    fa_icon="fa-solid fa-puzzle-piece",
                 ),
                 Page(
                     "Pupil timetables",
-                    url=UrlName.PUPILS_NAVIGATOR.url(),
-                    fa_icon="fa-solid fa-eye",
+                    url=UrlName.PUPIL_LIST.url(),
+                    fa_icon="fa-solid fa-child",
                 ),
                 Page(
                     "Teacher timetables",
-                    url=UrlName.TEACHERS_NAVIGATOR.url(),
-                    fa_icon="fa-solid fa-eye",
+                    url=UrlName.TEACHER_LIST.url(),
+                    fa_icon="fa-solid fa-person-chalkboard",
                 ),
             ],
         ),

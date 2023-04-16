@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 # Local application imports
 from data import constants, models
+from domain.solver.queries import school as school_solver_queries
 from interfaces.constants import UrlName
 
 
@@ -72,12 +73,23 @@ class Teacher(serializers.Serializer):
 
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+    timetable_url = serializers.SerializerMethodField(method_name="_get_timetable_url")
 
     def _get_update_url(self, obj: models.Teacher) -> str:
         """
         Get the url for this teacher's update / detail view page.
         """
         return UrlName.TEACHER_UPDATE.url(teacher_id=obj.teacher_id)
+
+    def _get_timetable_url(self, obj: models.Teacher) -> str:
+        """
+        Get the url for this teacher's timetable, if the school has timetable solutions.
+        """
+        if school_solver_queries.check_school_has_timetable_solutions(
+            school=obj.school
+        ):
+            return UrlName.TEACHER_TIMETABLE.url(teacher_id=obj.teacher_id)
+        return ""
 
 
 class Classroom(serializers.Serializer):
@@ -111,6 +123,7 @@ class Pupil(serializers.Serializer):
 
     # Non-field data
     update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+    timetable_url = serializers.SerializerMethodField(method_name="_get_timetable_url")
 
     def _year_group_name(self, obj: models.Pupil) -> str:
         return obj.year_group.year_group_name
@@ -120,6 +133,16 @@ class Pupil(serializers.Serializer):
         Get the url for this year group's update / detail view page.
         """
         return UrlName.PUPIL_UPDATE.url(pupil_id=obj.pupil_id)
+
+    def _get_timetable_url(self, obj: models.Pupil) -> str:
+        """
+        Get the url for this pupils's timetable, if the school has timetable solutions.
+        """
+        if school_solver_queries.check_school_has_timetable_solutions(
+            school=obj.school
+        ):
+            return UrlName.PUPIL_TIMETABLE.url(pupil_id=obj.pupil_id)
+        return ""
 
 
 class TimetableSlot(serializers.Serializer):

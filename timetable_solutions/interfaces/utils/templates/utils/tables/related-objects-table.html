@@ -40,7 +40,10 @@ paginator: django_paginate.Paginator
                 </fieldset>
             {% endfor %}
 
-            <input type="submit" name="add-{{ related_name }}" value="Add" class="btn btn-success m-1">
+            <button type="submit" name="add-{{ related_name }}" class="btn btn-success m-1">
+                <i class="fa-solid fa-plus-circle"></i>
+                Add
+            </button>
         </form>
     {% endif %}
 
@@ -53,9 +56,7 @@ paginator: django_paginate.Paginator
                     {% for field_name in displayed_fields.values %}
                         <th>{{ field_name }}</th>
                     {% endfor %}
-                    <th class="w-25 text-center">
-                        Action
-                    </th>
+                    <th class="w-25 text-center"></th>
                 </tr>
             </thead>
             <tbody>
@@ -70,6 +71,7 @@ paginator: django_paginate.Paginator
                         {% endfor %}
                         <td class="d-flex flex-row justify-content-evenly py-1">
                             <a href="{{ serialized_model_instance.update_url }}" class="btn btn-secondary py-1">
+                                <i class="fa-solid fa-eye"></i>
                                 View
                             </a>
 
@@ -92,6 +94,7 @@ paginator: django_paginate.Paginator
                                     name="remove-{{ related_name }}"
                                     class="btn btn-danger py-1"
                                 >
+                                    <i class="fa-solid fa-delete-left"></i>
                                     Remove
                                 </button>
                             </form>
@@ -115,7 +118,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        &laquo; first
+                        <i class="fa-solid fa-angle-double-left"></i>
                     </span>
                     <span
                         hx-get="{{ related_table_url }}?page={{ page_obj.previous_page_number }}"
@@ -124,7 +127,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        previous
+                        <i class="fa-solid fa-angle-left"></i>
                     </span>
                 {% endif %}
                 <span>
@@ -138,7 +141,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        next
+                        <i class="fa-solid fa-angle-right"></i>
                     </a>
                     <a
                         hx-get="{{ related_table_url }}?page={{ page_obj.paginator.num_pages }}"
@@ -147,7 +150,7 @@ paginator: django_paginate.Paginator
                         hx-swap="outerHTML"
                         class="btn btn-secondary p-1"
                     >
-                        last &raquo;
+                        <i class="fa-solid fa-angle-double-right"></i>
                     </a>
                 {% endif %}
             </span>

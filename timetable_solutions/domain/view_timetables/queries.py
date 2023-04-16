@@ -1,6 +1,9 @@
+"""
+Queries to construct timetables.
+"""
+
 # Standard library imports
 from collections import OrderedDict
-from string import ascii_uppercase
 
 # Local application imports
 from data import constants as data_constants
@@ -36,18 +39,3 @@ def get_teacher_timetable(
     breaks = teacher.breaks.all()
     tt = timetable.Timetable(lessons=lessons, breaks=breaks)
     return tt.make_timetable()
-
-
-def get_letter_indexed_teachers(school_id: int) -> dict[str, models.TeacherQuerySet]:
-    """Get a dictionary mapping letters of the alphabet to teachers whose surname starts with that letter."""
-    alphabet = list(ascii_uppercase)
-    teachers_unfiltered = {
-        letter: models.Teacher.objects.get_teachers_surnames_starting_with_x(
-            school_id=school_id, letter=letter
-        )
-        for letter in alphabet
-    }
-    all_teachers = {
-        key: value for key, value in teachers_unfiltered.items() if len(value) > 0
-    }
-    return all_teachers

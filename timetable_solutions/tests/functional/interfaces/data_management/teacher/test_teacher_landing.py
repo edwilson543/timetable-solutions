@@ -37,11 +37,11 @@ class TestTeacherLanding(TestClient):
         assert response.context["list_url"] == UrlName.TEACHER_LIST.url()
 
         # If the user has data, they should be able to click through to this data
+        no_data_alert = response.html.find("div", {"id": "no-data-alert"})
         if has_existing_data:
-            response.click(href=UrlName.TEACHER_LIST.url())
+            assert not no_data_alert
         else:
-            with pytest.raises(IndexError):
-                response.click(href=UrlName.TEACHER_LIST.url())
+            assert no_data_alert
 
     def test_anonymous_user_redirected(self):
         # Try to access landing page with an anonymous user

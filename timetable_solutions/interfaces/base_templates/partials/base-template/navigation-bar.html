@@ -70,7 +70,10 @@
             <ul class="ps-3 fa-ul">
               {% for page in page_collection.pages %}
               <li>
-                <a href="{{ page.url }}" class="btn btn-primary nav-button nav-button-detail">
+                <a
+                    href="{{ page.url }}"
+                    class="btn btn-primary nav-button nav-button-detail"
+                >
                   <i class="{{ page.fa_icon }} fa-icon"></i>
                   &nbsp;  {{ page.name }}
                 </a>

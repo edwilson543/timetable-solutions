@@ -91,8 +91,15 @@ model_name_plural: str
                         {% endfor %}
                             <td class="py-1">
                                 <a href="{{ object_ordered_dict.update_url }}" class="btn btn-secondary py-1">
+                                    <i class="fa-solid fa-eye"></i>
                                     View
                                 </a>
+                                {% if object_ordered_dict.timetable_url %}
+                                    <a href="{{ object_ordered_dict.timetable_url }}" class="btn btn-info py-1">
+                                        <i class="fa-regular fa-calendar-days"></i>
+                                        Timetable
+                                    </a>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -106,10 +113,10 @@ model_name_plural: str
                 <span>
                     {% if page_obj.has_previous %}
                         <a href="?page=1" class="btn btn-secondary p-1">
-                            &laquo; first
+                            <i class="fa-solid fa-angle-double-left"></i>
                         </a>
                         <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary p-1">
-                            previous
+                            <i class="fa-solid fa-angle-left"></i>
                         </a>
                     {% endif %}
                     <span>
@@ -117,10 +124,10 @@ model_name_plural: str
                     </span>
                     {% if page_obj.has_next %}
                         <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary p-1">
-                            next
+                            <i class="fa-solid fa-angle-right"></i>
                         </a>
                         <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-secondary p-1">
-                            last &raquo;
+                            <i class="fa-solid fa-angle-double-right"></i>
                         </a>
                     {% endif %}
                 </span>

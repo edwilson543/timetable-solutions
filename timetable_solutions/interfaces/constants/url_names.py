@@ -104,11 +104,8 @@ class UrlName(StrEnum):
     CREATE_TIMETABLES = "create_timetables"
 
     # View timetables app
-    PUPILS_NAVIGATOR = "pupils_navigator"
     PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id: int
-    TEACHERS_NAVIGATOR = "teachers_navigator"
     TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id: int
-    VIEW_TIMETABLES_DASH = "selection_dashboard"
 
     # HTMX #
 
@@ -116,5 +113,4 @@ class UrlName(StrEnum):
     USERNAME_FIELD_REGISTRATION = "username-field-registration"
 
     # View timetables app
-    LESSON_DETAIL = "lesson-detail"
-    CLOSE_LESSON_DETAIL = "close-lesson-detail"
+    LESSON_DETAIL = "lesson-detail"  # kwargs: lesson_id: str

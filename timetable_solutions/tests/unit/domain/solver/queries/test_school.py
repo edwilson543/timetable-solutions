@@ -57,3 +57,27 @@ class TestCheckSchoolHasSufficientDataToCreateTimetables:
             assert not school_queries.check_school_has_sufficient_data_to_create_timetables(
                 school
             )
+
+
+@pytest.mark.django_db
+class TestCheckSchoolHasTimetableSolutions:
+    def test_does_have_timetable_solutions(self):
+        school = data_factories.School()
+        slot = data_factories.TimetableSlot(school=school)
+        data_factories.Lesson(school=school, solver_defined_time_slots=(slot,))
+
+        assert school_queries.check_school_has_timetable_solutions(school)
+
+    def test_does_not_have_timetable_solutions(self):
+        school = data_factories.School()
+
+        # Make an unsolved slot for this school
+        slot = data_factories.TimetableSlot(school=school)
+        data_factories.Lesson(school=school, user_defined_time_slots=(slot,))
+
+        # Make some other school with solutions
+        other_school = data_factories.School()
+        slot = data_factories.TimetableSlot(school=other_school)
+        data_factories.Lesson(school=other_school, solver_defined_time_slots=(slot,))
+
+        assert not school_queries.check_school_has_timetable_solutions(school)

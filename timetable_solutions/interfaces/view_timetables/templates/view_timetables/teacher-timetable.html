@@ -1,0 +1,45 @@
+<!-- Page showing a teacher's timetable
+------------------
+Context variables:
+------------------
+teacher: models.Teacher
+timetable: OrderedDict[constants.Day, list[TimetableComponent]
+-->
+{% extends "base.html" %}
+
+{% block title %} {{ teacher.title }} {{ teacher.surname }} - timetable - {{ block.super }} {% endblock %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'teacher-landing-page' %}" class="link-secondary text-decoration-none">
+            teachers
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'teacher-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        timetable ({{ teacher.title }} {{ teacher.surname }})
+    </li>
+{% endblock %}
+
+{% block content %}
+
+{% include 'partials/lesson-detail.html' %}
+<div class="row h-75 mx-3">
+    <div class="card w-100 px-0">
+        <div class="card-header">
+            <h4>
+                Timetable for {{teacher.firstname}} {{teacher.surname}}
+            </h4>
+        </div>
+
+        <div class="card-body">
+            {% include 'partials/timetable.html' with timetable=timetable %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
