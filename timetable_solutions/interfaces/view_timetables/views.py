@@ -13,44 +13,6 @@ from domain import view_timetables
 
 
 @login_required
-def selection_dashboard(request: http.HttpRequest) -> http.HttpResponse:
-    """View providing the context for the information displayed on the selection dashboard"""
-    school_access_key = request.user.profile.school.school_access_key
-    stats = view_timetables.SummaryStats(school_access_key=school_access_key)
-    context = stats.summary_stats
-    template = loader.get_template("view_timetables/selection_dashboard.html")
-    return http.HttpResponse(template.render(context, request))
-
-
-@login_required
-def pupil_navigator(request: http.HttpRequest) -> http.HttpResponse:
-    """
-    View to provide a list of pupils which the user can navigate to view/retrieve each of their timetables.
-    This is pre-processed to be indexed by year group for display in the template.
-    """
-    school_id = request.user.profile.school.school_access_key
-    year_groups = models.YearGroup.objects.get_all_year_groups_with_pupils(
-        school_id=school_id
-    )
-    template = loader.get_template("view_timetables/pupils_navigator.html")
-    context = {"year_groups": year_groups}
-    return http.HttpResponse(template.render(context, request))
-
-
-@login_required
-def teacher_navigator(request: http.HttpRequest) -> http.HttpResponse:
-    """
-    View to provide a list of teachers which the user can navigate to view/retrieve each of their timetables.
-    Pre-processed to return a dictionary of teachers with the surnames indexed alphabetically.
-    """
-    school_id = request.user.profile.school.school_access_key
-    all_teachers = view_timetables.get_letter_indexed_teachers(school_id=school_id)
-    template = loader.get_template("view_timetables/teachers_navigator.html")
-    context = {"all_teachers": all_teachers}
-    return http.HttpResponse(template.render(context, request))
-
-
-@login_required
 def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpResponse:
     """
     View for rendering the timetable of the individual pupil with the passed id.

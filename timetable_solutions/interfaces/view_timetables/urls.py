@@ -8,22 +8,13 @@ from interfaces.constants import UrlName
 
 from . import htmx_views, views
 
-
 urlpatterns = [
-    path(
-        "selection_dash/",
-        views.selection_dashboard,
-        name=UrlName.VIEW_TIMETABLES_DASH.value,
-    ),
-    # Pupil URLs
-    path("pupils/", views.pupil_navigator, name=UrlName.PUPILS_NAVIGATOR.value),
+    # View timetable URLs
     path(
         "pupils/<int:pupil_id>",
         views.pupil_timetable,
         name=UrlName.PUPIL_TIMETABLE.value,
     ),
-    # Teacher URLs
-    path("teachers/", views.teacher_navigator, name=UrlName.TEACHERS_NAVIGATOR.value),
     path(
         "teachers/<int:teacher_id>",
         views.teacher_timetable,
