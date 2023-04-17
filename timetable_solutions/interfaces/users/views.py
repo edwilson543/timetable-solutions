@@ -12,11 +12,11 @@ Step 3b - the user must provide a school access key to associate themselves with
 # Django imports
 from django import http
 from django.contrib import messages
-from django.contrib.auth import login, logout
+from django.contrib.auth import login, logout, mixins
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import generic
 
@@ -164,20 +164,12 @@ class Login(LoginView):
 
 def custom_logout(request: http.HttpResponse) -> http.HttpResponseRedirect:
     """
-    View redirecting users to the login page when they logout rather than the dashboard, since there is no
-    application unless the user is logged in.
+    Redirect users to the login page when they log out.
     """
     if request.user.is_authenticated:
         logout(request)
-    return redirect(reverse(UrlName.LOGIN.value))
+    return redirect(UrlName.LOGIN.url())
 
 
-def dashboard(request: http.HttpRequest) -> http.HttpResponse:
-    """
-    Method to add some context to the dashboard view, for rendering in the template.
-    This is to restrict the list of options available to users.
-    """
-    if not request.user.is_authenticated:
-        return redirect(reverse(UrlName.LOGIN.value))
-
-    return render(request, "users/dashboard.html")
+class Dashboard(mixins.LoginRequiredMixin, generic.TemplateView):
+    template_name = "users/dashboard.html"

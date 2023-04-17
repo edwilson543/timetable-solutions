@@ -11,7 +11,7 @@ urlpatterns = [
     re_path(r"^accounts/login", views.Login.as_view(), name=UrlName.LOGIN.value),
     re_path("^accounts/logout", views.custom_logout, name=UrlName.LOGOUT.value),
     re_path("^accounts/", include("django.contrib.auth.urls")),
-    path("dashboard/", views.dashboard, name=UrlName.DASHBOARD.value),
+    path("dashboard/", views.Dashboard.as_view(), name=UrlName.DASHBOARD.value),
     # Views at each step of registration
     path("register/", views.Register.as_view(), name=UrlName.REGISTER.value),
     path(
