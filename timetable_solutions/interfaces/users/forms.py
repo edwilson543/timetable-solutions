@@ -37,11 +37,12 @@ class SchoolRegistrationPivot(forms.Form):
 
 class SchoolRegistration(forms.Form):
     """
-    Form to fill in at registration, when the user needs to register their school for the first time.
-    All the user needs to enter is the school's name - the access key is automatically generated.
+    Allow users to register a new school to the site.
+
+    Note that the school access key is automatically generated.
     """
 
-    school_name = forms.CharField(max_length=100)
+    school_name = forms.CharField(max_length=50)
 
 
 class ProfileRegistration(forms.Form):

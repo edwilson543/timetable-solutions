@@ -18,6 +18,7 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views import View, generic
@@ -68,41 +69,34 @@ class SchoolRegisterPivot(generic.FormView):
         return redirect(to=redirect_url)
 
 
-class SchoolRegistration(View):
+class SchoolRegistration(generic.FormView):
     """
-    View for step 3a of registering - when the school is not registered.
-    In this case, the user receives the role "SCHOOL_ADMIN", giving them ownership of their school's data, and since
-    they are a school admin, they are approved by the school admin...
+    Step 3a of registering - registering a new school.
+
+    The user receives the `SCHOOL_ADMIN` role, making them an admin of the new school's data.
     """
 
-    @staticmethod
-    def get(request: http.HttpRequest) -> http.HttpResponse:
-        context = {"form": forms.SchoolRegistration}
-        return render(request, "users/register_school.html", context)
+    template_name = "users/register_school.html"
+    form_class = forms.SchoolRegistration
 
-    @staticmethod
-    def post(request: http.HttpRequest) -> http.HttpResponse:
+    def form_valid(self, form: forms.SchoolRegistration) -> http.HttpResponse:
         """
-        A School instance is created, allowing a Profile instance (for the user) to be created.
+        Create a new school and profile for the registering user.
         """
-        form = forms.SchoolRegistration(request.POST)
-        if form.is_valid():
-            school_name = form.cleaned_data.get("school_name")
+        school_name = form.cleaned_data.get("school_name")
+
+        with transaction.atomic():
             new_school = models.School.create_new(school_name=school_name)
-
             models.Profile.create_new(
-                user=request.user,
+                user=self.request.user,
                 school_id=new_school.school_access_key,
                 role=constants.UserRole.SCHOOL_ADMIN,  # type: ignore  # mypy thinks this is a tuple of int, list
                 approved_by_school_admin=True,
             )
 
-            message = "Registration successful! You can now start using the site."
-            messages.success(request, message=message)
-            return redirect(reverse(UrlName.DASHBOARD.value))
-        else:
-            context = {"form": forms.SchoolRegistration, "errors": form.errors}
-            return render(request, "users/register_school.html", context)
+        message = f"Thanks for registering {school_name} at timetable solutions!"
+        messages.success(self.request, message=message)
+        return redirect(reverse(UrlName.DASHBOARD.value))
 
 
 class ProfileRegistration(View):
