@@ -1,7 +1,6 @@
 # Django imports
 from django import forms
 from django.contrib.auth import forms as auth_forms
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models as django_models
 
 # Local application imports
@@ -47,25 +46,19 @@ class SchoolRegistration(forms.Form):
 
 class ProfileRegistration(forms.Form):
     """
-    Form to fill in at registration, if the user's schools is already registered.
+    Allow users to register themselves to an existing school.
     """
 
     school_access_key = forms.IntegerField()
     position = forms.ChoiceField(choices=constants.UserRole.choices)
 
-    error_message = None
-
-    def is_valid(self) -> bool:
-        """Additional check on validity that the given access key exists."""
-        form_valid = super().is_valid()
-        if not form_valid:
-            return False
-        access_key = self.cleaned_data.get("school_access_key")
-
+    def clean_school_access_key(self) -> int:
+        """
+        Additional check on validity that the given access key exists.
+        """
+        school_access_key = self.cleaned_data.get("school_access_key")
         try:
-            models.School.objects.get_individual_school(school_id=access_key)
-            return True
-
-        except ObjectDoesNotExist:
-            self.error_message = "Access key not found, please try again"
-            return False
+            models.School.objects.get_individual_school(school_id=school_access_key)
+        except models.School.DoesNotExist:
+            raise forms.ValidationError("Invalid school access key")
+        return school_access_key

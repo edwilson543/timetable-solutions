@@ -21,7 +21,7 @@ from django.contrib.auth.views import LoginView
 from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
-from django.views import View, generic
+from django.views import generic
 
 # Local application imports
 from data import constants, models
@@ -99,46 +99,39 @@ class SchoolRegistration(generic.FormView):
         return redirect(reverse(UrlName.DASHBOARD.value))
 
 
-class ProfileRegistration(View):
+class ProfileRegistration(generic.FormView):
     """
-    View for step 3b of registering - when the school is already registered, just need the access key.
-    In this case, the user receives the role "TEACHER", which can only be upgraded by the "SCHOOL_ADMIN", and they
-    are initially set to not be approved by the school admin.
+    Step 3b of registering - registering a user to an existing school.
+
+    The user must provide a valid school access key, and even succeeding this they are not granted
+    access to the site until a school admin approves their account.
     """
 
-    @staticmethod
-    def get(
-        request: http.HttpRequest, context: dict | None = None
-    ) -> http.HttpResponse:
-        if context is None:
-            context = {"form": forms.ProfileRegistration}
-        return render(request, "users/register_profile_existing_school.html", context)
+    template_name = "users/register_profile_existing_school.html"
+    form_class = forms.ProfileRegistration
+    success_url = UrlName.LOGIN.url(lazy=True)
 
-    def post(self, request: http.HttpRequest) -> http.HttpResponse:
-        form = forms.ProfileRegistration(request.POST)
-        if form.is_valid():
-            access_key = form.cleaned_data.get("school_access_key")
-            role = form.cleaned_data.get("position")
-            models.Profile.create_new(
-                user=request.user,
-                school_id=access_key,
-                role=role,
-                approved_by_school_admin=False,
-            )
+    def form_valid(self, form: forms.ProfileRegistration) -> http.HttpResponse:
+        """
+        Create a profile linking the user to an existing school.
+        """
+        access_key = form.cleaned_data.get("school_access_key")
+        role = form.cleaned_data.get("position")
 
-            message = (
-                "Registration successful!\n"
-                "You will need to wait for your school admin to approve your account before gaining access to "
-                "the site."
-            )
-            messages.success(request, message=message)
-            return redirect(reverse(UrlName.LOGIN.value))
-        else:
-            context = {
-                "form": forms.ProfileRegistration,
-                "error_message": form.error_message,
-            }
-            return self.get(request, context=context)
+        models.Profile.create_new(
+            user=self.request.user,
+            school_id=access_key,
+            role=role,
+            approved_by_school_admin=False,
+        )
+
+        message = (
+            "Registration successful!\n"
+            "You will need to wait for your school admin to approve your account before gaining access to "
+            "the site."
+        )
+        messages.success(self.request, message=message)
+        return super().form_valid(form=form)
 
 
 class CustomLogin(LoginView):
