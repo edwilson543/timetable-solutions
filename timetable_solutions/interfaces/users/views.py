@@ -26,8 +26,7 @@ from django.views import generic
 # Local application imports
 from data import constants, models
 from interfaces.constants import UrlName
-
-from . import forms
+from interfaces.users import forms
 
 
 class Register(generic.FormView):
