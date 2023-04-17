@@ -1,63 +1,14 @@
-{% extends "legacy-base.html" %}
+{% extends "login-registration-base.html" %}
 
-{% block head_content %}
-{% load static %}
-<link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
-<title>Login or register</title>
-{% endblock %}
-
-<style>
-{% block style_block %}
-.errorlist {
-    /* Display */
-    padding: 3px;
-    margin: 5px;
-
-    /* Typography */
-    font-size: 12px;
-    color: var(--error_banner_red_border);
-
-    /* Background and border */
-    background-color: var(--error_banner_red);
-    border: 1px solid var(--error_banner_red_border);
-    border-radius: 4px;
-}
-ul {
-    list-style-type: none;
-}
-
-#register_button {
-    /* Display */
-    width: 330px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    /* Typography */
-    font-size: 20px;
-    color: white;
-    text-align: center;
-
-    /* Background and border */
-    background-color: var(--green_button);
-    border-radius: 5px;
-    border: 1px solid var(--green_button_border);
-}
-{% endblock %}
-</style>
+{% block title %} Login - {{ block.super }} {% endblock %}
 
 {% block content %}
-<div id="form_container">
-    {% if unapproved_error %}
-    <div class="static_error_message">
-        {{ unapproved_error }}
+
+<div class="card">
+    <div class="card-body">
+        {% url 'register' as register_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="login-form" submit_text="Login" submit_icon="fa-solid fa-lock" other_button_url=register_url other_button_text="Register" other_button_icon="fa-solid fa-address-card" %}
     </div>
-    {% endif %}
-    <form id="login-form" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Login">
-    </form>
-    <hr class="form_break_hr">
-    <a class="white_link" href="{% url 'register' %}" id="register_button">Register</a>
 </div>
+
 {% endblock %}
