@@ -9,9 +9,6 @@ Step 3a - the user must also register themselves with the school
 Step 3b - the user must provide a school access key to associate themselves with a school that is already registered.
 """
 
-# Standard library imports
-from typing import Any
-
 # Django imports
 from django import http
 from django.contrib import messages
@@ -133,29 +130,28 @@ class ProfileRegistration(generic.FormView):
         return super().form_valid(form=form)
 
 
-class CustomLogin(LoginView):
+class Login(LoginView):
     """
-    Slight customisation of the login process. See method docstrings for the customisations.
+    Add some extra rules to the login process.
     """
 
-    def get(
-        self, request: http.HttpRequest, *args: Any, **kwargs: Any
-    ) -> http.HttpResponse:
+    def setup(self, request: http.HttpRequest, *args: object, **kwargs: object) -> None:
         """
-        Method to first log a user out if they visit the login page.
+        Log a user out if they visit the login page.
         """
+        super().setup(request, *args, **kwargs)
         if request.user.is_authenticated:
             logout(request)
-        return super().get(request, *args, **kwargs)
 
-    def form_valid(
-        self, form: AuthenticationForm
-    ) -> http.HttpResponseRedirect | http.HttpResponse:
-        """
-        Method to check that a user has been given access to their school's data by the school admin.
-        """
+    def form_valid(self, form: AuthenticationForm) -> http.HttpResponse:
         user = form.get_user()
-        if user.profile.approved_by_school_admin:
+        if not hasattr(user, "profile"):
+            # The user has not completed registration
+            login(
+                self.request, user, backend="django.contrib.auth.backends.ModelBackend"
+            )
+            return redirect(to=UrlName.REGISTER_PIVOT.url())
+        elif user.profile.approved_by_school_admin:
             return super().form_valid(form)
         else:
             error_message = (

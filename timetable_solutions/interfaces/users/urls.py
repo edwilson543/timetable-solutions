@@ -8,7 +8,7 @@ from . import htmx_views, views
 
 urlpatterns = [
     # Views relating to authentication
-    re_path(r"^accounts/login", views.CustomLogin.as_view(), name=UrlName.LOGIN.value),
+    re_path(r"^accounts/login", views.Login.as_view(), name=UrlName.LOGIN.value),
     re_path("^accounts/logout", views.custom_logout, name=UrlName.LOGOUT.value),
     re_path("^accounts/", include("django.contrib.auth.urls")),
     path("dashboard/", views.dashboard, name=UrlName.DASHBOARD.value),
