@@ -1,32 +1,37 @@
 # Django imports
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import forms as auth_forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import models as django_models
 
 # Local application imports
 from data import constants, models
 
 
-class CustomUserCreation(UserCreationForm):
-    """Placeholder customisation of the default django user creation form"""
+class UserCreation(auth_forms.UserCreationForm):
+    """
+    Add some fields from the Profile model to the user creation form.
+    """
 
-    class Meta(UserCreationForm.Meta):
-        fields = UserCreationForm.Meta.fields + ("email", "first_name", "last_name")
+    class Meta(auth_forms.UserCreationForm.Meta):
+        fields = auth_forms.UserCreationForm.Meta.fields + (
+            "email",
+            "first_name",
+            "last_name",
+        )
 
 
 class SchoolRegistrationPivot(forms.Form):
     """
-    Pivot to decide whether the 2nd stage of user sign-up also requires them to register their school_id, or if
-    they just need to enter their school_id access key.
+    Allow users to state whether they are registering to a new school or an existing one.
     """
 
-    CHOICES = [
-        ("EXISTING", "I have an existing school access key"),
-        ("NEW", "I am registering my school for the first time"),
-    ]
+    class NewUserType(django_models.TextChoices):
+        EXISTING = "EXISTING", "I have an existing school access key"
+        NEW = "NEW", "I am registering my school for the first time"
 
     existing_school = forms.ChoiceField(
-        choices=CHOICES, widget=forms.RadioSelect, label=""
+        choices=NewUserType.choices, widget=forms.RadioSelect, label=""
     )
 
 

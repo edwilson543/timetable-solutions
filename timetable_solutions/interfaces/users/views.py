@@ -35,7 +35,7 @@ class Register(generic.FormView):
     """
 
     template_name = "users/register.html"
-    form_class = forms.CustomUserCreation
+    form_class = forms.UserCreation
     success_url = UrlName.REGISTER_PIVOT.url(lazy=True)
 
     def setup(self, request: http.HttpRequest, *args: object, **kwargs: object) -> None:
@@ -46,23 +46,26 @@ class Register(generic.FormView):
         if request.user.is_authenticated:
             logout(request)
 
-    def form_valid(self, form: forms.CustomUserCreation) -> http.HttpResponse:
+    def form_valid(self, form: forms.UserCreation) -> http.HttpResponse:
         user = form.save()
         login(self.request, user, backend="django.contrib.auth.backends.ModelBackend")
         return super().form_valid(form=form)
 
 
 class SchoolRegisterPivot(generic.FormView):
-    """View for step 2 of registering - whether the user's school also needs registering"""
+    """
+    Step 2 of registering - pivoting to registering a new school or the user to an existing school.
+    """
 
     template_name = "users/register_school_pivot.html"
     form_class = forms.SchoolRegistrationPivot
 
     def form_valid(self, form: forms.SchoolRegistrationPivot) -> http.HttpResponse:
-        if form.cleaned_data.get("existing_school") == "EXISTING":
-            return redirect(UrlName.PROFILE_REGISTRATION.url())
+        if form.cleaned_data["existing_school"] == form.NewUserType.EXISTING:
+            redirect_url = UrlName.PROFILE_REGISTRATION.url()
         else:
-            return redirect(UrlName.SCHOOL_REGISTRATION.url())
+            redirect_url = UrlName.SCHOOL_REGISTRATION.url()
+        return redirect(to=redirect_url)
 
 
 class SchoolRegistration(View):
