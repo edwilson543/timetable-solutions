@@ -54,7 +54,7 @@ class SchoolRegisterPivot(generic.FormView):
     Step 2 of registering - pivoting to registering a new school or the user to an existing school.
     """
 
-    template_name = "users/register_school_pivot.html"
+    template_name = "users/register-school-pivot.html"
     form_class = forms.SchoolRegistrationPivot
 
     def form_valid(self, form: forms.SchoolRegistrationPivot) -> http.HttpResponse:
@@ -72,7 +72,7 @@ class SchoolRegistration(generic.FormView):
     The user receives the `SCHOOL_ADMIN` role, making them an admin of the new school's data.
     """
 
-    template_name = "users/register_school.html"
+    template_name = "users/register-school.html"
     form_class = forms.SchoolRegistration
 
     def form_valid(self, form: forms.SchoolRegistration) -> http.HttpResponse:
@@ -103,7 +103,7 @@ class ProfileRegistration(generic.FormView):
     access to the site until a school admin approves their account.
     """
 
-    template_name = "users/register_profile_existing_school.html"
+    template_name = "users/register-profile-existing-school.html"
     form_class = forms.ProfileRegistration
     success_url = UrlName.LOGIN.url(lazy=True)
 
