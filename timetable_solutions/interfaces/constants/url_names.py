@@ -106,11 +106,4 @@ class UrlName(StrEnum):
     # View timetables app
     PUPIL_TIMETABLE = "pupil_timetable"  # kwargs: pupil_id: int
     TEACHER_TIMETABLE = "teacher_timetable"  # kwargs: teacher_id: int
-
-    # HTMX #
-
-    # Users app
-    USERNAME_FIELD_REGISTRATION = "username-field-registration"
-
-    # View timetables app
     LESSON_DETAIL = "lesson-detail"  # kwargs: lesson_id: str

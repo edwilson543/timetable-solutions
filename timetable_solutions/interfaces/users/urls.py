@@ -3,8 +3,7 @@ from django.urls import include, path, re_path
 
 # Local application imports
 from interfaces.constants import UrlName
-
-from . import htmx_views, views
+from interfaces.users import views
 
 urlpatterns = [
     # Views relating to authentication
@@ -28,11 +27,5 @@ urlpatterns = [
         "register/pivot/profile/",
         views.ProfileRegistration.as_view(),
         name=UrlName.PROFILE_REGISTRATION.value,
-    ),
-    # HTMX views - registration
-    path(
-        "register/username/",
-        htmx_views.username_field_view,
-        name=UrlName.USERNAME_FIELD_REGISTRATION.value,
     ),
 ]
