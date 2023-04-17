@@ -27,7 +27,7 @@ class TestPasswordChange(TestClient):
 
         # Check the user's password was changed
         assert response.status_code == 302
-        assert response.location == UrlName.PASSWORD_CHANGE_DONE.url()
+        assert response.location == UrlName.DASHBOARD.url()
 
         user.check_password("something else 123")
 

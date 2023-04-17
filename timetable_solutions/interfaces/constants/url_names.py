@@ -38,7 +38,6 @@ class UrlName(StrEnum):
     LOGIN = "login"
     LOGOUT = "logout"
     PASSWORD_CHANGE = "password_change"
-    PASSWORD_CHANGE_DONE = "password_change_done"
     PROFILE_REGISTRATION = "profile_registration"
     REGISTER = "register"
     REGISTER_PIVOT = "registration_pivot"

@@ -12,9 +12,9 @@ Step 3b - the user must provide a school access key to associate themselves with
 # Django imports
 from django import http
 from django.contrib import messages
+from django.contrib.auth import forms as auth_forms
 from django.contrib.auth import login, logout, mixins
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.views import LoginView
+from django.contrib.auth import views as auth_views
 from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -130,7 +130,7 @@ class ProfileRegistration(generic.FormView):
         return super().form_valid(form=form)
 
 
-class Login(LoginView):
+class Login(auth_views.LoginView):
     """
     Add some extra rules to the login process.
     """
@@ -143,7 +143,7 @@ class Login(LoginView):
         if request.user.is_authenticated:
             logout(request)
 
-    def form_valid(self, form: AuthenticationForm) -> http.HttpResponse:
+    def form_valid(self, form: auth_forms.AuthenticationForm) -> http.HttpResponse:
         user = form.get_user()
         if not hasattr(user, "profile"):
             # The user has not completed registration
@@ -169,6 +169,15 @@ def custom_logout(request: http.HttpResponse) -> http.HttpResponseRedirect:
     if request.user.is_authenticated:
         logout(request)
     return redirect(UrlName.LOGIN.url())
+
+
+class PasswordChange(auth_views.PasswordChangeView):
+    success_url = UrlName.DASHBOARD.url(lazy=True)
+
+    def form_valid(self, form: auth_forms.PasswordChangeForm) -> http.HttpResponse:
+        message = "Your password has been updated!"
+        messages.success(request=self.request, message=message)
+        return super().form_valid(form=form)
 
 
 class Dashboard(mixins.LoginRequiredMixin, generic.TemplateView):
