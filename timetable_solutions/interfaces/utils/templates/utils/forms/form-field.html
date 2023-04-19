@@ -27,6 +27,8 @@ field: django_forms.Field
         {% include 'utils/forms/widgets/checkbox.html' with field=field only %}
     {% elif field.widget_type == "select" %}
         {% include 'utils/forms/widgets/select.html' with field=field only %}
+    {% elif field.widget_type == "radioselect" %}
+        {% include 'utils/forms/widgets/radioselect.html' with field=field only %}
     {% elif field.widget_type == "selectmultiple" %}
         {% include 'utils/forms/widgets/multiselect.html' with field=field only %}
     {% endif %}
