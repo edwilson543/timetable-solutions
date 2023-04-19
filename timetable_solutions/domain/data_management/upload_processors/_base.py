@@ -21,7 +21,7 @@ from django.db import transaction
 
 # Local application imports
 from data import models
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from domain.data_management.constants import FileStructure, Header
 
 _Model = TypeVar("_Model", bound=django_models.Model)

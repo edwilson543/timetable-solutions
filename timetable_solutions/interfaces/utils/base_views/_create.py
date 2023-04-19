@@ -11,7 +11,7 @@ from django.db import models as django_models
 from django.views import generic
 
 # Local application imports
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 
 _ModelT = TypeVar("_ModelT", bound=django_models.Model)

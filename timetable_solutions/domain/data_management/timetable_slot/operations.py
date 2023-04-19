@@ -11,7 +11,7 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import constants, models
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from domain.data_management.timetable_slot import queries
 
 
