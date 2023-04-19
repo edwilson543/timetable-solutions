@@ -53,24 +53,29 @@ def test_render_form_field_in_div_renders_text_field_correctly(form: type[forms.
     assert expected_html in outcome
 
 
-class TestIsTextOrNumberInput:
+class TestIsBasicInputWidget:
     @pytest.mark.parametrize(
         "field, expected_return",
         [
             (forms.CharField(), True),
             (forms.IntegerField(), True),
+            (forms.TimeField(), True),
+            (forms.CharField(widget=forms.PasswordInput()), True),
+            (forms.EmailField(), True),
+            (forms.ChoiceField(), False),
+            (forms.CheckboxInput(), False),
             (forms.FileField(), False),
         ],
     )
-    def test_is_text_or_number_input_unbound_field(
+    def test_is_basic_input_widget_unbound_field(
         self, field: forms.Field, expected_return: bool
     ):
         template_string = """
         {% load form_tags %}
-        {% if field|is_text_or_number_input %}
+        {% if field|is_basic_input_widget %}
             <p>Is text or number input</p>
         {% endif %}
-        {{ field|is_text_or_number_input }}
+        {{ field|is_basic_input_widget }}
         """
 
         temp = template.Template(template_string=template_string)
@@ -85,7 +90,7 @@ class TestIsTextOrNumberInput:
             assert "Is text or number input" not in outcome
             assert "False" in outcome
 
-    def test_is_text_or_number_input_bound_field(self):
+    def test_is_basic_input_widget_bound_field(self):
         class Form(forms.Form):
             text = forms.CharField()
 
@@ -93,10 +98,10 @@ class TestIsTextOrNumberInput:
 
         template_string = """
         {% load form_tags %}
-        {% if form.text|is_text_or_number_input %}
+        {% if form.text|is_basic_input_widget %}
             <p>Is text or number input</p>
         {% endif %}
-        {{ form.text|is_text_or_number_input }}
+        {{ form.text|is_basic_input_widget }}
         """
 
         temp = template.Template(template_string=template_string)

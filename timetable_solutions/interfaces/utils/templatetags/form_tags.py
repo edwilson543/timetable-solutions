@@ -44,19 +44,19 @@ def render_form_field_in_div(bound_field: forms.BoundField) -> html.SafeString:
     return html.format_html(text)
 
 
-@register.filter(name="is_text_or_number_input")
-def is_text_or_number_input(field: forms.BoundField | forms.Field) -> bool:
+@register.filter(name="is_basic_input_widget")
+def is_basic_input_widget(field: forms.BoundField | forms.Field) -> bool:
     """
-    Check if an input widget is for a text or number input field.
-    These are both marked up in the same way.
+    Check if an input widget should be rendered using a simple <input type="x">.
     """
+    basic_input_fields = ["text", "number", "time", "email", "password"]
+
+    widget_type = None
     if isinstance(field, forms.BoundField):
-        return (field.widget_type == "text") or (field.widget_type == "number")
-    elif isinstance(field, forms.Field):
-        return (field.widget.input_type == "text") or (
-            field.widget.input_type == "number"
-        )
-    return False
+        widget_type = field.widget_type
+    if isinstance(field, forms.Field):
+        widget_type = field.widget.input_type
+    return widget_type in basic_input_fields
 
 
 @register.filter(name="is_string")
