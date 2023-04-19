@@ -1,7 +1,7 @@
 /* ====================
 CSS file to pair with django's flash messages framework
 ==================== */
-@import url(/static/stylesheets/colour_scheme.css);
+@import url(/static/stylesheets/colour-scheme.css);
 
 :root {
     /* Positioning */
@@ -124,7 +124,6 @@ Components of the flash messages
     margin-right: var(--close_button_total_width);
 }
 .error_message_text a {
-    color: var(--bright_blue_link);
     text-decoration: underline;
 }
 

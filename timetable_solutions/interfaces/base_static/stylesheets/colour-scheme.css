@@ -13,4 +13,6 @@ Project colour scheme
 
     /* Bootstrap */
     --bootstrap-primary: #0d6efd;
+    --bootstrap-success: #198754;
+    --bootstrap-danger: #dc3545;
 }
