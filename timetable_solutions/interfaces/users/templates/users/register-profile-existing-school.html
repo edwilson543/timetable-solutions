@@ -1,54 +1,14 @@
-{% extends "legacy-base.html" %}
+{% extends "login-registration-base.html" %}
 
-<head>
-{% block head_content %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
-    <title>Register</title>
-{% endblock %}
-
-<style>
-{% block style_block %}
-
-#id_position {
-    /* Display */
-    margin-top: 5px;
-    margin-bottom: 5px;
-    padding: 5px;
-
-    /* Typography */
-    font-size: 20px;
-
-    /* Border */
-    border-radius: 5px;
-    border: 1px solid black;
-}
-
-input[type="submit"] {background-color: #004000;}
-
-{% endblock %}
-</style>
-</head>
+{% block title %} Register - {{ block.super }} {% endblock %}
 
 {% block content %}
 
-<div id="form_container">
-    <h4 style="margin-bottom:20px;">
-        Please enter your school's access key below
-    </h4>
-    {% if error_message is not None %}
-    <p class="static_error_message">
-        {{error_message}}
-    </p>
-    {% endif %}
-    <form id="register-profile-form" method="post">
-        {% csrf_token %}
-        {{ form.as_div }}
-        <input type="submit" value="Complete registration">
-    </form>
-    <hr class="form_break_hr">
-    <a href="{% url 'registration_pivot' %}" class="wide_red_button white_link">Back</a>
+<div class="card">
+    <div class="card-body">
+        {% url 'registration_pivot' as pivot_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-profile-form" submit_text="Register" submit_icon="fa-solid fa-address-card" other_button_url=pivot_url other_button_text="Back" other_button_icon="fa-solid fa-arrow-left" %}
+    </div>
 </div>
-
 
 {% endblock %}

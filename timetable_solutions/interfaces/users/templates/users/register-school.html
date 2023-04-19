@@ -1,51 +1,22 @@
-{% extends "legacy-base.html" %}
+{% extends "login-registration-base.html" %}
 
-<head>
-{% block head_content %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
-    <title>Register</title>
-{% endblock %}
-
-<style>
-{% block style_block %}
-
-input[type="submit"] {background-color: #004000;}
-
-p {
-    /* Styling of error messages with registration form */
-    font-size: 15px;
-    margin-bottom: 20px;
-}
-
-{% endblock %}
-
-</style>
-</head>
+{% block title %} Register - {{ block.super }} {% endblock %}
 
 {% block content %}
 
-<div id="form_container">
-    <h3>
-        Please enter the name of your school below
-    </h3>
-    <br>
-    <p>
-        You will then be assigned a <b>school access key</b>, which is needed to register other users for your school.
-        This will become visible at the top of the site while logged in.
-    </p>
-    {% for error in errors %}
-    <p class="static_error_message">
-        {{error_message}}
-    </p>
-    {% endfor %}
-    <form id="register-school-form" method="post">
-        {% csrf_token %}
-        {{ form.as_div }}
-        <input type="submit" value="Complete registration">
-    </form>
-    <hr class="form_break_hr">
-    <a href="{% url 'registration_pivot' %}" class="wide_red_button white_link">Back</a>
+<div class="card">
+    <div class="card-header">
+        <h5>Register school</h5>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Your school will be assigned a <b>school access key</b></li>
+            <li>This is used to register other users for your school</li>
+            <li>This can be found in your account information while logged in</li>
+        </ul>
+        {% url 'registration_pivot' as pivot_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-school-form" submit_text="Register" submit_icon="fa-solid fa-address-card" other_button_url=pivot_url other_button_text="Back" other_button_icon="fa-solid fa-arrow-left" %}
+    </div>
 </div>
 
 {% endblock %}

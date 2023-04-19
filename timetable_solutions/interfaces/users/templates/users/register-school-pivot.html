@@ -1,62 +1,16 @@
-{% extends "legacy-base.html" %}
+{% extends "login-registration-base.html" %}
 
-<head>
-{% block head_content %}
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
-    <title>Register</title>
-{% endblock %}
-
-<style>
-{% block style_block %}
-
-input[type="submit"] {
-    background-color: #004000;
-    margin: 10px;
-}
-input[type="radio"] {
-    margin-bottom: 1px;
-    margin-top: 10px;
-}
-
-/* ====================
-Styling for the radio button labels
-==================== */
-label {
-    /* Display */
-    padding: 5px;
-    margin-bottom: 15px;
-
-    /* Typography */
-    font-weight: bold;
-    font-size: 15px;
-    text-align: center;
-
-    /* Background and border */
-    border: 1px solid black;
-    border-radius: 10px;
-}
-label:hover {
-  background-color: #1f1530;
-  color: white;
-}
-{% endblock %}
-
-</style>
-</head>
-
+{% block title %} Register - {{ block.super }} {% endblock %}
 
 {% block content %}
 
-<div id="form_container">
-    <h4 style="margin-bottom:5px;">
-        {{user.first_name}}, do you have an existing access key for your school?
-    </h4>
-    <form id="register-pivot-form" method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Continue">
-    </form>
+<div class="card">
+    <div class="card-body">
+        <b>
+            {{ user.first_name }}, do you have an existing access key for your school?
+        </b>
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-pivot-form" submit_text="Continue" submit_icon="fa-solid fa-arrow-right" %}
+    </div>
 </div>
 
 {% endblock %}
