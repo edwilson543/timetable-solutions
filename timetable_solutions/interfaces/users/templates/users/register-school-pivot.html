@@ -1,0 +1,16 @@
+{% extends "login-registration-base.html" %}
+
+{% block title %} Register - {{ block.super }} {% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+        <b>
+            {{ user.first_name }}, do you have an existing access key for your school?
+        </b>
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-pivot-form" submit_text="Continue" submit_icon="fa-solid fa-arrow-right" %}
+    </div>
+</div>
+
+{% endblock %}

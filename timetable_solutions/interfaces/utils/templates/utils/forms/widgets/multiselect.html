@@ -10,7 +10,7 @@ field: django_forms.BoundField
 {% for value, label in field.field.choices %}
     <div class="form-check form-switch m-2">
         <input
-            id="flexSwitchCheckDefault-{{ forloop.counter }}"
+            id="{{ field.name }}-{{ forloop.counter }}"
             name="{{ field.name }}"
             {% if value|is_string %}
                 value="{{ value }}"

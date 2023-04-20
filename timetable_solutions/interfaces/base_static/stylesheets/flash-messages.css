@@ -1,0 +1,194 @@
+/* ====================
+CSS file to pair with django's flash messages framework
+==================== */
+@import url(/static/stylesheets/colour-scheme.css);
+
+:root {
+    /* Positioning */
+    --banner_z_index: 1000;
+
+    /* Display */
+    --start_height: -30px;
+    --end_height: 40px;
+
+    --banner_width: 100vw;
+    --banner_left_indent: 0vw;
+
+    --close_button_total_width: 30px;
+
+    /* Background and border */
+    --banner_opacity: 0.95;
+    --banner_opacity_hover: 1;
+
+    /* Animations */
+    --message_duration: 30s;
+
+    /* COLOURS - one set per django flash message level */
+    --close_button_background: #d1cfcf;
+
+    /* INFO = Blue */
+    --info_background: #c4dcf2;
+    --info_background_hover: #b6cce0;
+    --info_border: #4e657a;
+
+    /* SUCCESS = Green */
+    --success_background: #a6dea2;
+    --success_background_hover: #82b57f;
+    --success_border: #527550;
+
+    /* WARNING = Yellow */
+    --warning_background: #f1f299;
+    --warning_background_hover: #d3d483;
+    --warning_border: #7f804d;
+
+    /* ERROR = Red */
+    --error_background: #ffb0b5;
+    --error_background_hover: #db9195;
+    --error_border: #690007;
+}
+
+/* ====================
+Animations
+==================== */
+@keyframes message_drop_in {
+    0% {
+        position: static;
+        z-index: var(--banner_z_index);
+        opacity: 0;
+        max-height: 0;
+    }
+
+    10% {
+        position: static;
+        z-index: var(--banner_z_index);
+        opacity: var(--banner_opacity);
+    }
+
+    95% {
+        position: static;
+        z-index: var(--banner_z_index);
+        opacity: var(--banner_opacity);
+        max-height: 5000px;
+    }
+
+    100% {
+        position: static;
+        z-index: var(--banner_z_index);
+        opacity: 0;
+        max-height: 0;
+    }
+}
+
+/* ====================
+Components of the flash messages
+==================== */
+.flash_message_container {
+    /* Display */
+    display: flex;
+    flex-direction: column;
+    width: var(--banner_width);
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+
+    /* Animations */
+    animation-name: message_drop_in;
+    animation-duration: var(--message_duration);
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.flash_message_base {
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--end_height);
+    padding: 5px;
+
+    /* Typography */
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    vertical-align: middle;
+
+    /* Border */
+    border-weight: 1px;
+    border-style: solid;
+}
+
+.error_message_text {
+    /* Avoid overlap with the close button */
+    margin-right: var(--close_button_total_width);
+}
+.error_message_text a {
+    text-decoration: underline;
+}
+
+.close_error_button {
+    /* Positioning */
+    position: absolute;
+    right: 0;
+
+    /* Display */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    padding: 2px;
+
+    /* Typography */
+    text-align: center;
+
+    /* Background, border and misc */
+    background-color: var(--close_button_background);
+    opacity: 0.7;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.close_error_button:hover {
+    opacity: 0.95;
+}
+
+/* ====================
+Additional styling for the individual flash message levels
+==================== */
+.info_message {
+    background-color: var(--info_background);
+    border-color: var(--info_border);
+}
+.info_message:hover {
+    background-color: var(--info_background_hover);
+    opacity: var(--banner_opacity_hover);
+}
+
+.success_message {
+    background-color: var(--success_background);
+    border-color: var(--success_border);
+}
+.success_message:hover {
+    background-color: var(--success_background_hover);
+    opacity: var(--banner_opacity_hover);
+}
+
+.warning_message {
+    background-color: var(--warning_background);
+    border-color: var(--warning_border);
+}
+.warning_message:hover {
+    background-color: var(--warning_background_hover);
+    opacity: var(--banner_opacity_hover);
+}
+
+.error_message {
+    background-color: var(--error_background);
+    border-color: var(--error_border);
+}
+.error_message:hover {
+    background-color: var(--error_background_hover);
+    opacity: var(--banner_opacity_hover);
+}

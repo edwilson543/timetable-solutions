@@ -6,8 +6,8 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import models
-from domain.data_management import base_exceptions
 
+from ... import base_exceptions
 from . import queries
 
 

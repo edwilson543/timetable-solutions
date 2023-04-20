@@ -1,89 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-{% extends "legacy-base.html" %}
+{% block title %} Page not found - {{ block.super }} {% endblock %}
 
-<head>
-{% block head_content %}
-<title> 404 Page not found </title>
-{% endblock %}
-
-<style>
-{% block style_block %}
-#error_container {
-    /* Positioning */
-    display: relative;
-
-    /* Display and box model */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: auto;
-    height: auto;
-    padding: 50px;
-
-    /* Background and border */
-    background-color: white;
-    border: 3px solid rgba(51, 0, 61, 0.5);
-    border-radius: 10px;
-    box-shadow: 5px 5px rgba(184, 184, 184, 0.8);
-}
-
-.login_home_button {
-    /* Display */
-    width: 180px;
-    padding-top: 5px;
-    padding-bottom: 5px;
-
-    /* Typography */
-    font-size: 20px;
-    color: white;
-    text-align: center;
-
-    /* Background and border */
-    background-color: #004000;
-    border-radius: 5px;
-    border: 1px solid #33003d;
-}
-.login_home_button:hover {
-    background-color: #3d112f;
-    cursor: pointer;
-}
-
-#page_not_found_text {
-    padding: 10px;
-    font-size: 20px;
-    font-weight: bold;
-}
-
-hr {
-    color:black;
-    width:90%;
-    margin-bottom:15px;
-}
-
-{% endblock %}
-</style>
-</head>
-
-<body>
 {% block content %}
-<div id="error_container">
-    <p id="page_not_found_text">
-      Page not found!
-    </p>
-    <hr>
-    {% if user.is_authenticated %}
-      <form action="{% url 'dashboard' %}">
-          <button class="login_home_button" type="submit">Home</button>
-      </form>
-    {% else %}
-      <form action="{% url 'login' %}">
-          <button class="login_home_button" type="submit">Login</button>
-      </form>
-    {% endif %}
+
+<div class="card-header alert alert-danger p-5 text-center">
+    <h1>Page not found!</h1>
 </div>
+
 {% endblock %}
-</body>
-</html>

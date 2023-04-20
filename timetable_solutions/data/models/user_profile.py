@@ -92,9 +92,13 @@ class Profile(models.Model):
         return profile
 
     # --------------------
-    # Properties tests
+    # Properties
     # --------------------
 
     @property
     def username(self) -> str:
         return self.user.username
+
+    @property
+    def is_school_admin(self) -> bool:
+        return self.role == constants.UserRole.SCHOOL_ADMIN

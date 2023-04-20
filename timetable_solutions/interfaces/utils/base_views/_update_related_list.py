@@ -8,7 +8,7 @@ from django import http
 from django.views.generic import edit
 
 # Local application imports
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from interfaces.utils.base_views import _related_list
 from interfaces.utils.typing_utils import AuthenticatedHttpRequest
 

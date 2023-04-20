@@ -106,7 +106,7 @@ def sitemap() -> list[PageCollection]:
             pages=[
                 Page(
                     "Manage users",
-                    url="",
+                    url=UrlName.USER_LIST.url(),
                     fa_icon="fa-solid fa-user-gear",
                 )
             ],

@@ -1,0 +1,27 @@
+<!--A group of radio select widgets
+------------------
+Context variables:
+------------------
+field: django_forms.BoundField
+-->
+{% load form_tags %}
+
+{% for value, label in field.field.choices %}
+    <div class="form-check">
+        <input
+            id="{{ field.name }}-{{ forloop.counter }}"
+            name="{{ field.name }}"
+            {% if value|is_string %}
+               value="{{ value }}"
+            {% else %}
+               value={{ value }}
+            {% endif %}
+            class="form-check-input"
+            type="radio"
+            {% if field.initial == value %}checked{% endif %}
+        >
+        <label class="form-check-label" for="{{ field.id_for_label }}-{{ forloop.counter }}">
+            {{ label }}
+        </label>
+    </div>
+{% endfor %}

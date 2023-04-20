@@ -27,7 +27,7 @@ Head strap goes at the top of every page of the site
             Timetable Solutions
         </span>
 
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated and user.profile %}
         <span class="dropdown mx-5 align-items-center">
             <button
                 id="dropdownMenuButton"

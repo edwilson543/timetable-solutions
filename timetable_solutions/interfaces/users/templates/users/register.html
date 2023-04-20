@@ -1,51 +1,14 @@
-{% extends "legacy-base.html" %}
+{% extends "login-registration-base.html" %}
 
-{% load static %}
-{% load form_tags %}
-
-<head>
-{% block head_content %}
-
-<link rel="stylesheet" href="{% static 'users/stylesheets/login_registration_forms.css' %}">
-<title>Register</title>
-
-{% endblock %}
-
-<style>
-{% block style_block %}
-
-input[type="submit"] {background-color: #004000;}
-.helptext {
-    display: none;
-}
-{% endblock %}
-</style>
-</head>
-
+{% block title %} Register - {{ block.super }} {% endblock %}
 
 {% block content %}
-<div id="form_container">
-    {% if error_messages %}
-        {% for error_message in error_messages %}
-            <p class="static_error_message">{{ error_message }}</p>
-        {% endfor %}
-    {% endif %}
 
-    <form id="register-form" method="post">
-        {% csrf_token %}
-<!--        Manually render the form elements, to allow easier use of htmx-->
-
-        {% include 'partials/username_field.html' %}
-        {% field_div form.email %}
-        {% field_div form.first_name %}
-        {% field_div form.last_name %}
-        {% field_div form.password1 %}
-        {% field_div form.password2 %}
-
-        <input type="submit" value="Continue">
-    </form>
-
-    <hr class="form_break_hr">
-    <a href="{% url 'login' %}" class="wide_red_button white_link">Back to login</a>
+<div class="card">
+    <div class="card-body">
+        {% url 'login' as login_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-form" submit_text="Register" submit_icon="fa-solid fa-address-card" other_button_url=login_url other_button_text="Back" other_button_icon="fa-solid fa-lock" %}
+    </div>
 </div>
+
 {% endblock %}

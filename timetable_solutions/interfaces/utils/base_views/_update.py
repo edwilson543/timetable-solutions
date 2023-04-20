@@ -16,7 +16,7 @@ from django.template import loader
 from django.views import generic
 
 # Local application imports
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from interfaces.constants import UrlName
 from interfaces.utils.base_views import _htmx_views
 from interfaces.utils.typing_utils import (

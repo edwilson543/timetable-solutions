@@ -1,0 +1,72 @@
+<!--A base template for the login and registration pages-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+{% load static %}
+
+<head>
+<title>
+    {% block title %} Timetable solutions {% endblock %}
+</title>
+
+{% include 'includes/config.html' %}
+
+{% block extra_style %}
+{% endblock %}
+
+<style>
+
+body, html {
+    /* Display */
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+
+    /* Typography */
+    font-family: monaco;
+}
+
+.background-image-container {
+    /* Background image */
+    background-image: url("{% static 'img/patterns_background.png' %}");
+    background-position: cover;
+    background-repeat: repeat;
+    background-size: contain;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 10px;
+}
+
+.card-container {
+    box-shadow: 0 0 10px;
+}
+
+</style>
+
+</head>
+
+<body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
+
+    <!--Add the 'head strap'-->
+    {% include "partials/base-template/headstrap.html" %}
+
+    <div class="background-image-container container-fluid h-100">
+        <div class="h-100 d-flex align-items-center justify-content-center">
+            <div class="row gx-3 w-100">
+                <div class="col-lg-3"></div>
+                <div class="col-lg-6 card-container p-0 rounded">
+                    {% block content %}{% endblock %}
+                </div>
+                <div class="col-lg-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!--Add the footer-->
+    <div class="row">
+        {% include "partials/base-template/footer.html" %}
+    </div>
+
+</body>

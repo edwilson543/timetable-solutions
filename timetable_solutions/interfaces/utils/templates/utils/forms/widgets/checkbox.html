@@ -1,4 +1,4 @@
-<!--A file upload widget
+<!--A checkbox widget
 ------------------
 Context variables:
 ------------------
@@ -9,6 +9,6 @@ field: django_forms.BoundField
        id="{{ field.id_for_label }}"
        class="form-check-input"
        aria-describedby="{{ field.id_for_label }}-help-text"
-       {% if field.initial %}checked {% endif %}
+       {% if field.initial %}checked{% endif %}
        {% if field.field.required %}required{% endif %}
 >

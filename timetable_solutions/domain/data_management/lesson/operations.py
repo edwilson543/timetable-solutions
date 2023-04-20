@@ -5,7 +5,7 @@ from django.db import IntegrityError
 
 # Local application imports
 from data import models
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 
 
 class UnableToCreateLesson(base_exceptions.UnableToCreateModelInstance):

@@ -1,0 +1,22 @@
+{% extends "login-registration-base.html" %}
+
+{% block title %} Register - {{ block.super }} {% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        <h5>Register school</h5>
+    </div>
+    <div class="card-body">
+        <ul>
+            <li>Your school will be assigned a <b>school access key</b></li>
+            <li>This is used to register other users for your school</li>
+            <li>This can be found in your account information while logged in</li>
+        </ul>
+        {% url 'registration_pivot' as pivot_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-school-form" submit_text="Register" submit_icon="fa-solid fa-address-card" other_button_url=pivot_url other_button_text="Back" other_button_icon="fa-solid fa-arrow-left" %}
+    </div>
+</div>
+
+{% endblock %}

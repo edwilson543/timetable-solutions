@@ -1,0 +1,14 @@
+{% extends "login-registration-base.html" %}
+
+{% block title %} Register - {{ block.super }} {% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-body">
+        {% url 'registration_pivot' as pivot_url %}
+        {% include 'utils/forms/basic-form.html' with form=form form_id="register-profile-form" submit_text="Register" submit_icon="fa-solid fa-address-card" other_button_url=pivot_url other_button_text="Back" other_button_icon="fa-solid fa-arrow-left" %}
+    </div>
+</div>
+
+{% endblock %}

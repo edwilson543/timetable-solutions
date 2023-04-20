@@ -6,7 +6,7 @@ from django.db.models import ProtectedError
 
 # Local application imports
 from data import models
-from domain.data_management import base_exceptions
+from domain import base_exceptions
 from domain.data_management.teachers import queries
 
 

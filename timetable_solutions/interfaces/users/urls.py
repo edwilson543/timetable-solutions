@@ -3,16 +3,27 @@ from django.urls import include, path, re_path
 
 # Local application imports
 from interfaces.constants import UrlName
-
-from . import htmx_views, views
+from interfaces.users import views
 
 urlpatterns = [
-    # Views relating to authentication
-    re_path(r"^accounts/login", views.CustomLogin.as_view(), name=UrlName.LOGIN.value),
+    # --------------------
+    # Authentication
+    # --------------------
+    re_path(r"^accounts/login", views.Login.as_view(), name=UrlName.LOGIN.value),
     re_path("^accounts/logout", views.custom_logout, name=UrlName.LOGOUT.value),
+    # --------------------
+    # Account management
+    # --------------------
+    re_path(
+        "^accounts/password_change",
+        views.PasswordChange.as_view(),
+        name=UrlName.PASSWORD_CHANGE.value,
+    ),
     re_path("^accounts/", include("django.contrib.auth.urls")),
-    path("dashboard/", views.dashboard, name=UrlName.DASHBOARD.value),
-    # Views at each step of registration
+    path("dashboard/", views.Dashboard.as_view(), name=UrlName.DASHBOARD.value),
+    # --------------------
+    # Registration
+    # --------------------
     path("register/", views.Register.as_view(), name=UrlName.REGISTER.value),
     path(
         "register/pivot/",
@@ -29,10 +40,17 @@ urlpatterns = [
         views.ProfileRegistration.as_view(),
         name=UrlName.PROFILE_REGISTRATION.value,
     ),
-    # HTMX views - registration
+    # --------------------
+    # User management
+    # --------------------
     path(
-        "register/username/",
-        htmx_views.username_field_view,
-        name=UrlName.USERNAME_FIELD_REGISTRATION.value,
+        "list/",
+        views.UserProfileList.as_view(),
+        name=UrlName.USER_LIST.value,
+    ),
+    path(
+        "list/<str:username>/",
+        views.UpdateUserProfile.as_view(),
+        name=UrlName.USER_UPDATE.value,
     ),
 ]
