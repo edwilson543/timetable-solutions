@@ -1,3 +1,7 @@
+"""
+Forms used for the registration of new users.
+"""
+
 # Django imports
 from django import forms
 from django.contrib.auth import forms as auth_forms
