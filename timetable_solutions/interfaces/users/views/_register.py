@@ -15,7 +15,6 @@ from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.db import transaction
 from django.shortcuts import redirect
-from django.urls import reverse
 from django.views import generic
 
 # Local application imports
@@ -90,7 +89,7 @@ class SchoolRegistration(generic.FormView):
 
         message = f"Thanks for registering {school_name} at timetable solutions!"
         messages.success(self.request, message=message)
-        return redirect(reverse(UrlName.DASHBOARD.value))
+        return redirect(UrlName.DASHBOARD.url())
 
 
 class ProfileRegistration(generic.FormView):
