@@ -4,3 +4,4 @@ from ._register import (
     SchoolRegistrationPivot,
     UserCreation,
 )
+from ._user_management import UpdateUser
