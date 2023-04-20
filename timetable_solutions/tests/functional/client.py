@@ -7,7 +7,7 @@ import pytest
 import webtest
 
 # Local application imports
-from data import models
+from data import constants, models
 from tests import data_factories
 
 
@@ -31,21 +31,27 @@ class TestClient:
         """
         self.client = django_app
 
-    def create_school_and_authorise_client(self) -> models.School:
+    def create_school_and_authorise_client(
+        self, role: constants.UserRole = constants.UserRole.SCHOOL_ADMIN  # type: ignore[assignment]
+    ) -> models.School:
         """
         Create a school in the db and authorise the client.
         This helps reduce boilerplate code in tests.
         """
         school = data_factories.School()
-        self.authorise_client_for_school(school)
+        self.authorise_client_for_school(school, role=role)
         return school
 
-    def authorise_client_for_school(self, school: models.School) -> None:
+    def authorise_client_for_school(
+        self,
+        school: models.School,
+        role: constants.UserRole = constants.UserRole.SCHOOL_ADMIN,  # type: ignore[assignment]
+    ) -> None:
         """
         Helper method to authorise the test client as a user at the school.
         """
         user = data_factories.create_user_with_known_password()
-        data_factories.Profile(user=user, school=school)
+        data_factories.Profile(user=user, school=school, role=role)
         self.client.set_user(user=user)
 
     def anonymize_user(self) -> None:

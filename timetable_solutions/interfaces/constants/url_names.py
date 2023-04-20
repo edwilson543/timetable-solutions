@@ -11,12 +11,9 @@ from django import urls
 
 class UrlName(StrEnum):
     """
-    Enumeration of ALL url shortcut names in the entire project.
+    Enumeration of all url aliases.
 
-    This is the single place where url names are written in python - elsewhere, they are accessed via this Enum, for
-    example whenever urls.reverse is called, the argument is accessed from this Enum. Also in all apps' url dispatchers.
-    Note however that some django html templates access the string versions via the {% url <url_name> %} tag, so these
-    would need updating.
+    The single place to store and reverse urls in any python code in the project.
     """
 
     def url(self, lazy: bool = False, **kwargs: str | int | None) -> str:
@@ -42,6 +39,8 @@ class UrlName(StrEnum):
     REGISTER = "register"
     REGISTER_PIVOT = "registration_pivot"
     SCHOOL_REGISTRATION = "school_registration"
+    USER_LIST = "user-list"
+    USER_UPDATE = "user-update"  # kwargs: username: str
 
     # --------------------
     # Data management

@@ -9,6 +9,7 @@ from django.contrib.auth import models as auth_models
 
 # Local application imports
 from data import constants
+from interfaces.constants import UrlName
 from interfaces.users import serializers
 from tests import data_factories
 
@@ -29,6 +30,7 @@ class TestUserProfile:
                 ("email", user.email),
                 ("approved_by_school_admin", "Yes"),
                 ("role", constants.UserRole(profile.role).label),
+                ("update_url", UrlName.USER_UPDATE.url(username=user.username)),
             ]
         )
 
@@ -52,6 +54,7 @@ class TestUserProfile:
                     ("email", user.email),
                     ("approved_by_school_admin", "Yes"),
                     ("role", constants.UserRole(profile.role).label),
+                    ("update_url", UrlName.USER_UPDATE.url(username=user.username)),
                 ]
             ),
             OrderedDict(
@@ -62,6 +65,10 @@ class TestUserProfile:
                     ("email", other_user.email),
                     ("approved_by_school_admin", "No"),
                     ("role", constants.UserRole(other_profile.role).label),
+                    (
+                        "update_url",
+                        UrlName.USER_UPDATE.url(username=other_user.username),
+                    ),
                 ]
             ),
         ]

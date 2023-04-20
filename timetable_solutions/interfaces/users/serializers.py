@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 # Local application imports
 from data import constants
+from interfaces.constants import UrlName
 from interfaces.utils import typing_utils
 
 
@@ -17,6 +18,7 @@ class UserProfile(serializers.Serializer):
     email = serializers.EmailField()
     approved_by_school_admin = serializers.SerializerMethodField()
     role = serializers.SerializerMethodField()
+    update_url = serializers.SerializerMethodField()
 
     def get_approved_by_school_admin(self, user: typing_utils.RegisteredUser) -> str:
         profile = user.profile
@@ -27,3 +29,6 @@ class UserProfile(serializers.Serializer):
     def get_role(self, user: typing_utils.RegisteredUser) -> str:
         profile = user.profile
         return constants.UserRole(profile.role).label
+
+    def get_update_url(self, user: typing_utils.RegisteredUser) -> str:
+        return UrlName.USER_UPDATE.url(username=user.username)

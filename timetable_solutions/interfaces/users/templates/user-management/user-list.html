@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        users list
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3 mb-3">
+    <div class="card-header">
+        <h3>View your users</h3>
+    </div>
+</div>
+
+{% include 'data_management/partials/tables/list-display-table.html' %}
+
+{% endblock %}

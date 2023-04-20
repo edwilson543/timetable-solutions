@@ -7,3 +7,4 @@ from ._register import (
     SchoolRegisterPivot,
     SchoolRegistration,
 )
+from ._user_management import UpdateUserProfile, UserProfileList

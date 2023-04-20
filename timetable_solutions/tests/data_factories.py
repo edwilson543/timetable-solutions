@@ -24,6 +24,9 @@ class User(factory.django.DjangoModelFactory):
 
     username = factory.Faker("user_name")
     password = factory.Faker("password")
+    first_name = factory.Faker("first_name")
+    last_name = factory.Faker("last_name")
+    email = factory.lazy_attribute(lambda obj: obj.first_name + "@test.com")
 
 
 def create_user_with_known_password(
