@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 # Django imports
 from django.db import models
 
@@ -22,3 +24,7 @@ class Day(models.IntegerChoices):
     FRIDAY = 5, "Friday"
     SATURDAY = 6, "Saturday"
     SUNDAY = 7, "Sunday"
+
+    @classmethod
+    def weekdays(cls) -> list[Day]:
+        return [cls.MONDAY, cls.TUESDAY, cls.WEDNESDAY, cls.THURSDAY, cls.FRIDAY]  # type: ignore[list-item]
