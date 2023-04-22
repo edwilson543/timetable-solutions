@@ -1,6 +1,7 @@
 # Standard library imports
 import dataclasses
 import datetime as dt
+import re
 
 # Local application imports
 from data import constants as data_constants
@@ -150,10 +151,15 @@ class TimetableComponent:
     def css_class(self) -> str:
         """Suffix for the css class used to display this component."""
         pct = int(round(self.percentage_of_days_timetable or 0, 0))
+        regex = re.compile(r"[ .!/]")
         if self.is_lesson:
-            middle = self.model_instance.lesson_id.replace(" ", "-")  # type: ignore[union-attr]
+            middle = re.sub(
+                pattern=regex, string=self.model_instance.lesson_id, repl=""  # type: ignore[union-attr]
+            )
         elif self.is_break:
-            middle = self.model_instance.break_name.replace(" ", "-")  # type: ignore[union-attr]
+            middle = re.sub(
+                pattern=regex, string=self.model_instance.break_name, repl=""  # type: ignore[union-attr]
+            )
         else:
             middle = view_timetables_constants.FREE
-        return f"component-{middle}-{pct}"
+        return f"component-{middle.lower()}-{pct}"

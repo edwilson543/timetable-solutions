@@ -21,10 +21,6 @@ Shared component styling
     /* Typography */
     text-align: center;
     vertical-align: middle;
-    overflow-y: scroll;
-}
-.component:hover {
-
 }
 
 /* ====================
@@ -52,12 +48,13 @@ Text styling
 }
 .component-sub-text {
     font-size: 12px;
+    font-style: italic;
 }
 
 </style>
 
 <div
-    class="component {{ component.css_class }}"
+    class="component {{ component.css_class }} overflow-auto d-flex flex-column"
     {% if component.is_lesson %}
         hx-get="{% url 'lesson-detail' component.model_instance.lesson_id %}"
         hx-trigger="click"
@@ -65,22 +62,20 @@ Text styling
         hx-swap="innerHTML"
     {% endif %}
 >
-    <div>
-        <div class="component-display-name">
-            {{ component.display_name }}
-        </div>
-        {% if component.percentage_of_days_timetable > 10 %}
-            <div class="component-sub-text">
-                {{ component.starts_at | time:"H:i" }} - {{ component.ends_at | time:"H:i" }}
-            </div>
-            {% if component.is_lesson %}
-                <div>
-                    <i class="component-sub-text">
-                        {{ component.model_instance.teacher.title }} {{ component.model_instance.teacher.surname }},
-                        {{ component.model_instance.classroom.building}} {{ component.model_instance.classroom.room_number}}
-                    </i>
-                </div>
-            {% endif %}
-        {% endif %}
+    <div class="component-display-name">
+        {{ component.display_name }}
     </div>
+    {% if component.percentage_of_days_timetable > 5 %}
+        <div class="component-sub-text">
+            {{ component.starts_at | time:"H:i" }} - {{ component.ends_at | time:"H:i" }}
+        </div>
+        {% if component.is_lesson %}
+            <div class="component-sub-text">
+                {{ component.model_instance.teacher.title }} {{ component.model_instance.teacher.surname }}
+            </div>
+            <div class="component-sub-text">
+                {{ component.model_instance.classroom.building}} {{ component.model_instance.classroom.room_number}}
+            </div>
+        {% endif %}
+    {% endif %}
 </div>
