@@ -68,6 +68,7 @@ class TestCreateNewLesson:
             teacher=teacher,
             classroom=classroom,
             pupils=models.Pupil.objects.all(),
+            year_group=pupil.year_group,
             user_defined_time_slots=models.TimetableSlot.objects.all(),
         )
 
@@ -78,7 +79,8 @@ class TestCreateNewLesson:
         assert lesson.school == school
         assert lesson.teacher == teacher
         assert lesson.classroom == classroom
-        assert pupil in lesson.pupils.all()
+        assert lesson.pupils.get() == pupil
+        assert lesson.year_group == pupil.year_group
         assert user_defined_slot in lesson.user_defined_time_slots.all()
 
     def test_create_new_raises_when_lesson_id_not_unique_for_school(self):

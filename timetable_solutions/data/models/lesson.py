@@ -59,6 +59,10 @@ class Lesson(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     lesson_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
+
+    year_group = models.ForeignKey(
+        YearGroup, related_name="lessons", on_delete=models.PROTECT, null=True
+    )
     pupils = models.ManyToManyField(Pupil, related_name="lessons")
 
     # Teacher & classroom can be null for sport / not classroom lessons
@@ -141,6 +145,7 @@ class Lesson(models.Model):
         total_required_double_periods: int,
         teacher: Teacher | None = None,
         classroom: Classroom | None = None,
+        year_group: YearGroup | None = None,
         pupils: PupilQuerySet | None = None,
         user_defined_time_slots: TimetableSlotQuerySet | None = None,
     ) -> "Lesson":
@@ -155,6 +160,7 @@ class Lesson(models.Model):
             total_required_double_periods=total_required_double_periods,
             teacher=teacher,
             classroom=classroom,
+            year_group=year_group,
         )
 
         if pupils:
@@ -304,6 +310,8 @@ class Lesson(models.Model):
         """
         Get the year group a Lesson will be taught to.
         """
+        if self.year_group:
+            return self.year_group
         all_pupils = self.pupils.all()
         if all_pupils.count() > 0:
             return all_pupils.first().year_group

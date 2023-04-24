@@ -22,6 +22,7 @@ def create_new_lesson(
     teacher_id: int | None = None,
     classroom_id: int | None = None,
     pupils: models.PupilQuerySet | None = None,
+    year_group: models.YearGroup | None = None,
     user_defined_time_slots: models.TimetableSlotQuerySet | None = None,
 ) -> models.Lesson:
     """
@@ -29,6 +30,19 @@ def create_new_lesson(
 
     :raises UnableToCreateLesson: if the parameters could not be used to create a lesson.
     """
+    if pupils:
+        year_group_ids = {pupil.year_group.pk for pupil in pupils}
+        if len(year_group_ids) > 1:
+            raise UnableToCreateLesson(
+                human_error_message="Cannot create a lesson with pupils in different year groups."
+            )
+        if year_group and year_group.pk not in year_group_ids:
+            raise UnableToCreateLesson(
+                human_error_message="The pupils' year group is different to the year group specified."
+            )
+        elif not year_group:
+            year_group = pupils.first().year_group
+
     if teacher_id:
         try:
             teacher = models.Teacher.objects.get(
@@ -63,6 +77,7 @@ def create_new_lesson(
             teacher=teacher,
             classroom=classroom,
             pupils=pupils,
+            year_group=year_group,
             user_defined_time_slots=user_defined_time_slots,
         )
     except IntegrityError as exc:
