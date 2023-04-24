@@ -11,6 +11,7 @@ from django import forms as django_forms
 # Local application imports
 from data import models
 from domain.solver.queries import classroom as classroom_solver_queries
+from domain.solver.queries import pupil as pupil_solver_queries
 from domain.solver.queries import teacher as teacher_solver_queries
 
 
@@ -165,3 +166,47 @@ class LessonUpdate(_LessonCreateUpdateBase):
             )
 
         return classroom
+
+
+class LessonAddPupil(django_forms.Form):
+    pupil = django_forms.ModelChoiceField(
+        label="Add a pupil to this lesson",
+        empty_label="",
+        queryset=models.Pupil.objects.none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Set the pupils that can be added.
+        """
+        school = kwargs.pop("school")
+        self.lesson = kwargs.pop("lesson")
+        super().__init__(*args, **kwargs)
+
+        exclude_pks = self.lesson.pupils.values_list("pk", flat=True)
+        pupils = (
+            models.Pupil.objects.filter(school=school)
+            .exclude(pk__in=exclude_pks)
+            .order_by("firstname")
+        )
+        self.fields["pupil"].queryset = pupils
+
+    def clean_pupil(self) -> models.Pupil:
+        pupil = self.cleaned_data["pupil"]
+        clashes = []
+        for slot in self.lesson.user_defined_time_slots.all():
+            if clash := pupil_solver_queries.check_if_pupil_busy_at_time(
+                pupil=pupil,
+                starts_at=slot.starts_at,
+                ends_at=slot.ends_at,
+                day_of_week=slot.day_of_week,
+            ):
+                clashes.append(clash)
+
+        if clashes:
+            raise django_forms.ValidationError(
+                f"Cannot add {pupil} to lesson, since they already have a lesson that clashes "
+                "with at least one of your pre-defined time slots"
+            )
+
+        return pupil

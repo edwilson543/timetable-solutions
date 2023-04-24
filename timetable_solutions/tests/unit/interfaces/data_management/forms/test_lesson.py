@@ -62,7 +62,7 @@ class TestLessonCreate:
 
 @pytest.mark.django_db
 class TestLessonUpdate:
-    def test_raises_if_teacher_would_have_clash(self):
+    def test_clean_teacher_raises_if_teacher_would_have_clash(self):
         school = data_factories.School()
         teacher = data_factories.Teacher(school=school)
 
@@ -83,7 +83,7 @@ class TestLessonUpdate:
 
         assert "already have a lesson that clashes" in str(exc.value)
 
-    def test_raises_if_classroom_would_have_clash(self):
+    def test_clean_classroom_raises_if_classroom_would_have_clash(self):
         school = data_factories.School()
         classroom = data_factories.Classroom(school=school)
 
@@ -103,3 +103,44 @@ class TestLessonUpdate:
             form.clean_classroom()
 
         assert "already has a lesson that clashes" in str(exc.value)
+
+
+@pytest.mark.django_db
+class TestLessonAddPupil:
+    def test_initialisation_sets_correct_pupil_options(self):
+        school = data_factories.School()
+
+        # Make a lesson with a pupil we don't expect in the add pupil options
+        lesson = data_factories.Lesson.with_n_pupils(n_pupils=1, school=school)
+
+        # This is the only pupil we expect in the add pupil options
+        other_pupil = data_factories.Pupil(school=school)
+
+        # Make a pupil at some other school
+        other_school_pupil = data_factories.Pupil()
+        assert other_school_pupil.school != other_school_pupil
+
+        form = lesson_forms.LessonAddPupil(school=school, lesson=lesson)
+
+        assert form.fields["pupil"].queryset.get() == other_pupil
+
+    def test_clean_pupil_raises_if_pupil_would_have_clash(self):
+        school = data_factories.School()
+
+        # Make a lesson the pupil is bust with
+        slot = data_factories.TimetableSlot(school=school)
+        pupil = data_factories.Pupil(school=school)
+        data_factories.Lesson(
+            school=school, pupils=(pupil,), user_defined_time_slots=(slot,)
+        )
+
+        # Make another lesson with the same pre-defined slots to try adding the pupil to
+        lesson = data_factories.Lesson(school=school, user_defined_time_slots=(slot,))
+
+        form = lesson_forms.LessonAddPupil(school=school, lesson=lesson)
+        form.cleaned_data = {"pupil": pupil}
+
+        with pytest.raises(django_exceptions.ValidationError) as exc:
+            form.clean_pupil()
+
+        assert "already have a lesson that clashes" in str(exc.value)
