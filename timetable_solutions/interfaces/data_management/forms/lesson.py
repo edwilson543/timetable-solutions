@@ -51,15 +51,15 @@ class _LessonCreateUpdateBase(django_forms.Form):
         """
         Set the teacher and classroom options.
         """
-        self.school = kwargs.pop("school")
+        self.school_id = kwargs.pop("school_id")
         super().__init__(*args, **kwargs)
 
-        teachers = models.Teacher.objects.filter(school=self.school).order_by(
+        teachers = models.Teacher.objects.filter(school_id=self.school_id).order_by(
             "firstname"
         )
         self.fields["teacher"].queryset = teachers
 
-        classrooms = models.Classroom.objects.filter(school=self.school).order_by(
+        classrooms = models.Classroom.objects.filter(school_id=self.school_id).order_by(
             "building", "room_number"
         )
         self.fields["classroom"].queryset = classrooms
@@ -98,9 +98,9 @@ class LessonCreate(_LessonCreateUpdateBase):
         Set the year group options.
         """
         super().__init__(*args, **kwargs)
-        year_groups = models.YearGroup.objects.filter(school_id=self.school).order_by(
-            "year_group_name"
-        )
+        year_groups = models.YearGroup.objects.filter(
+            school_id=self.school_id
+        ).order_by("year_group_name")
         self.fields["year_group"].queryset = year_groups
 
 
@@ -179,13 +179,13 @@ class LessonAddPupil(django_forms.Form):
         """
         Set the pupils that can be added.
         """
-        school = kwargs.pop("school")
+        school_id = kwargs.pop("school_id")
         self.lesson = kwargs.pop("lesson")
         super().__init__(*args, **kwargs)
 
         exclude_pks = self.lesson.pupils.values_list("pk", flat=True)
         pupils = (
-            models.Pupil.objects.filter(school=school)
+            models.Pupil.objects.filter(school_id=school_id)
             .exclude(pk__in=exclude_pks)
             .order_by("firstname")
         )
@@ -210,3 +210,74 @@ class LessonAddPupil(django_forms.Form):
             )
 
         return pupil
+
+
+class LessonAddUserDefinedTimetableSlot(django_forms.Form):
+    slot = django_forms.ModelChoiceField(
+        label="Pre-define a slot when this lesson must take place",
+        empty_label="",
+        queryset=models.TimetableSlot.objects.none(),
+    )
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """
+        Set the slots that can be added.
+        """
+        school_id = kwargs.pop("school_id")
+        self.lesson = kwargs.pop("lesson")
+        super().__init__(*args, **kwargs)
+
+        exclude_pks = self.lesson.user_defined_time_slots.values_list("pk", flat=True)
+        slots = (
+            models.TimetableSlot.objects.filter(school_id=school_id)
+            .exclude(pk__in=exclude_pks)
+            .order_by("day_of_week", "starts_at")
+        )
+        self.fields["slot"].queryset = slots
+
+    def clean_slot(self) -> models.TimetableSlot:
+        """
+        Check no pupil, teacher or pupil would be given a clash if added to the lesson.
+        """
+        slot = self.cleaned_data["slot"]
+
+        # Check the lesson's teacher would be given a clash
+        if teacher_solver_queries.check_if_teacher_busy_at_time(
+            teacher=self.lesson.teacher,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
+            day_of_week=slot.day_of_week,
+        ):
+            raise django_forms.ValidationError(
+                f"Cannot add {slot}, since the lesson's teacher "
+                "is already busy at this time"
+            )
+
+        if classroom_solver_queries.check_if_classroom_occupied_at_time(
+            classroom=self.lesson.classroom,
+            starts_at=slot.starts_at,
+            ends_at=slot.ends_at,
+            day_of_week=slot.day_of_week,
+        ):
+            raise django_forms.ValidationError(
+                f"Cannot add {slot}, since the lesson's classroom "
+                "is already busy at this time"
+            )
+
+        # Check none of the lesson's pupils would be given a clash
+        pupil_clashes = []
+        for pupil in self.lesson.pupils.all():
+            if clash := pupil_solver_queries.check_if_pupil_busy_at_time(
+                pupil=pupil,
+                starts_at=slot.starts_at,
+                ends_at=slot.ends_at,
+                day_of_week=slot.day_of_week,
+            ):
+                pupil_clashes.append(clash)
+        if pupil_clashes:
+            raise django_forms.ValidationError(
+                f"Cannot add {slot}, since at least one of the pupils in this "
+                "lesson is already busy at this time"
+            )
+
+        return slot
