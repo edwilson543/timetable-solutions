@@ -167,6 +167,29 @@ class TestCreateNewLesson:
 
 
 @pytest.mark.django_db
+class TestUpdateLesson:
+    def test_updates_lesson_in_db(self):
+        lesson = data_factories.Lesson()
+        teacher = data_factories.Teacher(school=lesson.school)
+        classroom = data_factories.Classroom(school=lesson.school)
+
+        updated_lesson = operations.update_lesson(
+            lesson,
+            subject_name="Geography",
+            teacher=teacher,
+            classroom=classroom,
+            total_required_slots=10,
+            total_required_double_periods=5,
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+        assert updated_lesson.teacher == teacher
+        assert updated_lesson.classroom == classroom
+        assert updated_lesson.total_required_slots == 10
+        assert updated_lesson.total_required_double_periods == 5
+
+
+@pytest.mark.django_db
 class TestDeleteLesson:
     def test_deletes_lesson_from_db(self):
         lesson = data_factories.Lesson()

@@ -12,7 +12,11 @@ class UnableToCreateLesson(base_exceptions.UnableToCreateModelInstance):
     pass
 
 
-class UnableToDeleteLesson(base_exceptions.UnableToCreateModelInstance):
+class UnableToUpdateLesson(base_exceptions.UnableToUpdateModelInstance):
+    pass
+
+
+class UnableToDeleteLesson(base_exceptions.UnableToDeleteModelInstance):
     pass
 
 
@@ -87,6 +91,32 @@ def create_new_lesson(
     except IntegrityError as exc:
         raise UnableToCreateLesson(
             human_error_message="Could not create lesson with the given data."
+        ) from exc
+
+
+def update_lesson(
+    lesson: models.Lesson,
+    *,
+    subject_name: str | None = None,
+    teacher: models.Teacher | None = None,
+    classroom: models.Classroom | None = None,
+    total_required_slots: int | None = None,
+    total_required_double_periods: int | None = None,
+) -> models.Lesson:
+    """
+    Update a lesson in the db
+    """
+    try:
+        return lesson.update(
+            subject_name=subject_name,
+            teacher=teacher,
+            classroom=classroom,
+            total_required_slots=total_required_slots,
+            total_required_double_periods=total_required_double_periods,
+        )
+    except Exception as exc:
+        raise UnableToUpdateLesson(
+            human_error_message="Unable to update this lesson!"
         ) from exc
 
 
