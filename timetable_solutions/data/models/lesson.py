@@ -188,6 +188,30 @@ class Lesson(models.Model):
     # Mutators
     # --------------------
 
+    def add_pupil(self, pupil: Pupil) -> None:
+        """
+        Add a pupil to this Lesson.
+        """
+        self.pupils.add(pupil)
+
+    def remove_pupil(self, pupil: Pupil) -> None:
+        """
+        Remove a pupil from this Lesson.
+        """
+        self.pupils.remove(pupil)
+
+    def add_user_defined_time_slot(self, slot: TimetableSlot) -> None:
+        """
+        Add a user-defined time slots to this lesson.
+        """
+        self.user_defined_time_slots.add(slot)
+
+    def remove_user_defined_time_slot(self, slot: TimetableSlot) -> None:
+        """
+        Add a user-defined time slots to this lesson.
+        """
+        self.user_defined_time_slots.remove(slot)
+
     def add_pupils(self, pupils: PupilQuerySet | Pupil) -> None:
         """
         Add some pupils to this Lesson.

@@ -148,6 +148,44 @@ class TestLessonDeletionMethods:
 
 
 @pytest.mark.django_db
+class TestAddRemovePupil:
+    def test_can_add_pupil(self):
+        lesson = data_factories.Lesson()
+        pupil = data_factories.Pupil(school=lesson.school)
+
+        lesson.add_pupil(pupil)
+
+        assert lesson.pupils.get() == pupil
+
+    def test_can_remove_pupil(self):
+        lesson = data_factories.Lesson.with_n_pupils(n_pupils=1)
+        pupil = lesson.pupils.get()
+
+        lesson.remove_pupil(pupil)
+
+        assert lesson.pupils.count() == 0
+
+
+@pytest.mark.django_db
+class TestAddRemoveUserDefinedTimeSlot:
+    def test_can_add_user_defined_time_slot(self):
+        lesson = data_factories.Lesson()
+        slot = data_factories.TimetableSlot(school=lesson.school)
+
+        lesson.add_user_defined_time_slot(slot)
+
+        assert lesson.user_defined_time_slots.get() == slot
+
+    def test_can_remove_user_defined_time_slot(self):
+        lesson = data_factories.Lesson()
+        slot = data_factories.TimetableSlot(school=lesson.school)
+
+        lesson.remove_user_defined_time_slot(slot)
+
+        assert lesson.user_defined_time_slots.count() == 0
+
+
+@pytest.mark.django_db
 class TestAddUserDefinedTimeSlots:
     def test_can_add_time_slot(self):
         slot = data_factories.TimetableSlot()
