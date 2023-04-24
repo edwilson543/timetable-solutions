@@ -164,3 +164,14 @@ class TestCreateNewLesson:
             "The pupils' year group is different to the year group specified"
             in exc.value.human_error_message
         )
+
+
+@pytest.mark.django_db
+class TestDeleteLesson:
+    def test_deletes_lesson_from_db(self):
+        lesson = data_factories.Lesson()
+
+        operations.delete_lesson(lesson)
+
+        with pytest.raises(models.Lesson.DoesNotExist):
+            lesson.refresh_from_db()

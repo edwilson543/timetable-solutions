@@ -12,6 +12,10 @@ class UnableToCreateLesson(base_exceptions.UnableToCreateModelInstance):
     pass
 
 
+class UnableToDeleteLesson(base_exceptions.UnableToCreateModelInstance):
+    pass
+
+
 def create_new_lesson(
     *,
     school_id: int,
@@ -83,4 +87,16 @@ def create_new_lesson(
     except IntegrityError as exc:
         raise UnableToCreateLesson(
             human_error_message="Could not create lesson with the given data."
+        ) from exc
+
+
+def delete_lesson(lesson: models.Lesson) -> tuple[int, dict[str, int]]:
+    """
+    Delete a lesson from the db.
+    """
+    try:
+        return lesson.delete()
+    except Exception as exc:
+        raise UnableToDeleteLesson(
+            human_error_message="Unable to delete this lesson!"
         ) from exc
