@@ -188,6 +188,39 @@ class Lesson(models.Model):
     # Mutators
     # --------------------
 
+    def update(
+        self,
+        *,
+        subject_name: str | None = None,
+        teacher: Teacher | None = None,
+        classroom: Classroom | None = None,
+        total_required_slots: int | None = None,
+        total_required_double_periods: int | None = None,
+    ) -> "Lesson":
+        """
+        Update a lesson in the db.
+
+        Excludes M2M fields and any other fields that it does not make
+        sense to update post-creation.
+        """
+        self.subject_name = subject_name or self.subject_name
+        self.teacher = teacher or self.teacher
+        self.classroom = classroom or self.classroom
+        self.total_required_slots = total_required_slots or self.total_required_slots
+        self.total_required_double_periods = (
+            total_required_double_periods or self.total_required_double_periods
+        )
+        self.save(
+            update_fields=[
+                "subject_name",
+                "teacher",
+                "classroom",
+                "total_required_slots",
+                "total_required_double_periods",
+            ]
+        )
+        return self
+
     def add_pupil(self, pupil: Pupil) -> None:
         """
         Add a pupil to this Lesson.

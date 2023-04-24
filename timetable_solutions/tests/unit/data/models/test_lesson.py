@@ -148,6 +148,37 @@ class TestLessonDeletionMethods:
 
 
 @pytest.mark.django_db
+class TestUpdate:
+    def test_updates_all_lesson_parameters(self):
+        lesson = data_factories.Lesson()
+        teacher = data_factories.Teacher(school=lesson.school)
+        classroom = data_factories.Classroom(school=lesson.school)
+
+        updated_lesson = lesson.update(
+            subject_name="Geography",
+            teacher=teacher,
+            classroom=classroom,
+            total_required_slots=10,
+            total_required_double_periods=5,
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+        assert updated_lesson.teacher == teacher
+        assert updated_lesson.classroom == classroom
+        assert updated_lesson.total_required_slots == 10
+        assert updated_lesson.total_required_double_periods == 5
+
+    def test_updates_a_subset_of_parameters(self):
+        lesson = data_factories.Lesson()
+
+        updated_lesson = lesson.update(
+            subject_name="Geography",
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+
+
+@pytest.mark.django_db
 class TestAddRemovePupil:
     def test_can_add_pupil(self):
         lesson = data_factories.Lesson()
