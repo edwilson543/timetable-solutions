@@ -178,6 +178,20 @@ class TestLessonAddUserDefinedTimetableSlot:
 
         assert form.fields["slot"].queryset.get() == slot
 
+    def test_slot_field_disabled_if_already_has_required_number_of_slots(self):
+        school = data_factories.School()
+
+        slot = data_factories.TimetableSlot(school=school)
+        lesson = data_factories.Lesson(
+            school=school, user_defined_time_slots=(slot,)
+        )
+
+        form = lesson_forms.LessonAddUserDefinedTimetableSlot(
+            school_id=school.school_access_key, lesson=lesson
+        )
+
+        assert form.fields["slot"].disabled
+
     def test_form_not_valid_if_teacher_would_have_clash(self):
         school = data_factories.School()
 

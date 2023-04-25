@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'lesson-landing-page' %}" class="link-secondary text-decoration-none">
+            lessons
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        upload
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>Bulk upload lessons</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        <div class="card-header">
+            <b>Upload a csv file with the required structure</b>
+        </div>
+        <div class="card-body">
+            {% include 'utils/forms/basic-form.html' with upload=True form=form form_id="upload-form" submit_url=upload_url submit_text="Upload" submit_icon='fa-solid fa-cloud-arrow-up' other_button_url=example_download_url other_button_text="Download example" other_button_icon='fa-solid fa-file-arrow-down' %}
+        </div>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3">
+        <div class="card-header">
+            <b>Required file structure</b>
+        </div>
+
+        <!-- Documentation -->
+        <div class="table-responsive">
+            <table class="table table-striped w-100 text-nowrap">
+                <thead>
+                    <tr>
+                        <th>lesson_id</th>
+                        <th>subject_name</th>
+                        <th>teacher_id</th>
+                        <th>pupil_ids</th>
+                        <th>classroom_id</th>
+                        <th>total_required_slots</th>
+                        <th>total_required_double_periods</th>
+                        <th>user_defined_slot_ids</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>maths-y1-a</td>
+                        <td>Maths</td>
+                        <td>1</td>
+                        <td>1; 2; 3</td>
+                        <td>10</td>
+                        <td>5</td>
+                        <td>1</td>
+                        <td>6; 24</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+                <b>lesson_id*:</b> A text identifier used to identify this lesson.
+                Note that these must be unique
+            </li>
+            <li class="list-group-item">
+                <b>subject_name*:</b> The name of the lesson subject
+            </li>
+            <li class="list-group-item">
+                <b>teacher_id*:</b> The ID of the lesson's teacher
+            </li>
+            <li class="list-group-item">
+                <b>pupil_ids*:</b> IDs of the pupils to add to the lesson.
+                Separate each id with a semicolon as shown in the example table
+            </li>
+            <li class="list-group-item">
+                <b>classroom_id*:</b> The ID of the lesson's classroom
+            </li>
+            <li class="list-group-item">
+                <b>total_required_slots*:</b> The number of timetable slots this lesson
+                should be assigned each week. Note that this count should include any
+                that you assign yourself
+            </li>
+            <li class="list-group-item">
+                <b>total_required_double_periods*:</b> The number of double periods this lesson
+                should be assigned each week. Note that this count should include any double
+                periods you assign yourself, and does count towards fulfilling total_required_slots.
+                Therefore it must be at most half of total_required_slots
+            </li>
+            <li class="list-group-item">
+                <b>user_defined_slot_ids*:</b> IDs of the slots to add to the lesson.
+                Separate each id with a semicolon as shown in the example table
+            </li>
+            <li class="list-group-item">
+                <i>*required - no empty values are allowed in these columns</i>
+            </li>
+        </ul>
+
+    </div>
+</div>
+
+{% endblock %}

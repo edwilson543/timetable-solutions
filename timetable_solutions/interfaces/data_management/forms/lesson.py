@@ -68,8 +68,10 @@ class _LessonCreateUpdateBase(django_forms.Form):
         """
         Ensure total required slots and total required double periods are compatible
         """
-        total_required_slots = self.cleaned_data["total_required_slots"]
-        total_required_double_periods = self.cleaned_data["total_required_slots"]
+        total_required_slots = self.cleaned_data.get("total_required_slots", 1)
+        total_required_double_periods = self.cleaned_data.get(
+            "total_required_double_periods", 0
+        )
         if total_required_double_periods * 2 > total_required_slots:
             raise django_forms.ValidationError(
                 "Total required double periods must be at most half the total number of required slots"
@@ -189,7 +191,17 @@ class LessonAddPupil(django_forms.Form):
             .exclude(pk__in=exclude_pks)
             .order_by("firstname")
         )
-        self.fields["pupil"].queryset = pupils
+        if pupils:
+            self.fields["pupil"].queryset = pupils
+        elif (
+            self.lesson.user_defined_time_slots.count()
+            == self.lesson.total_required_slots
+        ):
+            self.fields["slot"].disabled = True
+            self.fields["slot"] = "This lesson already has its required number of slots"
+        else:
+            self.fields["pupil"].disabled = True
+            self.fields["pupil"].help_text = "All pupils have been added to this lesson"
 
     def clean_pupil(self) -> models.Pupil:
         pupil = self.cleaned_data["pupil"]
@@ -227,13 +239,21 @@ class LessonAddUserDefinedTimetableSlot(django_forms.Form):
         self.lesson = kwargs.pop("lesson")
         super().__init__(*args, **kwargs)
 
+        # if self.lesson.user_defined_time_slots.count() == self.lesson.total_required_slots:
+        #     self.fields["slot"].disabled = True
+        #     self.fields["slot"] = "This lesson already has its required number of slots"
+        #     return None
+
         exclude_pks = self.lesson.user_defined_time_slots.values_list("pk", flat=True)
         slots = (
             models.TimetableSlot.objects.filter(school_id=school_id)
             .exclude(pk__in=exclude_pks)
             .order_by("day_of_week", "starts_at")
         )
-        self.fields["slot"].queryset = slots
+        if slots:
+            self.fields["slot"].queryset = slots
+        else:
+            self.fields["slot"].disabled = True
 
     def clean_slot(self) -> models.TimetableSlot:
         """

@@ -13,7 +13,7 @@ def get_lessons(
     *,
     school_id: int,
     search_term: str,
-) -> django_models.QuerySet[models.Lesson]:
+) -> models.LessonQuerySet:
     """
     Get a filtered subset of lessons, based on id or subject name.
     """

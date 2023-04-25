@@ -69,6 +69,7 @@ class TestLessonSerializer:
                     f"{lesson.classroom.building} {lesson.classroom.room_number}",
                 ),
                 ("total_required_slots", lesson.total_required_slots),
+                ("update_url", UrlName.LESSON_UPDATE.url(lesson_id=lesson.lesson_id))
             ]
         )
 
@@ -93,6 +94,7 @@ class TestLessonSerializer:
                         f"{lesson_a.classroom.building} {lesson_a.classroom.room_number}",
                     ),
                     ("total_required_slots", lesson_a.total_required_slots),
+                    ("update_url", UrlName.LESSON_UPDATE.url(lesson_id=lesson_a.lesson_id))
                 ]
             ),
             OrderedDict(
@@ -106,6 +108,7 @@ class TestLessonSerializer:
                         f"{lesson_b.classroom.building} {lesson_b.classroom.room_number}",
                     ),
                     ("total_required_slots", lesson_b.total_required_slots),
+                    ("update_url", UrlName.LESSON_UPDATE.url(lesson_id=lesson_b.lesson_id))
                 ]
             ),
         ]

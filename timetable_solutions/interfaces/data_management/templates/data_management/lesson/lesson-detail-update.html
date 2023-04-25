@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'lesson-landing-page' %}" class="link-secondary text-decoration-none">
+            lessons
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'lesson-list' %}" class="link-secondary text-decoration-none">
+            list
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        {{ serialized_model_instance.lesson_id }}
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3">
+    <div class="card-header">
+        <h3>
+            View and update details for lesson {{ serialized_model_instance.lesson_id }}
+        </h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="col-lg-6 my-3 p-1">
+        <div class="card h-100 p-2">
+            <div class="card-header">
+                <h5>Update lesson</h5>
+            </div>
+            <div class="card-body">
+                {% include 'data_management/partials/forms/disabled-update-form.html' with form=form %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Lazy-load the related pupils -->
+<div
+    class="row mx-3 my-1"
+    hx-get="{% url 'lesson-add-pupil-partial' serialized_model_instance.lesson_id %}"
+    hx-trigger="load"
+    hx-target="this"
+    hx-swap="innerHTML"
+>
+</div>
+
+<!-- Lazy-load the user defined time slots -->
+<div
+    class="row mx-3 my-1"
+    hx-get="{% url 'lesson-add-user-slot-partial' serialized_model_instance.lesson_id %}"
+    hx-trigger="load"
+    hx-target="this"
+    hx-swap="innerHTML"
+>
+</div>
+
+{% endblock %}
