@@ -7,6 +7,13 @@ from .break_ import (
     BreakUpdateYearGroups,
 )
 from .classroom import ClassroomCreate, ClassroomSearch, ClassroomUpdate
+from .lesson import (
+    LessonAddPupil,
+    LessonAddUserDefinedTimetableSlot,
+    LessonCreate,
+    LessonSearch,
+    LessonUpdate,
+)
 from .pupil import PupilCreate, PupilSearch, PupilUpdate
 from .teacher import TeacherCreate, TeacherSearch, TeacherUpdate
 from .timetable_slot import (

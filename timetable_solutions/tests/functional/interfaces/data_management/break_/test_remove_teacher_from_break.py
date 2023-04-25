@@ -5,9 +5,6 @@ Tests for removing a related teacher from a break.
 # Standard library imports
 from collections import OrderedDict
 
-# Django imports
-from django import test
-
 # Local application imports
 from interfaces.constants import UrlName
 from tests import data_factories
@@ -15,7 +12,6 @@ from tests.functional import client
 
 
 class TestBreakUpdateRelatedTeachersPartialRemove(client.TestClient):
-    @test.override_settings(DEBUG=True)
     def test_loads_related_teachers_and_then_can_remove_one(self):
         school = self.create_school_and_authorise_client()
 

@@ -74,7 +74,7 @@ def sitemap() -> list[PageCollection]:
                 ),
                 Page(
                     "Lessons",
-                    url="",
+                    url=UrlName.LESSON_LANDING_PAGE.url(),
                     fa_icon="fa-solid fa-brain",
                 ),
             ],

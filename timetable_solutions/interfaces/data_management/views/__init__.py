@@ -20,6 +20,16 @@ from .classroom import (
     ClassroomUpdate,
     ClassroomUpload,
 )
+from .lesson import (
+    LessonCreate,
+    LessonExampleDownload,
+    LessonLanding,
+    LessonSearch,
+    LessonUpdate,
+    LessonUpdatePupilsPartial,
+    LessonUpdateUserDefinedTimetableSlotPartial,
+    LessonUpload,
+)
 from .pupil import (
     PupilCreate,
     PupilExampleDownload,

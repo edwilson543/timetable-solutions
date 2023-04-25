@@ -2,12 +2,10 @@
 Module containing the view class for the timetable creation page.
 """
 
-
 # Standard library imports
 from typing import Any
 
 # Django imports
-from django import urls
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
@@ -33,12 +31,12 @@ class CreateTimetable(LoginRequiredMixin, FormView):
     """
 
     # LoginRequiredMixin attributes
-    login_url = urls.reverse_lazy(UrlName.LOGIN.value)
+    login_url = UrlName.LOGIN.url(lazy=True)
 
     # FormView attributes
     form_class = forms.SolutionSpecification
     template_name = "create-timetables/create-timetables.html"
-    success_url = urls.reverse_lazy(UrlName.PUPIL_LIST.value)
+    success_url = UrlName.PUPIL_LIST.url(lazy=True)
 
     def form_valid(self, form: forms.SolutionSpecification) -> HttpResponse:
         """

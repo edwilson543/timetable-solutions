@@ -59,6 +59,10 @@ class Lesson(models.Model):
     school = models.ForeignKey(School, on_delete=models.CASCADE)
     lesson_id = models.CharField(max_length=20)
     subject_name = models.CharField(max_length=20)
+
+    year_group = models.ForeignKey(
+        YearGroup, related_name="lessons", on_delete=models.PROTECT, null=True
+    )
     pupils = models.ManyToManyField(Pupil, related_name="lessons")
 
     # Teacher & classroom can be null for sport / not classroom lessons
@@ -141,6 +145,7 @@ class Lesson(models.Model):
         total_required_double_periods: int,
         teacher: Teacher | None = None,
         classroom: Classroom | None = None,
+        year_group: YearGroup | None = None,
         pupils: PupilQuerySet | None = None,
         user_defined_time_slots: TimetableSlotQuerySet | None = None,
     ) -> "Lesson":
@@ -155,6 +160,7 @@ class Lesson(models.Model):
             total_required_double_periods=total_required_double_periods,
             teacher=teacher,
             classroom=classroom,
+            year_group=year_group,
         )
 
         if pupils:
@@ -181,6 +187,63 @@ class Lesson(models.Model):
     # --------------------
     # Mutators
     # --------------------
+
+    def update(
+        self,
+        *,
+        subject_name: str | None = None,
+        teacher: Teacher | None = None,
+        classroom: Classroom | None = None,
+        total_required_slots: int | None = None,
+        total_required_double_periods: int | None = None,
+    ) -> "Lesson":
+        """
+        Update a lesson in the db.
+
+        Excludes M2M fields and any other fields that it does not make
+        sense to update post-creation.
+        """
+        self.subject_name = subject_name or self.subject_name
+        self.teacher = teacher or self.teacher
+        self.classroom = classroom or self.classroom
+        self.total_required_slots = total_required_slots or self.total_required_slots
+        self.total_required_double_periods = (
+            total_required_double_periods or self.total_required_double_periods
+        )
+        self.save(
+            update_fields=[
+                "subject_name",
+                "teacher",
+                "classroom",
+                "total_required_slots",
+                "total_required_double_periods",
+            ]
+        )
+        return self
+
+    def add_pupil(self, pupil: Pupil) -> None:
+        """
+        Add a pupil to this Lesson.
+        """
+        self.pupils.add(pupil)
+
+    def remove_pupil(self, pupil: Pupil) -> None:
+        """
+        Remove a pupil from this Lesson.
+        """
+        self.pupils.remove(pupil)
+
+    def add_user_defined_time_slot(self, slot: TimetableSlot) -> None:
+        """
+        Add a user-defined time slots to this lesson.
+        """
+        self.user_defined_time_slots.add(slot)
+
+    def remove_user_defined_time_slot(self, slot: TimetableSlot) -> None:
+        """
+        Add a user-defined time slots to this lesson.
+        """
+        self.user_defined_time_slots.remove(slot)
 
     def add_pupils(self, pupils: PupilQuerySet | Pupil) -> None:
         """
@@ -304,6 +367,8 @@ class Lesson(models.Model):
         """
         Get the year group a Lesson will be taught to.
         """
+        if self.year_group:
+            return self.year_group
         all_pupils = self.pupils.all()
         if all_pupils.count() > 0:
             return all_pupils.first().year_group

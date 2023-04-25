@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block breadcrumbs %}
+    <li class="breadcrumb-item active" aria-current="page">
+        <a href="{% url 'lesson-landing-page' %}" class="link-secondary text-decoration-none">
+            lessons
+        </a>
+    </li>
+    <li class="breadcrumb-item active" aria-current="page">
+        list
+    </li>
+{% endblock %}
+
+{% block content %}
+
+<div class="row mx-3 mb-3">
+    <div class="card-header">
+        <h3>View your lessons</h3>
+    </div>
+</div>
+
+<div class="row mx-3 my-1">
+    <div class="card p-1 my-3 col-lg-6">
+        {% include 'utils/forms/basic-form.html' with form=form form_id="search-form" method="get" submit_url=page_url submit_name="search-submit" submit_text="Search" submit_icon='fa-solid fa-magnifying-glass' other_button_url=page_url other_button_text="Clear" other_button_icon='fa-solid fa-circle-xmark' %}
+    </div>
+</div>
+
+{% include 'data_management/partials/tables/list-display-table.html' %}
+
+{% endblock %}

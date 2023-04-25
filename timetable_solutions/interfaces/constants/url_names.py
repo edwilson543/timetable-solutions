@@ -64,6 +64,18 @@ class UrlName(StrEnum):
     CLASSROOM_UPDATE = "classroom-update"  # kwargs: classroom_id: int
     CLASSROOM_UPLOAD = "classroom-upload"
 
+    # Lessons
+    LESSON_UPDATE_PUPILS_PARTIAL = "lesson-add-pupil-partial"  # kwargs: lesson_id: str
+    LESSON_UPDATE_USER_SLOTS_PARTIAL = (
+        "lesson-add-user-slot-partial"  # kwargs: lesson_id: str
+    )
+    LESSON_CREATE = "lesson-create"
+    LESSON_DOWNLOAD = "lesson-download"
+    LESSON_LANDING_PAGE = "lesson-landing-page"
+    LESSON_LIST = "lesson-list"
+    LESSON_UPDATE = "lesson-update"  # kwargs: lesson_id: str
+    LESSON_UPLOAD = "lesson-upload"
+
     # Pupils
     PUPIL_CREATE = "pupil-create"
     PUPIL_DOWNLOAD = "pupil-download"

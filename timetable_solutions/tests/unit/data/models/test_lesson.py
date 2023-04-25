@@ -68,6 +68,7 @@ class TestCreateNewLesson:
             teacher=teacher,
             classroom=classroom,
             pupils=models.Pupil.objects.all(),
+            year_group=pupil.year_group,
             user_defined_time_slots=models.TimetableSlot.objects.all(),
         )
 
@@ -78,7 +79,8 @@ class TestCreateNewLesson:
         assert lesson.school == school
         assert lesson.teacher == teacher
         assert lesson.classroom == classroom
-        assert pupil in lesson.pupils.all()
+        assert lesson.pupils.get() == pupil
+        assert lesson.year_group == pupil.year_group
         assert user_defined_slot in lesson.user_defined_time_slots.all()
 
     def test_create_new_raises_when_lesson_id_not_unique_for_school(self):
@@ -143,6 +145,75 @@ class TestLessonDeletionMethods:
         # Check the lesson no longer has any solver defined time slots
         lesson.refresh_from_db()
         assert lesson.solver_defined_time_slots.count() == 0
+
+
+@pytest.mark.django_db
+class TestUpdate:
+    def test_updates_all_lesson_parameters(self):
+        lesson = data_factories.Lesson()
+        teacher = data_factories.Teacher(school=lesson.school)
+        classroom = data_factories.Classroom(school=lesson.school)
+
+        updated_lesson = lesson.update(
+            subject_name="Geography",
+            teacher=teacher,
+            classroom=classroom,
+            total_required_slots=10,
+            total_required_double_periods=5,
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+        assert updated_lesson.teacher == teacher
+        assert updated_lesson.classroom == classroom
+        assert updated_lesson.total_required_slots == 10
+        assert updated_lesson.total_required_double_periods == 5
+
+    def test_updates_a_subset_of_parameters(self):
+        lesson = data_factories.Lesson()
+
+        updated_lesson = lesson.update(
+            subject_name="Geography",
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+
+
+@pytest.mark.django_db
+class TestAddRemovePupil:
+    def test_can_add_pupil(self):
+        lesson = data_factories.Lesson()
+        pupil = data_factories.Pupil(school=lesson.school)
+
+        lesson.add_pupil(pupil)
+
+        assert lesson.pupils.get() == pupil
+
+    def test_can_remove_pupil(self):
+        lesson = data_factories.Lesson.with_n_pupils(n_pupils=1)
+        pupil = lesson.pupils.get()
+
+        lesson.remove_pupil(pupil)
+
+        assert lesson.pupils.count() == 0
+
+
+@pytest.mark.django_db
+class TestAddRemoveUserDefinedTimeSlot:
+    def test_can_add_user_defined_time_slot(self):
+        lesson = data_factories.Lesson()
+        slot = data_factories.TimetableSlot(school=lesson.school)
+
+        lesson.add_user_defined_time_slot(slot)
+
+        assert lesson.user_defined_time_slots.get() == slot
+
+    def test_can_remove_user_defined_time_slot(self):
+        lesson = data_factories.Lesson()
+        slot = data_factories.TimetableSlot(school=lesson.school)
+
+        lesson.remove_user_defined_time_slot(slot)
+
+        assert lesson.user_defined_time_slots.count() == 0
 
 
 @pytest.mark.django_db

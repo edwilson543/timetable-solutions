@@ -87,6 +87,49 @@ urlpatterns = [
         name=UrlName.CLASSROOM_DOWNLOAD.value,
     ),
     # --------------------
+    # Lessons
+    # --------------------
+    path(
+        "lessons/",
+        views.LessonLanding.as_view(),
+        name=UrlName.LESSON_LANDING_PAGE.value,
+    ),
+    path(
+        "lessons/create/",
+        views.LessonCreate.as_view(),
+        name=UrlName.LESSON_CREATE.value,
+    ),
+    path(
+        "lessons/list/",
+        views.LessonSearch.as_view(),
+        name=UrlName.LESSON_LIST.value,
+    ),
+    path(
+        "lessons/list/<str:lesson_id>/",
+        views.LessonUpdate.as_view(),
+        name=UrlName.LESSON_UPDATE.value,
+    ),
+    path(
+        "lessons/list/<str:lesson_id>/pupils/",
+        views.LessonUpdatePupilsPartial.as_view(),
+        name=UrlName.LESSON_UPDATE_PUPILS_PARTIAL.value,
+    ),
+    path(
+        "lessons/list/<str:lesson_id>/slots/",
+        views.LessonUpdateUserDefinedTimetableSlotPartial.as_view(),
+        name=UrlName.LESSON_UPDATE_USER_SLOTS_PARTIAL.value,
+    ),
+    path(
+        "lessons/upload/",
+        views.LessonUpload.as_view(),
+        name=UrlName.LESSON_UPLOAD.value,
+    ),
+    path(
+        "lessons/download/",
+        views.LessonExampleDownload.as_view(),
+        name=UrlName.LESSON_DOWNLOAD.value,
+    ),
+    # --------------------
     # Pupils
     # --------------------
     path(

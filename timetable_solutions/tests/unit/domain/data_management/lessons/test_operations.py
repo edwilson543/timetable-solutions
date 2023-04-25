@@ -11,12 +11,14 @@ from tests import data_factories
 
 @pytest.mark.django_db
 class TestCreateNewLesson:
-    def test_create_new_valid_lesson(self):
+    @pytest.mark.parametrize("specify_year_group", [True, False])
+    def test_create_new_valid_lesson(self, specify_year_group: bool):
         # Get some data to make the lesson with
         school = data_factories.School()
         teacher = data_factories.Teacher(school=school)
         classroom = data_factories.Classroom(school=school)
         pupil = data_factories.Pupil(school=school)
+        year_group = pupil.year_group if specify_year_group else None
         user_defined_slot = data_factories.TimetableSlot(
             school=school, relevant_year_groups=(pupil.year_group,)
         )
@@ -31,6 +33,7 @@ class TestCreateNewLesson:
             teacher_id=teacher.teacher_id,
             classroom_id=classroom.classroom_id,
             pupils=models.Pupil.objects.all(),
+            year_group=year_group,
             user_defined_time_slots=models.TimetableSlot.objects.all(),
         )
 
@@ -46,6 +49,7 @@ class TestCreateNewLesson:
         assert lesson.teacher == teacher
         assert lesson.classroom == classroom
         assert lesson.pupils.get() == pupil
+        assert lesson.year_group == pupil.year_group
         assert lesson.user_defined_time_slots.get() == user_defined_slot
 
     def test_raises_when_teacher_does_not_exist(self):
@@ -111,3 +115,86 @@ class TestCreateNewLesson:
             "Could not create lesson with the given data."
             in exc.value.human_error_message
         )
+
+    def test_raises_for_pupils_in_different_year_groups(self):
+        school = data_factories.School()
+        pupil_a = data_factories.Pupil(school=school)
+        pupil_b = data_factories.Pupil(school=school)
+
+        assert pupil_a.year_group != pupil_b.year_group
+
+        mixed_yg_pupils = models.Pupil.objects.all()
+
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
+            operations.create_new_lesson(
+                pupils=mixed_yg_pupils,
+                school_id=school.school_access_key,
+                lesson_id="test",
+                subject_name="test",
+                total_required_slots=1,
+                total_required_double_periods=0,
+            )
+
+        assert (
+            "Cannot create a lesson with pupils in different year groups"
+            in exc.value.human_error_message
+        )
+
+    def test_raises_when_specified_year_group_is_different_to_the_pupils(self):
+        school = data_factories.School()
+        pupil = data_factories.Pupil(school=school)
+        year_group = data_factories.YearGroup(school=school)
+
+        assert pupil.year_group != year_group
+
+        pupils = models.Pupil.objects.all()
+
+        with pytest.raises(operations.UnableToCreateLesson) as exc:
+            operations.create_new_lesson(
+                pupils=pupils,
+                year_group=year_group,
+                school_id=school.school_access_key,
+                lesson_id="test",
+                subject_name="test",
+                total_required_slots=1,
+                total_required_double_periods=0,
+            )
+
+        assert (
+            "The pupils' year group is different to the year group specified"
+            in exc.value.human_error_message
+        )
+
+
+@pytest.mark.django_db
+class TestUpdateLesson:
+    def test_updates_lesson_in_db(self):
+        lesson = data_factories.Lesson()
+        teacher = data_factories.Teacher(school=lesson.school)
+        classroom = data_factories.Classroom(school=lesson.school)
+
+        updated_lesson = operations.update_lesson(
+            lesson,
+            subject_name="Geography",
+            teacher=teacher,
+            classroom=classroom,
+            total_required_slots=10,
+            total_required_double_periods=5,
+        )
+
+        assert updated_lesson.subject_name == "Geography"
+        assert updated_lesson.teacher == teacher
+        assert updated_lesson.classroom == classroom
+        assert updated_lesson.total_required_slots == 10
+        assert updated_lesson.total_required_double_periods == 5
+
+
+@pytest.mark.django_db
+class TestDeleteLesson:
+    def test_deletes_lesson_from_db(self):
+        lesson = data_factories.Lesson()
+
+        operations.delete_lesson(lesson)
+
+        with pytest.raises(models.Lesson.DoesNotExist):
+            lesson.refresh_from_db()

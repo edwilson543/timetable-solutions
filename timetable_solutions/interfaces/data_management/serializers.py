@@ -47,6 +47,9 @@ class Lesson(serializers.Serializer):
     classroom = serializers.SerializerMethodField(method_name="_classroom")
     total_required_slots = serializers.IntegerField()
 
+    # Non-field data data
+    update_url = serializers.SerializerMethodField(method_name="_get_update_url")
+
     def _year_group(self, obj: models.Lesson) -> str:
         return obj.get_associated_year_group().year_group_name
 
@@ -59,6 +62,12 @@ class Lesson(serializers.Serializer):
         if classroom := obj.classroom:
             return classroom.building + " " + str(classroom.room_number)
         return "N/A"
+
+    def _get_update_url(self, obj: models.Lesson) -> str:
+        """
+        Get the url for this lesson's update / detail view page.
+        """
+        return UrlName.LESSON_UPDATE.url(lesson_id=obj.lesson_id)
 
 
 class Teacher(serializers.Serializer):

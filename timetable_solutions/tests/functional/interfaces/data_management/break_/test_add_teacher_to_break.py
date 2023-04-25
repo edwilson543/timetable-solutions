@@ -86,7 +86,7 @@ class TestBreakUpdateRelatedTeachersPartialAdd(client.TestClient):
             ),
         ]
 
-        # The form should now be disabled since there are no more tachers toa dd
+        # The form should now be disabled since there are no more teachers to add
         django_form = response.context["add_form"]
         assert django_form.fields["teacher"].disabled
 

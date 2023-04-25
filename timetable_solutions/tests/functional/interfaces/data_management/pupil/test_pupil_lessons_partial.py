@@ -45,6 +45,10 @@ class TestPupilLessonsPartial(client.TestClient):
                         f"{lesson_a.classroom.building} {lesson_a.classroom.room_number}",
                     ),
                     ("total_required_slots", lesson_a.total_required_slots),
+                    (
+                        "update_url",
+                        UrlName.LESSON_UPDATE.url(lesson_id=lesson_a.lesson_id),
+                    ),
                 ]
             ),
             OrderedDict(
@@ -58,6 +62,10 @@ class TestPupilLessonsPartial(client.TestClient):
                         f"{lesson_b.classroom.building} {lesson_b.classroom.room_number}",
                     ),
                     ("total_required_slots", lesson_b.total_required_slots),
+                    (
+                        "update_url",
+                        UrlName.LESSON_UPDATE.url(lesson_id=lesson_b.lesson_id),
+                    ),
                 ]
             ),
         ]
@@ -95,6 +103,10 @@ class TestPupilLessonsPartial(client.TestClient):
                         f"{lesson_b.classroom.building} {lesson_b.classroom.room_number}",
                     ),
                     ("total_required_slots", lesson_b.total_required_slots),
+                    (
+                        "update_url",
+                        UrlName.LESSON_UPDATE.url(lesson_id=lesson_b.lesson_id),
+                    ),
                 ]
             )
         ]
