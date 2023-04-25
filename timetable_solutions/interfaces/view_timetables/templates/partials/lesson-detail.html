@@ -193,7 +193,11 @@ Styling of the modal containers + panels
                 </div>
 
                 <div id="modal_button_panel">
-                    <a id="amend_button" class="modal_button" href="">
+                    <a
+                        id="amend_button"
+                        class="modal_button"
+                        href="{% url 'lesson-update' lesson_id=lesson.lesson_id %}"
+                    >
                         Amend
                     </a>
                     <a id="close_button" class="modal_button" href="{{ close_modal_url }}">
