@@ -1,9 +1,10 @@
 <h1>School timetable scheduling web app</h1>
 
 <h3>
-This is a project I did between 2022/23 to provide a timetabling service for schools,
+This is a project I did in late 2022 / early 2023 to provide a timetabling service for schools,
 implemented using django and deployed at
 <a href="https://timetable-solutions.com">timetable-solutions.com</a>
+(server now decomissioned).
 </h3>
 
 <h5>Core functionality:</h5>
