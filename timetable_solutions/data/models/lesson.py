@@ -257,7 +257,7 @@ class Lesson(models.Model):
         """
         existing_user_slots = self.user_defined_time_slots.all()
 
-        if (time_slots | existing_user_slots).count() > self.total_required_slots:
+        if (time_slots | existing_user_slots).distinct().count() > self.total_required_slots:
             raise IntegrityError(
                 f"User tried to define more slots for {repr(self)} than the total requirement"
             )
