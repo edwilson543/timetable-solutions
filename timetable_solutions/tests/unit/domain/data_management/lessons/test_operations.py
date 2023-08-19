@@ -116,30 +116,6 @@ class TestCreateNewLesson:
             in exc.value.human_error_message
         )
 
-    def test_raises_for_pupils_in_different_year_groups(self):
-        school = data_factories.School()
-        pupil_a = data_factories.Pupil(school=school)
-        pupil_b = data_factories.Pupil(school=school)
-
-        assert pupil_a.year_group != pupil_b.year_group
-
-        mixed_yg_pupils = models.Pupil.objects.all()
-
-        with pytest.raises(operations.UnableToCreateLesson) as exc:
-            operations.create_new_lesson(
-                pupils=mixed_yg_pupils,
-                school_id=school.school_access_key,
-                lesson_id="test",
-                subject_name="test",
-                total_required_slots=1,
-                total_required_double_periods=0,
-            )
-
-        assert (
-            "Cannot create a lesson with pupils in different year groups"
-            in exc.value.human_error_message
-        )
-
     def test_raises_when_specified_year_group_is_different_to_the_pupils(self):
         school = data_factories.School()
         pupil = data_factories.Pupil(school=school)

@@ -183,10 +183,7 @@ class TestSolverConstraints:
 
         # We should have a (duplicated) constraint that the teacher can't teach
         # at both of the factory slots, since they clash (the problem is infeasible)
-        constraint_tuple = next(constraints)
-        constraint = constraint_tuple[0]
-        assert len(constraint) == 2
-        assert constraint.constant == -1
+        assert max(len(constraint[0]) for constraint in constraints) == 2
 
     @pytest.mark.parametrize("n_classrooms", [1, 5])
     def test_get_all_classroom_constraints_gives_one_meaningful_per_classroom(

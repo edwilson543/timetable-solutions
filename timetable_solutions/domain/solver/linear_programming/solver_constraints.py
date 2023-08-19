@@ -18,7 +18,6 @@ from domain.solver.linear_programming.solver_variables import (
 )
 from domain.solver.queries import classroom as classroom_queries
 from domain.solver.queries import pupil as pupil_queries
-from domain.solver.queries import teacher as teacher_queries
 from domain.solver.solver_input_data import TimetableSolverInputs
 
 
@@ -169,7 +168,7 @@ class TimetableSolverConstraints:
 
     def _get_all_teacher_constraints(
         self,
-    ) -> Generator[tuple[lp.LpConstraint, str], None, None]:
+    ) -> list[tuple[lp.LpConstraint, str]]:
         """
         Ensure every teacher is only assigned one lesson at a time.
         """
@@ -177,7 +176,7 @@ class TimetableSolverConstraints:
         def __one_place_at_a_time_constraint(
             teacher: models.Teacher,
             time_slot: models.TimetableSlot,
-        ) -> tuple[lp.LpConstraint, str]:
+        ) -> list[tuple[lp.LpConstraint, str]]:
             """
             Ensure this teacher is only assigned one lesson at the time spanned by the given time slot.
 
@@ -192,43 +191,58 @@ class TimetableSolverConstraints:
                 time_of_week=clashes.TimeOfWeek.from_slot(slot=time_slot),
             )
 
+            # Check for any other clashes
             possible_commitments = lp.lpSum(
                 [
                     self._decision_variables.get(key)
                     for lesson in teacher.lessons.all()
-                    for clash_slot in clashing_slots
                     if (
                         key := var_key(
-                            lesson_id=lesson.lesson_id, slot_id=clash_slot.slot_id
+                            lesson_id=lesson.lesson_id,
+                            slot_id=time_slot.slot_id,
                         )
                     )
                     in self._decision_variables.keys()
                 ]
             )
-
-            existing_commitment = teacher_queries.check_if_teacher_busy_at_time(
-                teacher,
-                starts_at=time_slot.starts_at,
-                ends_at=time_slot.ends_at,
-                day_of_week=time_slot.day_of_week,
-            )
-            if existing_commitment:
-                constraint = (
-                    possible_commitments == 0,
-                    f"teacher_{teacher.teacher_id}_unavailable_at_{time_slot.slot_id}",
-                )
-            else:
-                constraint = (
+            constraints = [
+                (
                     possible_commitments <= 1,
                     f"teacher_{teacher.teacher_id}_available_at_{time_slot.slot_id}",
                 )
-            return constraint
+            ]
+            for other_slot in clashing_slots.exclude(slot_id=time_slot.slot_id):
+                possible_commitments = lp.lpSum(
+                    [
+                        self._decision_variables.get(key)
+                        for lesson in teacher.lessons.all()
+                        for clash_slot in [time_slot, other_slot]
+                        if (
+                            key := var_key(
+                                lesson_id=lesson.lesson_id,
+                                slot_id=clash_slot.slot_id,
+                            )
+                        )
+                        in self._decision_variables.keys()
+                    ]
+                )
+                constraints.append(
+                    (
+                        possible_commitments <= 1,
+                        f"teacher_{teacher.teacher_id}_available_at_one_of_{time_slot.slot_id}_and_{other_slot.slot_id}",
+                    )
+                )
 
-        yield from (
-            __one_place_at_a_time_constraint(teacher=teacher, time_slot=time_slot)
+            return constraints
+
+        return [
+            constraint
             for teacher in self._inputs.teachers
             for time_slot in self._inputs.timetable_slots
-        )
+            for constraint in __one_place_at_a_time_constraint(
+                teacher=teacher, time_slot=time_slot
+            )
+        ]
 
     def _get_all_classroom_constraints(
         self,
@@ -247,6 +261,7 @@ class TimetableSolverConstraints:
             of the time slot. Force to 0 if it has an existing lesson at any of the times.
             Otherwise, their sum must be at most 1.
             """
+            # TODO -> mimic teacher constraints
             # Need to constrain against ALL slots clashing with this one
             # since the teacher can only be utilised for ONE of these slots
             clashing_slots = clashes.filter_queryset_for_clashes(

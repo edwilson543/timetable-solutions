@@ -26,6 +26,7 @@ class TimetableSolverOutcome:
         Method to recover the variable values (1s / 0s) and use these to add slots to the
         'solver_defined_time_slots' on all relevant Lesson instances
         """
+        unsolved_lessons = []
         for lesson in self._input_data.lessons:
             solved_timeslot_ids = [
                 var_key.slot_id
@@ -34,11 +35,13 @@ class TimetableSolverOutcome:
             ]
 
             if len(solved_timeslot_ids) < lesson.get_n_solver_slots_required():
-                self.error_messages.append(
-                    f"Could not find solution to fulfill required slots of lesson: {lesson}."
-                )
-
+                unsolved_lessons.append(lesson)
             solved_timeslots = self._input_data.timetable_slots.filter(
                 slot_id__in=solved_timeslot_ids
             )
             lesson.add_solver_defined_time_slots(time_slots=solved_timeslots)
+        if unsolved_lessons:
+            lessons = ", ".join([str(lsn) for lsn in unsolved_lessons])
+            self.error_messages.append(
+                f"Could not find solution to fulfill required slots of lesson: {lessons}."
+            )

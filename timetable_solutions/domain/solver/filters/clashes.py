@@ -53,26 +53,6 @@ class TimeOfWeek:
             day_of_week=break_.day_of_week,
         )
 
-    @property
-    def open_interval(self) -> tuple[dt.time, dt.time]:
-        """
-        Create a 'fake' open interval covered by a timespan.
-
-        This is so that comparing two intervals doesn't give undesired clashes when using
-        the django queryset look __range, which is inclusive.
-        """
-        one_second = dt.timedelta(seconds=1)
-
-        open_start_time = (
-            dt.datetime.combine(date=dt.datetime.min, time=self.starts_at) + one_second
-        ).time()
-
-        open_end_time = (
-            dt.datetime.combine(date=dt.datetime.min, time=self.ends_at) - one_second
-        ).time()
-
-        return open_start_time, open_end_time
-
 
 @typing.overload
 def filter_queryset_for_clashes(
@@ -106,21 +86,21 @@ def filter_queryset_for_clashes(
     The use case for this is to check whether teachers / classrooms / pupil / year groups
     are already busy at any point during a give time of the week.
     """
-    clash_range = time_of_week.open_interval
-    # Note the django __range filter is inclusive, hence the open interval is essential,
-    # otherwise we just get slots that start/finish at the same time e.g. 9-10, 10-11...
-
     return queryset.filter(
         (
             (
-                # OVERLAPPING clashes
-                django_models.Q(starts_at__range=clash_range)
-                | django_models.Q(ends_at__range=clash_range)
+                # Items of the queryset time_of_week.starts_at falls within
+                django_models.Q(starts_at__lt=time_of_week.starts_at)
+                & django_models.Q(ends_at__gt=time_of_week.starts_at)
             )
             | (
-                # EXACT MATCH clashes
-                # We do however want slots to clash with themselves / other slots starting and finishing
-                # at the same time, since a user may have defined slots covering the same time span
+                # Items of the queryset time_of_week.ends_at falls within
+                django_models.Q(starts_at__lt=time_of_week.ends_at)
+                & django_models.Q(ends_at__gt=time_of_week.ends_at)
+            )
+            | (
+                # EXACT MATCH - we want slots to clash with other slots starting and finishing
+                # at the same time
                 django_models.Q(starts_at=time_of_week.starts_at)
                 | django_models.Q(ends_at=time_of_week.ends_at)
             )

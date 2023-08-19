@@ -20,6 +20,16 @@ urlpatterns = [
         views.teacher_timetable,
         name=UrlName.TEACHER_TIMETABLE.value,
     ),
+    path(
+        "teachers/print/",
+        views.teacher_timetables,
+        name="print-all-teachers",
+    ),
+    path(
+        "pupils/print/",
+        views.pupil_timetables,
+        name="print-all-pupils",
+    ),
     # HTMX URLs
     path(
         "lesson-detail-modal/<str:lesson_id>",
