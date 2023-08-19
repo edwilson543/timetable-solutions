@@ -40,10 +40,6 @@ def create_new_lesson(
     """
     if pupils:
         year_group_ids = {pupil.year_group.pk for pupil in pupils}
-        if len(year_group_ids) > 1:
-            raise UnableToCreateLesson(
-                human_error_message="Cannot create a lesson with pupils in different year groups."
-            )
         if year_group and year_group.pk not in year_group_ids:
             raise UnableToCreateLesson(
                 human_error_message="The pupils' year group is different to the year group specified."
