@@ -13,7 +13,32 @@
 }
 </style>
 
-<div class="timetable">
+<script>
+    function printTimetable() {
+        var divContents = document.getElementById("timetable").outerHTML;
+        var a = window.open('', '', 'height=500, width=500');
+        a.document.write('<html>');
+        a.document.write('<head><style>\n' +
+          '.timetable {\n' +
+          '    display: flex;\n' +
+          '    flex-flow: row nowrap;\n' +
+          '    align-items: stretch;\n' +
+          '    justify-content: space-evenly;\n' +
+          '    column-gap: 5px;\n' +
+          '\n' +
+          '    height: 100%;\n' +
+          '    width: 100%;\n' +
+          '}\n' +
+          '</style></head>');
+        a.document.write('<body>');
+        a.document.write(divContents);
+        a.document.write('</body></html>');
+        a.document.close();
+        a.print();
+    }
+</script>
+
+<div id="timetable" class="timetable">
     {% for day, components in timetable.items %}
         {% if components %}
             {% include 'partials/timetable-day.html' with day=day components=components %}

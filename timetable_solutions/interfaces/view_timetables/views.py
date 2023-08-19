@@ -35,6 +35,25 @@ def pupil_timetable(request: http.HttpRequest, pupil_id: int) -> http.HttpRespon
 
 
 @login_required
+def pupil_timetables(request: http.HttpRequest) -> http.HttpResponse:
+    """
+    All pupil timetables.
+    """
+    school_id = request.user.profile.school.school_access_key
+    pupils = models.Pupil.objects.filter(school_id=school_id)
+    timetables = {pupil:
+        view_timetables.get_pupil_timetable(pupil) for pupil in pupils
+    }
+
+    template = loader.get_template("view_timetables/print-timetables.html")
+    context = {
+        "timetables": timetables,
+        "is_pupils": True
+    }
+    return http.HttpResponse(template.render(context, request))
+
+
+@login_required
 def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpResponse:
     """
     View for the timetable of the individual teacher with the passed id.
@@ -51,6 +70,24 @@ def teacher_timetable(request: http.HttpRequest, teacher_id: int) -> http.HttpRe
     context = {
         "teacher": teacher,
         "timetable": timetable,
+    }
+    return http.HttpResponse(template.render(context, request))
+
+
+@login_required
+def teacher_timetables(request: http.HttpRequest) -> http.HttpResponse:
+    """
+    All teacher timetables.
+    """
+    school_id = request.user.profile.school.school_access_key
+    teachers = models.Teacher.objects.filter(school_id=school_id)
+    timetables = {teacher:
+        view_timetables.get_teacher_timetable(teacher) for teacher in teachers
+    }
+
+    template = loader.get_template("view_timetables/print-timetables.html")
+    context = {
+        "timetables": timetables,
     }
     return http.HttpResponse(template.render(context, request))
 

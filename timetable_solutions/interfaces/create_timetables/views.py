@@ -93,3 +93,9 @@ class CreateTimetable(LoginRequiredMixin, FormView):
         )
         kwargs["available_time_slots"] = timeslots
         return kwargs
+
+    def get_success_url(self) -> str:
+        http_referer = self.request.headers.get("Referer", "")
+        if "teachers" in http_referer or "pupils" in http_referer:
+            return http_referer
+        return super().get_success_url()

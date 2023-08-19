@@ -1,0 +1,20 @@
+<style>
+    @media print {
+        .break {
+            break-before: page;
+        }
+    }
+</style>
+
+{% for person, timetable in timetables.items %}
+<div style="width: 90%; height: 90%; break-before: page;">
+    <h2>
+        Timetable for: {{ person.firstname }}
+        {% if is_pupils %}
+            - {{ person.surname }}
+        {% endif %}
+    </h2>
+    {% include 'partials/timetable.html' with timetable=timetable %}
+</div>
+<span class="break"></span>
+{% endfor %}
