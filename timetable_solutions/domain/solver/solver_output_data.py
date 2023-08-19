@@ -41,7 +41,7 @@ class TimetableSolverOutcome:
             )
             lesson.add_solver_defined_time_slots(time_slots=solved_timeslots)
         if unsolved_lessons:
-            lessons = ", ".join([str(l) for l in unsolved_lessons])
+            lessons = ", ".join([str(lsn) for lsn in unsolved_lessons])
             self.error_messages.append(
                 f"Could not find solution to fulfill required slots of lesson: {lessons}."
             )

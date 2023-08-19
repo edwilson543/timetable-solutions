@@ -185,7 +185,6 @@ class TestSolverConstraints:
         # at both of the factory slots, since they clash (the problem is infeasible)
         assert max(len(constraint[0]) for constraint in constraints) == 2
 
-
     @pytest.mark.parametrize("n_classrooms", [1, 5])
     def test_get_all_classroom_constraints_gives_one_meaningful_per_classroom(
         self, n_classrooms

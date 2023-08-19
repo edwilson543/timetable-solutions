@@ -18,7 +18,6 @@ from domain.solver.linear_programming.solver_variables import (
 )
 from domain.solver.queries import classroom as classroom_queries
 from domain.solver.queries import pupil as pupil_queries
-from domain.solver.queries import teacher as teacher_queries
 from domain.solver.solver_input_data import TimetableSolverInputs
 
 
