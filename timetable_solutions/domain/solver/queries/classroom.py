@@ -32,12 +32,7 @@ def check_if_classroom_occupied_at_time(
 
     n_commitments = lesson_clashes.count()
 
-    if n_commitments == 1:
-        return lesson_clashes
-    elif n_commitments == 0:
+    if n_commitments == 0:
         return None
-    else:
-        raise ValueError(
-            f"Classroom {classroom}, {classroom.pk} has ended up with more than 1 commitment"
-            f" at {starts_at} - {ends_at} on {day_of_week.value}"
-        )
+
+    return lesson_clashes

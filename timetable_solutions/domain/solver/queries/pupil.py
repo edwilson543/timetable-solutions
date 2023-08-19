@@ -35,12 +35,7 @@ def check_if_pupil_busy_at_time(
 
     n_commitments = lesson_clashes.count() + break_clashes.count()
 
-    if n_commitments == 1:
-        return clashes.Clash(slots=lesson_clashes, breaks=break_clashes)
-    elif n_commitments == 0:
+    if n_commitments == 0:
         return None
-    else:
-        raise ValueError(
-            f"Pupil {pupil}, {pupil.pk} has ended up with more than 1 commitment"
-            f" at {starts_at} - {ends_at} on {day_of_week.value}"
-        )
+
+    return clashes.Clash(slots=lesson_clashes, breaks=break_clashes)
